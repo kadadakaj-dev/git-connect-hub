@@ -1,13 +1,18 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Helmet } from 'react-helmet-async';
+import BookingWizard from '@/components/booking/BookingWizard';
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Helmet>
+        <title>Book Appointment | PhysioWell Clinic - Physiotherapy & Chiropractic</title>
+        <meta 
+          name="description" 
+          content="Book your physiotherapy or chiropractic appointment online. Easy scheduling, instant confirmation. PhysioWell Clinic offers expert care for your wellness journey." 
+        />
+      </Helmet>
+      <BookingWizard />
+    </>
   );
 };
 

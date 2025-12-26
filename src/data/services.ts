@@ -1,0 +1,58 @@
+import { Service } from '@/types/booking';
+
+export const services: Service[] = [
+  {
+    id: '1',
+    name: 'Initial Examination',
+    description: 'Comprehensive first-time assessment including posture analysis, mobility tests, and personalized treatment plan.',
+    duration: 60,
+    price: 120,
+    category: 'physiotherapy',
+    icon: 'ClipboardCheck',
+  },
+  {
+    id: '2',
+    name: 'Physiotherapy Session',
+    description: 'Targeted treatment session focusing on rehabilitation, pain relief, and improved mobility.',
+    duration: 45,
+    price: 85,
+    category: 'physiotherapy',
+    icon: 'Activity',
+  },
+  {
+    id: '3',
+    name: 'Chiropractic Adjustment',
+    description: 'Spinal manipulation and adjustments to restore proper alignment and nervous system function.',
+    duration: 30,
+    price: 75,
+    category: 'chiropractic',
+    icon: 'Bone',
+  },
+  {
+    id: '4',
+    name: 'Sports Therapy',
+    description: 'Specialized treatment for athletes and active individuals recovering from sports injuries.',
+    duration: 50,
+    price: 95,
+    category: 'physiotherapy',
+    icon: 'Dumbbell',
+  },
+  {
+    id: '5',
+    name: 'Massage Therapy',
+    description: 'Therapeutic massage to relieve muscle tension, improve circulation, and promote relaxation.',
+    duration: 60,
+    price: 90,
+    category: 'physiotherapy',
+    icon: 'Hand',
+  },
+  {
+    id: '6',
+    name: 'Follow-up Consultation',
+    description: 'Progress review and treatment adjustment based on your recovery journey.',
+    duration: 30,
+    price: 60,
+    category: 'physiotherapy',
+    icon: 'MessageSquare',
+  },
+];
