@@ -7,14 +7,9 @@ import ServiceSelection from './ServiceSelection';
 import DateTimeSelection from './DateTimeSelection';
 import ClientDetails from './ClientDetails';
 import Confirmation from './Confirmation';
+import LanguageSwitcher from '../LanguageSwitcher';
 import { toast } from 'sonner';
-
-const steps: BookingStep[] = [
-  { id: 1, title: 'Service', description: 'Choose your treatment' },
-  { id: 2, title: 'Date & Time', description: 'Pick your slot' },
-  { id: 3, title: 'Details', description: 'Your information' },
-  { id: 4, title: 'Confirm', description: 'Review & book' },
-];
+import { useLanguage } from '@/i18n/LanguageContext';
 
 const initialBookingData: BookingData = {
   service: null,
@@ -27,10 +22,18 @@ const initialBookingData: BookingData = {
 };
 
 const BookingWizard = () => {
+  const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState(0);
   const [bookingData, setBookingData] = useState<BookingData>(initialBookingData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const steps: BookingStep[] = [
+    { id: 1, title: t.steps.service.title, description: t.steps.service.description },
+    { id: 2, title: t.steps.dateTime.title, description: t.steps.dateTime.description },
+    { id: 3, title: t.steps.details.title, description: t.steps.details.description },
+    { id: 4, title: t.steps.confirm.title, description: t.steps.confirm.description },
+  ];
 
   const updateBookingData = (field: string, value: any) => {
     setBookingData((prev) => ({ ...prev, [field]: value }));
@@ -50,31 +53,31 @@ const BookingWizard = () => {
     switch (step) {
       case 0:
         if (!bookingData.service) {
-          toast.error('Please select a service');
+          toast.error(t.errors.selectService);
           return false;
         }
         break;
       case 1:
         if (!bookingData.date) {
-          toast.error('Please select a date');
+          toast.error(t.errors.selectDate);
           return false;
         }
         if (!bookingData.time) {
-          toast.error('Please select a time slot');
+          toast.error(t.errors.selectTime);
           return false;
         }
         break;
       case 2:
         if (!bookingData.clientName.trim()) {
-          newErrors.clientName = 'Name is required';
+          newErrors.clientName = t.errors.nameRequired;
         }
         if (!bookingData.clientEmail.trim()) {
-          newErrors.clientEmail = 'Email is required';
+          newErrors.clientEmail = t.errors.emailRequired;
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bookingData.clientEmail)) {
-          newErrors.clientEmail = 'Please enter a valid email';
+          newErrors.clientEmail = t.errors.emailInvalid;
         }
         if (!bookingData.clientPhone.trim()) {
-          newErrors.clientPhone = 'Phone number is required';
+          newErrors.clientPhone = t.errors.phoneRequired;
         }
         if (Object.keys(newErrors).length > 0) {
           setErrors(newErrors);
@@ -95,7 +98,7 @@ const BookingWizard = () => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setIsSubmitting(false);
-      toast.success('Booking confirmed successfully!');
+      toast.success(t.bookingSuccess);
     }
 
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -129,11 +132,14 @@ const BookingWizard = () => {
       <div className="container max-w-5xl mx-auto px-4 py-8 md:py-12">
         {/* Header */}
         <div className="text-center mb-8">
+          <div className="flex justify-end mb-4">
+            <LanguageSwitcher />
+          </div>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-            PhysioWell Clinic
+            {t.clinicName}
           </h1>
           <p className="text-muted-foreground">
-            Book your appointment in just a few steps
+            {t.clinicSubtitle}
           </p>
         </div>
 
@@ -189,7 +195,7 @@ const BookingWizard = () => {
               className="gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back
+              {t.back}
             </Button>
 
             <Button
@@ -202,13 +208,13 @@ const BookingWizard = () => {
               {isSubmitting ? (
                 <>
                   <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                  Booking...
+                  {t.booking}
                 </>
               ) : currentStep === 2 ? (
-                'Confirm Booking'
+                t.confirmBooking
               ) : (
                 <>
-                  Continue
+                  {t.continue}
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
