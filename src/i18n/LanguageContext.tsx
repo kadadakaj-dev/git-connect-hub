@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useMemo } from 'react';
 import { translations, Language } from './translations';
 
 type TranslationType = typeof translations.sk | typeof translations.en;
@@ -9,24 +9,31 @@ interface LanguageContextType {
   t: TranslationType;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+// Default context value to prevent crashes during hydration
+const defaultContextValue: LanguageContextType = {
+  language: 'sk',
+  setLanguage: () => {},
+  t: translations.sk,
+};
+
+const LanguageContext = createContext<LanguageContextType>(defaultContextValue);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('sk'); // Slovak as default
+  const [language, setLanguage] = useState<Language>('sk');
 
-  const t = translations[language];
+  const value = useMemo(() => ({
+    language,
+    setLanguage,
+    t: translations[language],
+  }), [language]);
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );
 };
 
 export const useLanguage = () => {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
+  return useContext(LanguageContext);
 };
