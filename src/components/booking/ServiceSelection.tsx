@@ -1,6 +1,6 @@
 import { Service } from '@/types/booking';
-import { services } from '@/data/services';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/LanguageContext';
 import { 
   ClipboardCheck, 
   Activity, 
@@ -26,15 +26,45 @@ const iconMap: Record<string, React.ElementType> = {
   MessageSquare,
 };
 
+const serviceKeyMap: Record<string, keyof typeof import('@/i18n/translations').translations.sk.services> = {
+  '1': 'initialExamination',
+  '2': 'physiotherapySession',
+  '3': 'chiropracticAdjustment',
+  '4': 'sportsTherapy',
+  '5': 'massageTherapy',
+  '6': 'followUpConsultation',
+};
+
+// Base service data without translations
+const baseServices: Omit<Service, 'name' | 'description'>[] = [
+  { id: '1', duration: 60, price: 120, category: 'physiotherapy', icon: 'ClipboardCheck' },
+  { id: '2', duration: 45, price: 85, category: 'physiotherapy', icon: 'Activity' },
+  { id: '3', duration: 30, price: 75, category: 'chiropractic', icon: 'Bone' },
+  { id: '4', duration: 50, price: 95, category: 'physiotherapy', icon: 'Dumbbell' },
+  { id: '5', duration: 60, price: 90, category: 'physiotherapy', icon: 'Hand' },
+  { id: '6', duration: 30, price: 60, category: 'physiotherapy', icon: 'MessageSquare' },
+];
+
 const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) => {
+  const { t } = useLanguage();
+
+  const services: Service[] = baseServices.map(service => {
+    const key = serviceKeyMap[service.id];
+    return {
+      ...service,
+      name: t.services[key].name,
+      description: t.services[key].description,
+    };
+  });
+
   return (
     <div className="animate-fade-in-up">
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-          Select Your Service
+          {t.selectService}
         </h2>
         <p className="text-muted-foreground">
-          Choose the treatment that best fits your needs
+          {t.chooseServiceSubtitle}
         </p>
       </div>
 
@@ -62,7 +92,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                   ? "bg-primary/10 text-primary" 
                   : "bg-accent text-accent-foreground"
               )}>
-                {service.category === 'physiotherapy' ? 'Physiotherapy' : 'Chiropractic'}
+                {service.category === 'physiotherapy' ? t.categories.physiotherapy : t.categories.chiropractic}
               </span>
 
               {/* Icon */}
@@ -85,7 +115,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
               <div className="flex items-center gap-4 text-sm">
                 <span className="flex items-center gap-1 text-muted-foreground">
                   <Clock className="w-4 h-4" />
-                  {service.duration} min
+                  {service.duration} {t.min}
                 </span>
                 <span className="flex items-center gap-1 font-semibold text-foreground">
                   <DollarSign className="w-4 h-4" />

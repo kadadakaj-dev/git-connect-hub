@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react';
 import { BookingStep } from '@/types/booking';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 interface ProgressBarProps {
   steps: BookingStep[];
@@ -8,6 +9,8 @@ interface ProgressBarProps {
 }
 
 const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
+  const { t } = useLanguage();
+
   return (
     <div className="w-full py-6">
       <div className="flex items-center justify-between">
@@ -65,7 +68,7 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
           {steps[currentStep]?.title}
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          Step {currentStep + 1} of {steps.length}
+          {t.stepOf.replace('{current}', String(currentStep + 1)).replace('{total}', String(steps.length))}
         </p>
       </div>
     </div>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { User, Mail, Phone, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 interface ClientDetailsProps {
   clientName: string;
@@ -19,14 +19,16 @@ const ClientDetails = ({
   onUpdate,
   errors,
 }: ClientDetailsProps) => {
+  const { t } = useLanguage();
+
   return (
     <div className="animate-fade-in-up">
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-          Your Details
+          {t.yourDetails}
         </h2>
         <p className="text-muted-foreground">
-          Please provide your contact information
+          {t.provideContactInfo}
         </p>
       </div>
 
@@ -35,7 +37,7 @@ const ClientDetails = ({
           {/* Name Field */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-              Full Name *
+              {t.fullName} {t.required}
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -44,7 +46,7 @@ const ClientDetails = ({
                 type="text"
                 value={clientName}
                 onChange={(e) => onUpdate('clientName', e.target.value)}
-                placeholder="John Doe"
+                placeholder={t.fullNamePlaceholder}
                 className={cn(
                   "w-full pl-11 pr-4 py-3 rounded-lg border bg-background text-foreground placeholder:text-muted-foreground transition-all duration-200",
                   "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary",
@@ -60,7 +62,7 @@ const ClientDetails = ({
           {/* Email Field */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-              Email Address *
+              {t.emailAddress} {t.required}
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -69,7 +71,7 @@ const ClientDetails = ({
                 type="email"
                 value={clientEmail}
                 onChange={(e) => onUpdate('clientEmail', e.target.value)}
-                placeholder="john@example.com"
+                placeholder={t.emailPlaceholder}
                 className={cn(
                   "w-full pl-11 pr-4 py-3 rounded-lg border bg-background text-foreground placeholder:text-muted-foreground transition-all duration-200",
                   "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary",
@@ -85,7 +87,7 @@ const ClientDetails = ({
           {/* Phone Field */}
           <div>
             <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
-              Phone Number *
+              {t.phoneNumber} {t.required}
             </label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -94,7 +96,7 @@ const ClientDetails = ({
                 type="tel"
                 value={clientPhone}
                 onChange={(e) => onUpdate('clientPhone', e.target.value)}
-                placeholder="+1 (555) 123-4567"
+                placeholder={t.phonePlaceholder}
                 className={cn(
                   "w-full pl-11 pr-4 py-3 rounded-lg border bg-background text-foreground placeholder:text-muted-foreground transition-all duration-200",
                   "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary",
@@ -110,8 +112,8 @@ const ClientDetails = ({
           {/* Notes Field */}
           <div>
             <label htmlFor="notes" className="block text-sm font-medium text-foreground mb-2">
-              Additional Notes
-              <span className="text-muted-foreground font-normal ml-1">(optional)</span>
+              {t.additionalNotes}
+              <span className="text-muted-foreground font-normal ml-1">{t.optional}</span>
             </label>
             <div className="relative">
               <FileText className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
@@ -119,7 +121,7 @@ const ClientDetails = ({
                 id="notes"
                 value={notes}
                 onChange={(e) => onUpdate('notes', e.target.value)}
-                placeholder="Any specific concerns or information we should know..."
+                placeholder={t.notesPlaceholder}
                 rows={4}
                 className={cn(
                   "w-full pl-11 pr-4 py-3 rounded-lg border bg-background text-foreground placeholder:text-muted-foreground transition-all duration-200 resize-none",
@@ -131,7 +133,7 @@ const ClientDetails = ({
 
           {/* Privacy Notice */}
           <p className="text-xs text-muted-foreground text-center">
-            By continuing, you agree to our privacy policy. We'll only use your information to manage your appointment.
+            {t.privacyNotice}
           </p>
         </div>
       </div>

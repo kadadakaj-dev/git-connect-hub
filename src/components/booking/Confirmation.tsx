@@ -1,7 +1,9 @@
 import { format } from 'date-fns';
+import { sk, enUS } from 'date-fns/locale';
 import { CheckCircle2, Calendar, Clock, User, Mail, Phone, FileText, MapPin } from 'lucide-react';
 import { BookingData } from '@/types/booking';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 interface ConfirmationProps {
   bookingData: BookingData;
@@ -9,6 +11,8 @@ interface ConfirmationProps {
 }
 
 const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
+  const { t, language } = useLanguage();
+  const locale = language === 'sk' ? sk : enUS;
   const { service, date, time, clientName, clientEmail, clientPhone, notes } = bookingData;
 
   return (
@@ -19,10 +23,10 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
           <CheckCircle2 className="w-12 h-12 text-success" />
         </div>
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-          Booking Confirmed!
+          {t.bookingConfirmed}
         </h2>
         <p className="text-muted-foreground">
-          Your appointment has been successfully scheduled
+          {t.appointmentScheduled}
         </p>
       </div>
 
@@ -30,13 +34,13 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
       <div className="max-w-lg mx-auto bg-card rounded-xl border border-border p-6 md:p-8 shadow-elegant text-left">
         <div className="flex items-center justify-between mb-6 pb-6 border-b border-border">
           <div>
-            <p className="text-sm text-muted-foreground">Confirmation Number</p>
+            <p className="text-sm text-muted-foreground">{t.confirmationNumber}</p>
             <p className="text-lg font-bold text-foreground">
               #{Math.random().toString(36).substring(2, 8).toUpperCase()}
             </p>
           </div>
           <div className="px-3 py-1 rounded-full bg-success/10 text-success text-sm font-medium">
-            Confirmed
+            {t.confirmed}
           </div>
         </div>
 
@@ -47,9 +51,9 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
               <FileText className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Service</p>
+              <p className="text-sm text-muted-foreground">{t.service}</p>
               <p className="font-medium text-foreground">{service?.name}</p>
-              <p className="text-sm text-muted-foreground">{service?.duration} min • ${service?.price}</p>
+              <p className="text-sm text-muted-foreground">{service?.duration} {t.min} • ${service?.price}</p>
             </div>
           </div>
 
@@ -59,9 +63,9 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
               <Calendar className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Date & Time</p>
+              <p className="text-sm text-muted-foreground">{t.dateAndTime}</p>
               <p className="font-medium text-foreground">
-                {date && format(date, 'EEEE, MMMM d, yyyy')}
+                {date && format(date, 'EEEE, d. MMMM yyyy', { locale })}
               </p>
               <p className="text-sm text-muted-foreground flex items-center gap-1">
                 <Clock className="w-4 h-4" />
@@ -76,9 +80,9 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
               <MapPin className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Location</p>
-              <p className="font-medium text-foreground">PhysioWell Clinic</p>
-              <p className="text-sm text-muted-foreground">123 Wellness Street, Suite 100</p>
+              <p className="text-sm text-muted-foreground">{t.location}</p>
+              <p className="font-medium text-foreground">{t.clinicName}</p>
+              <p className="text-sm text-muted-foreground">{t.clinicAddress}</p>
             </div>
           </div>
 
@@ -100,7 +104,7 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
 
           {notes && (
             <div className="pt-4 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-1">Notes</p>
+              <p className="text-sm text-muted-foreground mb-1">{t.notes}</p>
               <p className="text-sm text-foreground">{notes}</p>
             </div>
           )}
@@ -110,7 +114,7 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
       {/* Email Notice */}
       <div className="max-w-lg mx-auto mt-6 p-4 rounded-lg bg-muted/50 border border-border">
         <p className="text-sm text-muted-foreground">
-          A confirmation email has been sent to <span className="font-medium text-foreground">{clientEmail}</span>
+          {t.emailSentTo} <span className="font-medium text-foreground">{clientEmail}</span>
         </p>
       </div>
 
@@ -121,7 +125,7 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
           size="lg"
           onClick={onNewBooking}
         >
-          Book Another Appointment
+          {t.bookAnotherAppointment}
         </Button>
       </div>
     </div>
