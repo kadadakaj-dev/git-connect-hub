@@ -33,6 +33,14 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { toast } from 'sonner';
 
+interface Service {
+  id: string;
+  name_sk: string;
+  name_en: string;
+  duration: number;
+  category: string;
+}
+
 interface Booking {
   id: string;
   date: string;
@@ -42,12 +50,39 @@ interface Booking {
   client_phone: string;
   status: string;
   notes: string | null;
-  service: {
-    name_sk: string;
-    name_en: string;
-    duration: number;
-  } | null;
+  service_id: string;
+  service: Service | null;
 }
+
+// Service color palette - distinct colors for each service
+const serviceColors: Record<string, { bg: string; text: string; border: string }> = {
+  'Chiro masáž': { bg: 'bg-blue-500/20', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-500/40' },
+  'Naprávanie': { bg: 'bg-purple-500/20', text: 'text-purple-700 dark:text-purple-300', border: 'border-purple-500/40' },
+  'Celotelová chiro masáž': { bg: 'bg-teal-500/20', text: 'text-teal-700 dark:text-teal-300', border: 'border-teal-500/40' },
+  'Express termín': { bg: 'bg-orange-500/20', text: 'text-orange-700 dark:text-orange-300', border: 'border-orange-500/40' },
+};
+
+// Fallback colors for services not in the predefined list
+const fallbackColors = [
+  { bg: 'bg-pink-500/20', text: 'text-pink-700 dark:text-pink-300', border: 'border-pink-500/40' },
+  { bg: 'bg-indigo-500/20', text: 'text-indigo-700 dark:text-indigo-300', border: 'border-indigo-500/40' },
+  { bg: 'bg-emerald-500/20', text: 'text-emerald-700 dark:text-emerald-300', border: 'border-emerald-500/40' },
+  { bg: 'bg-rose-500/20', text: 'text-rose-700 dark:text-rose-300', border: 'border-rose-500/40' },
+];
+
+const getServiceColor = (serviceName: string | undefined, serviceIndex: number = 0) => {
+  if (!serviceName) {
+    return { bg: 'bg-muted', text: 'text-muted-foreground', border: 'border-muted' };
+  }
+  
+  // Check predefined colors first
+  if (serviceColors[serviceName]) {
+    return serviceColors[serviceName];
+  }
+  
+  // Use fallback colors based on index
+  return fallbackColors[serviceIndex % fallbackColors.length];
+};
 
 interface TimeSlotConfig {
   day_of_week: number;
@@ -60,12 +95,10 @@ interface TimeSlotConfig {
 const DraggableBooking = ({ 
   booking, 
   language, 
-  getStatusColor, 
   onClick 
 }: { 
   booking: Booking; 
   language: 'sk' | 'en';
-  getStatusColor: (status: string) => string;
   onClick: () => void;
 }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -78,11 +111,15 @@ const DraggableBooking = ({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const serviceName = booking.service?.name_sk;
+  const colors = getServiceColor(serviceName);
+  const isPending = booking.status === 'pending';
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`w-full text-left p-1.5 rounded text-xs mb-1 border transition-all cursor-grab active:cursor-grabbing ${getStatusColor(booking.status)} ${isDragging ? 'shadow-lg ring-2 ring-primary' : ''}`}
+      className={`w-full text-left p-1.5 rounded text-xs mb-1 border transition-all cursor-grab active:cursor-grabbing ${colors.bg} ${colors.text} ${colors.border} ${isDragging ? 'shadow-lg ring-2 ring-primary' : ''} ${isPending ? 'opacity-70 border-dashed' : ''}`}
     >
       <div className="flex items-start gap-1">
         <div 
@@ -93,8 +130,9 @@ const DraggableBooking = ({
           <GripVertical className="w-3 h-3 opacity-50" />
         </div>
         <button onClick={onClick} className="flex-1 text-left min-w-0">
-          <div className="font-medium truncate">
+          <div className="font-medium truncate flex items-center gap-1">
             {booking.client_name}
+            {isPending && <span className="text-[10px] opacity-60">⏳</span>}
           </div>
           <div className="truncate opacity-80">
             {booking.service 
@@ -135,23 +173,26 @@ const DroppableSlot = ({
 // Drag Overlay Component
 const DragOverlayContent = ({ 
   booking, 
-  language, 
-  getStatusColor 
+  language
 }: { 
   booking: Booking; 
   language: 'sk' | 'en';
-  getStatusColor: (status: string) => string;
-}) => (
-  <div className={`w-32 p-2 rounded text-xs border shadow-xl ${getStatusColor(booking.status)}`}>
-    <div className="font-medium truncate">{booking.client_name}</div>
-    <div className="truncate opacity-80">
-      {booking.service 
-        ? (language === 'sk' ? booking.service.name_sk : booking.service.name_en)
-        : '-'
-      }
+}) => {
+  const serviceName = booking.service?.name_sk;
+  const colors = getServiceColor(serviceName);
+  
+  return (
+    <div className={`w-32 p-2 rounded text-xs border shadow-xl ${colors.bg} ${colors.text} ${colors.border}`}>
+      <div className="font-medium truncate">{booking.client_name}</div>
+      <div className="truncate opacity-80">
+        {booking.service 
+          ? (language === 'sk' ? booking.service.name_sk : booking.service.name_en)
+          : '-'
+        }
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const CalendarView = () => {
   const { language } = useLanguage();
@@ -160,6 +201,7 @@ const CalendarView = () => {
   );
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeSlotConfig[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
@@ -190,7 +232,7 @@ const CalendarView = () => {
     
     const weekEnd = addDays(currentWeekStart, 6);
     
-    const [bookingsRes, slotsRes] = await Promise.all([
+    const [bookingsRes, slotsRes, servicesRes] = await Promise.all([
       supabase
         .from('bookings')
         .select(`
@@ -202,7 +244,8 @@ const CalendarView = () => {
           client_phone,
           status,
           notes,
-          service:services(name_sk, name_en, duration)
+          service_id,
+          service:services(id, name_sk, name_en, duration, category)
         `)
         .gte('date', format(currentWeekStart, 'yyyy-MM-dd'))
         .lte('date', format(weekEnd, 'yyyy-MM-dd'))
@@ -212,7 +255,12 @@ const CalendarView = () => {
       supabase
         .from('time_slots_config')
         .select('*')
+        .eq('is_active', true),
+      supabase
+        .from('services')
+        .select('id, name_sk, name_en, duration, category')
         .eq('is_active', true)
+        .order('sort_order')
     ]);
 
     if (bookingsRes.data) {
@@ -220,6 +268,9 @@ const CalendarView = () => {
     }
     if (slotsRes.data) {
       setTimeSlots(slotsRes.data);
+    }
+    if (servicesRes.data) {
+      setServices(servicesRes.data);
     }
     
     setIsLoading(false);
@@ -424,7 +475,6 @@ const CalendarView = () => {
                                 key={booking.id}
                                 booking={booking}
                                 language={language}
-                                getStatusColor={getStatusColor}
                                 onClick={() => setSelectedBooking(booking)}
                               />
                             ))}
@@ -435,16 +485,25 @@ const CalendarView = () => {
                   ))}
                 </div>
 
-                {/* Legend */}
+                {/* Legend - Services */}
                 <div className="flex items-center gap-4 mt-4 text-sm flex-wrap">
+                  <span className="text-muted-foreground font-medium">
+                    {language === 'sk' ? 'Služby:' : 'Services:'}
+                  </span>
+                  {services.map((service) => {
+                    const colors = getServiceColor(service.name_sk);
+                    return (
+                      <div key={service.id} className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded ${colors.bg} border ${colors.border}`}></div>
+                        <span className="text-muted-foreground">
+                          {language === 'sk' ? service.name_sk : service.name_en}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  <span className="text-muted-foreground mx-2">|</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/30"></div>
-                    <span className="text-muted-foreground">
-                      {language === 'sk' ? 'Potvrdené' : 'Confirmed'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-yellow-500/20 border border-yellow-500/30"></div>
+                    <span className="text-[10px] opacity-60">⏳</span>
                     <span className="text-muted-foreground">
                       {language === 'sk' ? 'Čakajúce' : 'Pending'}
                     </span>
@@ -465,7 +524,6 @@ const CalendarView = () => {
                 <DragOverlayContent
                   booking={activeBooking}
                   language={language}
-                  getStatusColor={getStatusColor}
                 />
               )}
             </DragOverlay>
