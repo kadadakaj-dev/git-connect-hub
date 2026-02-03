@@ -1,4 +1,5 @@
-import { Instagram, Facebook, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { Instagram, Facebook, MapPin, Phone, Mail, Clock, FileText, Shield } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLanguage } from '@/i18n/LanguageContext';
 
@@ -98,8 +99,24 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="mt-4 pt-4 border-t border-border/50 text-center">
+        {/* Legal Links & Copyright */}
+        <div className="mt-4 pt-4 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
+            <Link
+              to="/legal?tab=terms"
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              {language === 'sk' ? 'Obchodné podmienky' : 'Terms of Service'}
+            </Link>
+            <Link
+              to="/legal?tab=privacy"
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Shield className="w-3.5 h-3.5" />
+              {language === 'sk' ? 'Ochrana údajov' : 'Privacy Policy'}
+            </Link>
+          </div>
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} FYZIO&FIT. {language === 'sk' ? 'Všetky práva vyhradené.' : 'All rights reserved.'}
           </p>
