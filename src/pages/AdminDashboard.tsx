@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/i18n/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ServiceManagement from '@/components/admin/ServiceManagement';
+import BookingManagement from '@/components/admin/BookingManagement';
+import OverviewStats from '@/components/admin/OverviewStats';
 import { toast } from 'sonner';
 import { LogOut, Calendar, Package, BarChart3 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
@@ -120,91 +121,11 @@ const AdminDashboard = () => {
           </TabsList>
 
           <TabsContent value="overview">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="border-border/50">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {language === 'sk' ? 'Rezervácie dnes' : "Today's Bookings"}
-                  </CardTitle>
-                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
-                    <Calendar className="w-4 h-4" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold">--</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-border/50">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {language === 'sk' ? 'Tento týždeň' : 'This Week'}
-                  </CardTitle>
-                  <div className="p-2 rounded-lg bg-green-500/10 text-green-500">
-                    <BarChart3 className="w-4 h-4" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold">--</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-border/50">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {language === 'sk' ? 'Aktívne služby' : 'Active Services'}
-                  </CardTitle>
-                  <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500">
-                    <Package className="w-4 h-4" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold">4</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card className="mt-6 border-border/50">
-              <CardHeader>
-                <CardTitle>
-                  {language === 'sk' ? 'Posledné rezervácie' : 'Recent Bookings'}
-                </CardTitle>
-                <CardDescription>
-                  {language === 'sk' 
-                    ? 'Zatiaľ nie sú žiadne rezervácie' 
-                    : 'No bookings yet'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-center py-8">
-                  {language === 'sk' 
-                    ? 'Rezervácie sa tu zobrazia po vytvorení' 
-                    : 'Bookings will appear here once created'}
-                </p>
-              </CardContent>
-            </Card>
+            <OverviewStats />
           </TabsContent>
 
           <TabsContent value="bookings">
-            <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle>
-                  {language === 'sk' ? 'Všetky rezervácie' : 'All Bookings'}
-                </CardTitle>
-                <CardDescription>
-                  {language === 'sk' 
-                    ? 'Správa rezervácií klientov' 
-                    : 'Manage client bookings'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-center py-8">
-                  {language === 'sk' 
-                    ? 'Zatiaľ nie sú žiadne rezervácie' 
-                    : 'No bookings yet'}
-                </p>
-              </CardContent>
-            </Card>
+            <BookingManagement />
           </TabsContent>
 
           <TabsContent value="services">
