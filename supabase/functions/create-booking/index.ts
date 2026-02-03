@@ -175,7 +175,7 @@ serve(async (req) => {
     const { data: booking, error: insertError } = await supabase
       .from('bookings')
       .insert(bookingData)
-      .select('id, date, time_slot, status')
+      .select('id, date, time_slot, status, cancellation_token')
       .single()
 
     if (insertError) {

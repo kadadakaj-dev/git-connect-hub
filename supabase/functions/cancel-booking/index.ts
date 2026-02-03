@@ -1,0 +1,126 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+interface CancelRequest {
+  token: string
+}
+
+function isValidUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  return uuidRegex.test(str)
+}
+
+serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+    const body: CancelRequest = await req.json()
+    console.log('Received cancellation request for token:', body.token?.substring(0, 8) + '...')
+
+    // Validate token
+    if (!body.token || !isValidUUID(body.token)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid cancellation token' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Find booking by cancellation token
+    const { data: booking, error: fetchError } = await supabase
+      .from('bookings')
+      .select('id, status, date, time_slot, client_name, client_email, service_id')
+      .eq('cancellation_token', body.token)
+      .maybeSingle()
+
+    if (fetchError) {
+      console.error('Error fetching booking:', fetchError)
+      return new Response(
+        JSON.stringify({ error: 'Failed to find booking' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (!booking) {
+      return new Response(
+        JSON.stringify({ error: 'Booking not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Check if already cancelled
+    if (booking.status === 'cancelled') {
+      return new Response(
+        JSON.stringify({ error: 'Booking is already cancelled', booking }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Check if booking date is in the past
+    const bookingDate = new Date(booking.date)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    if (bookingDate < today) {
+      return new Response(
+        JSON.stringify({ error: 'Cannot cancel past bookings' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Get service info for response
+    const { data: service } = await supabase
+      .from('services')
+      .select('name_sk, name_en')
+      .eq('id', booking.service_id)
+      .single()
+
+    // Update booking status to cancelled
+    const { error: updateError } = await supabase
+      .from('bookings')
+      .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+      .eq('id', booking.id)
+
+    if (updateError) {
+      console.error('Error cancelling booking:', updateError)
+      return new Response(
+        JSON.stringify({ error: 'Failed to cancel booking' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    console.log('Booking cancelled successfully:', booking.id)
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        booking: {
+          ...booking,
+          status: 'cancelled',
+          service_name_sk: service?.name_sk,
+          service_name_en: service?.name_en
+        }
+      }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+
+  } catch (error) {
+    console.error('Unexpected error:', error)
+    return new Response(
+      JSON.stringify({ error: 'Internal server error' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+})
