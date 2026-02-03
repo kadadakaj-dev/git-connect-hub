@@ -5,10 +5,10 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Book Appointment | PhysioWell Clinic - Physiotherapy & Chiropractic</title>
+        <title>Rezervácia termínu | FYZIO&FIT - Fyzioterapia a chiropraktika</title>
         <meta 
           name="description" 
-          content="Book your physiotherapy or chiropractic appointment online. Easy scheduling, instant confirmation. PhysioWell Clinic offers expert care for your wellness journey." 
+          content="Rezervujte si termín fyzioterapie alebo chiropraktiky online. Jednoduché plánovanie, okamžité potvrdenie. FYZIO&FIT ponúka odbornú starostlivosť pre vaše zdravie." 
         />
       </Helmet>
       <BookingWizard />
