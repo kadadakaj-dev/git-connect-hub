@@ -110,7 +110,7 @@ serve(async (req) => {
     // Verify service exists and is active
     const { data: service, error: serviceError } = await supabase
       .from('services')
-      .select('id, is_active')
+      .select('id, is_active, name_sk, name_en')
       .eq('id', body.service_id)
       .maybeSingle()
 
@@ -187,6 +187,35 @@ serve(async (req) => {
     }
 
     console.log('Booking created successfully:', booking.id)
+
+    // Send confirmation email (non-blocking)
+    try {
+      const emailResponse = await fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+        },
+        body: JSON.stringify({
+          to: bookingData.client_email,
+          clientName: bookingData.client_name,
+          serviceName: service.name_sk, // Default to Slovak
+          date: bookingData.date,
+          time: bookingData.time_slot,
+          cancellationToken: booking.cancellation_token,
+          language: 'sk',
+        }),
+      })
+      
+      if (!emailResponse.ok) {
+        console.error('Failed to send confirmation email:', await emailResponse.text())
+      } else {
+        console.log('Confirmation email sent successfully')
+      }
+    } catch (emailError) {
+      console.error('Error sending confirmation email:', emailError)
+      // Don't fail the booking if email fails
+    }
 
     return new Response(
       JSON.stringify({ success: true, booking }),
