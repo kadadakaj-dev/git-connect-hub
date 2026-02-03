@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react';
 import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isBefore, startOfToday } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { TimeSlot } from '@/types/booking';
-import { generateTimeSlots } from '@/data/timeSlots';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { useTimeSlots } from '@/hooks/useTimeSlots';
+import { useState } from 'react';
 
 interface DateTimeSelectionProps {
   selectedDate: Date | null;
@@ -23,8 +22,7 @@ const DateTimeSelection = ({
 }: DateTimeSelectionProps) => {
   const { t, language } = useLanguage();
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
-  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate);
 
   const locale = language === 'sk' ? sk : enUS;
   const today = startOfToday();
@@ -34,17 +32,6 @@ const DateTimeSelection = ({
 
   // Calculate starting day offset
   const startingDayIndex = monthStart.getDay();
-
-  useEffect(() => {
-    if (selectedDate) {
-      setIsLoadingSlots(true);
-      // Simulate API call delay
-      setTimeout(() => {
-        setTimeSlots(generateTimeSlots(selectedDate));
-        setIsLoadingSlots(false);
-      }, 300);
-    }
-  }, [selectedDate]);
 
   const goToPreviousMonth = () => {
     setCurrentMonth((prev) => addDays(startOfMonth(prev), -1));
