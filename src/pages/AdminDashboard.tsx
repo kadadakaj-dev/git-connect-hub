@@ -8,8 +8,9 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ServiceManagement from '@/components/admin/ServiceManagement';
 import BookingManagement from '@/components/admin/BookingManagement';
 import OverviewStats from '@/components/admin/OverviewStats';
+import CalendarView from '@/components/admin/CalendarView';
 import { toast } from 'sonner';
-import { LogOut, Calendar, Package, BarChart3 } from 'lucide-react';
+import { LogOut, Calendar, Package, BarChart3, CalendarDays } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 
 const AdminDashboard = () => {
@@ -110,6 +111,10 @@ const AdminDashboard = () => {
               <BarChart3 className="w-4 h-4" />
               {language === 'sk' ? 'Prehľad' : 'Overview'}
             </TabsTrigger>
+            <TabsTrigger value="calendar" className="gap-2">
+              <CalendarDays className="w-4 h-4" />
+              {language === 'sk' ? 'Kalendár' : 'Calendar'}
+            </TabsTrigger>
             <TabsTrigger value="bookings" className="gap-2">
               <Calendar className="w-4 h-4" />
               {language === 'sk' ? 'Rezervácie' : 'Bookings'}
@@ -122,6 +127,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="overview">
             <OverviewStats />
+          </TabsContent>
+
+          <TabsContent value="calendar">
+            <CalendarView />
           </TabsContent>
 
           <TabsContent value="bookings">
