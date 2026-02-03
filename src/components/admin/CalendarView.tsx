@@ -8,7 +8,8 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Calendar as CalendarIcon,
-  Clock
+  Clock,
+  GripVertical
 } from 'lucide-react';
 import { format, startOfWeek, addDays, isSameDay, addWeeks, subWeeks } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
@@ -18,6 +19,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  useDraggable,
+  useDroppable,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
+import { toast } from 'sonner';
 
 interface Booking {
   id: string;
@@ -42,6 +56,103 @@ interface TimeSlotConfig {
   is_active: boolean;
 }
 
+// Draggable Booking Item Component
+const DraggableBooking = ({ 
+  booking, 
+  language, 
+  getStatusColor, 
+  onClick 
+}: { 
+  booking: Booking; 
+  language: 'sk' | 'en';
+  getStatusColor: (status: string) => string;
+  onClick: () => void;
+}) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: booking.id,
+    data: { booking },
+  });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`w-full text-left p-1.5 rounded text-xs mb-1 border transition-all cursor-grab active:cursor-grabbing ${getStatusColor(booking.status)} ${isDragging ? 'shadow-lg ring-2 ring-primary' : ''}`}
+    >
+      <div className="flex items-start gap-1">
+        <div 
+          {...listeners} 
+          {...attributes}
+          className="flex-shrink-0 mt-0.5 cursor-grab active:cursor-grabbing"
+        >
+          <GripVertical className="w-3 h-3 opacity-50" />
+        </div>
+        <button onClick={onClick} className="flex-1 text-left min-w-0">
+          <div className="font-medium truncate">
+            {booking.client_name}
+          </div>
+          <div className="truncate opacity-80">
+            {booking.service 
+              ? (language === 'sk' ? booking.service.name_sk : booking.service.name_en)
+              : '-'
+            }
+          </div>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Droppable Time Slot Component
+const DroppableSlot = ({ 
+  id, 
+  isActive, 
+  children 
+}: { 
+  id: string; 
+  isActive: boolean; 
+  children: React.ReactNode;
+}) => {
+  const { isOver, setNodeRef } = useDroppable({ id });
+
+  return (
+    <div 
+      ref={setNodeRef}
+      className={`min-h-[60px] p-1 transition-colors ${
+        isActive ? 'bg-background' : 'bg-muted/20'
+      } ${isOver ? 'bg-primary/10 ring-2 ring-primary ring-inset' : ''}`}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Drag Overlay Component
+const DragOverlayContent = ({ 
+  booking, 
+  language, 
+  getStatusColor 
+}: { 
+  booking: Booking; 
+  language: 'sk' | 'en';
+  getStatusColor: (status: string) => string;
+}) => (
+  <div className={`w-32 p-2 rounded text-xs border shadow-xl ${getStatusColor(booking.status)}`}>
+    <div className="font-medium truncate">{booking.client_name}</div>
+    <div className="truncate opacity-80">
+      {booking.service 
+        ? (language === 'sk' ? booking.service.name_sk : booking.service.name_en)
+        : '-'
+      }
+    </div>
+  </div>
+);
+
 const CalendarView = () => {
   const { language } = useLanguage();
   const [currentWeekStart, setCurrentWeekStart] = useState(() => 
@@ -51,8 +162,18 @@ const CalendarView = () => {
   const [timeSlots, setTimeSlots] = useState<TimeSlotConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
 
   const locale = language === 'sk' ? sk : enUS;
+
+  // Configure sensors for drag
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   // Generate week days
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
@@ -138,10 +259,78 @@ const CalendarView = () => {
     setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }));
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const booking = event.active.data.current?.booking as Booking;
+    setActiveBooking(booking);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    setActiveBooking(null);
+    
+    const { active, over } = event;
+    
+    if (!over) return;
+    
+    const booking = active.data.current?.booking as Booking;
+    const [newDate, newTime] = (over.id as string).split('_');
+    
+    // Don't update if dropped in the same slot
+    if (booking.date === newDate && booking.time_slot === newTime) {
+      return;
+    }
+
+    // Check if slot is already taken
+    const existingBooking = bookings.find(
+      b => b.date === newDate && b.time_slot === newTime && b.id !== booking.id
+    );
+    
+    if (existingBooking) {
+      toast.error(
+        language === 'sk' 
+          ? 'Tento termín je už obsadený' 
+          : 'This time slot is already booked'
+      );
+      return;
+    }
+
+    // Update booking in database
+    const { error } = await supabase
+      .from('bookings')
+      .update({ 
+        date: newDate, 
+        time_slot: newTime 
+      })
+      .eq('id', booking.id);
+
+    if (error) {
+      toast.error(
+        language === 'sk' 
+          ? 'Nepodarilo sa presunúť rezerváciu' 
+          : 'Failed to move booking'
+      );
+      return;
+    }
+
+    // Update local state
+    setBookings(prev => 
+      prev.map(b => 
+        b.id === booking.id 
+          ? { ...b, date: newDate, time_slot: newTime }
+          : b
+      )
+    );
+
+    toast.success(
+      language === 'sk' 
+        ? 'Rezervácia bola presunutá' 
+        : 'Booking has been moved'
+    );
+  };
+
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <CardTitle className="flex items-center gap-2">
             <CalendarIcon className="w-5 h-5" />
             {language === 'sk' ? 'Kalendár rezervácií' : 'Booking Calendar'}
@@ -161,6 +350,11 @@ const CalendarView = () => {
             </Button>
           </div>
         </div>
+        <p className="text-sm text-muted-foreground mt-2">
+          {language === 'sk' 
+            ? 'Potiahnite rezerváciu na iný čas pre zmenu termínu' 
+            : 'Drag a booking to another time slot to reschedule'}
+        </p>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -168,98 +362,114 @@ const CalendarView = () => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <div className="min-w-[800px]">
-              {/* Header with days */}
-              <div className="grid grid-cols-8 gap-1 mb-2">
-                <div className="p-2 text-center text-sm font-medium text-muted-foreground">
-                  <Clock className="w-4 h-4 mx-auto" />
-                </div>
-                {weekDays.map((day) => (
-                  <div 
-                    key={day.toISOString()} 
-                    className={`p-2 text-center rounded-lg ${
-                      isSameDay(day, new Date()) 
-                        ? 'bg-primary text-primary-foreground' 
-                        : isDayActive(day) 
-                          ? 'bg-muted' 
-                          : 'bg-muted/50 opacity-50'
-                    }`}
-                  >
-                    <div className="text-xs uppercase">
-                      {format(day, 'EEE', { locale })}
-                    </div>
-                    <div className="text-lg font-bold">
-                      {format(day, 'd')}
-                    </div>
+          <DndContext 
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="overflow-x-auto">
+              <div className="min-w-[800px]">
+                {/* Header with days */}
+                <div className="grid grid-cols-8 gap-1 mb-2">
+                  <div className="p-2 text-center text-sm font-medium text-muted-foreground">
+                    <Clock className="w-4 h-4 mx-auto" />
                   </div>
-                ))}
-              </div>
-
-              {/* Time slots grid */}
-              <div className="border rounded-lg overflow-hidden">
-                {hours.map((hour, hourIndex) => (
-                  <div 
-                    key={hour} 
-                    className={`grid grid-cols-8 gap-px ${
-                      hourIndex !== hours.length - 1 ? 'border-b' : ''
-                    }`}
-                  >
-                    <div className="p-2 text-xs text-muted-foreground bg-muted/30 flex items-center justify-center">
-                      {hour}
+                  {weekDays.map((day) => (
+                    <div 
+                      key={day.toISOString()} 
+                      className={`p-2 text-center rounded-lg ${
+                        isSameDay(day, new Date()) 
+                          ? 'bg-primary text-primary-foreground' 
+                          : isDayActive(day) 
+                            ? 'bg-muted' 
+                            : 'bg-muted/50 opacity-50'
+                      }`}
+                    >
+                      <div className="text-xs uppercase">
+                        {format(day, 'EEE', { locale })}
+                      </div>
+                      <div className="text-lg font-bold">
+                        {format(day, 'd')}
+                      </div>
                     </div>
-                    {weekDays.map((day) => {
-                      const dayBookings = getBookingsForDayAndTime(day, hour);
-                      const isActive = isDayActive(day);
-                      
-                      return (
-                        <div 
-                          key={`${day.toISOString()}-${hour}`}
-                          className={`min-h-[60px] p-1 ${
-                            isActive ? 'bg-background' : 'bg-muted/20'
-                          }`}
-                        >
-                          {dayBookings.map((booking) => (
-                            <button
-                              key={booking.id}
-                              onClick={() => setSelectedBooking(booking)}
-                              className={`w-full text-left p-1.5 rounded text-xs mb-1 border transition-all hover:scale-[1.02] ${getStatusColor(booking.status)}`}
-                            >
-                              <div className="font-medium truncate">
-                                {booking.client_name}
-                              </div>
-                              <div className="truncate opacity-80">
-                                {booking.service 
-                                  ? (language === 'sk' ? booking.service.name_sk : booking.service.name_en)
-                                  : '-'
-                                }
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-
-              {/* Legend */}
-              <div className="flex items-center gap-4 mt-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/30"></div>
-                  <span className="text-muted-foreground">
-                    {language === 'sk' ? 'Potvrdené' : 'Confirmed'}
-                  </span>
+                  ))}
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded bg-yellow-500/20 border border-yellow-500/30"></div>
-                  <span className="text-muted-foreground">
-                    {language === 'sk' ? 'Čakajúce' : 'Pending'}
-                  </span>
+
+                {/* Time slots grid */}
+                <div className="border rounded-lg overflow-hidden">
+                  {hours.map((hour, hourIndex) => (
+                    <div 
+                      key={hour} 
+                      className={`grid grid-cols-8 gap-px ${
+                        hourIndex !== hours.length - 1 ? 'border-b' : ''
+                      }`}
+                    >
+                      <div className="p-2 text-xs text-muted-foreground bg-muted/30 flex items-center justify-center">
+                        {hour}
+                      </div>
+                      {weekDays.map((day) => {
+                        const dateStr = format(day, 'yyyy-MM-dd');
+                        const slotId = `${dateStr}_${hour}`;
+                        const dayBookings = getBookingsForDayAndTime(day, hour);
+                        const isActive = isDayActive(day);
+                        
+                        return (
+                          <DroppableSlot 
+                            key={slotId} 
+                            id={slotId} 
+                            isActive={isActive}
+                          >
+                            {dayBookings.map((booking) => (
+                              <DraggableBooking
+                                key={booking.id}
+                                booking={booking}
+                                language={language}
+                                getStatusColor={getStatusColor}
+                                onClick={() => setSelectedBooking(booking)}
+                              />
+                            ))}
+                          </DroppableSlot>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Legend */}
+                <div className="flex items-center gap-4 mt-4 text-sm flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/30"></div>
+                    <span className="text-muted-foreground">
+                      {language === 'sk' ? 'Potvrdené' : 'Confirmed'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded bg-yellow-500/20 border border-yellow-500/30"></div>
+                    <span className="text-muted-foreground">
+                      {language === 'sk' ? 'Čakajúce' : 'Pending'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <GripVertical className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">
+                      {language === 'sk' ? 'Potiahnite pre presun' : 'Drag to move'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            {/* Drag overlay */}
+            <DragOverlay>
+              {activeBooking && (
+                <DragOverlayContent
+                  booking={activeBooking}
+                  language={language}
+                  getStatusColor={getStatusColor}
+                />
+              )}
+            </DragOverlay>
+          </DndContext>
         )}
 
         {/* Booking detail dialog */}
