@@ -18,7 +18,7 @@ interface EmailRequest {
 
 const translations = {
   sk: {
-    subject: 'Potvrdenie rezervácie - Chiropraxia Košice',
+    subject: 'Potvrdenie rezervácie - FYZIO&FIT',
     greeting: 'Dobrý deň',
     confirmationTitle: 'Vaša rezervácia bola úspešne vytvorená',
     service: 'Služba',
@@ -28,11 +28,11 @@ const translations = {
     cancelText: 'Ak potrebujete zrušiť rezerváciu, kliknite na nasledujúci odkaz:',
     cancelButton: 'Zrušiť rezerváciu',
     footer: 'Tešíme sa na vašu návštevu!',
-    clinicName: 'Chiropraxia Košice',
+    clinicName: 'FYZIO&FIT',
     contact: 'Kontakt: info@chiropraxiakosice.eu',
   },
   en: {
-    subject: 'Booking Confirmation - Chiropraxia Košice',
+    subject: 'Booking Confirmation - FYZIO&FIT',
     greeting: 'Hello',
     confirmationTitle: 'Your booking has been successfully created',
     service: 'Service',
@@ -42,7 +42,7 @@ const translations = {
     cancelText: 'If you need to cancel your booking, click the following link:',
     cancelButton: 'Cancel Booking',
     footer: 'We look forward to seeing you!',
-    clinicName: 'Chiropraxia Košice',
+    clinicName: 'FYZIO&FIT',
     contact: 'Contact: info@chiropraxiakosice.eu',
   },
 }
@@ -58,10 +58,10 @@ function formatDate(dateStr: string, language: 'sk' | 'en'): string {
   return date.toLocaleDateString(language === 'sk' ? 'sk-SK' : 'en-US', options)
 }
 
-function generateEmailHtml(data: EmailRequest): string {
+function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
   const t = translations[data.language]
   const formattedDate = formatDate(data.date, data.language)
-  const cancelUrl = `https://booking.chiropraxiakosice.eu/cancel?token=${data.cancellationToken}`
+  const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`
 
   return `
 <!DOCTYPE html>
@@ -79,7 +79,7 @@ function generateEmailHtml(data: EmailRequest): string {
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); padding: 30px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">${t.clinicName}</h1>
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px;">${t.clinicName}</h1>
             </td>
           </tr>
           
@@ -154,6 +154,9 @@ serve(async (req) => {
       throw new Error('SMTP_PASSWORD not configured')
     }
 
+    // Use published URL for cancel links
+    const baseUrl = 'https://booking-black.lovable.app'
+
     const client = new SMTPClient({
       connection: {
         hostname: 'smtp.m1.websupport.sk',
@@ -167,10 +170,10 @@ serve(async (req) => {
     })
 
     const t = translations[data.language]
-    const html = generateEmailHtml(data)
+    const html = generateEmailHtml(data, baseUrl)
 
     await client.send({
-      from: 'Chiropraxia Košice <info@chiropraxiakosice.eu>',
+      from: 'FYZIO&FIT <info@chiropraxiakosice.eu>',
       to: data.to,
       subject: t.subject,
       html: html,
