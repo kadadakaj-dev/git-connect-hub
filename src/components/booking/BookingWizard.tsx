@@ -7,7 +7,7 @@ import ServiceSelection from './ServiceSelection';
 import DateTimeSelection from './DateTimeSelection';
 import ClientDetails from './ClientDetails';
 import Confirmation from './Confirmation';
-import LanguageSwitcher from '../LanguageSwitcher';
+import Footer from '../Footer';
 import { toast } from 'sonner';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useCreateBooking } from '@/hooks/useCreateBooking';
@@ -143,13 +143,10 @@ const BookingWizard = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-hero">
-      <div className="container max-w-5xl mx-auto px-4 py-8 md:py-12">
+    <div className="min-h-screen gradient-hero flex flex-col">
+      <div className="container max-w-5xl mx-auto px-4 py-8 md:py-12 flex-1">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="flex justify-end mb-4">
-            <LanguageSwitcher />
-          </div>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
             {t.clinicName}
           </h1>
@@ -237,6 +234,9 @@ const BookingWizard = () => {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
