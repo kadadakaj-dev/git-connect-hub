@@ -1,6 +1,7 @@
 import { Service } from '@/types/booking';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { useServices } from '@/hooks/useServices';
 import { 
   ClipboardCheck, 
   Activity, 
@@ -9,7 +10,8 @@ import {
   Hand, 
   MessageSquare,
   Clock,
-  DollarSign
+  DollarSign,
+  Loader2
 } from 'lucide-react';
 
 interface ServiceSelectionProps {
@@ -26,36 +28,39 @@ const iconMap: Record<string, React.ElementType> = {
   MessageSquare,
 };
 
-const serviceKeyMap: Record<string, keyof typeof import('@/i18n/translations').translations.sk.services> = {
-  '1': 'initialExamination',
-  '2': 'physiotherapySession',
-  '3': 'chiropracticAdjustment',
-  '4': 'sportsTherapy',
-  '5': 'massageTherapy',
-  '6': 'followUpConsultation',
-};
-
-// Base service data without translations
-const baseServices: Omit<Service, 'name' | 'description'>[] = [
-  { id: '1', duration: 60, price: 120, category: 'physiotherapy', icon: 'ClipboardCheck' },
-  { id: '2', duration: 45, price: 85, category: 'physiotherapy', icon: 'Activity' },
-  { id: '3', duration: 30, price: 75, category: 'chiropractic', icon: 'Bone' },
-  { id: '4', duration: 50, price: 95, category: 'physiotherapy', icon: 'Dumbbell' },
-  { id: '5', duration: 60, price: 90, category: 'physiotherapy', icon: 'Hand' },
-  { id: '6', duration: 30, price: 60, category: 'physiotherapy', icon: 'MessageSquare' },
-];
-
 const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { data: services, isLoading, error } = useServices();
 
-  const services: Service[] = baseServices.map(service => {
-    const key = serviceKeyMap[service.id];
-    return {
-      ...service,
-      name: t.services[key].name,
-      description: t.services[key].description,
-    };
-  });
+  if (isLoading) {
+    return (
+      <div className="animate-fade-in-up">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            {t.selectService}
+          </h2>
+        </div>
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !services || services.length === 0) {
+    return (
+      <div className="animate-fade-in-up">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            {t.selectService}
+          </h2>
+        </div>
+        <div className="text-center py-16 text-muted-foreground">
+          {language === 'sk' ? 'Služby nie sú momentálne dostupné' : 'Services are not available at the moment'}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in-up">
@@ -119,7 +124,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                 </span>
                 <span className="flex items-center gap-1 font-semibold text-foreground">
                   <DollarSign className="w-4 h-4" />
-                  {service.price}
+                  {service.price}€
                 </span>
               </div>
 

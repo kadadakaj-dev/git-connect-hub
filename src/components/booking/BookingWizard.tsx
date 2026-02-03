@@ -10,6 +10,7 @@ import Confirmation from './Confirmation';
 import LanguageSwitcher from '../LanguageSwitcher';
 import { toast } from 'sonner';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { useCreateBooking } from '@/hooks/useCreateBooking';
 
 const initialBookingData: BookingData = {
   service: null,
@@ -26,7 +27,7 @@ const BookingWizard = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [bookingData, setBookingData] = useState<BookingData>(initialBookingData);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const createBooking = useCreateBooking();
 
   const steps: BookingStep[] = [
     { id: 1, title: t.steps.service.title, description: t.steps.service.description },
@@ -68,7 +69,7 @@ const BookingWizard = () => {
         }
         break;
       case 2:
-        if (!bookingData.clientName.trim()) {
+        if (!bookingData.clientName.trim() || bookingData.clientName.trim().length < 2) {
           newErrors.clientName = t.errors.nameRequired;
         }
         if (!bookingData.clientEmail.trim()) {
@@ -77,6 +78,8 @@ const BookingWizard = () => {
           newErrors.clientEmail = t.errors.emailInvalid;
         }
         if (!bookingData.clientPhone.trim()) {
+          newErrors.clientPhone = t.errors.phoneRequired;
+        } else if (!/^[\+]?[0-9\s\-\(\)]{7,20}$/.test(bookingData.clientPhone.trim())) {
           newErrors.clientPhone = t.errors.phoneRequired;
         }
         if (Object.keys(newErrors).length > 0) {
@@ -93,15 +96,27 @@ const BookingWizard = () => {
     if (!validateStep(currentStep)) return;
 
     if (currentStep === 2) {
-      // Submit booking
-      setIsSubmitting(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setIsSubmitting(false);
-      toast.success(t.bookingSuccess);
+      // Submit booking via edge function
+      try {
+        await createBooking.mutateAsync({
+          serviceId: bookingData.service!.id,
+          date: bookingData.date!,
+          timeSlot: bookingData.time!,
+          clientName: bookingData.clientName,
+          clientEmail: bookingData.clientEmail,
+          clientPhone: bookingData.clientPhone,
+          notes: bookingData.notes || undefined,
+        });
+        toast.success(t.bookingSuccess);
+        setCurrentStep((prev) => prev + 1);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Booking failed';
+        toast.error(message);
+        return;
+      }
+    } else {
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     }
-
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
   };
 
   const handleBack = () => {
@@ -202,10 +217,10 @@ const BookingWizard = () => {
               variant="booking"
               size="lg"
               onClick={handleNext}
-              disabled={!canProceed() || isSubmitting}
+              disabled={!canProceed() || createBooking.isPending}
               className="gap-2 min-w-[160px]"
             >
-              {isSubmitting ? (
+              {createBooking.isPending ? (
                 <>
                   <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
                   {t.booking}
