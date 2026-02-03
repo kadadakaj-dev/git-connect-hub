@@ -122,8 +122,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                   <Clock className="w-4 h-4" />
                   {service.duration} {t.min}
                 </span>
-                <span className="flex items-center gap-1 font-semibold text-foreground">
-                  <DollarSign className="w-4 h-4" />
+                <span className="font-semibold text-foreground">
                   {service.price}€
                 </span>
               </div>
