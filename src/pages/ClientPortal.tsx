@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { format, isPast, parseISO } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
@@ -22,17 +23,22 @@ import {
   Star,
   User as UserIcon,
   FileText,
+  Settings,
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import ProfileEditDialog from '@/components/client/ProfileEditDialog';
 import { useClientProfile } from '@/hooks/useClientProfile';
 import { useClientBookings } from '@/hooks/useClientBookings';
 import { useFavoriteServices } from '@/hooks/useFavoriteServices';
+import { useQueryClient } from '@tanstack/react-query';
 
 const ClientPortal = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -63,6 +69,19 @@ const ClientPortal = () => {
     navigate('/');
   };
 
+  const handleProfileUpdated = () => {
+    queryClient.invalidateQueries({ queryKey: ['client-profile', user?.id] });
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   const t = {
     sk: {
       title: 'Klientský portál',
@@ -78,6 +97,7 @@ const ClientPortal = () => {
       bookNow: 'Rezervovať teraz',
       quickBook: 'Rýchla rezervácia',
       signOut: 'Odhlásiť sa',
+      editProfile: 'Upraviť profil',
       status: {
         pending: 'Čaká na potvrdenie',
         confirmed: 'Potvrdené',
@@ -100,6 +120,7 @@ const ClientPortal = () => {
       bookNow: 'Book Now',
       quickBook: 'Quick Book',
       signOut: 'Sign Out',
+      editProfile: 'Edit Profile',
       status: {
         pending: 'Pending',
         confirmed: 'Confirmed',
@@ -160,17 +181,42 @@ const ClientPortal = () => {
         {/* Header */}
         <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold">{text.title}</h1>
-              <p className="text-sm text-muted-foreground">
-                {text.welcome}, {profile?.full_name || user?.email}
-              </p>
-            </div>
             <div className="flex items-center gap-4">
+              <button
+                onClick={() => setIsProfileDialogOpen(true)}
+                className="relative group"
+              >
+                <Avatar className="h-12 w-12 border-2 border-primary/20 group-hover:border-primary/50 transition-colors">
+                  <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name} />
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    {profile?.full_name ? getInitials(profile.full_name) : <UserIcon className="h-5 w-5" />}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Settings className="h-4 w-4 text-white" />
+                </div>
+              </button>
+              <div>
+                <h1 className="text-xl font-bold">{text.title}</h1>
+                <p className="text-sm text-muted-foreground">
+                  {text.welcome}, {profile?.full_name || user?.email}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsProfileDialogOpen(true)}
+                className="hidden sm:flex"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                {text.editProfile}
+              </Button>
               <LanguageSwitcher />
               <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                {text.signOut}
+                <LogOut className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{text.signOut}</span>
               </Button>
             </div>
           </div>
@@ -352,7 +398,7 @@ const ClientPortal = () => {
                             <Heart
                               className={`h-4 w-4 mr-2 ${
                                 favorites?.some((f) => f.service_id === booking.service?.id)
-                                  ? 'fill-current text-red-500'
+                                  ? 'fill-current text-destructive'
                                   : ''
                               }`}
                             />
@@ -407,7 +453,7 @@ const ClientPortal = () => {
                               size="icon"
                               onClick={() => toggleFavorite(fav.service_id)}
                             >
-                              <Heart className="h-4 w-4 fill-current text-red-500" />
+                              <Heart className="h-4 w-4 fill-current text-destructive" />
                             </Button>
                           </div>
                           <Button
@@ -427,6 +473,16 @@ const ClientPortal = () => {
           </Tabs>
         </main>
       </div>
+
+      {/* Profile Edit Dialog */}
+      {profile && (
+        <ProfileEditDialog
+          open={isProfileDialogOpen}
+          onOpenChange={setIsProfileDialogOpen}
+          profile={profile}
+          onProfileUpdated={handleProfileUpdated}
+        />
+      )}
     </>
   );
 };
