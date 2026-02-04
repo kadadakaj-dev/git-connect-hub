@@ -1,9 +1,23 @@
 import { format } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
-import { CheckCircle2, Calendar, Clock, User, Mail, Phone, FileText, MapPin, Sparkles } from 'lucide-react';
+import { 
+  CheckCircle2, 
+  Calendar, 
+  Clock, 
+  User, 
+  Mail, 
+  Phone, 
+  FileText, 
+  MapPin, 
+  Sparkles,
+  PartyPopper,
+  ArrowRight,
+  CalendarPlus
+} from 'lucide-react';
 import { BookingData } from '@/types/booking';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { cn } from '@/lib/utils';
 
 interface ConfirmationProps {
   bookingData: BookingData;
@@ -15,57 +29,83 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
   const locale = language === 'sk' ? sk : enUS;
   const { service, date, time, clientName, clientEmail, clientPhone, notes } = bookingData;
 
+  const handleAddToCalendar = () => {
+    if (date && time && service) {
+      const title = `FYZIO&FIT - ${service.name}`;
+      const startDate = new Date(date);
+      const [hours, minutes] = time.split(':');
+      startDate.setHours(parseInt(hours), parseInt(minutes));
+      
+      const endDate = new Date(startDate.getTime() + (service.duration || 60) * 60000);
+      
+      const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(language === 'sk' ? 'Rezervácia fyzioterapie' : 'Physiotherapy appointment')}&location=${encodeURIComponent('Krmanová 6, Košice')}`;
+      window.open(googleCalendarUrl, '_blank');
+    }
+  };
+
   return (
     <div className="animate-scale-in text-center">
-      {/* Success Icon */}
-      <div className="mb-6 sm:mb-8">
-        <div className="relative inline-block">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-success/12 flex items-center justify-center mx-auto mb-4 sm:mb-5 animate-pulse-soft">
-            <CheckCircle2 className="w-10 h-10 sm:w-14 sm:h-14 text-success" />
+      {/* Success Icon - Enhanced */}
+      <div className="mb-8 sm:mb-10">
+        <div className="relative inline-flex items-center justify-center mb-6">
+          {/* Animated rings */}
+          <div className="absolute w-28 h-28 sm:w-32 sm:h-32 rounded-full border-2 border-success/20 animate-ping" style={{ animationDuration: '2s' }} />
+          <div className="absolute w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-success/30 animate-pulse" />
+          
+          {/* Main success icon */}
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center shadow-xl shadow-success/30 animate-scale-in">
+            <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-success-foreground" strokeWidth={2.5} />
           </div>
-          <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/15 flex items-center justify-center animate-bounce-subtle">
-            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
-          </div>
+          
+          {/* Decorations */}
+          <PartyPopper className="absolute -top-2 -right-2 w-6 h-6 sm:w-7 sm:h-7 text-amber-500 animate-bounce-subtle" />
+          <Sparkles className="absolute -bottom-1 -left-3 w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
         </div>
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground mb-2 sm:mb-3">
+        
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-foreground mb-3">
           {t.bookingConfirmed}
         </h2>
-        <p className="text-muted-foreground text-sm sm:text-base max-w-sm mx-auto">
+        <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
           {t.appointmentScheduled}
         </p>
       </div>
 
-      {/* Booking Details Card */}
-      <div className="max-w-lg mx-auto glass-card rounded-2xl p-5 sm:p-6 md:p-8 text-left">
-        <div className="flex items-center justify-between mb-5 sm:mb-6 pb-5 sm:pb-6 border-b border-border/40">
-          <div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">{t.confirmationNumber}</p>
-            <p className="text-lg sm:text-xl font-bold text-foreground font-mono">
-              #{Math.random().toString(36).substring(2, 8).toUpperCase()}
-            </p>
-          </div>
-          <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-success/12 text-success text-xs sm:text-sm font-semibold">
-            {t.confirmed}
+      {/* Booking Details Card - Enhanced */}
+      <div className="max-w-lg mx-auto glass-premium rounded-2xl overflow-hidden shadow-elevated">
+        {/* Card Header */}
+        <div className="bg-gradient-to-r from-primary/10 via-accent/20 to-primary/10 px-5 sm:px-6 py-4 sm:py-5 border-b border-border/30">
+          <div className="flex items-center justify-between">
+            <div className="text-left">
+              <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">{t.confirmationNumber}</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground font-mono">
+                #{Math.random().toString(36).substring(2, 8).toUpperCase()}
+              </p>
+            </div>
+            <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-success/15 text-success text-xs sm:text-sm font-semibold flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              {t.confirmed}
+            </div>
           </div>
         </div>
 
-        <div className="space-y-4 sm:space-y-5">
+        {/* Details Content */}
+        <div className="p-5 sm:p-6 md:p-8 text-left space-y-4 sm:space-y-5">
           {/* Service */}
-          <div className="flex items-start gap-3 sm:gap-4 group">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/12 flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
+          <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/8 to-transparent border-l-2 border-primary group hover:from-primary/12 transition-all duration-300">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
               <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-0.5">{t.service}</p>
-              <p className="font-semibold text-foreground text-base sm:text-lg truncate">{service?.name}</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">{service?.duration} {t.min} • {service?.price}€</p>
+              <p className="font-semibold text-primary text-base sm:text-lg truncate">{service?.name}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">{service?.duration} {t.min} • <span className="font-bold text-foreground">{service?.price}€</span></p>
             </div>
           </div>
 
           {/* Date & Time */}
-          <div className="flex items-start gap-3 sm:gap-4 group">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/12 flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
-              <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+          <div className="flex items-start gap-4 group">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-muted/60 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 group-hover:scale-105 transition-all duration-300">
+              <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-0.5">{t.dateAndTime}</p>
@@ -80,9 +120,9 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
           </div>
 
           {/* Location */}
-          <div className="flex items-start gap-3 sm:gap-4 group">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/12 flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
-              <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+          <div className="flex items-start gap-4 group">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-muted/60 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 group-hover:scale-105 transition-all duration-300">
+              <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-0.5">{t.location}</p>
@@ -91,53 +131,64 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
             </div>
           </div>
 
-          {/* Client Info */}
-          <div className="pt-4 sm:pt-5 border-t border-border/40 space-y-2.5 sm:space-y-3">
-            <div className="flex items-center gap-2.5 sm:gap-3 text-sm group">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-muted/50 flex items-center justify-center transition-colors duration-200 group-hover:bg-primary/10">
-                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          {/* Client Info - Enhanced */}
+          <div className="pt-5 border-t border-border/30 space-y-3 stagger-fade">
+            <div className="flex items-center gap-3 text-sm group hover:bg-muted/30 p-2 -mx-2 rounded-lg transition-all duration-300">
+              <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
+                <User className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
-              <span className="text-foreground text-sm font-medium">{clientName}</span>
+              <span className="text-foreground font-medium">{clientName}</span>
             </div>
-            <div className="flex items-center gap-2.5 sm:gap-3 text-sm group">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-muted/50 flex items-center justify-center transition-colors duration-200 group-hover:bg-primary/10">
-                <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            <div className="flex items-center gap-3 text-sm group hover:bg-muted/30 p-2 -mx-2 rounded-lg transition-all duration-300">
+              <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
+                <Mail className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
-              <span className="text-foreground text-sm">{clientEmail}</span>
+              <span className="text-foreground">{clientEmail}</span>
             </div>
-            <div className="flex items-center gap-2.5 sm:gap-3 text-sm group">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-muted/50 flex items-center justify-center transition-colors duration-200 group-hover:bg-primary/10">
-                <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            <div className="flex items-center gap-3 text-sm group hover:bg-muted/30 p-2 -mx-2 rounded-lg transition-all duration-300">
+              <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
+                <Phone className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
-              <span className="text-foreground text-sm">{clientPhone}</span>
+              <span className="text-foreground">{clientPhone}</span>
             </div>
           </div>
 
           {notes && (
-            <div className="pt-4 sm:pt-5 border-t border-border/40">
+            <div className="pt-5 border-t border-border/30">
               <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-2">{t.notes}</p>
-              <p className="text-xs sm:text-sm text-foreground bg-muted/30 rounded-xl p-3">{notes}</p>
+              <p className="text-xs sm:text-sm text-foreground bg-muted/30 rounded-xl p-3 border border-border/30">{notes}</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Email Notice */}
-      <div className="max-w-lg mx-auto mt-5 sm:mt-6 p-3.5 sm:p-4 rounded-xl bg-primary/8 border border-primary/15">
+      {/* Email Notice - Enhanced */}
+      <div className="max-w-lg mx-auto mt-6 p-4 rounded-xl bg-gradient-to-r from-primary/8 to-accent/10 border border-primary/15">
         <p className="text-xs sm:text-sm text-muted-foreground">
           {t.emailSentTo} <span className="font-semibold text-foreground">{clientEmail}</span>
         </p>
       </div>
 
-      {/* Action Button */}
-      <div className="mt-6 sm:mt-8">
+      {/* Action Buttons - Enhanced */}
+      <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
         <Button
-          variant="ghost"
+          variant="booking"
           size="lg"
           onClick={onNewBooking}
-          className="gap-2 hover:bg-primary/10 active:scale-[0.98] transition-all h-11"
+          className="w-full sm:w-auto gap-2.5 group min-w-[180px]"
         >
-          {t.bookAnotherAppointment}
+          <span>{t.bookAnotherAppointment}</span>
+          <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+        </Button>
+        
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={handleAddToCalendar}
+          className="w-full sm:w-auto gap-2 hover:bg-primary/5 transition-all duration-300"
+        >
+          <CalendarPlus className="w-4 h-4" />
+          <span>{language === 'sk' ? 'Pridať do kalendára' : 'Add to Calendar'}</span>
         </Button>
       </div>
     </div>
