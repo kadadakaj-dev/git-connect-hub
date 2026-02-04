@@ -5,14 +5,14 @@ const LanguageSwitcher = () => {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="inline-flex items-center rounded-full border border-border bg-card p-1 gap-1">
+    <div className="inline-flex items-center rounded-xl glass-card p-1.5 gap-1">
       <button
         onClick={() => setLanguage('sk')}
         className={cn(
-          "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
+          "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
           language === 'sk'
-            ? "bg-primary text-primary-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
+            ? "bg-navy text-navy-foreground shadow-md"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
         )}
       >
         SK
@@ -20,10 +20,10 @@ const LanguageSwitcher = () => {
       <button
         onClick={() => setLanguage('en')}
         className={cn(
-          "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
+          "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
           language === 'en'
-            ? "bg-primary text-primary-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
+            ? "bg-navy text-navy-foreground shadow-md"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
         )}
       >
         EN

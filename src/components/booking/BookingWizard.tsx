@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BookingData, BookingStep, Service } from '@/types/booking';
 import ProgressBar from './ProgressBar';
@@ -38,7 +38,6 @@ const BookingWizard = () => {
 
   const updateBookingData = (field: string, value: any) => {
     setBookingData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when field is updated
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -96,7 +95,6 @@ const BookingWizard = () => {
     if (!validateStep(currentStep)) return;
 
     if (currentStep === 2) {
-      // Submit booking via edge function
       try {
         await createBooking.mutateAsync({
           serviceId: bookingData.service!.id,
@@ -144,24 +142,37 @@ const BookingWizard = () => {
 
   return (
     <div className="min-h-screen gradient-hero flex flex-col">
-      <div className="container max-w-5xl mx-auto px-4 py-8 md:py-12 flex-1">
+      {/* Decorative background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -left-20 w-72 h-72 bg-primary/3 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-64 h-64 bg-accent/30 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 md:py-12 flex-1 relative z-10">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+        <header className="text-center mb-8 md:mb-12 animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            <Sparkles className="w-4 h-4" />
+            <span>{t.clinicSubtitle}</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-foreground mb-3 tracking-tight">
             {t.clinicName}
           </h1>
-          <p className="text-muted-foreground">
-            {t.clinicSubtitle}
+          <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto">
+            Profesionálna starostlivosť o vaše zdravie
           </p>
-        </div>
+        </header>
 
-        {/* Progress Bar - hide on confirmation */}
+        {/* Progress Bar */}
         {currentStep < 3 && (
-          <ProgressBar steps={steps.slice(0, 3)} currentStep={currentStep} />
+          <div className="mb-8">
+            <ProgressBar steps={steps.slice(0, 3)} currentStep={currentStep} />
+          </div>
         )}
 
         {/* Step Content */}
-        <div className="mt-8">
+        <main className="mt-6 sm:mt-8">
           {currentStep === 0 && (
             <ServiceSelection
               selectedService={bookingData.service}
@@ -195,16 +206,16 @@ const BookingWizard = () => {
               onNewBooking={handleNewBooking}
             />
           )}
-        </div>
+        </main>
 
-        {/* Navigation Buttons - hide on confirmation */}
+        {/* Navigation Buttons */}
         {currentStep < 3 && (
-          <div className="flex items-center justify-between mt-10 pt-6 border-t border-border">
+          <nav className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 sm:mt-12 pt-6 border-t border-border/50">
             <Button
               variant="ghost"
               onClick={handleBack}
               disabled={currentStep === 0}
-              className="gap-2"
+              className="gap-2 order-2 sm:order-1 w-full sm:w-auto"
             >
               <ArrowLeft className="w-4 h-4" />
               {t.back}
@@ -215,11 +226,11 @@ const BookingWizard = () => {
               size="lg"
               onClick={handleNext}
               disabled={!canProceed() || createBooking.isPending}
-              className="gap-2 min-w-[160px]"
+              className="gap-2 min-w-[180px] order-1 sm:order-2 w-full sm:w-auto"
             >
               {createBooking.isPending ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-navy-foreground border-t-transparent rounded-full animate-spin" />
                   {t.booking}
                 </>
               ) : currentStep === 2 ? (
@@ -231,11 +242,10 @@ const BookingWizard = () => {
                 </>
               )}
             </Button>
-          </div>
+          </nav>
         )}
       </div>
 
-      {/* Footer */}
       <Footer />
     </div>
   );
