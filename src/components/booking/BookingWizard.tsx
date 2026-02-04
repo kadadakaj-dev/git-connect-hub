@@ -161,33 +161,33 @@ const BookingWizard = () => {
       {/* Enhanced Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {/* Primary blob */}
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 dark:bg-primary/15 rounded-full blur-3xl animate-float-slow" />
         
         {/* Secondary blob */}
         <div 
-          className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/6 rounded-full blur-3xl animate-float" 
+          className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/6 dark:bg-primary/10 rounded-full blur-3xl animate-float" 
           style={{ animationDelay: '1s' }} 
         />
         
         {/* Accent blob */}
         <div 
-          className="absolute bottom-32 right-1/4 w-64 h-64 bg-accent/50 rounded-full blur-3xl animate-float-slow" 
+          className="absolute bottom-32 right-1/4 w-64 h-64 bg-accent/50 dark:bg-accent/20 rounded-full blur-3xl animate-float-slow" 
           style={{ animationDelay: '2s' }} 
         />
         
         {/* Navy accent */}
         <div 
-          className="absolute top-1/2 right-10 w-48 h-48 bg-navy/5 rounded-full blur-3xl animate-float" 
+          className="absolute top-1/2 right-10 w-48 h-48 bg-navy/5 dark:bg-navy/10 rounded-full blur-3xl animate-float" 
           style={{ animationDelay: '3s' }} 
         />
         
         {/* Morphing shape */}
         <div 
-          className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-br from-primary/8 to-accent/20 animate-morph blur-2xl"
+          className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-br from-primary/8 to-accent/20 dark:from-primary/15 dark:to-accent/10 animate-morph blur-2xl"
         />
         
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(200_30%_90%/0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(200_30%_90%/0.05)_1px,transparent_1px)] bg-[size:48px_48px]" />
+        {/* Subtle grid pattern - using CSS custom property for theme support */}
+        <div className="absolute inset-0 grid-pattern" />
       </div>
 
       <div className="container max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-6 md:py-10 flex-1 relative z-10">

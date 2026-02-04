@@ -380,6 +380,20 @@
   .dark .border-gradient::before {
     background: linear-gradient(135deg, hsl(199, 80%, 60%), hsl(199, 70%, 50%));
   }
+  
+  /* Grid pattern for backgrounds */
+  .grid-pattern {
+    background-image: 
+      linear-gradient(to right, hsl(200 30% 70% / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(200 30% 70% / 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  
+  .dark .grid-pattern {
+    background-image: 
+      linear-gradient(to right, hsl(200 20% 50% / 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(200 20% 50% / 0.08) 1px, transparent 1px);
+  }
 }
 
 /* Custom animations */
