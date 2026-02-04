@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useTimeSlots } from '@/hooks/useTimeSlots';
 import { useState } from 'react';
+import TimeSlotSkeleton from './TimeSlotSkeleton';
 
 interface DateTimeSelectionProps {
   selectedDate: Date | null;
@@ -173,11 +174,11 @@ const DateTimeSelection = ({
               </p>
             </div>
           ) : isLoadingSlots ? (
-            <div className="flex flex-col items-center justify-center h-48 sm:h-64">
-              <div className="relative">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 border-3 sm:border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-              </div>
-              <p className="text-muted-foreground mt-4 text-sm">{t.loadingSlots}</p>
+            <div className="py-4">
+              <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                {t.loadingSlots}
+              </p>
+              <TimeSlotSkeleton />
             </div>
           ) : availableSlots.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-48 sm:h-64 text-center px-4">
