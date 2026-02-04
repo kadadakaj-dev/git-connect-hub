@@ -144,35 +144,35 @@ const BookingWizard = () => {
     <div className="min-h-screen gradient-hero flex flex-col">
       {/* Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -left-20 w-72 h-72 bg-primary/3 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-1/4 w-64 h-64 bg-accent/30 rounded-full blur-3xl" />
+        <div className="absolute -top-32 -right-32 w-80 h-80 bg-primary/8 rounded-full blur-3xl animate-float" />
+        <div className="absolute top-1/3 -left-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-24 right-1/4 w-56 h-56 bg-accent/40 rounded-full blur-3xl" style={{ animationDelay: '2s' }} />
       </div>
 
-      <div className="container max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 md:py-12 flex-1 relative z-10">
+      <div className="container max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-6 md:py-10 flex-1 relative z-10">
         {/* Header */}
-        <header className="text-center mb-8 md:mb-12 animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            <Sparkles className="w-4 h-4" />
+        <header className="text-center mb-6 sm:mb-8 md:mb-10 animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/12 text-primary text-xs sm:text-sm font-medium mb-3 sm:mb-4 hover:bg-primary/18 transition-colors cursor-default">
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>{t.clinicSubtitle}</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-foreground mb-3 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-2 sm:mb-3 tracking-tight">
             {t.clinicName}
           </h1>
-          <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto">
+          <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
             Profesionálna starostlivosť o vaše zdravie
           </p>
         </header>
 
         {/* Progress Bar */}
         {currentStep < 3 && (
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <ProgressBar steps={steps.slice(0, 3)} currentStep={currentStep} />
           </div>
         )}
 
         {/* Step Content */}
-        <main className="mt-6 sm:mt-8">
+        <main className="mt-4 sm:mt-6">
           {currentStep === 0 && (
             <ServiceSelection
               selectedService={bookingData.service}
@@ -210,12 +210,12 @@ const BookingWizard = () => {
 
         {/* Navigation Buttons */}
         {currentStep < 3 && (
-          <nav className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 sm:mt-12 pt-6 border-t border-border/50">
+          <nav className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-border/40">
             <Button
               variant="ghost"
               onClick={handleBack}
               disabled={currentStep === 0}
-              className="gap-2 order-2 sm:order-1 w-full sm:w-auto"
+              className="gap-2 order-2 sm:order-1 w-full sm:w-auto h-11 sm:h-10 hover:bg-primary/10 active:scale-[0.98] transition-all"
             >
               <ArrowLeft className="w-4 h-4" />
               {t.back}
@@ -226,11 +226,11 @@ const BookingWizard = () => {
               size="lg"
               onClick={handleNext}
               disabled={!canProceed() || createBooking.isPending}
-              className="gap-2 min-w-[180px] order-1 sm:order-2 w-full sm:w-auto"
+              className="gap-2 min-w-[160px] sm:min-w-[180px] order-1 sm:order-2 w-full sm:w-auto h-12 sm:h-11"
             >
               {createBooking.isPending ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-navy-foreground border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-navy-foreground/30 border-t-navy-foreground rounded-full animate-spin" />
                   {t.booking}
                 </>
               ) : currentStep === 2 ? (
@@ -238,7 +238,7 @@ const BookingWizard = () => {
               ) : (
                 <>
                   {t.continue}
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </>
               )}
             </Button>

@@ -22,11 +22,14 @@ const ClientDetails = ({
   const { t } = useLanguage();
 
   const inputClasses = (hasError: boolean) => cn(
-    "w-full pl-12 pr-4 py-3.5 rounded-xl border bg-background/50 text-foreground",
-    "placeholder:text-muted-foreground/60 transition-all duration-200",
-    "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-background",
-    hasError ? "border-destructive bg-destructive/5" : "border-border hover:border-primary/30"
+    "w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl border bg-background/60 text-foreground text-sm sm:text-base",
+    "placeholder:text-muted-foreground/50 transition-all duration-200",
+    "focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary focus:bg-background",
+    "hover:border-primary/30 hover:bg-background/80",
+    hasError ? "border-destructive/50 bg-destructive/5 focus:ring-destructive/30" : "border-border"
   );
+
+  const iconClasses = "absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground transition-colors duration-200 group-focus-within:text-primary";
 
   return (
     <div className="animate-fade-in-up">
@@ -34,22 +37,20 @@ const ClientDetails = ({
         <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-3">
           {t.yourDetails}
         </h2>
-        <p className="text-muted-foreground max-w-md mx-auto">
+        <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
           {t.provideContactInfo}
         </p>
       </div>
 
       <div className="max-w-xl mx-auto">
-        <div className="glass-card rounded-2xl p-6 md:p-8 space-y-5">
+        <div className="glass-card rounded-2xl p-5 sm:p-6 md:p-8 space-y-4 sm:space-y-5">
           {/* Name Field */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-              {t.fullName} <span className="text-primary">{t.required}</span>
+          <div className="group">
+            <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+              {t.fullName} <span className="text-primary font-normal">{t.required}</span>
             </label>
             <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground">
-                <User className="w-5 h-5" />
-              </div>
+              <User className={iconClasses} />
               <input
                 id="name"
                 type="text"
@@ -60,22 +61,20 @@ const ClientDetails = ({
               />
             </div>
             {errors.clientName && (
-              <p className="text-sm text-destructive mt-2 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-destructive" />
+              <p className="text-xs sm:text-sm text-destructive mt-1.5 flex items-center gap-1.5 animate-slide-up">
+                <span className="w-1 h-1 rounded-full bg-destructive flex-shrink-0" />
                 {errors.clientName}
               </p>
             )}
           </div>
 
           {/* Email Field */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-              {t.emailAddress} <span className="text-primary">{t.required}</span>
+          <div className="group">
+            <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+              {t.emailAddress} <span className="text-primary font-normal">{t.required}</span>
             </label>
             <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground">
-                <Mail className="w-5 h-5" />
-              </div>
+              <Mail className={iconClasses} />
               <input
                 id="email"
                 type="email"
@@ -86,22 +85,20 @@ const ClientDetails = ({
               />
             </div>
             {errors.clientEmail && (
-              <p className="text-sm text-destructive mt-2 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-destructive" />
+              <p className="text-xs sm:text-sm text-destructive mt-1.5 flex items-center gap-1.5 animate-slide-up">
+                <span className="w-1 h-1 rounded-full bg-destructive flex-shrink-0" />
                 {errors.clientEmail}
               </p>
             )}
           </div>
 
           {/* Phone Field */}
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
-              {t.phoneNumber} <span className="text-primary">{t.required}</span>
+          <div className="group">
+            <label htmlFor="phone" className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+              {t.phoneNumber} <span className="text-primary font-normal">{t.required}</span>
             </label>
             <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground">
-                <Phone className="w-5 h-5" />
-              </div>
+              <Phone className={iconClasses} />
               <input
                 id="phone"
                 type="tel"
@@ -112,42 +109,40 @@ const ClientDetails = ({
               />
             </div>
             {errors.clientPhone && (
-              <p className="text-sm text-destructive mt-2 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-destructive" />
+              <p className="text-xs sm:text-sm text-destructive mt-1.5 flex items-center gap-1.5 animate-slide-up">
+                <span className="w-1 h-1 rounded-full bg-destructive flex-shrink-0" />
                 {errors.clientPhone}
               </p>
             )}
           </div>
 
           {/* Notes Field */}
-          <div>
-            <label htmlFor="notes" className="block text-sm font-medium text-foreground mb-2">
+          <div className="group">
+            <label htmlFor="notes" className="block text-xs sm:text-sm font-medium text-foreground mb-2">
               {t.additionalNotes}
               <span className="text-muted-foreground font-normal ml-1">({t.optional})</span>
             </label>
             <div className="relative">
-              <div className="absolute left-4 top-4 w-5 h-5 text-muted-foreground">
-                <FileText className="w-5 h-5" />
-              </div>
+              <FileText className="absolute left-3.5 sm:left-4 top-3.5 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground transition-colors duration-200 group-focus-within:text-primary" />
               <textarea
                 id="notes"
                 value={notes}
                 onChange={(e) => onUpdate('notes', e.target.value)}
                 placeholder={t.notesPlaceholder}
-                rows={4}
+                rows={3}
                 className={cn(
-                  "w-full pl-12 pr-4 py-3.5 rounded-xl border bg-background/50 text-foreground",
-                  "placeholder:text-muted-foreground/60 transition-all duration-200 resize-none",
-                  "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-background",
-                  "border-border hover:border-primary/30"
+                  "w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl border bg-background/60 text-foreground text-sm sm:text-base",
+                  "placeholder:text-muted-foreground/50 transition-all duration-200 resize-none",
+                  "focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary focus:bg-background",
+                  "hover:border-primary/30 hover:bg-background/80 border-border"
                 )}
               />
             </div>
           </div>
 
           {/* Privacy Notice */}
-          <div className="pt-4 border-t border-border/50">
-            <p className="text-xs text-muted-foreground text-center leading-relaxed">
+          <div className="pt-4 border-t border-border/40">
+            <p className="text-[10px] sm:text-xs text-muted-foreground text-center leading-relaxed">
               {t.privacyNotice}
             </p>
           </div>
