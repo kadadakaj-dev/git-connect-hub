@@ -9,6 +9,7 @@ import DateTimeSelection from './DateTimeSelection';
 import ClientDetails from './ClientDetails';
 import Confirmation from './Confirmation';
 import Footer from '../Footer';
+import ThemeToggle from '../ThemeToggle';
 import { toast } from 'sonner';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useCreateBooking } from '@/hooks/useCreateBooking';
@@ -192,8 +193,9 @@ const BookingWizard = () => {
       <div className="container max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-6 md:py-10 flex-1 relative z-10">
         {/* Header */}
         <header className="text-center mb-6 sm:mb-8 md:mb-10 animate-fade-in-up relative">
-          {/* Client Portal Link */}
-          <div className="absolute top-0 right-0">
+          {/* Top right controls - Theme Toggle & Client Portal */}
+          <div className="absolute top-0 right-0 flex items-center gap-2">
+            <ThemeToggle />
             <Button 
               variant="ghost" 
               size="sm" 
