@@ -1,11 +1,10 @@
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const ThemeToggle = () => {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -14,55 +13,46 @@ const ThemeToggle = () => {
 
   if (!mounted) {
     return (
-      <Button
-        variant="ghost"
-        size="icon"
-        className="w-9 h-9 rounded-xl bg-muted/50"
-        disabled
-      >
-        <div className="w-4 h-4" />
-      </Button>
+      <div className="w-14 h-8 rounded-full bg-muted/50 animate-pulse" />
     );
   }
 
   const isDark = resolvedTheme === 'dark';
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className={cn(
-        "relative w-9 h-9 rounded-xl overflow-hidden transition-all duration-300",
-        "bg-muted/50 hover:bg-muted",
-        "group"
+        "relative w-14 h-8 rounded-full transition-all duration-300",
+        "bg-muted border border-border",
+        "hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "outline-none"
       )}
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label={isDark ? 'Prepnúť na svetlý režim' : 'Prepnúť na tmavý režim'}
     >
-      {/* Background glow effect */}
+      {/* Track background */}
       <div className={cn(
-        "absolute inset-0 transition-opacity duration-500",
-        isDark 
-          ? "bg-gradient-to-br from-primary/20 to-accent/20 opacity-100" 
-          : "bg-gradient-to-br from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100"
+        "absolute inset-0 rounded-full transition-colors duration-300",
+        isDark ? "bg-primary/10" : "bg-primary/5"
       )} />
       
-      {/* Sun icon */}
-      <Sun className={cn(
-        "absolute h-4 w-4 transition-all duration-500 ease-out",
-        isDark 
-          ? "rotate-90 scale-0 opacity-0" 
-          : "rotate-0 scale-100 opacity-100 text-primary"
-      )} />
-      
-      {/* Moon icon */}
-      <Moon className={cn(
-        "absolute h-4 w-4 transition-all duration-500 ease-out",
-        isDark 
-          ? "rotate-0 scale-100 opacity-100 text-primary" 
-          : "-rotate-90 scale-0 opacity-0"
-      )} />
-    </Button>
+      {/* Sliding thumb */}
+      <div className={cn(
+        "absolute top-1 w-6 h-6 rounded-full transition-all duration-300 ease-out",
+        "bg-background shadow-md border border-border/50",
+        "flex items-center justify-center",
+        isDark ? "left-7" : "left-1"
+      )}>
+        <Sun className={cn(
+          "absolute h-3.5 w-3.5 text-primary transition-all duration-300",
+          isDark ? "opacity-0 rotate-90 scale-0" : "opacity-100 rotate-0 scale-100"
+        )} />
+        <Moon className={cn(
+          "absolute h-3.5 w-3.5 text-primary transition-all duration-300",
+          isDark ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-0"
+        )} />
+      </div>
+    </button>
   );
 };
 
