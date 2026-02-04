@@ -2,6 +2,7 @@ import { Service } from '@/types/booking';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useServices } from '@/hooks/useServices';
+import ServiceSkeleton from './ServiceSkeleton';
 import { 
   ClipboardCheck, 
   Activity, 
@@ -10,7 +11,6 @@ import {
   Hand, 
   MessageSquare,
   Clock,
-  Loader2,
   ChevronRight
 } from 'lucide-react';
 
@@ -35,20 +35,15 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
   if (isLoading) {
     return (
       <div className="animate-fade-in-up">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-2">
+        <div className="text-center mb-8 md:mb-10">
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-3">
             {t.selectService}
           </h2>
+          <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
+            {t.chooseServiceSubtitle}
+          </p>
         </div>
-        <div className="flex items-center justify-center py-20">
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative">
-              <Loader2 className="w-10 h-10 animate-spin text-primary" />
-              <div className="absolute inset-0 w-10 h-10 rounded-full bg-primary/20 animate-ping" />
-            </div>
-            <p className="text-muted-foreground text-sm">Načítavam služby...</p>
-          </div>
-        </div>
+        <ServiceSkeleton />
       </div>
     );
   }
