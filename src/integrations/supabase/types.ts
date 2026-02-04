@@ -35,12 +35,45 @@ export type Database = {
         }
         Relationships: []
       }
+      booking_reminders: {
+        Row: {
+          booking_id: string
+          created_at: string
+          id: string
+          reminder_sent_at: string | null
+          reminder_type: string | null
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          id?: string
+          reminder_sent_at?: string | null
+          reminder_type?: string | null
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          id?: string
+          reminder_sent_at?: string | null
+          reminder_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_reminders_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           cancellation_token: string
           client_email: string
           client_name: string
           client_phone: string
+          client_user_id: string | null
           created_at: string
           date: string
           id: string
@@ -55,6 +88,7 @@ export type Database = {
           client_email: string
           client_name: string
           client_phone: string
+          client_user_id?: string | null
           created_at?: string
           date: string
           id?: string
@@ -69,6 +103,7 @@ export type Database = {
           client_email?: string
           client_name?: string
           client_phone?: string
+          client_user_id?: string | null
           created_at?: string
           date?: string
           id?: string
@@ -81,6 +116,78 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string
+          id: string
+          phone: string | null
+          preferred_language: string | null
+          total_visits: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          preferred_language?: string | null
+          total_visits?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          preferred_language?: string | null
+          total_visits?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      favorite_services: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          service_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          service_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_services_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorite_services_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
@@ -135,6 +242,41 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      therapist_notes: {
+        Row: {
+          booking_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "therapist_notes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       time_slots_config: {
         Row: {

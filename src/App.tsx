@@ -11,6 +11,8 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import CancelBooking from "./pages/CancelBooking";
 import Legal from "./pages/Legal";
+import ClientAuth from "./pages/ClientAuth";
+import ClientPortal from "./pages/ClientPortal";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,8 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<ClientAuth />} />
+              <Route path="/portal" element={<ClientPortal />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/cancel" element={<CancelBooking />} />

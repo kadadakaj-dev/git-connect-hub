@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Sparkles, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BookingData, BookingStep, Service } from '@/types/booking';
 import ProgressBar from './ProgressBar';
@@ -23,7 +24,7 @@ const initialBookingData: BookingData = {
 };
 
 const BookingWizard = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [currentStep, setCurrentStep] = useState(0);
   const [bookingData, setBookingData] = useState<BookingData>(initialBookingData);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -151,7 +152,19 @@ const BookingWizard = () => {
 
       <div className="container max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-6 md:py-10 flex-1 relative z-10">
         {/* Header */}
-        <header className="text-center mb-6 sm:mb-8 md:mb-10 animate-fade-in-up">
+        <header className="text-center mb-6 sm:mb-8 md:mb-10 animate-fade-in-up relative">
+          {/* Client Portal Link */}
+          <div className="absolute top-0 right-0">
+            <Button variant="ghost" size="sm" asChild className="gap-2">
+              <Link to="/auth">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {language === 'sk' ? 'Klientský portál' : 'Client Portal'}
+                </span>
+              </Link>
+            </Button>
+          </div>
+
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/12 text-primary text-xs sm:text-sm font-medium mb-3 sm:mb-4 hover:bg-primary/18 transition-colors cursor-default">
             <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>{t.clinicSubtitle}</span>
