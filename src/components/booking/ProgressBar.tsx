@@ -98,26 +98,63 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
       
       {/* Mobile Progress */}
       <div className="sm:hidden">
-        <div className="glass-card rounded-xl p-3.5">
-          {/* Progress dots */}
-          <div className="flex items-center justify-center gap-2.5 mb-2.5">
-            {steps.map((_, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "rounded-full transition-all duration-300",
-                  index === currentStep 
-                    ? "w-7 h-1.5 bg-navy" 
-                    : index < currentStep 
-                      ? "w-1.5 h-1.5 bg-primary" 
-                      : "w-1.5 h-1.5 bg-muted-foreground/20"
-                )}
-              />
-            ))}
+        <div className="glass-card rounded-xl p-4">
+          {/* Progress steps with SVG numbers */}
+          <div className="flex items-center justify-center gap-3">
+            {steps.map((step, index) => {
+              const isCompleted = index < currentStep;
+              const isCurrent = index === currentStep;
+              
+              return (
+                <div key={step.id} className="flex items-center">
+                  <div
+                    className={cn(
+                      "w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300",
+                      isCompleted && "bg-primary text-primary-foreground shadow-sm",
+                      isCurrent && "bg-navy text-navy-foreground shadow-md ring-2 ring-navy/20",
+                      !isCompleted && !isCurrent && "bg-muted/70 text-muted-foreground border border-border/50"
+                    )}
+                  >
+                    {isCompleted ? (
+                      <Check className="w-4 h-4" strokeWidth={2.5} />
+                    ) : (
+                      <svg 
+                        viewBox="0 0 24 24" 
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        {index === 0 && <path d="M9 7l3-2v14M9 19h6" />}
+                        {index === 1 && <path d="M7 8a4 4 0 0 1 7.5-2c1 1.5.5 3-1 4.5L7 17h10" />}
+                        {index === 2 && <path d="M7 7h6l-3 5c2.5 0 4 1.5 4 3.5s-1.5 3.5-4 3.5c-2 0-3.5-1-4-2.5" />}
+                        {index === 3 && <path d="M14 5v14M7 13h10M7 13V5l7 8" />}
+                      </svg>
+                    )}
+                  </div>
+                  
+                  {/* Connector Line */}
+                  {index < steps.length - 1 && (
+                    <div className="w-6 mx-1.5">
+                      <div className="relative h-0.5 rounded-full bg-border/50 overflow-hidden">
+                        <div
+                          className={cn(
+                            "absolute inset-y-0 left-0 bg-primary rounded-full transition-all duration-500 ease-out",
+                            isCompleted ? "w-full" : "w-0"
+                          )}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
           
           {/* Current step info */}
-          <div className="text-center">
+          <div className="text-center mt-3">
             <p className="text-sm font-semibold text-foreground">
               {steps[currentStep]?.title}
             </p>
