@@ -159,6 +159,51 @@ export type Database = {
         }
         Relationships: []
       }
+      employees: {
+        Row: {
+          avatar_url: string | null
+          bio_en: string | null
+          bio_sk: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          is_active: boolean
+          phone: string | null
+          position: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio_en?: string | null
+          bio_sk?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          position?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio_en?: string | null
+          bio_sk?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          position?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       favorite_services: {
         Row: {
           client_id: string

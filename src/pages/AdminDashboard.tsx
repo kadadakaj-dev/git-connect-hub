@@ -9,8 +9,10 @@ import ServiceManagement from '@/components/admin/ServiceManagement';
 import BookingManagement from '@/components/admin/BookingManagement';
 import OverviewStats from '@/components/admin/OverviewStats';
 import CalendarView from '@/components/admin/CalendarView';
+import EmployeeManagement from '@/components/admin/EmployeeManagement';
+import OpeningHoursManagement from '@/components/admin/OpeningHoursManagement';
 import { toast } from 'sonner';
-import { LogOut, Calendar, Package, BarChart3, CalendarDays } from 'lucide-react';
+import { LogOut, Calendar, Package, BarChart3, CalendarDays, Users, Clock } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 
 const AdminDashboard = () => {
@@ -123,6 +125,14 @@ const AdminDashboard = () => {
               <Package className="w-4 h-4" />
               {language === 'sk' ? 'Služby' : 'Services'}
             </TabsTrigger>
+            <TabsTrigger value="employees" className="gap-2">
+              <Users className="w-4 h-4" />
+              {language === 'sk' ? 'Zamestnanci' : 'Employees'}
+            </TabsTrigger>
+            <TabsTrigger value="hours" className="gap-2">
+              <Clock className="w-4 h-4" />
+              {language === 'sk' ? 'Hodiny' : 'Hours'}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -139,6 +149,14 @@ const AdminDashboard = () => {
 
           <TabsContent value="services">
             <ServiceManagement />
+          </TabsContent>
+
+          <TabsContent value="employees">
+            <EmployeeManagement />
+          </TabsContent>
+
+          <TabsContent value="hours">
+            <OpeningHoursManagement />
           </TabsContent>
         </Tabs>
       </main>
