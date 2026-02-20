@@ -3,13 +3,8 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useServices } from '@/hooks/useServices';
 import ServiceSkeleton from './ServiceSkeleton';
+import { serviceIconMap } from './ServiceIcons';
 import { 
-  ClipboardCheck, 
-  Activity, 
-  Bone, 
-  Dumbbell, 
-  Hand, 
-  MessageSquare,
   Clock,
   ChevronRight,
   Star,
@@ -20,15 +15,6 @@ interface ServiceSelectionProps {
   selectedService: Service | null;
   onSelect: (service: Service) => void;
 }
-
-const iconMap: Record<string, React.ElementType> = {
-  ClipboardCheck,
-  Activity,
-  Bone,
-  Dumbbell,
-  Hand,
-  MessageSquare,
-};
 
 const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) => {
   const { t, language } = useLanguage();
@@ -82,7 +68,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 stagger-children">
         {services.map((service, index) => {
-          const Icon = iconMap[service.icon] || Activity;
+          const ServiceIcon = serviceIconMap[service.icon];
           const isSelected = selectedService?.id === service.id;
           const isPopular = index === 0; // First service as popular
 
@@ -129,10 +115,17 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                   "absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 transition-opacity duration-300",
                   "group-hover:opacity-100"
                 )} />
-                <Icon className={cn(
-                  "w-7 h-7 sm:w-8 sm:h-8 transition-all duration-400 relative z-10",
-                  "group-hover:scale-110 group-hover:rotate-3"
-                )} />
+                {ServiceIcon ? (
+                  <ServiceIcon className={cn(
+                    "w-full h-full transition-all duration-400 relative z-10",
+                    "group-hover:scale-110"
+                  )} />
+                ) : (
+                  <Zap className={cn(
+                    "w-7 h-7 sm:w-8 sm:h-8 transition-all duration-400 relative z-10",
+                    "group-hover:scale-110 group-hover:rotate-3"
+                  )} />
+                )}
               </div>
 
               {/* Service Info */}
