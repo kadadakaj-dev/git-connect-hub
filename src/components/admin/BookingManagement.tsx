@@ -26,10 +26,14 @@ interface Booking {
   notes: string | null;
   created_at: string;
   service_id: string;
+  employee_id: string | null;
   services?: {
     name_sk: string;
     name_en: string;
   };
+  employees?: {
+    full_name: string;
+  } | null;
 }
 
 const BookingManagement = () => {
@@ -46,7 +50,8 @@ const BookingManagement = () => {
         .from('bookings')
         .select(`
           *,
-          services (name_sk, name_en)
+          services (name_sk, name_en),
+          employees (full_name)
         `)
         .order('date', { ascending: false });
       
@@ -180,6 +185,7 @@ const BookingManagement = () => {
                 <TableRow>
                   <TableHead>{language === 'sk' ? 'Klient' : 'Client'}</TableHead>
                   <TableHead>{language === 'sk' ? 'Služba' : 'Service'}</TableHead>
+                  <TableHead>{language === 'sk' ? 'Zamestnanec' : 'Employee'}</TableHead>
                   <TableHead>{language === 'sk' ? 'Dátum' : 'Date'}</TableHead>
                   <TableHead>{language === 'sk' ? 'Čas' : 'Time'}</TableHead>
                   <TableHead>{language === 'sk' ? 'Stav' : 'Status'}</TableHead>
@@ -200,6 +206,9 @@ const BookingManagement = () => {
                       {booking.services 
                         ? (language === 'sk' ? booking.services.name_sk : booking.services.name_en)
                         : '-'}
+                    </TableCell>
+                    <TableCell>
+                      {booking.employees?.full_name || (language === 'sk' ? 'Nepriradený' : 'Unassigned')}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

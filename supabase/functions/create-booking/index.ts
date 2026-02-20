@@ -160,6 +160,41 @@ serve(async (req) => {
       )
     }
 
+    // Auto-assign an available employee (round-robin by least bookings on that date)
+    let assignedEmployeeId: string | null = null
+    const { data: activeEmployees } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true })
+
+    if (activeEmployees && activeEmployees.length > 0) {
+      // Find employee with fewest bookings on this date
+      const { data: dateCounts } = await supabase
+        .from('bookings')
+        .select('employee_id')
+        .eq('date', body.date)
+        .neq('status', 'cancelled')
+        .not('employee_id', 'is', null)
+
+      const countMap: Record<string, number> = {}
+      for (const emp of activeEmployees) {
+        countMap[emp.id] = 0
+      }
+      if (dateCounts) {
+        for (const b of dateCounts) {
+          if (b.employee_id && countMap[b.employee_id] !== undefined) {
+            countMap[b.employee_id]++
+          }
+        }
+      }
+      // Pick employee with least bookings
+      assignedEmployeeId = activeEmployees.reduce((best, emp) =>
+        (countMap[emp.id] ?? 0) < (countMap[best.id] ?? 0) ? emp : best
+      ).id
+      console.log('Auto-assigned employee:', assignedEmployeeId)
+    }
+
     // Create the booking with sanitized data
     const bookingData = {
       service_id: body.service_id,
@@ -169,7 +204,8 @@ serve(async (req) => {
       client_email: sanitizeString(body.client_email.toLowerCase(), 255),
       client_phone: sanitizeString(body.client_phone, 20),
       notes: body.notes ? sanitizeString(body.notes, 1000) : null,
-      status: 'pending'
+      status: 'pending',
+      employee_id: assignedEmployeeId
     }
 
     const { data: booking, error: insertError } = await supabase

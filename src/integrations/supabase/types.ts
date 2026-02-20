@@ -76,6 +76,7 @@ export type Database = {
           client_user_id: string | null
           created_at: string
           date: string
+          employee_id: string | null
           id: string
           notes: string | null
           service_id: string
@@ -91,6 +92,7 @@ export type Database = {
           client_user_id?: string | null
           created_at?: string
           date: string
+          employee_id?: string | null
           id?: string
           notes?: string | null
           service_id: string
@@ -106,6 +108,7 @@ export type Database = {
           client_user_id?: string | null
           created_at?: string
           date?: string
+          employee_id?: string | null
           id?: string
           notes?: string | null
           service_id?: string
@@ -114,6 +117,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_service_id_fkey"
             columns: ["service_id"]
