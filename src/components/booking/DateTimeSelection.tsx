@@ -45,9 +45,24 @@ const DateTimeSelection = ({
     return isBefore(date, today) || isSameDay(date, today) || date.getDay() === 0;
   };
 
-  const availableSlots = timeSlots.filter((slot) => slot.available);
-  const morningSlots = availableSlots.filter((slot) => parseInt(slot.time.split(':')[0]) < 12);
-  const afternoonSlots = availableSlots.filter((slot) => parseInt(slot.time.split(':')[0]) >= 12);
+  const allSlots = timeSlots;
+  const availableSlots = allSlots.filter((slot) => slot.available);
+  const morningSlots = allSlots.filter((slot) => parseInt(slot.time.split(':')[0]) < 12);
+  const afternoonSlots = allSlots.filter((slot) => parseInt(slot.time.split(':')[0]) >= 12);
+
+  const getSlotColorClass = (slot: { available: boolean; bookedCount: number; totalCapacity: number }) => {
+    if (!slot.available) return 'opacity-40 cursor-not-allowed';
+    const remaining = slot.totalCapacity - slot.bookedCount;
+    if (remaining <= 1) return ''; // yellow indicator added separately
+    return '';
+  };
+
+  const getCapacityBadgeClass = (slot: { available: boolean; bookedCount: number; totalCapacity: number }) => {
+    if (!slot.available) return 'text-muted-foreground/40';
+    const remaining = slot.totalCapacity - slot.bookedCount;
+    if (remaining <= 1) return 'text-amber-600 dark:text-amber-400';
+    return 'text-emerald-600 dark:text-emerald-400';
+  };
 
   return (
     <div className="animate-fade-in-up">
@@ -203,7 +218,7 @@ const DateTimeSelection = ({
               </div>
               <TimeSlotSkeleton />
             </div>
-          ) : availableSlots.length === 0 ? (
+          ) : allSlots.length === 0 || availableSlots.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-52 sm:h-72 text-center px-4">
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-destructive/10 to-destructive/5 flex items-center justify-center mb-5">
                 <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-destructive/40" />
@@ -225,26 +240,43 @@ const DateTimeSelection = ({
                       {t.morning}
                     </p>
                     <span className="text-[10px] text-muted-foreground/60 ml-auto">
-                      {morningSlots.length} {language === 'sk' ? 'voľných' : 'available'}
+                      {morningSlots.filter(s => s.available).length} {language === 'sk' ? 'voľných' : 'available'}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 stagger-fade">
                     {morningSlots.map((slot) => (
                       <button
                         key={slot.time}
-                        onClick={() => onTimeSelect(slot.time)}
+                        onClick={() => slot.available && onTimeSelect(slot.time)}
+                        disabled={!slot.available}
                         className={cn(
-                          "px-3 py-3 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden",
+                          "px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden",
                           "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                          selectedTime === slot.time
+                          !slot.available && "opacity-40 cursor-not-allowed bg-muted/30",
+                          slot.available && selectedTime === slot.time
                             ? "bg-gradient-to-br from-navy to-navy/90 text-navy-foreground shadow-lg shadow-navy/25 scale-105"
-                            : "bg-gradient-to-br from-muted/60 to-muted/30 text-foreground hover:from-primary/20 hover:to-primary/10 hover:text-primary hover:scale-105 active:scale-95"
+                            : slot.available
+                              ? "bg-gradient-to-br from-muted/60 to-muted/30 text-foreground hover:from-primary/20 hover:to-primary/10 hover:text-primary hover:scale-105 active:scale-95"
+                              : ""
                         )}
                       >
-                        {selectedTime === slot.time && (
+                        {selectedTime === slot.time && slot.available && (
                           <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
                         )}
                         <span className="relative z-10">{slot.time}</span>
+                        {slot.totalCapacity > 1 && (
+                          <span className={cn(
+                            "block text-[10px] font-semibold relative z-10 mt-0.5",
+                            selectedTime === slot.time && slot.available
+                              ? "text-navy-foreground/70"
+                              : getCapacityBadgeClass(slot)
+                          )}>
+                            {slot.available
+                              ? `${slot.totalCapacity - slot.bookedCount}/${slot.totalCapacity}`
+                              : language === 'sk' ? 'plné' : 'full'
+                            }
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -259,27 +291,44 @@ const DateTimeSelection = ({
                       {t.afternoon}
                     </p>
                     <span className="text-[10px] text-muted-foreground/60 ml-auto">
-                      {afternoonSlots.length} {language === 'sk' ? 'voľných' : 'available'}
+                      {afternoonSlots.filter(s => s.available).length} {language === 'sk' ? 'voľných' : 'available'}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 stagger-fade">
                     {afternoonSlots.map((slot, index) => (
                       <button
                         key={slot.time}
-                        onClick={() => onTimeSelect(slot.time)}
+                        onClick={() => slot.available && onTimeSelect(slot.time)}
+                        disabled={!slot.available}
                         style={{ animationDelay: `${index * 0.03}s` }}
                         className={cn(
-                          "px-3 py-3 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden",
+                          "px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden",
                           "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                          selectedTime === slot.time
+                          !slot.available && "opacity-40 cursor-not-allowed bg-muted/30",
+                          slot.available && selectedTime === slot.time
                             ? "bg-gradient-to-br from-navy to-navy/90 text-navy-foreground shadow-lg shadow-navy/25 scale-105"
-                            : "bg-gradient-to-br from-muted/60 to-muted/30 text-foreground hover:from-primary/20 hover:to-primary/10 hover:text-primary hover:scale-105 active:scale-95"
+                            : slot.available
+                              ? "bg-gradient-to-br from-muted/60 to-muted/30 text-foreground hover:from-primary/20 hover:to-primary/10 hover:text-primary hover:scale-105 active:scale-95"
+                              : ""
                         )}
                       >
-                        {selectedTime === slot.time && (
+                        {selectedTime === slot.time && slot.available && (
                           <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
                         )}
                         <span className="relative z-10">{slot.time}</span>
+                        {slot.totalCapacity > 1 && (
+                          <span className={cn(
+                            "block text-[10px] font-semibold relative z-10 mt-0.5",
+                            selectedTime === slot.time && slot.available
+                              ? "text-navy-foreground/70"
+                              : getCapacityBadgeClass(slot)
+                          )}>
+                            {slot.available
+                              ? `${slot.totalCapacity - slot.bookedCount}/${slot.totalCapacity}`
+                              : language === 'sk' ? 'plné' : 'full'
+                            }
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>

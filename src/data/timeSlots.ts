@@ -24,6 +24,8 @@ export const generateTimeSlots = (date: Date): TimeSlot[] => {
       slots.push({
         time: timeString,
         available: isAvailable,
+        bookedCount: 0,
+        totalCapacity: 1,
       });
     }
   }

@@ -11,6 +11,8 @@ export interface Service {
 export interface TimeSlot {
   time: string;
   available: boolean;
+  bookedCount: number;
+  totalCapacity: number;
 }
 
 export interface BookingData {
