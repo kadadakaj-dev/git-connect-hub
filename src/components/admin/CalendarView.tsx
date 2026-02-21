@@ -330,16 +330,24 @@ const CalendarView = () => {
       return;
     }
 
-    // Check if slot is already taken
-    const existingBooking = bookings.find(
+    // Check capacity - count bookings in target slot
+    const slotBookings = bookings.filter(
       b => b.date === newDate && b.time_slot === newTime && b.id !== booking.id
     );
-    
-    if (existingBooking) {
+
+    // We need active employee count - fetch it
+    const { data: activeEmps } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('is_active', true);
+
+    const totalCapacity = Math.max(activeEmps?.length || 1, 1);
+
+    if (slotBookings.length >= totalCapacity) {
       toast.error(
         language === 'sk' 
-          ? 'Tento termín je už obsadený' 
-          : 'This time slot is already booked'
+          ? 'Tento termín je už plne obsadený' 
+          : 'This time slot is fully booked'
       );
       return;
     }

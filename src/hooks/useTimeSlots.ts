@@ -10,7 +10,11 @@ interface TimeSlotConfig {
   is_active: boolean;
 }
 
-function generateSlotsFromConfig(config: TimeSlotConfig, bookedSlots: string[]): TimeSlot[] {
+function generateSlotsFromConfig(
+  config: TimeSlotConfig,
+  bookingCounts: Record<string, number>,
+  totalCapacity: number
+): TimeSlot[] {
   const slots: TimeSlot[] = [];
   const [startHour, startMin] = config.start_time.split(':').map(Number);
   const [endHour, endMin] = config.end_time.split(':').map(Number);
@@ -20,12 +24,14 @@ function generateSlotsFromConfig(config: TimeSlotConfig, bookedSlots: string[]):
 
   while (currentHour < endHour || (currentHour === endHour && currentMin < endMin)) {
     const timeString = `${String(currentHour).padStart(2, '0')}:${String(currentMin).padStart(2, '0')}`;
+    const bookedCount = bookingCounts[timeString] || 0;
     slots.push({
       time: timeString,
-      available: !bookedSlots.includes(timeString),
+      available: bookedCount < totalCapacity,
+      bookedCount,
+      totalCapacity,
     });
 
-    // Increment by 30 minutes
     currentMin += 30;
     if (currentMin >= 60) {
       currentMin = 0;
@@ -53,47 +59,49 @@ export function useTimeSlots(selectedDate: Date | null) {
         .maybeSingle();
 
       if (blockedDate) {
-        return []; // Date is blocked, no slots available
+        return [];
       }
 
-      // Get time slot config for this day
-      const { data: configData, error: configError } = await supabase
-        .from('time_slots_config')
-        .select('*')
-        .eq('day_of_week', dayOfWeek)
-        .eq('is_active', true);
+      // Fetch config, bookings, and active employees count in parallel
+      const [configRes, bookingsRes, employeesRes] = await Promise.all([
+        supabase
+          .from('time_slots_config')
+          .select('*')
+          .eq('day_of_week', dayOfWeek)
+          .eq('is_active', true),
+        supabase
+          .from('bookings')
+          .select('time_slot')
+          .eq('date', dateString)
+          .neq('status', 'cancelled'),
+        supabase
+          .from('employees')
+          .select('id')
+          .eq('is_active', true),
+      ]);
 
-      if (configError) {
-        console.error('Error fetching time slots config:', configError);
-        throw configError;
+      if (configRes.error) throw configRes.error;
+      if (bookingsRes.error) throw bookingsRes.error;
+      if (employeesRes.error) throw employeesRes.error;
+
+      const configData = configRes.data;
+      if (!configData || configData.length === 0) return [];
+
+      const totalCapacity = Math.max(employeesRes.data?.length || 1, 1);
+
+      // Count bookings per time slot
+      const bookingCounts: Record<string, number> = {};
+      for (const b of bookingsRes.data || []) {
+        bookingCounts[b.time_slot] = (bookingCounts[b.time_slot] || 0) + 1;
       }
 
-      if (!configData || configData.length === 0) {
-        return []; // No configuration for this day
-      }
-
-      // Get already booked slots for this date
-      const { data: bookings, error: bookingsError } = await supabase
-        .from('bookings')
-        .select('time_slot')
-        .eq('date', dateString)
-        .neq('status', 'cancelled');
-
-      if (bookingsError) {
-        console.error('Error fetching bookings:', bookingsError);
-        throw bookingsError;
-      }
-
-      const bookedSlots = (bookings || []).map((b) => b.time_slot);
-
-      // Generate all available slots from config
+      // Generate all slots
       let allSlots: TimeSlot[] = [];
       for (const config of configData) {
-        const slots = generateSlotsFromConfig(config, bookedSlots);
+        const slots = generateSlotsFromConfig(config, bookingCounts, totalCapacity);
         allSlots = [...allSlots, ...slots];
       }
 
-      // Sort by time
       allSlots.sort((a, b) => a.time.localeCompare(b.time));
 
       // Remove duplicates

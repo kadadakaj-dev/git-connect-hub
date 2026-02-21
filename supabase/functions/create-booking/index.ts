@@ -143,19 +143,35 @@ serve(async (req) => {
       )
     }
 
-    // Check if time slot is already booked
-    const { data: existingBooking } = await supabase
+    // Count existing bookings for this slot
+    const { data: slotBookings, error: slotError } = await supabase
       .from('bookings')
       .select('id')
       .eq('date', body.date)
       .eq('time_slot', body.time_slot)
       .neq('status', 'cancelled')
-      .maybeSingle()
 
-    if (existingBooking) {
-      console.log('Time slot already booked:', body.date, body.time_slot)
+    if (slotError) {
+      console.error('Error checking slot capacity:', slotError)
       return new Response(
-        JSON.stringify({ error: 'This time slot is already booked' }),
+        JSON.stringify({ error: 'Failed to check slot availability' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Get active employee count for capacity check
+    const { data: activeEmps } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('is_active', true)
+
+    const totalCapacity = Math.max(activeEmps?.length || 1, 1)
+    const currentBookings = slotBookings?.length || 0
+
+    if (currentBookings >= totalCapacity) {
+      console.log('Time slot at full capacity:', body.date, body.time_slot, `${currentBookings}/${totalCapacity}`)
+      return new Response(
+        JSON.stringify({ error: 'This time slot is fully booked' }),
         { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
