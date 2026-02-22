@@ -16,7 +16,8 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
  const CancelBooking = lazy(() => import("./pages/CancelBooking"));
  const Legal = lazy(() => import("./pages/Legal"));
  const ClientAuth = lazy(() => import("./pages/ClientAuth"));
- const ClientPortal = lazy(() => import("./pages/ClientPortal"));
+const ClientPortal = lazy(() => import("./pages/ClientPortal"));
+const Preview = lazy(() => import("./pages/Preview"));
 
 const queryClient = new QueryClient();
 
@@ -37,7 +38,8 @@ const App = () => (
                    <Route path="/admin/login" element={<AdminLogin />} />
                    <Route path="/admin" element={<AdminDashboard />} />
                    <Route path="/cancel" element={<CancelBooking />} />
-                   <Route path="/legal" element={<Legal />} />
+                    <Route path="/legal" element={<Legal />} />
+                    <Route path="/preview" element={<Preview />} />
                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                    <Route path="*" element={<NotFound />} />
                  </Routes>
