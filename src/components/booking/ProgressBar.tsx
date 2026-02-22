@@ -23,14 +23,13 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
               
               return (
                 <div key={step.id} className="flex items-center">
-                  {/* Step Circle & Label */}
                   <div className="flex flex-col items-center min-w-[80px] md:min-w-[100px]">
                     <div
                       className={cn(
                         "w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-400 relative",
-                        isCompleted && "bg-primary text-primary-foreground shadow-md",
-                        isCurrent && "bg-navy text-navy-foreground shadow-lg ring-4 ring-navy/20",
-                        !isCompleted && !isCurrent && "bg-muted/80 text-muted-foreground border-2 border-border/50"
+                        isCompleted && "bg-primary text-primary-foreground shadow-md shadow-primary/30",
+                        isCurrent && "bg-primary text-primary-foreground shadow-lg ring-4 ring-primary/20",
+                        !isCompleted && !isCurrent && "bg-muted/50 text-muted-foreground border border-border/50"
                       )}
                     >
                       {isCompleted ? (
@@ -45,22 +44,10 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         >
-                          {index === 0 && (
-                            // Number 1 - elegant single stroke
-                            <path d="M9 7l3-2v14M9 19h6" />
-                          )}
-                          {index === 1 && (
-                            // Number 2 - curved elegant style
-                            <path d="M7 8a4 4 0 0 1 7.5-2c1 1.5.5 3-1 4.5L7 17h10" />
-                          )}
-                          {index === 2 && (
-                            // Number 3 - two curves
-                            <path d="M7 7h6l-3 5c2.5 0 4 1.5 4 3.5s-1.5 3.5-4 3.5c-2 0-3.5-1-4-2.5" />
-                          )}
-                          {index === 3 && (
-                            // Number 4 - angular design
-                            <path d="M14 5v14M7 13h10M7 13V5l7 8" />
-                          )}
+                          {index === 0 && <path d="M9 7l3-2v14M9 19h6" />}
+                          {index === 1 && <path d="M7 8a4 4 0 0 1 7.5-2c1 1.5.5 3-1 4.5L7 17h10" />}
+                          {index === 2 && <path d="M7 7h6l-3 5c2.5 0 4 1.5 4 3.5s-1.5 3.5-4 3.5c-2 0-3.5-1-4-2.5" />}
+                          {index === 3 && <path d="M14 5v14M7 13h10M7 13V5l7 8" />}
                         </svg>
                       )}
                     </div>
@@ -76,10 +63,9 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
                     </div>
                   </div>
                   
-                  {/* Connector Line */}
                   {index < steps.length - 1 && (
                     <div className="w-12 md:w-20 mx-2 md:mx-4">
-                      <div className="relative h-0.5 rounded-full bg-border/60 overflow-hidden">
+                      <div className="relative h-0.5 rounded-full bg-border/40 overflow-hidden">
                         <div
                           className={cn(
                             "absolute inset-y-0 left-0 bg-primary rounded-full transition-all duration-600 ease-out",
@@ -99,7 +85,6 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
       {/* Mobile Progress */}
       <div className="sm:hidden">
         <div className="glass-card rounded-xl p-4">
-          {/* Progress steps with SVG numbers */}
           <div className="flex items-center justify-center gap-3">
             {steps.map((step, index) => {
               const isCompleted = index < currentStep;
@@ -110,9 +95,9 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
                   <div
                     className={cn(
                       "w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300",
-                      isCompleted && "bg-primary text-primary-foreground shadow-sm",
-                      isCurrent && "bg-navy text-navy-foreground shadow-md ring-2 ring-navy/20",
-                      !isCompleted && !isCurrent && "bg-muted/70 text-muted-foreground border border-border/50"
+                      isCompleted && "bg-primary text-primary-foreground shadow-sm shadow-primary/30",
+                      isCurrent && "bg-primary text-primary-foreground shadow-md ring-2 ring-primary/20",
+                      !isCompleted && !isCurrent && "bg-muted/50 text-muted-foreground border border-border/50"
                     )}
                   >
                     {isCompleted ? (
@@ -135,10 +120,9 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
                     )}
                   </div>
                   
-                  {/* Connector Line */}
                   {index < steps.length - 1 && (
                     <div className="w-6 mx-1.5">
-                      <div className="relative h-0.5 rounded-full bg-border/50 overflow-hidden">
+                      <div className="relative h-0.5 rounded-full bg-border/40 overflow-hidden">
                         <div
                           className={cn(
                             "absolute inset-y-0 left-0 bg-primary rounded-full transition-all duration-500 ease-out",
@@ -153,7 +137,6 @@ const ProgressBar = ({ steps, currentStep }: ProgressBarProps) => {
             })}
           </div>
           
-          {/* Current step info */}
           <div className="text-center mt-3">
             <p className="text-sm font-semibold text-foreground">
               {steps[currentStep]?.title}

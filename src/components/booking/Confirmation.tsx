@@ -45,24 +45,21 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
 
   return (
     <div className="animate-scale-in text-center">
-      {/* Success Icon - Enhanced */}
+      {/* Success Icon */}
       <div className="mb-8 sm:mb-10">
         <div className="relative inline-flex items-center justify-center mb-6">
-          {/* Animated rings */}
-          <div className="absolute w-28 h-28 sm:w-32 sm:h-32 rounded-full border-2 border-success/20 animate-ping" style={{ animationDuration: '2s' }} />
-          <div className="absolute w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-success/30 animate-pulse" />
+          <div className="absolute w-28 h-28 sm:w-32 sm:h-32 rounded-full border-2 border-primary/20 animate-ping" style={{ animationDuration: '2s' }} />
+          <div className="absolute w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-primary/30 animate-pulse" />
           
-          {/* Main success icon */}
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center shadow-xl shadow-success/30 animate-scale-in">
-            <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-success-foreground" strokeWidth={2.5} />
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary flex items-center justify-center shadow-xl shadow-primary/30 animate-scale-in">
+            <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary-foreground" strokeWidth={2.5} />
           </div>
           
-          {/* Decorations */}
           <PartyPopper className="absolute -top-2 -right-2 w-6 h-6 sm:w-7 sm:h-7 text-amber-500 animate-bounce-subtle" />
           <Sparkles className="absolute -bottom-1 -left-3 w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
         </div>
         
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-foreground mb-3">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gradient mb-3">
           {t.bookingConfirmed}
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
@@ -70,41 +67,39 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
         </p>
       </div>
 
-      {/* Booking Details Card - Enhanced */}
+      {/* Booking Details Card */}
       <div className="max-w-lg mx-auto glass-premium rounded-2xl overflow-hidden shadow-elevated">
-        {/* Card Header */}
-        <div className="bg-gradient-to-r from-primary/10 via-accent/20 to-primary/10 px-5 sm:px-6 py-4 sm:py-5 border-b border-border/30">
+        <div className="bg-primary/10 px-5 sm:px-6 py-4 sm:py-5 border-b border-border/30">
           <div className="flex items-center justify-between">
             <div className="text-left">
               <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">{t.confirmationNumber}</p>
-              <p className="text-lg sm:text-xl font-bold text-foreground font-mono">
+              <p className="text-lg sm:text-xl font-bold text-foreground font-data">
                 #{Math.random().toString(36).substring(2, 8).toUpperCase()}
               </p>
             </div>
-            <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-success/15 text-success text-xs sm:text-sm font-semibold flex items-center gap-1.5">
+            <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/15 text-primary text-xs sm:text-sm font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5" />
               {t.confirmed}
             </div>
           </div>
         </div>
 
-        {/* Details Content */}
         <div className="p-5 sm:p-6 md:p-8 text-left space-y-4 sm:space-y-5">
           {/* Service */}
-          <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/8 to-transparent border-l-2 border-primary group hover:from-primary/12 transition-all duration-300">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+          <div className="flex items-start gap-4 p-4 rounded-xl bg-primary/5 border-l-2 border-primary group hover:bg-primary/10 transition-all duration-300">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
               <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-0.5">{t.service}</p>
               <p className="font-semibold text-primary text-base sm:text-lg truncate">{service?.name}</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">{service?.duration} {t.min} • <span className="font-bold text-foreground">{service?.price}€</span></p>
+              <p className="text-xs sm:text-sm text-muted-foreground">{service?.duration} {t.min} • <span className="font-bold text-foreground font-data">{service?.price}€</span></p>
             </div>
           </div>
 
           {/* Date & Time */}
           <div className="flex items-start gap-4 group">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-muted/60 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 group-hover:scale-105 transition-all duration-300">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-muted/50 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 group-hover:scale-105 transition-all duration-300">
               <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
             <div className="flex-1 min-w-0">
@@ -112,7 +107,7 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
               <p className="font-semibold text-foreground text-base sm:text-lg">
                 {date && format(date, 'EEEE, d. MMMM yyyy', { locale })}
               </p>
-              <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5">
+              <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5 font-data">
                 <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {time}
               </p>
@@ -121,7 +116,7 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
 
           {/* Location */}
           <div className="flex items-start gap-4 group">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-muted/60 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 group-hover:scale-105 transition-all duration-300">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-muted/50 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 group-hover:scale-105 transition-all duration-300">
               <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
             <div className="flex-1 min-w-0">
@@ -131,45 +126,45 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
             </div>
           </div>
 
-          {/* Client Info - Enhanced */}
+          {/* Client Info */}
           <div className="pt-5 border-t border-border/30 space-y-3 stagger-fade">
-            <div className="flex items-center gap-3 text-sm group hover:bg-muted/30 p-2 -mx-2 rounded-lg transition-all duration-300">
+            <div className="flex items-center gap-3 text-sm group hover:bg-muted/20 p-2 -mx-2 rounded-lg transition-all duration-300">
               <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
                 <User className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
               <span className="text-foreground font-medium">{clientName}</span>
             </div>
-            <div className="flex items-center gap-3 text-sm group hover:bg-muted/30 p-2 -mx-2 rounded-lg transition-all duration-300">
+            <div className="flex items-center gap-3 text-sm group hover:bg-muted/20 p-2 -mx-2 rounded-lg transition-all duration-300">
               <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
                 <Mail className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
               <span className="text-foreground">{clientEmail}</span>
             </div>
-            <div className="flex items-center gap-3 text-sm group hover:bg-muted/30 p-2 -mx-2 rounded-lg transition-all duration-300">
+            <div className="flex items-center gap-3 text-sm group hover:bg-muted/20 p-2 -mx-2 rounded-lg transition-all duration-300">
               <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
                 <Phone className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
-              <span className="text-foreground">{clientPhone}</span>
+              <span className="text-foreground font-data">{clientPhone}</span>
             </div>
           </div>
 
           {notes && (
             <div className="pt-5 border-t border-border/30">
               <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-2">{t.notes}</p>
-              <p className="text-xs sm:text-sm text-foreground bg-muted/30 rounded-xl p-3 border border-border/30">{notes}</p>
+              <p className="text-xs sm:text-sm text-foreground bg-muted/20 rounded-xl p-3 border border-border/30">{notes}</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Email Notice - Enhanced */}
-      <div className="max-w-lg mx-auto mt-6 p-4 rounded-xl bg-gradient-to-r from-primary/8 to-accent/10 border border-primary/15">
+      {/* Email Notice */}
+      <div className="max-w-lg mx-auto mt-6 p-4 rounded-xl bg-primary/5 border border-primary/10">
         <p className="text-xs sm:text-sm text-muted-foreground">
           {t.emailSentTo} <span className="font-semibold text-foreground">{clientEmail}</span>
         </p>
       </div>
 
-      {/* Action Buttons - Enhanced */}
+      {/* Action Buttons */}
       <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
         <Button
           variant="booking"

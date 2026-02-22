@@ -12,13 +12,11 @@ const Footer = () => {
       icon: Instagram,
       href: 'https://instagram.com/jaro_fyziofit',
       label: 'Instagram',
-      color: 'hover:text-pink-500',
     },
     {
       icon: Facebook,
       href: 'https://www.facebook.com/Jaro.Begala/',
       label: 'Facebook',
-      color: 'hover:text-blue-600',
     },
   ];
 
@@ -46,12 +44,11 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="w-full border-t border-border/30 bg-gradient-to-b from-background/80 to-background backdrop-blur-xl mt-auto relative z-20">
-      {/* Decorative top border gradient */}
+    <footer className="w-full border-t border-border/30 bg-background/80 backdrop-blur-xl mt-auto relative z-20">
+      {/* Decorative top border */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {/* Main Footer Content */}
         <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-5 lg:gap-6">
           {/* Contact Info */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
@@ -86,9 +83,8 @@ const Footer = () => {
             })}
           </div>
 
-          {/* Social Links & Language Switcher */}
+          {/* Social & Language */}
           <div className="flex items-center gap-3 sm:gap-4">
-            {/* Social Icons - Enhanced */}
             <div className="inline-flex items-center rounded-xl glass-card p-1.5 sm:p-2 gap-1">
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
@@ -101,10 +97,9 @@ const Footer = () => {
                     aria-label={social.label}
                     className={cn(
                       "p-2.5 sm:p-3 rounded-lg text-muted-foreground",
-                      "hover:bg-primary/10 transition-all duration-300",
+                      "hover:bg-primary/10 hover:text-primary transition-all duration-300",
                       "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                      "active:scale-90 group",
-                      social.color
+                      "active:scale-90 group"
                     )}
                   >
                     <Icon className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-300" />
@@ -113,12 +108,11 @@ const Footer = () => {
               })}
             </div>
 
-            {/* Language Switcher */}
             <LanguageSwitcher />
           </div>
         </div>
 
-        {/* Legal Links & Copyright */}
+        {/* Legal & Copyright */}
         <div className="mt-6 pt-6 border-t border-border/20 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-5 sm:gap-6">
             <Link
@@ -142,7 +136,7 @@ const Footer = () => {
             <span className="hidden sm:inline">•</span>
             <span className="hidden sm:inline-flex items-center gap-1">
               {language === 'sk' ? 'S' : 'Made with'}
-              <Heart className="w-3 h-3 text-destructive fill-destructive animate-pulse" />
+              <Heart className="w-3 h-3 text-primary fill-primary animate-pulse" />
               {language === 'sk' ? 'pre vaše zdravie' : 'for your health'}
             </span>
           </p>
