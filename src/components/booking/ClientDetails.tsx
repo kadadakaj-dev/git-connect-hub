@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { User, Mail, Phone, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
@@ -69,25 +69,23 @@ const ClientDetails = ({
           {!required && <span className="text-muted-foreground font-normal ml-1">({t.optional})</span>}
         </label>
         <div className="relative">
-          {/* Icon container with animated background */}
           <div className={cn(
             "absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300",
             isFocused && "bg-primary/10",
             hasError && "bg-destructive/10",
-            isValid === true && "bg-success/10"
+            isValid === true && "bg-primary/10"
           )}>
             <Icon className={cn(
               "w-4 h-4 sm:w-[18px] sm:h-[18px] transition-all duration-300",
               isFocused && "text-primary scale-110",
               hasError && "text-destructive",
-              isValid === true && "text-success",
+              isValid === true && "text-primary",
               !isFocused && !hasError && isValid !== true && "text-muted-foreground"
             )} />
           </div>
           
           {children}
           
-          {/* Validation indicator */}
           <div className={cn(
             "absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 transition-all duration-300",
             (isValid !== null || hasError) ? "opacity-100 scale-100" : "opacity-0 scale-75"
@@ -95,12 +93,11 @@ const ClientDetails = ({
             {hasError ? (
               <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-destructive animate-bounce-subtle" />
             ) : isValid === true ? (
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-success animate-scale-in" />
+              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary animate-scale-in" />
             ) : null}
           </div>
         </div>
         
-        {/* Error message with animation */}
         <div className={cn(
           "overflow-hidden transition-all duration-300",
           hasError ? "max-h-10 opacity-100 mt-2" : "max-h-0 opacity-0 mt-0"
@@ -117,12 +114,12 @@ const ClientDetails = ({
   const inputBaseClasses = (field: string) => {
     const hasError = !!errors[field];
     return cn(
-      "w-full pl-14 sm:pl-16 pr-12 sm:pr-14 py-3.5 sm:py-4 rounded-xl border-2 bg-background/60 text-foreground text-sm sm:text-base",
+      "w-full pl-14 sm:pl-16 pr-12 sm:pr-14 py-3.5 sm:py-4 rounded-xl border bg-background/60 text-foreground text-sm sm:text-base",
       "placeholder:text-muted-foreground/40 transition-all duration-300",
       "focus:outline-none focus:bg-background focus:border-primary focus:shadow-inner-glow",
       "hover:border-primary/40 hover:bg-background/80",
       hasError 
-        ? "border-destructive/40 bg-destructive/5 focus:border-destructive focus:shadow-[inset_0_2px_20px_hsl(0_84%_60%/0.1)]" 
+        ? "border-destructive/40 bg-destructive/5 focus:border-destructive" 
         : "border-border/60"
     );
   };
@@ -130,7 +127,7 @@ const ClientDetails = ({
   return (
     <div className="animate-fade-in-up">
       <div className="text-center mb-8 md:mb-10">
-        <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-3">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gradient mb-3">
           {t.yourDetails}
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
@@ -140,7 +137,6 @@ const ClientDetails = ({
 
       <div className="max-w-xl mx-auto">
         <div className="glass-premium rounded-2xl p-6 sm:p-8 space-y-5 sm:space-y-6">
-          {/* Name Field */}
           <InputWrapper field="clientName" icon={User} label={t.fullName}>
             <input
               id="clientName"
@@ -155,7 +151,6 @@ const ClientDetails = ({
             />
           </InputWrapper>
 
-          {/* Email Field */}
           <InputWrapper field="clientEmail" icon={Mail} label={t.emailAddress}>
             <input
               id="clientEmail"
@@ -170,7 +165,6 @@ const ClientDetails = ({
             />
           </InputWrapper>
 
-          {/* Phone Field */}
           <InputWrapper field="clientPhone" icon={Phone} label={t.phoneNumber}>
             <input
               id="clientPhone"
@@ -185,7 +179,6 @@ const ClientDetails = ({
             />
           </InputWrapper>
 
-          {/* Notes Field */}
           <div className="group">
             <label 
               htmlFor="notes" 
@@ -216,7 +209,7 @@ const ClientDetails = ({
                 placeholder={t.notesPlaceholder}
                 rows={3}
                 className={cn(
-                  "w-full pl-14 sm:pl-16 pr-4 py-3.5 sm:py-4 rounded-xl border-2 bg-background/60 text-foreground text-sm sm:text-base",
+                  "w-full pl-14 sm:pl-16 pr-4 py-3.5 sm:py-4 rounded-xl border bg-background/60 text-foreground text-sm sm:text-base",
                   "placeholder:text-muted-foreground/40 transition-all duration-300 resize-none",
                   "focus:outline-none focus:bg-background focus:border-primary focus:shadow-inner-glow",
                   "hover:border-primary/40 hover:bg-background/80 border-border/60"
@@ -225,9 +218,8 @@ const ClientDetails = ({
             </div>
           </div>
 
-          {/* Privacy Notice - Enhanced */}
           <div className="pt-5 border-t border-border/30">
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-primary/5 to-accent/10 border border-primary/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-primary/5 border border-primary/10">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

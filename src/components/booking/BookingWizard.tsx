@@ -157,43 +157,37 @@ const BookingWizard = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-hero flex flex-col relative overflow-hidden">
-      {/* Enhanced Decorative background elements */}
+    <div className="min-h-screen gradient-hero flex flex-col relative overflow-hidden bg-noise">
+      {/* Atmospheric liquid gradient background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {/* Primary blob */}
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 dark:bg-primary/15 rounded-full blur-3xl animate-float-slow" />
+        {/* Emerald blob - top right */}
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-primary/8 rounded-full blur-[100px] animate-float-slow" />
         
-        {/* Secondary blob */}
+        {/* Charcoal blob - left */}
         <div 
-          className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/6 dark:bg-primary/10 rounded-full blur-3xl animate-float" 
+          className="absolute top-1/3 -left-32 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px] animate-float" 
           style={{ animationDelay: '1s' }} 
         />
         
-        {/* Accent blob */}
+        {/* Emerald accent - bottom */}
         <div 
-          className="absolute bottom-32 right-1/4 w-64 h-64 bg-accent/50 dark:bg-accent/20 rounded-full blur-3xl animate-float-slow" 
+          className="absolute bottom-20 right-1/4 w-[350px] h-[350px] bg-primary/6 rounded-full blur-[100px] animate-float-slow" 
           style={{ animationDelay: '2s' }} 
-        />
-        
-        {/* Navy accent */}
-        <div 
-          className="absolute top-1/2 right-10 w-48 h-48 bg-navy/5 dark:bg-navy/10 rounded-full blur-3xl animate-float" 
-          style={{ animationDelay: '3s' }} 
         />
         
         {/* Morphing shape */}
         <div 
-          className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-br from-primary/8 to-accent/20 dark:from-primary/15 dark:to-accent/10 animate-morph blur-2xl"
+          className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-br from-primary/5 to-transparent animate-morph blur-[80px]"
         />
         
-        {/* Subtle grid pattern - using CSS custom property for theme support */}
+        {/* Subtle grid */}
         <div className="absolute inset-0 grid-pattern" />
       </div>
 
       <div className="container max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-6 md:py-10 flex-1 relative z-10">
         {/* Header */}
         <header className="text-center mb-6 sm:mb-8 md:mb-10 animate-fade-in-up relative">
-          {/* Top right controls - Theme Toggle & Client Portal */}
+          {/* Top right controls */}
           <div className="absolute top-0 right-0 flex items-center gap-2">
             <ThemeToggle />
             <Button 
@@ -213,21 +207,21 @@ const BookingWizard = () => {
             </Button>
           </div>
 
-          {/* Badge with glow effect */}
-          <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-primary/15 to-accent/30 text-primary text-xs sm:text-sm font-medium mb-4 sm:mb-5 hover:from-primary/20 hover:to-accent/40 transition-all duration-300 cursor-default shadow-sm animate-glow-pulse">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full glass-card text-primary text-xs sm:text-sm font-medium mb-4 sm:mb-5 transition-all duration-300 cursor-default animate-glow-pulse">
             <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-pulse-soft" />
-            <span className="tracking-wide">{t.clinicSubtitle}</span>
+            <span className="tracking-wider uppercase">{t.clinicSubtitle}</span>
           </div>
           
-          {/* Main title with enhanced typography */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-3 sm:mb-4 tracking-tight">
+          {/* Main title - gradient text */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gradient mb-3 sm:mb-4">
             <span className="relative inline-block">
               {t.clinicName}
-              <span className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-primary/40 via-primary to-primary/40 rounded-full transform scale-x-0 animate-[scale-x_0.8s_0.3s_ease-out_forwards] origin-left" />
+              <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full transform scale-x-0 animate-[scale-x_0.8s_0.3s_ease-out_forwards] origin-left" />
             </span>
           </h1>
           
-          {/* Subtitle with fade effect */}
+          {/* Subtitle */}
           <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-lg mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
             {language === 'sk' 
               ? 'Profesionálna starostlivosť o vaše zdravie v príjemnom prostredí'
@@ -238,7 +232,7 @@ const BookingWizard = () => {
           {/* Trust badges */}
           <div className="flex items-center justify-center gap-4 mt-4 sm:mt-5 animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-muted-foreground">
-              <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-success" />
+              <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
               <span>{language === 'sk' ? 'Certifikovaný terapeut' : 'Certified Therapist'}</span>
             </div>
             <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
@@ -256,7 +250,7 @@ const BookingWizard = () => {
           </div>
         )}
 
-        {/* Step Content with transition */}
+        {/* Step Content */}
         <main className={cn(
           "mt-4 sm:mt-6 transition-all duration-300",
           isTransitioning && "opacity-0 transform translate-y-2"
@@ -296,7 +290,7 @@ const BookingWizard = () => {
           )}
         </main>
 
-        {/* Navigation Buttons - Enhanced */}
+        {/* Navigation Buttons */}
         {currentStep < 3 && (
           <nav className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-border/30">
             <Button
@@ -325,12 +319,12 @@ const BookingWizard = () => {
                 canProceed() && !createBooking.isPending && "animate-pulse-soft hover:animate-none"
               )}
             >
-              {/* Button glow effect */}
+              {/* Shimmer effect */}
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
               
               {createBooking.isPending ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-navy-foreground/30 border-t-navy-foreground rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                   <span>{t.booking}</span>
                 </>
               ) : currentStep === 2 ? (
