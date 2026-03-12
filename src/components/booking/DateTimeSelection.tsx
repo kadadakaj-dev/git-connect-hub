@@ -13,6 +13,7 @@ interface DateTimeSelectionProps {
   selectedTime: string | null;
   onDateSelect: (date: Date) => void;
   onTimeSelect: (time: string) => void;
+  serviceDuration?: number;
 }
 
 const DateTimeSelection = ({
