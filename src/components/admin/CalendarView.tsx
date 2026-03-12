@@ -20,6 +20,7 @@ const CalendarView = () => {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [blockedDates, setBlockedDates] = useState<{ date: string; reason: string | null }[]>([]);
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
