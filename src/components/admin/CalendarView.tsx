@@ -371,6 +371,7 @@ const CalendarView = () => {
             currentDate={currentDate}
             events={events}
             selectedTherapist={selectedTherapist}
+            blockedDates={blockedDates}
             onCreateEvent={(date, time) => openCreateModal(date, time)}
             onEditEvent={openEditModal}
             onDragStart={handleDragStart}
