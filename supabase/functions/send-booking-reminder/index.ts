@@ -13,6 +13,7 @@ interface BookingWithService {
   time_slot: string;
   client_name: string;
   client_email: string;
+  cancellation_token: string;
   service: {
     name_sk: string;
     name_en: string;
@@ -81,13 +82,11 @@ const handler = async (req: Request): Promise<Response> => {
         time_slot,
         client_name,
         client_email,
+        cancellation_token,
         service:services(name_sk, name_en)
       `)
       .eq("date", tomorrowStr)
-      .in("status", ["pending", "confirmed"])
-      .not("id", "in", `(
-        SELECT booking_id FROM booking_reminders WHERE reminder_sent_at IS NOT NULL
-      )`);
+      .in("status", ["pending", "confirmed"]);
 
     if (bookingsError) {
       throw new Error(`Error fetching bookings: ${bookingsError.message}`);
@@ -109,21 +108,19 @@ const handler = async (req: Request): Promise<Response> => {
           continue;
         }
 
-        // Send reminder email via existing email function
+        // Send reminder email with correct payload matching send-booking-email interface
         const { error: emailError } = await supabase.functions.invoke(
           "send-booking-email",
           {
             body: {
               to: booking.client_email,
-              subject: `Pripomienka: Váš termín zajtra - ${booking.service?.name_sk || "Rezervácia"}`,
-              booking_id: booking.id,
+              clientName: booking.client_name,
+              serviceName: booking.service?.name_sk || "Služba",
+              date: booking.date,
+              time: booking.time_slot,
+              cancellationToken: booking.cancellation_token,
+              language: "sk" as const,
               template: "reminder",
-              booking_data: {
-                client_name: booking.client_name,
-                service_name: booking.service?.name_sk || "Služba",
-                date: booking.date,
-                time_slot: booking.time_slot,
-              },
             },
           }
         );

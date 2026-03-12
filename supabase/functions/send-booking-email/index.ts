@@ -14,13 +14,16 @@ interface EmailRequest {
   time: string
   cancellationToken: string
   language: 'sk' | 'en'
+  template?: 'confirmation' | 'reminder'
 }
 
 const translations = {
   sk: {
     subject: 'Potvrdenie rezervácie - FYZIO&FIT',
+    reminderSubject: 'Pripomienka: Váš termín zajtra - FYZIO&FIT',
     greeting: 'Dobrý deň',
     confirmationTitle: 'Vaša rezervácia bola úspešne vytvorená',
+    reminderTitle: 'Pripomíname vám zajtrajší termín',
     service: 'Služba',
     dateTime: 'Dátum a čas',
     location: 'Miesto',
@@ -33,8 +36,10 @@ const translations = {
   },
   en: {
     subject: 'Booking Confirmation - FYZIO&FIT',
+    reminderSubject: 'Reminder: Your appointment tomorrow - FYZIO&FIT',
     greeting: 'Hello',
     confirmationTitle: 'Your booking has been successfully created',
+    reminderTitle: 'Reminder about your appointment tomorrow',
     service: 'Service',
     dateTime: 'Date & Time',
     location: 'Location',
@@ -62,6 +67,8 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
   const t = translations[data.language]
   const formattedDate = formatDate(data.date, data.language)
   const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`
+  const isReminder = data.template === 'reminder'
+  const title = isReminder ? t.reminderTitle : t.confirmationTitle
 
   return `
 <!DOCTYPE html>
@@ -69,16 +76,16 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${t.subject}</title>
+  <title>${isReminder ? (t.reminderSubject) : t.subject}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px;">
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f5fa;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f5fa; padding: 20px;">
     <tr>
       <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
           <!-- Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); padding: 30px; text-align: center;">
+            <td style="background: linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%); padding: 30px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px;">${t.clinicName}</h1>
             </td>
           </tr>
@@ -86,31 +93,31 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
           <!-- Content -->
           <tr>
             <td style="padding: 40px 30px;">
-              <h2 style="color: #1f2937; margin: 0 0 10px 0; font-size: 20px;">${t.greeting}, ${data.clientName}!</h2>
-              <p style="color: #4b5563; margin: 0 0 30px 0; font-size: 16px;">${t.confirmationTitle}</p>
+              <h2 style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px;">${t.greeting}, ${data.clientName}!</h2>
+              <p style="color: #4b5e78; margin: 0 0 30px 0; font-size: 16px;">${title}</p>
               
               <!-- Booking Details -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f8fc; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
                 <tr>
                   <td style="padding: 20px;">
                     <table width="100%" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
-                          <span style="color: #6b7280; font-size: 14px;">${t.service}</span><br>
-                          <span style="color: #1f2937; font-size: 16px; font-weight: 500;">${data.serviceName}</span>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #dde5ef;">
+                          <span style="color: #6b7c94; font-size: 14px;">${t.service}</span><br>
+                          <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${data.serviceName}</span>
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
-                          <span style="color: #6b7280; font-size: 14px;">${t.dateTime}</span><br>
-                          <span style="color: #1f2937; font-size: 16px; font-weight: 500;">${formattedDate}</span><br>
-                          <span style="color: #0d9488; font-size: 16px; font-weight: 600;">${data.time}</span>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #dde5ef;">
+                          <span style="color: #6b7c94; font-size: 14px;">${t.dateTime}</span><br>
+                          <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${formattedDate}</span><br>
+                          <span style="color: #4a90d9; font-size: 16px; font-weight: 600;">${data.time}</span>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding: 10px 0;">
-                          <span style="color: #6b7280; font-size: 14px;">${t.location}</span><br>
-                          <span style="color: #1f2937; font-size: 16px; font-weight: 500;">${t.address}</span>
+                          <span style="color: #6b7c94; font-size: 14px;">${t.location}</span><br>
+                          <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${t.address}</span>
                         </td>
                       </tr>
                     </table>
@@ -119,16 +126,16 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
               </table>
               
               <!-- Cancel Section -->
-              <p style="color: #6b7280; font-size: 14px; margin: 0 0 15px 0;">${t.cancelText}</p>
+              <p style="color: #6b7c94; font-size: 14px; margin: 0 0 15px 0;">${t.cancelText}</p>
               <a href="${cancelUrl}" style="display: inline-block; background-color: #ef4444; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">${t.cancelButton}</a>
             </td>
           </tr>
           
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f9fafb; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="color: #0d9488; margin: 0 0 10px 0; font-size: 16px; font-weight: 500;">${t.footer}</p>
-              <p style="color: #6b7280; margin: 0; font-size: 14px;">${t.contact}</p>
+            <td style="background-color: #f5f8fc; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
+              <p style="color: #4a90d9; margin: 0 0 10px 0; font-size: 16px; font-weight: 500;">${t.footer}</p>
+              <p style="color: #6b7c94; margin: 0; font-size: 14px;">${t.contact}</p>
             </td>
           </tr>
         </table>
@@ -147,14 +154,15 @@ serve(async (req) => {
 
   try {
     const data: EmailRequest = await req.json()
-    console.log('Sending booking confirmation email to:', data.to)
+    console.log('Sending booking email to:', data.to, 'template:', data.template || 'confirmation')
 
     const smtpPassword = Deno.env.get('SMTP_PASSWORD')
     if (!smtpPassword) {
       throw new Error('SMTP_PASSWORD not configured')
     }
 
-    // Use published URL for cancel links
+    // Use SUPABASE_URL to derive base URL, fallback to published URL
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
     const baseUrl = 'https://booking-black.lovable.app'
 
     const client = new SMTPClient({
@@ -170,12 +178,14 @@ serve(async (req) => {
     })
 
     const t = translations[data.language]
+    const isReminder = data.template === 'reminder'
+    const subject = isReminder ? t.reminderSubject : t.subject
     const html = generateEmailHtml(data, baseUrl)
 
     await client.send({
       from: 'FYZIO&FIT <info@chiropraxiakosice.eu>',
       to: data.to,
-      subject: t.subject,
+      subject: subject,
       html: html,
     })
 

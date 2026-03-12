@@ -30,7 +30,7 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <HelmetProvider>
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <LanguageProvider>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
