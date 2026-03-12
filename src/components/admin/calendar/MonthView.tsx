@@ -27,6 +27,7 @@ const MonthView = ({
   currentDate,
   events,
   selectedTherapist,
+  blockedDates,
   onCreateEvent,
   onEditEvent,
   onDragStart,
