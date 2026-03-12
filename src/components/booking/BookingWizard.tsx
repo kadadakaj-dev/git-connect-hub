@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Phone, Mail, Check, ChevronDown, FileText, AlertCircle, CheckCircle2, Shield } from 'lucide-react';
+import { User, Phone, Mail, Check, FileText, AlertCircle, CheckCircle2, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BookingData, Service } from '@/types/booking';
 import ServiceSelection from './ServiceSelection';
@@ -129,7 +129,7 @@ const BookingWizard = () => {
   const inputClasses = (field: string) => {
     const hasError = !!errors[field];
     return cn(
-      "w-full pl-9 pr-9 py-2 rounded-md border bg-card text-foreground text-sm",
+      "w-full pl-8 pr-8 py-2 rounded-md border bg-card text-foreground text-sm",
       "placeholder:text-muted-foreground/40 transition-all duration-200",
       "focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
       hasError
@@ -141,9 +141,8 @@ const BookingWizard = () => {
   const renderField = (
     field: string,
     icon: React.ElementType,
-    label: string,
-    type: string,
     placeholder: string,
+    type: string,
     value: string,
     autoComplete?: string
   ) => {
@@ -154,12 +153,6 @@ const BookingWizard = () => {
 
     return (
       <div>
-        <label htmlFor={field} className={cn(
-          "block text-[11px] font-medium mb-1 transition-colors duration-200",
-          isFocused ? "text-primary" : "text-foreground"
-        )}>
-          {label} <span className="text-primary">{t.required}</span>
-        </label>
         <div className="relative">
           <Icon className={cn(
             "absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 transition-colors duration-200",
@@ -188,7 +181,7 @@ const BookingWizard = () => {
           </div>
         </div>
         {hasError && (
-          <p className="text-[11px] text-destructive mt-1 flex items-center gap-1">
+          <p className="text-[11px] text-destructive mt-0.5 flex items-center gap-1">
             <span className="w-1 h-1 rounded-full bg-destructive" />
             {errors[field]}
           </p>
@@ -197,25 +190,38 @@ const BookingWizard = () => {
     );
   };
 
+  // Shared header
+  const renderHeader = () => (
+    <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border/60">
+      <div className="container max-w-2xl mx-auto px-4 h-11 flex items-center justify-between">
+        <span className="text-sm font-bold text-foreground tracking-tight">FYZIO&FIT</span>
+        <div className="flex items-center gap-3">
+          <a href="tel:+421905307198" className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+            <Phone className="w-3 h-3" />
+            <span>+421 905 307 198</span>
+          </a>
+          <a href="mailto:booking@fyzioafit.sk" className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+            <Mail className="w-3 h-3" />
+            <span>booking@fyzioafit.sk</span>
+          </a>
+          <Button variant="ghost" size="sm" asChild className="gap-1 text-muted-foreground hover:text-foreground h-7 px-2">
+            <Link to="/auth">
+              <User className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline text-[11px] font-medium">
+                {language === 'sk' ? 'Klientský portál' : 'Client Portal'}
+              </span>
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </header>
+  );
+
   if (isConfirmed) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border/60">
-          <div className="container max-w-3xl mx-auto px-4 h-12 flex items-center justify-between">
-            <span className="text-base font-bold text-foreground tracking-tight">FYZIO&FIT</span>
-            <div className="flex items-center gap-3">
-              <a href="tel:+421905307198" className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-                <Phone className="w-3 h-3" />
-                <span>+421 905 307 198</span>
-              </a>
-              <a href="mailto:booking@fyzioafit.sk" className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-                <Mail className="w-3 h-3" />
-                <span>booking@fyzioafit.sk</span>
-              </a>
-            </div>
-          </div>
-        </header>
-        <div className="container max-w-3xl mx-auto px-4 py-6 flex-1">
+        {renderHeader()}
+        <div className="container max-w-2xl mx-auto px-4 py-6 flex-1">
           <Confirmation bookingData={bookingData} onNewBooking={handleNewBooking} />
         </div>
         <Footer />
@@ -225,48 +231,13 @@ const BookingWizard = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Compact Header */}
-      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border/60">
-        <div className="container max-w-3xl mx-auto px-4 h-12 flex items-center justify-between">
-          <span className="text-base font-bold text-foreground tracking-tight">FYZIO&FIT</span>
-          <div className="flex items-center gap-3">
-            <a href="tel:+421905307198" className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-              <Phone className="w-3 h-3" />
-              <span>+421 905 307 198</span>
-            </a>
-            <a href="mailto:booking@fyzioafit.sk" className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-              <Mail className="w-3 h-3" />
-              <span>booking@fyzioafit.sk</span>
-            </a>
-            <Button variant="ghost" size="sm" asChild className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2">
-              <Link to="/auth">
-                <User className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline text-[11px] font-medium">
-                  {language === 'sk' ? 'Klientský portál' : 'Client Portal'}
-                </span>
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      {renderHeader()}
 
-      <div className="container max-w-3xl mx-auto px-4 py-5 flex-1">
-        {/* Compact Hero */}
-        <div className="text-center mb-5">
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
-            {language === 'sk' ? 'Rezervuj si termín' : 'Book your appointment'}
-          </h1>
-        </div>
-
-        {/* Step 1: Service Selection */}
-        <section className="mb-4">
-          <SectionHeader
-            number={1}
-            title={t.steps.service.title}
-            completed={hasService}
-            summary={hasService ? `${bookingData.service!.name} • ${bookingData.service!.price}€` : undefined}
-          />
-          <div className="mt-3">
+      <div className="container max-w-2xl mx-auto px-4 py-4 flex-1">
+        {/* Step 1: Service */}
+        <section className="mb-5">
+          <SectionHeader number={1} title={language === 'sk' ? 'Vyberte službu' : 'Select service'} completed={hasService} />
+          <div className="mt-2">
             <ServiceSelection
               selectedService={bookingData.service}
               onSelect={handleServiceSelect}
@@ -274,15 +245,13 @@ const BookingWizard = () => {
           </div>
         </section>
 
-        {/* Step 2: Date & Time */}
-        <section ref={dateTimeRef} className={cn("mb-4 transition-opacity duration-300", !hasService && "opacity-40 pointer-events-none")}>
-          <SectionHeader
-            number={2}
-            title={t.steps.dateTime.title}
-            completed={hasDateTime}
-            summary={hasDateTime ? `${format(bookingData.date!, 'd. MMM', { locale })} • ${bookingData.time}` : undefined}
-          />
-          <div className="mt-3">
+        {/* Step 2 & 3: Date & Time side by side */}
+        <section ref={dateTimeRef} className={cn("mb-5 transition-opacity duration-300", !hasService && "opacity-30 pointer-events-none")}>
+          <div className="flex items-center gap-6 mb-2">
+            <SectionHeader number={2} title={language === 'sk' ? 'Vyberte dátum' : 'Select date'} completed={!!bookingData.date} />
+            <SectionHeader number={3} title={language === 'sk' ? 'Vyberte čas' : 'Select time'} completed={!!bookingData.time} />
+          </div>
+          <div className="mt-2">
             <DateTimeSelection
               selectedDate={bookingData.date}
               selectedTime={bookingData.time}
@@ -292,81 +261,66 @@ const BookingWizard = () => {
           </div>
         </section>
 
-        {/* Step 3: Client Details */}
-        <section ref={detailsRef} className={cn("mb-6 transition-opacity duration-300", !hasDateTime && "opacity-40 pointer-events-none")}>
-          <SectionHeader
-            number={3}
-            title={t.steps.details.title}
-            completed={false}
-          />
-          <div className="mt-3">
-            <div className="bg-card border border-border/60 rounded-lg p-4 shadow-soft space-y-3">
-              {renderField('clientName', User, t.fullName, 'text', t.fullNamePlaceholder, bookingData.clientName, 'name')}
-              {renderField('clientEmail', Mail, t.emailAddress, 'email', t.emailPlaceholder, bookingData.clientEmail, 'email')}
-              {renderField('clientPhone', Phone, t.phoneNumber, 'tel', t.phonePlaceholder, bookingData.clientPhone, 'tel')}
+        {/* Step 4: Client Details */}
+        <section ref={detailsRef} className={cn("mb-4 transition-opacity duration-300", !hasDateTime && "opacity-30 pointer-events-none")}>
+          <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
+          <div className="mt-2 space-y-2">
+            {renderField('clientName', User, t.fullNamePlaceholder, 'text', bookingData.clientName, 'name')}
+            {renderField('clientEmail', Mail, t.emailPlaceholder, 'email', bookingData.clientEmail, 'email')}
+            {renderField('clientPhone', Phone, t.phonePlaceholder, 'tel', bookingData.clientPhone, 'tel')}
 
-              {/* Notes */}
-              <div>
-                <label htmlFor="notes" className={cn(
-                  "block text-[11px] font-medium mb-1 transition-colors duration-200",
-                  focusedField === 'notes' ? "text-primary" : "text-foreground"
-                )}>
-                  {t.additionalNotes}
-                  <span className="text-muted-foreground ml-1">({t.optional})</span>
-                </label>
-                <div className="relative">
-                  <FileText className={cn(
-                    "absolute left-2.5 top-2.5 w-3.5 h-3.5 transition-colors duration-200",
-                    focusedField === 'notes' ? "text-primary" : "text-muted-foreground"
-                  )} />
-                  <textarea
-                    id="notes"
-                    value={bookingData.notes}
-                    onChange={(e) => updateBookingData('notes', e.target.value)}
-                    onFocus={() => setFocusedField('notes')}
-                    onBlur={() => setFocusedField(null)}
-                    placeholder={t.notesPlaceholder}
-                    rows={2}
-                    className={cn(
-                      "w-full pl-9 pr-3 py-2 rounded-md border bg-card text-foreground text-sm resize-none",
-                      "placeholder:text-muted-foreground/40 transition-all duration-200",
-                      "focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
-                      "border-border/60 hover:border-muted-foreground/30"
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* GDPR */}
-              <div className="flex items-center gap-2 pt-1">
-                <Shield className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                <p className="text-[10px] text-muted-foreground">
-                  {language === 'sk' ? 'GDPR • Vaše údaje sú chránené' : 'GDPR • Your data is protected'}
-                </p>
-              </div>
+            {/* Notes */}
+            <div className="relative">
+              <FileText className={cn(
+                "absolute left-2.5 top-2.5 w-3.5 h-3.5 transition-colors duration-200",
+                focusedField === 'notes' ? "text-primary" : "text-muted-foreground"
+              )} />
+              <textarea
+                id="notes"
+                value={bookingData.notes}
+                onChange={(e) => updateBookingData('notes', e.target.value)}
+                onFocus={() => setFocusedField('notes')}
+                onBlur={() => setFocusedField(null)}
+                placeholder={t.notesPlaceholder}
+                rows={2}
+                className={cn(
+                  "w-full pl-8 pr-3 py-2 rounded-md border bg-card text-foreground text-sm resize-none",
+                  "placeholder:text-muted-foreground/40 transition-all duration-200",
+                  "focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                  "border-border/60 hover:border-muted-foreground/30"
+                )}
+              />
             </div>
 
-            {/* Submit Button */}
-            <div className="mt-4">
-              <Button
-                variant="default"
-                size="lg"
-                onClick={handleSubmit}
-                disabled={!hasService || !hasDateTime || createBooking.isPending}
-                className="w-full gap-2"
-              >
-                {createBooking.isPending ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    <span>{t.booking}</span>
-                  </>
-                ) : (
-                  <span>{t.confirmBooking}</span>
-                )}
-              </Button>
+            {/* GDPR */}
+            <div className="flex items-center gap-2">
+              <Shield className="w-3 h-3 text-primary flex-shrink-0" />
+              <p className="text-[10px] text-muted-foreground">
+                {language === 'sk' ? 'GDPR • Vaše údaje sú chránené' : 'GDPR • Your data is protected'}
+              </p>
             </div>
           </div>
         </section>
+
+        {/* Submit */}
+        <div className="pb-6">
+          <Button
+            variant="default"
+            size="lg"
+            onClick={handleSubmit}
+            disabled={!hasService || !hasDateTime || createBooking.isPending}
+            className="w-full gap-2 rounded-full text-sm font-semibold h-11"
+          >
+            {createBooking.isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                <span>{t.booking}</span>
+              </>
+            ) : (
+              <span>{language === 'sk' ? 'Rezervovať' : 'Book now'}</span>
+            )}
+          </Button>
+        </div>
       </div>
 
       <Footer />
@@ -374,31 +328,25 @@ const BookingWizard = () => {
   );
 };
 
-// Section header component
 const SectionHeader = ({
   number,
   title,
   completed,
-  summary,
 }: {
   number: number;
   title: string;
   completed: boolean;
-  summary?: string;
 }) => (
-  <div className="flex items-center gap-2.5">
+  <div className="flex items-center gap-2">
     <div className={cn(
-      "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold flex-shrink-0",
+      "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0",
       completed
         ? "bg-primary text-primary-foreground"
-        : "bg-muted text-muted-foreground border border-border/60"
+        : "bg-primary/15 text-primary border border-primary/30"
     )}>
       {completed ? <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> : number}
     </div>
     <span className="text-sm font-semibold text-foreground">{title}</span>
-    {summary && (
-      <span className="text-xs text-muted-foreground ml-auto truncate max-w-[180px]">{summary}</span>
-    )}
   </div>
 );
 
