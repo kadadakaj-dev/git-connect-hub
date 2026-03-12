@@ -73,6 +73,11 @@ const MonthView = ({
                 {date.getDate()}
               </span>
               <div className="flex-1 flex flex-col gap-1 overflow-y-auto">
+                {isBlocked && (
+                  <div className="text-[10px] md:text-xs px-1.5 py-0.5 rounded bg-destructive/15 border border-destructive/30 text-destructive font-medium truncate">
+                    🚫 {blockedInfo.reason || (language === 'sk' ? 'Zablokované' : 'Blocked')}
+                  </div>
+                )}
                 {dayEvents.map(ev => (
                   <div
                     key={ev.id}

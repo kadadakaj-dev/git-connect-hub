@@ -95,16 +95,24 @@ const TimeGridView = ({
           {activeDays.map((date, dayIndex) => {
             const dateStr = formatDateForInput(date);
             const dayEvents = getDayEventsWithPositions(events, dateStr, selectedTherapist);
+            const blockedInfo = blockedDates.find(b => b.date === dateStr);
+            const isBlocked = !!blockedInfo;
 
             return (
               <div
                 key={dayIndex}
                 className={`flex-1 border-r border-border/50 relative group ${
-                  isToday(date) ? 'bg-accent/30' : 'bg-card'
+                  isBlocked ? 'bg-destructive/10' : isToday(date) ? 'bg-accent/30' : 'bg-card'
                 }`}
                 onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
                 onDrop={(e) => onDropOnGrid(e, date)}
               >
+                {/* Blocked day overlay */}
+                {isBlocked && (
+                  <div className="absolute inset-x-0 top-0 z-20 bg-destructive/15 border-b border-destructive/30 px-2 py-1 text-[10px] md:text-xs text-destructive font-medium truncate">
+                    🚫 {blockedInfo.reason || (language === 'sk' ? 'Zablokované' : 'Blocked')}
+                  </div>
+                )}
                 {/* Slot lines */}
                 {TIME_SLOTS.map((time, slotIndex) => (
                   <div
