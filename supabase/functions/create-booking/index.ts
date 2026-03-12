@@ -260,33 +260,30 @@ serve(async (req) => {
 
     console.log('Booking created successfully:', booking.id)
 
-    // Send confirmation email (non-blocking)
-    try {
-      const emailResponse = await fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseServiceKey}`,
-        },
-        body: JSON.stringify({
-          to: bookingData.client_email,
-          clientName: bookingData.client_name,
-          serviceName: service.name_sk, // Default to Slovak
-          date: bookingData.date,
-          time: bookingData.time_slot,
-          cancellationToken: booking.cancellation_token,
-          language: 'sk',
-        }),
-      })
-      
-      if (!emailResponse.ok) {
-        console.error('Failed to send confirmation email:', await emailResponse.text())
-      } else {
-        console.log('Confirmation email sent successfully')
-      }
-    } catch (emailError) {
-      console.error('Error sending confirmation email:', emailError)
-      // Don't fail the booking if email fails
+    // Send confirmation email (fire-and-forget, non-blocking)
+    const emailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+      },
+      body: JSON.stringify({
+        to: bookingData.client_email,
+        clientName: bookingData.client_name,
+        serviceName: service.name_sk,
+        date: bookingData.date,
+        time: bookingData.time_slot,
+        cancellationToken: booking.cancellation_token,
+        language: 'sk',
+      }),
+    }).then(res => {
+      if (!res.ok) console.error('Failed to send confirmation email')
+      else console.log('Confirmation email sent successfully')
+    }).catch(err => console.error('Error sending confirmation email:', err))
+
+    // Use waitUntil if available (Deno Deploy), otherwise just let it run
+    if (typeof (globalThis as any).EdgeRuntime?.waitUntil === 'function') {
+      (globalThis as any).EdgeRuntime.waitUntil(emailPromise)
     }
 
     return new Response(
