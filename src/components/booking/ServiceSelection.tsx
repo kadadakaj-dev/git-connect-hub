@@ -63,7 +63,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
               key={service.id}
               onClick={() => onSelect(service)}
               className={cn(
-                "p-5 rounded-lg text-left transition-all duration-200",
+                "p-5 rounded-lg text-left transition-all duration-200 relative",
                 "bg-card border shadow-soft",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 "hover:shadow-elevated hover:-translate-y-px",
