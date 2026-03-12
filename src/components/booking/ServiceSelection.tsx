@@ -3,12 +3,15 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useServices } from '@/hooks/useServices';
 import ServiceSkeleton from './ServiceSkeleton';
-import { Clock, Check } from 'lucide-react';
+import { Clock, Check, Phone } from 'lucide-react';
 
 interface ServiceSelectionProps {
   selectedService: Service | null;
   onSelect: (service: Service) => void;
 }
+
+const EXPRESS_SERVICE_ID = '6770d8ae-197f-41bf-b58f-514d6ce34d6c';
+const EXPRESS_PHONE = '+421 905 307 198';
 
 const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) => {
   const { t, language } = useLanguage();
@@ -57,6 +60,48 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
         {services.map((service) => {
           const isSelected = selectedService?.id === service.id;
+          const isExpress = service.id === EXPRESS_SERVICE_ID;
+
+          if (isExpress) {
+            return (
+              <div
+                key={service.id}
+                className={cn(
+                  "p-5 rounded-lg text-left relative",
+                  "bg-card border border-border/60 shadow-soft opacity-80"
+                )}
+              >
+                <h3 className="text-sm font-semibold text-foreground mb-1.5 leading-tight">
+                  {service.name}
+                </h3>
+                <p className="text-xs text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                  {service.description}
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span className="text-xs">{service.duration} {t.min}</span>
+                  </span>
+                  <span className="text-sm font-bold font-data px-3 py-1 rounded-md bg-muted text-foreground">
+                    {service.price}€
+                  </span>
+                </div>
+
+                <div className="mt-3 pt-3 border-t border-border/40">
+                  <a
+                    href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
+                    className="flex items-center gap-2 text-xs font-medium text-primary hover:underline"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>
+                      {language === 'sk' ? 'Iba telefonicky:' : 'Phone only:'} {EXPRESS_PHONE}
+                    </span>
+                  </a>
+                </div>
+              </div>
+            );
+          }
 
           return (
             <button
@@ -72,7 +117,6 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                   : "border-border/60"
               )}
             >
-              {/* Title */}
               <h3 className="text-sm font-semibold text-foreground mb-1.5 leading-tight">
                 {service.name}
               </h3>
@@ -80,7 +124,6 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                 {service.description}
               </p>
 
-              {/* Duration & Price */}
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-muted-foreground">
                   <Clock className="w-3.5 h-3.5" />
@@ -96,7 +139,6 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                 </span>
               </div>
 
-              {/* Selected check */}
               {isSelected && (
                 <div className="absolute top-4 right-4">
                   <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
