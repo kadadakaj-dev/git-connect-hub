@@ -27,13 +27,10 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
 
   if (error || !services || services.length === 0) {
     return (
-      <div className="animate-fade-in-up">
-        <div className="text-center mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">{t.selectService}</h2>
-        </div>
-        <div className="text-center py-16">
-          <div className="bg-card border border-border/60 rounded-lg p-8 max-w-md mx-auto shadow-soft">
-            <p className="text-muted-foreground">
+      <div>
+        <div className="text-center py-8">
+          <div className="bg-card border border-border/60 rounded-lg p-6 max-w-md mx-auto shadow-soft">
+            <p className="text-muted-foreground text-sm">
               {language === 'sk' ? 'Služby nie sú momentálne dostupné' : 'Services are not available at the moment'}
             </p>
           </div>
