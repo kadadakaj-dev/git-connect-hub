@@ -19,11 +19,18 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 const Preview = lazy(() => import("./pages/Preview"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30_000,
+    },
+  },
+});
 
 const App = () => (
   <HelmetProvider>
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <LanguageProvider>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>

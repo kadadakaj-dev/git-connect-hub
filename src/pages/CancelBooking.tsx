@@ -87,7 +87,7 @@ const CancelBooking = () => {
     
     // Verify the token exists and booking is cancellable
     verifyBooking();
-  }, [token]);
+  }, [token, text.invalidToken]);
 
   const verifyBooking = async () => {
     try {

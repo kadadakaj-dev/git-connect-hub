@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { encode as base64Encode } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,37 +21,36 @@ serve(async (req) => {
 
     const prompt = `High-end landing page UI design screenshot for a premium physiotherapy & chiropractic clinic called "FYZIO&FIT". 
 
-Design style: "Atmospheric Technical" aesthetic, dark mode.
+Design style: Clean "Apple Pro" aesthetic, light mode with baby blue accents.
 
 LAYOUT & STRUCTURE:
 - Full page view showing a booking wizard interface
-- Top: minimal header with "FYZIO&FIT" logo text in white, thin navigation links
-- Main content: bento-grid layout with glassmorphic cards
+- Top: minimal header with "FYZIO&FIT" logo text in dark navy, thin navigation links
+- Main content: clean card-based layout with subtle shadows
 - Cards contain: service selection (Fyzioterapia, Chiropraktika, Masáže, Rehabilitácia), date/time picker, pricing info
-- Bottom: floating minimal navigation bar
+- Bottom: minimal footer
 
 COLOR SCHEME:
-- Deep zinc-950 (#09090b) background
-- Emerald (#10b981) accent color for buttons, active states, progress indicators
-- Cards: rgba(255,255,255,0.05) with 12px backdrop blur effect
-- Subtle 1px white borders at 10% opacity on cards
-- Gradient text on headings: white to zinc-400 (top to bottom)
+- Light background (#f0f5fa) with white cards
+- Baby blue (#4a90d9) accent color for buttons, active states, progress indicators
+- Cards: white (#ffffff) with subtle box-shadow (0 4px 6px rgba(0,0,0,0.07))
+- Clean borders in light gray (#dde5ef)
+- Dark navy (#1a2b42) for headings and important text
 
 VISUAL EFFECTS:
-- Glassmorphic cards with frosted glass appearance
-- Spotlight hover effect visible on one card (radial white glow following cursor position)
-- Organic liquid gradient blobs in emerald and charcoal floating in background
-- Subtle depth and layering
+- Clean, minimal card design with subtle shadows
+- Soft hover transitions
+- No glassmorphism — pure Apple-style clarity
 
 TYPOGRAPHY:
-- Bold sans-serif headings with very tight letter-spacing (-0.05em)
-- Monospace font for prices and numerical data
-- Clean, minimal body text in zinc-400
+- Inter font family throughout
+- Bold headings in dark navy
+- Clean body text in muted blue-gray (#6b7c94)
 
 MOOD:
-- Premium, high-tech medical instrument feel mixed with luxury editorial style
-- Dark, atmospheric, sophisticated
-- NOT generic healthcare blue - this is emerald/dark luxury
+- Clean, professional, trustworthy medical feel
+- Light, airy, sophisticated
+- Apple-inspired minimalism with baby blue warmth
 
 2k resolution, ultra sharp details, pixel-perfect UI design, professional UX/UI mockup screenshot, Figma-quality render.`;
 
