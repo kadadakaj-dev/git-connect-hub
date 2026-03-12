@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useServices } from '@/hooks/useServices';
 import ServiceSkeleton from './ServiceSkeleton';
-import { Clock, Check, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
 
 interface ServiceSelectionProps {
   selectedService: Service | null;
@@ -18,114 +18,100 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
   const { data: services, isLoading, error } = useServices();
 
   if (isLoading) {
-    return (
-      <div>
-        <ServiceSkeleton />
-      </div>
-    );
+    return <ServiceSkeleton />;
   }
 
   if (error || !services || services.length === 0) {
     return (
-      <div>
-        <div className="text-center py-8">
-          <div className="bg-card border border-border/60 rounded-lg p-6 max-w-md mx-auto shadow-soft">
-            <p className="text-muted-foreground text-sm">
-              {language === 'sk' ? 'Služby nie sú momentálne dostupné' : 'Services are not available at the moment'}
-            </p>
-          </div>
-        </div>
+      <div className="text-center py-6">
+        <p className="text-muted-foreground text-sm">
+          {language === 'sk' ? 'Služby nie sú momentálne dostupné' : 'Services are not available at the moment'}
+        </p>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="space-y-1">
+      {services.map((service) => {
+        const isSelected = selectedService?.id === service.id;
+        const isExpress = service.id === EXPRESS_SERVICE_ID;
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
-        {services.map((service) => {
-          const isSelected = selectedService?.id === service.id;
-          const isExpress = service.id === EXPRESS_SERVICE_ID;
-
-          if (isExpress) {
-            return (
-              <div
-                key={service.id}
-                className={cn(
-                  "p-5 rounded-lg text-left relative",
-                  "bg-card border border-border/60 shadow-soft opacity-80"
-                )}
-              >
-                <h3 className="text-sm font-semibold text-foreground mb-1.5 leading-tight">
+        if (isExpress) {
+          return (
+            <div
+              key={service.id}
+              className="flex items-start gap-3 px-3 py-2.5 rounded-md border border-border/40 bg-muted/30 opacity-70"
+            >
+              <div className="mt-0.5">
+                <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground leading-snug">
                   {service.name}
-                </h3>
-                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                </p>
+                <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
                   {service.description}
                 </p>
-
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-muted-foreground">
-                    <Phone className="w-3.5 h-3.5" />
-                    <span className="text-xs">{language === 'sk' ? 'Len telefonicky' : 'Phone only'}</span>
-                  </span>
-                  <a
-                    href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
-                    className="text-sm font-bold font-data px-3 py-1 rounded-md bg-muted text-foreground hover:underline"
-                  >
-                    {EXPRESS_PHONE}
-                  </a>
-                </div>
+                <a
+                  href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
+                  className="text-[11px] font-medium text-primary hover:underline mt-0.5 inline-block"
+                >
+                  {language === 'sk' ? 'Len telefonicky' : 'Phone only'}: {EXPRESS_PHONE}
+                </a>
               </div>
-            );
-          }
-
-          return (
-            <button
-              key={service.id}
-              onClick={() => onSelect(service)}
-              className={cn(
-                "p-5 rounded-lg text-left transition-all duration-200 relative",
-                "bg-card border shadow-soft",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                "hover:shadow-elevated hover:-translate-y-px",
-                isSelected
-                  ? "border-l-[3px] border-l-primary border-t-border/60 border-r-border/60 border-b-border/60 bg-primary/5"
-                  : "border-border/60"
-              )}
-            >
-              <h3 className="text-sm font-semibold text-foreground mb-1.5 leading-tight">
-                {service.name}
-              </h3>
-              <p className="text-xs text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
-                {service.description}
-              </p>
-
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-muted-foreground">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span className="text-xs">{service.duration} {t.min}</span>
-                </span>
-                <span className={cn(
-                  "text-sm font-bold font-data px-3 py-1 rounded-md",
-                  isSelected
-                    ? "bg-primary/10 text-primary"
-                    : "bg-muted text-foreground"
-                )}>
-                  {service.price}€
-                </span>
-              </div>
-
-              {isSelected && (
-                <div className="absolute top-4 right-4">
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-3.5 h-3.5 text-primary-foreground" strokeWidth={2.5} />
-                  </div>
-                </div>
-              )}
-            </button>
+              <span className="text-sm font-bold font-data text-muted-foreground whitespace-nowrap mt-0.5">
+                +15 €
+              </span>
+            </div>
           );
-        })}
-      </div>
+        }
+
+        return (
+          <button
+            key={service.id}
+            onClick={() => onSelect(service)}
+            className={cn(
+              "w-full flex items-start gap-3 px-3 py-2.5 rounded-md text-left transition-all duration-150",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "border",
+              isSelected
+                ? "border-primary bg-primary/5"
+                : "border-border/40 hover:border-border hover:bg-accent/50"
+            )}
+          >
+            {/* Radio indicator */}
+            <div className="mt-1 flex-shrink-0">
+              <div className={cn(
+                "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors",
+                isSelected
+                  ? "border-primary"
+                  : "border-muted-foreground/30"
+              )}>
+                {isSelected && (
+                  <div className="w-2 h-2 rounded-full bg-primary" />
+                )}
+              </div>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground leading-snug">
+                {service.name}
+              </p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
+                {service.description} ({service.duration}{t.min})
+              </p>
+            </div>
+
+            <span className={cn(
+              "text-sm font-bold font-data whitespace-nowrap mt-0.5",
+              isSelected ? "text-primary" : "text-foreground"
+            )}>
+              {service.price} €
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 };
