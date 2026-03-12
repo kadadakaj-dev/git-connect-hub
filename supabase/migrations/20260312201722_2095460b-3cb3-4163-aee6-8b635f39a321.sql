@@ -1,0 +1,1 @@
+UPDATE services SET description_sk = 'klasická masáž celého tela, chiropraxia/naprávanie, bankovanie, mobilizácia a iné' WHERE id = 'a6ed9c72-3393-4511-bce7-8079abc79f7e';
