@@ -32,6 +32,7 @@ const TimeGridView = ({
   events,
   selectedTherapist,
   viewMode,
+  blockedDates,
   onCreateEvent,
   onEditEvent,
   onDragStart,
