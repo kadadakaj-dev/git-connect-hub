@@ -102,26 +102,6 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                 {service.category === 'physiotherapy' ? t.categories.physiotherapy : t.categories.chiropractic}
               </span>
 
-              {/* Icon */}
-              <div className={cn(
-                "relative z-20 w-14 h-14 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center mb-4 transition-all duration-400",
-                "overflow-hidden",
-                isSelected 
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" 
-                  : "bg-muted/50 text-muted-foreground group-hover:bg-primary/15 group-hover:text-primary"
-              )}>
-                {ServiceIcon ? (
-                  <ServiceIcon className={cn(
-                    "w-full h-full transition-all duration-400 relative z-10",
-                    "group-hover:scale-110"
-                  )} />
-                ) : (
-                  <Zap className={cn(
-                    "w-7 h-7 sm:w-8 sm:h-8 transition-all duration-400 relative z-10",
-                    "group-hover:scale-110"
-                  )} />
-                )}
-              </div>
 
               {/* Service Info */}
               <h3 className="relative z-20 text-base sm:text-lg font-semibold text-foreground mb-2 leading-tight group-hover:text-primary transition-colors duration-300">
