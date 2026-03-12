@@ -40,13 +40,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
   }
 
   return (
-    <div className="animate-fade-in-up">
-      <div className="text-center mb-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
-          {t.selectService}
-        </h2>
-        <p className="text-muted-foreground text-sm">{t.chooseServiceSubtitle}</p>
-      </div>
+    <div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
         {services.map((service) => {

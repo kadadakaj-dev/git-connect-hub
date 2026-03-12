@@ -58,15 +58,8 @@ const DateTimeSelection = ({
   };
 
   return (
-    <div className="animate-fade-in-up">
-      <div className="text-center mb-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
-          {t.chooseDateAndTime}
-        </h2>
-        <p className="text-muted-foreground text-sm">{t.selectPreferredSlot}</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Calendar */}
         <div className="bg-card border border-border/60 rounded-lg p-5 shadow-soft">
           <div className="flex items-center justify-between mb-5">
