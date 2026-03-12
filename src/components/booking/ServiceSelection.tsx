@@ -10,6 +10,9 @@ interface ServiceSelectionProps {
   onSelect: (service: Service) => void;
 }
 
+const EXPRESS_SERVICE_ID = '6770d8ae-197f-41bf-b58f-514d6ce34d6c';
+const EXPRESS_PHONE = '+421 905 307 198';
+
 const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) => {
   const { t, language } = useLanguage();
   const { data: services, isLoading, error } = useServices();
