@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useServices } from '@/hooks/useServices';
 import ServiceSkeleton from './ServiceSkeleton';
-import { Clock, Check } from 'lucide-react';
+import { Clock, Check, Phone } from 'lucide-react';
 
 interface ServiceSelectionProps {
   selectedService: Service | null;
