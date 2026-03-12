@@ -1,0 +1,1 @@
+UPDATE time_slots_config SET start_time = '09:00:00', end_time = '19:00:00' WHERE day_of_week BETWEEN 1 AND 6;
