@@ -240,7 +240,8 @@ serve(async (req) => {
       client_phone: sanitizeString(body.client_phone, 20),
       notes: body.notes ? sanitizeString(body.notes, 1000) : null,
       status: 'pending',
-      employee_id: assignedEmployeeId
+      employee_id: assignedEmployeeId,
+      booking_duration: bookingDuration
     }
 
     const { data: booking, error: insertError } = await supabase
