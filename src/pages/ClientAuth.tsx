@@ -158,6 +158,22 @@ const ClientAuth = () => {
     }
   };
 
+  const handleAppleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await lovable.auth.signInWithOAuth('apple', {
+        redirect_uri: window.location.origin + '/portal',
+      });
+      if (error) {
+        toast.error(language === 'sk' ? 'Chyba pri prihlásení cez Apple' : 'Error signing in with Apple');
+      }
+    } catch (error) {
+      toast.error(language === 'sk' ? 'Niečo sa pokazilo' : 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const t = {
     sk: {
       title: 'Klientský portál',
@@ -172,6 +188,7 @@ const ClientAuth = () => {
       signUp: 'Zaregistrovať sa',
       orContinueWith: 'alebo pokračujte s',
       googleSignIn: 'Pokračovať s Google',
+      appleSignIn: 'Pokračovať s Apple',
       backToBooking: 'Späť na rezerváciu',
     },
     en: {
@@ -187,6 +204,7 @@ const ClientAuth = () => {
       signUp: 'Sign Up',
       orContinueWith: 'or continue with',
       googleSignIn: 'Continue with Google',
+      appleSignIn: 'Continue with Apple',
       backToBooking: 'Back to booking',
     },
   };
