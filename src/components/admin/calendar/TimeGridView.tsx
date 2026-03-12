@@ -18,6 +18,7 @@ interface TimeGridViewProps {
   events: CalendarEvent[];
   selectedTherapist: string;
   viewMode: 'day' | 'week';
+  blockedDates: { date: string; reason: string | null }[];
   onCreateEvent: (date: Date, time: string) => void;
   onEditEvent: (event: CalendarEvent) => void;
   onDragStart: (e: React.DragEvent, event: CalendarEvent) => void;
