@@ -117,7 +117,7 @@ const Legal = () => {
         sections: [
           {
             heading: '1. Data Controller',
-            text: 'The data controller is FYZIO&FIT, Krmanová 6, Košice. Contact: +421 905 307 198, info@fyziofit.sk',
+            text: 'The data controller is FYZIO&FIT, Krmanová 6, Košice. Contact: +421 905 307 198, booking@fyzioafit.sk',
           },
           {
             heading: '2. Data We Process',
