@@ -50,7 +50,7 @@ const DateTimeSelection = ({
   const morningSlots = allSlots.filter((slot) => parseInt(slot.time.split(':')[0]) < 12);
   const afternoonSlots = allSlots.filter((slot) => parseInt(slot.time.split(':')[0]) >= 12);
 
-  const getCapacityBadgeClass = (slot: { available: boolean; bookedCount: number; totalCapacity: number }) => {
+  const getCapacityColor = (slot: { available: boolean; bookedCount: number; totalCapacity: number }) => {
     if (!slot.available) return 'text-muted-foreground/40';
     const remaining = slot.totalCapacity - slot.bookedCount;
     if (remaining <= 1) return 'text-amber-500';
@@ -59,49 +59,42 @@ const DateTimeSelection = ({
 
   return (
     <div className="animate-fade-in-up">
-      <div className="text-center mb-8 md:mb-10">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gradient mb-3">
+      <div className="text-center mb-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
           {t.chooseDateAndTime}
         </h2>
-        <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
-          {t.selectPreferredSlot}
-        </p>
+        <p className="text-muted-foreground text-sm">{t.selectPreferredSlot}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Calendar */}
-        <div className="glass-premium rounded-2xl p-5 sm:p-6">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-card border border-border/60 rounded-lg p-5 shadow-soft">
+          <div className="flex items-center justify-between mb-5">
             <Button
               variant="ghost"
               size="icon"
               onClick={goToPreviousMonth}
               disabled={isSameMonth(currentMonth, today)}
-              className="rounded-xl h-10 w-10 hover:bg-primary/10 active:scale-95 transition-all duration-300 group"
+              className="h-9 w-9 rounded-md"
             >
-              <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+              <ChevronLeft className="w-4 h-4" />
             </Button>
-            <h3 className="text-lg sm:text-xl font-semibold text-foreground capitalize">
+            <h3 className="text-sm font-semibold text-foreground capitalize">
               {format(currentMonth, 'LLLL yyyy', { locale })}
             </h3>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={goToNextMonth} 
-              className="rounded-xl h-10 w-10 hover:bg-primary/10 active:scale-95 transition-all duration-300 group"
-            >
-              <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+            <Button variant="ghost" size="icon" onClick={goToNextMonth} className="h-9 w-9 rounded-md">
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
 
           {/* Day Names */}
-          <div className="grid grid-cols-7 gap-1 mb-3">
+          <div className="grid grid-cols-7 gap-0.5 mb-2">
             {t.dayNames.map((day, index) => (
               <div
                 key={day}
                 className={cn(
-                  "text-center text-[10px] sm:text-xs font-bold py-2 uppercase tracking-wider rounded-lg",
-                  index === 0 ? "text-destructive/70" : "text-muted-foreground/70"
+                  "text-center text-[10px] font-semibold py-1.5 uppercase tracking-wider",
+                  index === 0 ? "text-destructive/60" : "text-muted-foreground/60"
                 )}
               >
                 {day}
@@ -110,7 +103,7 @@ const DateTimeSelection = ({
           </div>
 
           {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-1.5">
+          <div className="grid grid-cols-7 gap-0.5">
             {Array.from({ length: startingDayIndex }).map((_, index) => (
               <div key={`empty-${index}`} className="aspect-square" />
             ))}
@@ -127,18 +120,18 @@ const DateTimeSelection = ({
                   onClick={() => !isDisabled && onDateSelect(day)}
                   disabled={isDisabled}
                   className={cn(
-                    "aspect-square rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 relative",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
-                    isSelected && "bg-primary text-primary-foreground shadow-lg shadow-primary/30 scale-105 z-10",
-                    !isSelected && !isDisabled && "hover:bg-primary/15 hover:text-primary hover:scale-110 text-foreground active:scale-95",
-                    isDisabled && "text-muted-foreground/20 cursor-not-allowed",
+                    "aspect-square rounded-md text-xs font-medium transition-all duration-200 relative",
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                    isSelected && "bg-primary text-primary-foreground shadow-soft",
+                    !isSelected && !isDisabled && "hover:bg-accent text-foreground active:scale-95",
+                    isDisabled && "text-muted-foreground/25 cursor-not-allowed",
                     isSunday && !isSelected && "text-destructive/30",
-                    isToday && !isSelected && "ring-1 ring-primary/30"
+                    isToday && !isSelected && "ring-1 ring-primary/30 font-bold"
                   )}
                 >
                   {format(day, 'd')}
                   {isToday && !isSelected && (
-                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
                   )}
                 </button>
               );
@@ -146,18 +139,18 @@ const DateTimeSelection = ({
           </div>
 
           {/* Legend */}
-          <div className="flex items-center justify-center gap-6 mt-6 pt-5 border-t border-border/30 text-[10px] sm:text-xs text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-muted-foreground/10 border border-muted-foreground/20" />
+          <div className="flex items-center justify-center gap-5 mt-4 pt-4 border-t border-border/40 text-[10px] text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-muted-foreground/15" />
               {t.unavailable}
             </span>
-            <span className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-primary shadow-sm" />
+            <span className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-primary" />
               {t.selected}
             </span>
-            <span className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded border border-primary/30 relative">
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+            <span className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm border border-primary/30 relative">
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0.5 h-0.5 rounded-full bg-primary" />
               </div>
               {language === 'sk' ? 'Dnes' : 'Today'}
             </span>
@@ -165,22 +158,20 @@ const DateTimeSelection = ({
         </div>
 
         {/* Time Slots */}
-        <div className="glass-premium rounded-2xl p-5 sm:p-6">
-          <div className="flex items-center gap-4 mb-6 pb-5 border-b border-border/30">
+        <div className="bg-card border border-border/60 rounded-lg p-5 shadow-soft">
+          <div className="flex items-center gap-3 mb-5 pb-4 border-b border-border/40">
             <div className={cn(
-              "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-400",
-              selectedDate 
-                ? "bg-primary/15 text-primary" 
-                : "bg-muted/60 text-muted-foreground"
+              "w-10 h-10 rounded-md flex items-center justify-center",
+              selectedDate ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
             )}>
-              <Calendar className="w-5 h-5" />
+              <Calendar className="w-4 h-4" />
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="text-base sm:text-lg font-semibold text-foreground truncate">
+              <h3 className="text-sm font-semibold text-foreground truncate">
                 {selectedDate ? format(selectedDate, 'EEEE', { locale }) : t.selectDateFirst}
               </h3>
               {selectedDate && (
-                <p className="text-sm text-muted-foreground mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {format(selectedDate, 'd. MMMM yyyy', { locale })}
                 </p>
               )}
@@ -188,79 +179,64 @@ const DateTimeSelection = ({
           </div>
 
           {!selectedDate ? (
-            <div className="flex flex-col items-center justify-center h-52 sm:h-72 text-center px-4">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-muted/30 flex items-center justify-center mb-5 animate-float-slow">
-                <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground/40" />
-              </div>
-              <p className="text-muted-foreground text-sm sm:text-base font-medium">
-                {t.selectDateToViewSlots}
-              </p>
-              <p className="text-muted-foreground/60 text-xs mt-2">
-                {language === 'sk' ? 'Vyberte deň v kalendári vľavo' : 'Select a day from the calendar on the left'}
+            <div className="flex flex-col items-center justify-center h-48 text-center px-4">
+              <Clock className="w-10 h-10 text-muted-foreground/30 mb-4" />
+              <p className="text-muted-foreground text-sm">{t.selectDateToViewSlots}</p>
+              <p className="text-muted-foreground/50 text-xs mt-1">
+                {language === 'sk' ? 'Vyberte deň v kalendári' : 'Select a day from the calendar'}
               </p>
             </div>
           ) : isLoadingSlots ? (
             <div className="py-4">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-4 h-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  {t.loadingSlots}
-                </p>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3.5 h-3.5 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+                <p className="text-xs text-muted-foreground">{t.loadingSlots}</p>
               </div>
               <TimeSlotSkeleton />
             </div>
           ) : allSlots.length === 0 || availableSlots.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-52 sm:h-72 text-center px-4">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-destructive/10 flex items-center justify-center mb-5">
-                <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-destructive/40" />
-              </div>
-              <p className="text-muted-foreground text-sm sm:text-base font-medium">
-                {t.noSlotsAvailable}
-              </p>
-              <p className="text-muted-foreground/60 text-xs mt-2">
+            <div className="flex flex-col items-center justify-center h-48 text-center px-4">
+              <Clock className="w-10 h-10 text-destructive/30 mb-4" />
+              <p className="text-muted-foreground text-sm">{t.noSlotsAvailable}</p>
+              <p className="text-muted-foreground/50 text-xs mt-1">
                 {language === 'sk' ? 'Skúste vybrať iný deň' : 'Try selecting another day'}
               </p>
             </div>
           ) : (
-            <div className="space-y-5 max-h-[300px] sm:max-h-[350px] overflow-y-auto pr-2 -mr-2">
+            <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1 -mr-1">
               {morningSlots.length > 0 && (
-                <div className="animate-fade-in">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sun className="w-4 h-4 text-amber-500" />
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      {t.morning}
-                    </p>
-                    <span className="text-[10px] text-muted-foreground/60 ml-auto font-data">
+                <div>
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.morning}</p>
+                    <span className="text-[10px] text-muted-foreground/50 ml-auto font-data">
                       {morningSlots.filter(s => s.available).length} {language === 'sk' ? 'voľných' : 'available'}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 stagger-fade">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {morningSlots.map((slot) => (
                       <button
                         key={slot.time}
                         onClick={() => slot.available && onTimeSelect(slot.time)}
                         disabled={!slot.available}
                         className={cn(
-                          "px-3 py-2.5 rounded-xl text-sm font-medium font-data transition-all duration-300 relative overflow-hidden",
-                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                          !slot.available && "opacity-40 cursor-not-allowed bg-muted/20",
+                          "px-3 py-2 rounded-md text-sm font-medium font-data transition-all duration-200",
+                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          !slot.available && "opacity-30 cursor-not-allowed bg-muted/30",
                           slot.available && selectedTime === slot.time
-                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
+                            ? "bg-primary text-primary-foreground shadow-soft"
                             : slot.available
-                              ? "glass-card text-foreground hover:bg-primary/15 hover:text-primary hover:scale-105 active:scale-95"
+                              ? "bg-muted/50 text-foreground hover:bg-primary/10 hover:text-primary active:scale-95"
                               : ""
                         )}
                       >
-                        {selectedTime === slot.time && slot.available && (
-                          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
-                        )}
-                        <span className="relative z-10">{slot.time}</span>
+                        <span>{slot.time}</span>
                         {slot.totalCapacity > 1 && (
                           <span className={cn(
-                            "block text-[10px] font-semibold relative z-10 mt-0.5",
+                            "block text-[10px] font-semibold mt-0.5",
                             selectedTime === slot.time && slot.available
                               ? "text-primary-foreground/70"
-                              : getCapacityBadgeClass(slot)
+                              : getCapacityColor(slot)
                           )}>
                             {slot.available
                               ? `${slot.totalCapacity - slot.bookedCount}/${slot.totalCapacity}`
@@ -275,44 +251,38 @@ const DateTimeSelection = ({
               )}
 
               {afternoonSlots.length > 0 && (
-                <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sunset className="w-4 h-4 text-orange-500" />
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      {t.afternoon}
-                    </p>
-                    <span className="text-[10px] text-muted-foreground/60 ml-auto font-data">
+                <div>
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <Sunset className="w-3.5 h-3.5 text-orange-500" />
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.afternoon}</p>
+                    <span className="text-[10px] text-muted-foreground/50 ml-auto font-data">
                       {afternoonSlots.filter(s => s.available).length} {language === 'sk' ? 'voľných' : 'available'}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 stagger-fade">
-                    {afternoonSlots.map((slot, index) => (
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {afternoonSlots.map((slot) => (
                       <button
                         key={slot.time}
                         onClick={() => slot.available && onTimeSelect(slot.time)}
                         disabled={!slot.available}
-                        style={{ animationDelay: `${index * 0.03}s` }}
                         className={cn(
-                          "px-3 py-2.5 rounded-xl text-sm font-medium font-data transition-all duration-300 relative overflow-hidden",
-                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                          !slot.available && "opacity-40 cursor-not-allowed bg-muted/20",
+                          "px-3 py-2 rounded-md text-sm font-medium font-data transition-all duration-200",
+                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          !slot.available && "opacity-30 cursor-not-allowed bg-muted/30",
                           slot.available && selectedTime === slot.time
-                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
+                            ? "bg-primary text-primary-foreground shadow-soft"
                             : slot.available
-                              ? "glass-card text-foreground hover:bg-primary/15 hover:text-primary hover:scale-105 active:scale-95"
+                              ? "bg-muted/50 text-foreground hover:bg-primary/10 hover:text-primary active:scale-95"
                               : ""
                         )}
                       >
-                        {selectedTime === slot.time && slot.available && (
-                          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
-                        )}
-                        <span className="relative z-10">{slot.time}</span>
+                        <span>{slot.time}</span>
                         {slot.totalCapacity > 1 && (
                           <span className={cn(
-                            "block text-[10px] font-semibold relative z-10 mt-0.5",
+                            "block text-[10px] font-semibold mt-0.5",
                             selectedTime === slot.time && slot.available
                               ? "text-primary-foreground/70"
-                              : getCapacityBadgeClass(slot)
+                              : getCapacityColor(slot)
                           )}>
                             {slot.available
                               ? `${slot.totalCapacity - slot.bookedCount}/${slot.totalCapacity}`

@@ -79,10 +79,8 @@ export default {
         "2xl": "calc(var(--radius) + 8px)",
       },
       boxShadow: {
-        'elegant': 'var(--shadow-lg)',
-        'glow': 'var(--shadow-glow)',
-        'glass': 'var(--shadow-glass)',
-        'soft': '0 2px 8px -2px hsl(var(--foreground) / 0.08)',
+        'soft': '0 1px 2px rgba(0,0,0,0.04)',
+        'elevated': '0 2px 8px rgba(0,0,0,0.06)',
       },
       keyframes: {
         "accordion-down": {
