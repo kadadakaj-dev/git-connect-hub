@@ -71,6 +71,11 @@ const CalendarView = () => {
         .select('id, full_name, position, is_active')
         .eq('is_active', true)
         .order('sort_order'),
+      supabase
+        .from('blocked_dates')
+        .select('date, reason')
+        .gte('date', format(rangeStart, 'yyyy-MM-dd'))
+        .lte('date', format(rangeEnd, 'yyyy-MM-dd')),
     ]);
 
     if (employeesRes.data) setEmployees(employeesRes.data);
