@@ -51,13 +51,16 @@ const MonthView = ({
           const dateStr = formatDateForInput(date);
           let dayEvents = events.filter(e => e.date === dateStr);
           if (selectedTherapist !== 'all') dayEvents = dayEvents.filter(e => e.therapistId === selectedTherapist);
+          const blockedInfo = blockedDates.find(b => b.date === dateStr);
+          const isBlocked = !!blockedInfo;
 
           return (
             <div
               key={i}
               className={`border-r border-b border-border/50 p-1 md:p-2 flex flex-col gap-1 min-h-[80px] cursor-pointer
                 ${date.getMonth() === currentDate.getMonth() ? 'bg-card' : 'bg-secondary/50 text-muted-foreground'}
-                ${isToday(date) ? 'bg-accent/40' : ''}
+                ${isBlocked ? 'bg-destructive/10' : ''}
+                ${isToday(date) && !isBlocked ? 'bg-accent/40' : ''}
               `}
               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
               onDrop={(e) => onDropOnDay(e, date)}
