@@ -92,18 +92,6 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                     {language === 'sk' ? 'Cena služby + 15 €' : 'Service price + 15 €'}
                   </span>
                 </div>
-
-                <div className="mt-3 pt-3 border-t border-border/40">
-                  <a
-                    href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
-                    className="flex items-center gap-2 text-xs font-medium text-primary hover:underline"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>
-                      {language === 'sk' ? 'Iba telefonicky:' : 'Phone only:'} {EXPRESS_PHONE}
-                    </span>
-                  </a>
-                </div>
               </div>
             );
           }
