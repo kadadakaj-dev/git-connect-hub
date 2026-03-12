@@ -168,9 +168,9 @@ const BookingWizard = () => {
               <Phone className="w-3.5 h-3.5" />
               <span>+421 905 307 198</span>
             </a>
-            <a href="mailto:info@fyziofit.sk" className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+            <a href="mailto:booking@fyzioafit.sk" className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
               <Mail className="w-3.5 h-3.5" />
-              <span>info@fyziofit.sk</span>
+              <span>booking@fyzioafit.sk</span>
             </a>
             <Button variant="ghost" size="sm" asChild className="gap-2 text-muted-foreground hover:text-foreground">
               <Link to="/auth">
