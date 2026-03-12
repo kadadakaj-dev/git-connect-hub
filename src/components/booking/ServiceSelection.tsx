@@ -39,31 +39,40 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
 
         if (isExpress) {
           return (
-            <div
+            <a
               key={service.id}
-              className="flex items-start gap-3 px-3 py-2.5 rounded-md border border-border/40 bg-muted/30 opacity-70"
+              href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
+              className={cn(
+                "flex items-start gap-3 px-3 py-3 rounded-md border-2 border-primary/30",
+                "bg-gradient-to-r from-primary/8 via-primary/5 to-transparent",
+                "hover:border-primary/50 hover:from-primary/12 transition-all duration-200",
+                "relative overflow-hidden group"
+              )}
             >
-              <div className="mt-0.5">
-                <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+              {/* Accent bar */}
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-md" />
+              
+              <div className="mt-0.5 flex-shrink-0">
+                <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-colors">
+                  <Phone className="w-3.5 h-3.5 text-primary" />
+                </div>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground leading-snug">
+                <p className="text-sm font-semibold text-foreground leading-snug">
                   {service.name}
                 </p>
                 <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
                   {service.description}
                 </p>
-                <a
-                  href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
-                  className="text-[11px] font-medium text-primary hover:underline mt-0.5 inline-block"
-                >
-                  {language === 'sk' ? 'Len telefonicky' : 'Phone only'}: {EXPRESS_PHONE}
-                </a>
+                <span className="text-[11px] font-semibold text-primary mt-1 inline-flex items-center gap-1">
+                  <Phone className="w-2.5 h-2.5" />
+                  {EXPRESS_PHONE}
+                </span>
               </div>
-              <span className="text-sm font-bold font-data text-muted-foreground whitespace-nowrap mt-0.5">
+              <span className="text-sm font-bold font-data text-primary whitespace-nowrap mt-0.5">
                 +15 €
               </span>
-            </div>
+            </a>
           );
         }
 
