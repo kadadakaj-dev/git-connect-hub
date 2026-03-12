@@ -74,30 +74,23 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                 <h3 className="text-sm font-semibold text-foreground mb-1.5 leading-tight">
                   {service.name}
                 </h3>
-                <p className="text-xs text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
                   {service.description}
                 </p>
 
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-muted-foreground">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span className="text-xs">{service.duration} {t.min}</span>
-                  </span>
-                  <span className="text-sm font-bold font-data px-3 py-1 rounded-md bg-muted text-foreground">
-                    {service.price}€
-                  </span>
-                </div>
-
-                <div className="mt-3 pt-3 border-t border-border/40">
-                  <a
-                    href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
-                    className="flex items-center gap-2 text-xs font-medium text-primary hover:underline"
-                  >
                     <Phone className="w-3.5 h-3.5" />
-                    <span>
-                      {language === 'sk' ? 'Iba telefonicky:' : 'Phone only:'} {EXPRESS_PHONE}
-                    </span>
-                  </a>
+                    <a
+                      href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
+                      className="text-xs font-medium text-primary hover:underline"
+                    >
+                      {EXPRESS_PHONE}
+                    </a>
+                  </span>
+                  <span className="text-xs font-semibold font-data px-3 py-1 rounded-md bg-muted text-foreground">
+                    {language === 'sk' ? 'Cena služby + 15 €' : 'Service price + 15 €'}
+                  </span>
                 </div>
               </div>
             );
