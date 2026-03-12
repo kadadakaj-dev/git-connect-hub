@@ -1,0 +1,1 @@
+UPDATE services SET description_sk = 'klasická masáž chrbta, chiropraxia/naprávanie, mobilizácie, bankovanie, masážna pištoľ' WHERE id = 'b46a5fc0-70e7-4ec2-b489-6b61a6303d26';
