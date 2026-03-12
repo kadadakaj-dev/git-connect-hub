@@ -69,6 +69,7 @@ export type Database = {
       }
       bookings: {
         Row: {
+          booking_duration: number
           cancellation_token: string
           client_email: string
           client_name: string
@@ -85,6 +86,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          booking_duration?: number
           cancellation_token?: string
           client_email: string
           client_name: string
@@ -101,6 +103,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          booking_duration?: number
           cancellation_token?: string
           client_email?: string
           client_name?: string

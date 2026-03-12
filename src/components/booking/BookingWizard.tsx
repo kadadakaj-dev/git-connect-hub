@@ -257,6 +257,7 @@ const BookingWizard = () => {
               selectedTime={bookingData.time}
               onDateSelect={(date) => updateBookingData('date', date)}
               onTimeSelect={handleTimeSelect}
+              serviceDuration={bookingData.service?.duration}
             />
           </div>
         </section>

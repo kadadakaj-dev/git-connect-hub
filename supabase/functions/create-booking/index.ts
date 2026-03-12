@@ -110,7 +110,7 @@ serve(async (req) => {
     // Verify service exists and is active
     const { data: service, error: serviceError } = await supabase
       .from('services')
-      .select('id, is_active, name_sk, name_en')
+      .select('id, is_active, name_sk, name_en, duration')
       .eq('id', body.service_id)
       .maybeSingle()
 
@@ -129,6 +129,9 @@ serve(async (req) => {
       )
     }
 
+    // Calculate booking duration (round up to nearest 30 min)
+    const bookingDuration = Math.ceil(service.duration / 30) * 30
+
     // Check if date is not blocked
     const { data: blockedDate } = await supabase
       .from('blocked_dates')
@@ -143,22 +146,6 @@ serve(async (req) => {
       )
     }
 
-    // Count existing bookings for this slot
-    const { data: slotBookings, error: slotError } = await supabase
-      .from('bookings')
-      .select('id')
-      .eq('date', body.date)
-      .eq('time_slot', body.time_slot)
-      .neq('status', 'cancelled')
-
-    if (slotError) {
-      console.error('Error checking slot capacity:', slotError)
-      return new Response(
-        JSON.stringify({ error: 'Failed to check slot availability' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
     // Get active employee count for capacity check
     const { data: activeEmps } = await supabase
       .from('employees')
@@ -166,14 +153,46 @@ serve(async (req) => {
       .eq('is_active', true)
 
     const totalCapacity = Math.max(activeEmps?.length || 1, 1)
-    const currentBookings = slotBookings?.length || 0
 
-    if (currentBookings >= totalCapacity) {
-      console.log('Time slot at full capacity:', body.date, body.time_slot, `${currentBookings}/${totalCapacity}`)
+    // Get all bookings for this date to check slot occupancy
+    const { data: dateBookings, error: bookingsError } = await supabase
+      .from('bookings')
+      .select('time_slot, booking_duration')
+      .eq('date', body.date)
+      .neq('status', 'cancelled')
+
+    if (bookingsError) {
+      console.error('Error checking slot capacity:', bookingsError)
       return new Response(
-        JSON.stringify({ error: 'This time slot is fully booked' }),
-        { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Failed to check slot availability' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
+    }
+
+    // Check all required consecutive slots
+    const [slotH, slotM] = body.time_slot.split(':').map(Number)
+    const slotStartMin = slotH * 60 + slotM
+    const requiredSlots = bookingDuration / 30
+
+    for (let i = 0; i < requiredSlots; i++) {
+      const checkMin = slotStartMin + i * 30
+      let occupiedCount = 0
+      for (const b of (dateBookings || [])) {
+        const [bH, bM] = b.time_slot.split(':').map(Number)
+        const bStart = bH * 60 + bM
+        const bEnd = bStart + (b.booking_duration || 30)
+        if (checkMin >= bStart && checkMin < bEnd) {
+          occupiedCount++
+        }
+      }
+      if (occupiedCount >= totalCapacity) {
+        const checkTimeStr = `${String(Math.floor(checkMin / 60)).padStart(2, '0')}:${String(checkMin % 60).padStart(2, '0')}`
+        console.log('Slot occupied:', checkTimeStr, `${occupiedCount}/${totalCapacity}`)
+        return new Response(
+          JSON.stringify({ error: 'This time slot is fully booked' }),
+          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
     }
 
     // Auto-assign an available employee (round-robin by least bookings on that date)
@@ -221,7 +240,8 @@ serve(async (req) => {
       client_phone: sanitizeString(body.client_phone, 20),
       notes: body.notes ? sanitizeString(body.notes, 1000) : null,
       status: 'pending',
-      employee_id: assignedEmployeeId
+      employee_id: assignedEmployeeId,
+      booking_duration: bookingDuration
     }
 
     const { data: booking, error: insertError } = await supabase

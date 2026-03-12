@@ -13,6 +13,7 @@ interface DateTimeSelectionProps {
   selectedTime: string | null;
   onDateSelect: (date: Date) => void;
   onTimeSelect: (time: string) => void;
+  serviceDuration?: number;
 }
 
 const DateTimeSelection = ({
@@ -20,10 +21,11 @@ const DateTimeSelection = ({
   selectedTime,
   onDateSelect,
   onTimeSelect,
+  serviceDuration = 30,
 }: DateTimeSelectionProps) => {
   const { t, language } = useLanguage();
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate);
+  const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate, serviceDuration);
 
   const locale = language === 'sk' ? sk : enUS;
   const today = startOfToday();
