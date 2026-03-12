@@ -1,0 +1,1 @@
+UPDATE public.time_slots_config SET start_time = '09:30', end_time = '18:30' WHERE is_active = true;

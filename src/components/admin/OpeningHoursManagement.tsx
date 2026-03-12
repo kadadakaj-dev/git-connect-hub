@@ -50,7 +50,7 @@ const OpeningHoursManagement = () => {
         const existing = serverConfigs.find((c) => c.day_of_week === day);
         return existing
           ? { id: existing.id, day_of_week: existing.day_of_week, start_time: existing.start_time, end_time: existing.end_time, is_active: existing.is_active }
-          : { day_of_week: day, start_time: '08:00', end_time: '18:00', is_active: false };
+          : { day_of_week: day, start_time: '09:30', end_time: '18:30', is_active: false };
       });
       setConfigs(mapped);
     }
