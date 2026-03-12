@@ -194,7 +194,7 @@ const BookingWizard = () => {
   const renderHeader = () => (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border/60">
       <div className="container max-w-2xl mx-auto px-4 h-11 flex items-center justify-between">
-        <span className="text-sm font-bold text-foreground tracking-tight">FYZIO&FIT</span>
+        <a href="https://booking.fyzioafit.sk" className="text-sm font-bold text-foreground tracking-tight hover:text-primary transition-colors">FYZIO&FIT</a>
         <div className="flex items-center gap-3">
           <a href="tel:+421905307198" className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
             <Phone className="w-3 h-3" />
