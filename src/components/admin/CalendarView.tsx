@@ -20,6 +20,7 @@ const CalendarView = () => {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [blockedDates, setBlockedDates] = useState<{ date: string; reason: string | null }[]>([]);
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -52,7 +53,7 @@ const CalendarView = () => {
       rangeEnd = currentDate;
     }
 
-    const [bookingsRes, employeesRes] = await Promise.all([
+    const [bookingsRes, employeesRes, blockedRes] = await Promise.all([
       supabase
         .from('bookings')
         .select(`
@@ -70,9 +71,15 @@ const CalendarView = () => {
         .select('id, full_name, position, is_active')
         .eq('is_active', true)
         .order('sort_order'),
+      supabase
+        .from('blocked_dates')
+        .select('date, reason')
+        .gte('date', format(rangeStart, 'yyyy-MM-dd'))
+        .lte('date', format(rangeEnd, 'yyyy-MM-dd')),
     ]);
 
     if (employeesRes.data) setEmployees(employeesRes.data);
+    if (blockedRes.data) setBlockedDates(blockedRes.data);
 
     if (bookingsRes.data) {
       const mapped: CalendarEvent[] = (bookingsRes.data as any[]).map(b => ({
@@ -364,6 +371,7 @@ const CalendarView = () => {
             currentDate={currentDate}
             events={events}
             selectedTherapist={selectedTherapist}
+            blockedDates={blockedDates}
             onCreateEvent={(date, time) => openCreateModal(date, time)}
             onEditEvent={openEditModal}
             onDragStart={handleDragStart}
@@ -376,6 +384,7 @@ const CalendarView = () => {
             events={events}
             selectedTherapist={selectedTherapist}
             viewMode={viewMode}
+            blockedDates={blockedDates}
             onCreateEvent={(date, time) => openCreateModal(date, time)}
             onEditEvent={openEditModal}
             onDragStart={handleDragStart}

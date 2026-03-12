@@ -15,6 +15,7 @@ interface MonthViewProps {
   currentDate: Date;
   events: CalendarEvent[];
   selectedTherapist: string;
+  blockedDates: { date: string; reason: string | null }[];
   onCreateEvent: (date: Date, time?: string) => void;
   onEditEvent: (event: CalendarEvent) => void;
   onDragStart: (e: React.DragEvent, event: CalendarEvent) => void;
@@ -26,6 +27,7 @@ const MonthView = ({
   currentDate,
   events,
   selectedTherapist,
+  blockedDates,
   onCreateEvent,
   onEditEvent,
   onDragStart,
@@ -49,13 +51,16 @@ const MonthView = ({
           const dateStr = formatDateForInput(date);
           let dayEvents = events.filter(e => e.date === dateStr);
           if (selectedTherapist !== 'all') dayEvents = dayEvents.filter(e => e.therapistId === selectedTherapist);
+          const blockedInfo = blockedDates.find(b => b.date === dateStr);
+          const isBlocked = !!blockedInfo;
 
           return (
             <div
               key={i}
               className={`border-r border-b border-border/50 p-1 md:p-2 flex flex-col gap-1 min-h-[80px] cursor-pointer
                 ${date.getMonth() === currentDate.getMonth() ? 'bg-card' : 'bg-secondary/50 text-muted-foreground'}
-                ${isToday(date) ? 'bg-accent/40' : ''}
+                ${isBlocked ? 'bg-destructive/10' : ''}
+                ${isToday(date) && !isBlocked ? 'bg-accent/40' : ''}
               `}
               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
               onDrop={(e) => onDropOnDay(e, date)}
@@ -68,6 +73,11 @@ const MonthView = ({
                 {date.getDate()}
               </span>
               <div className="flex-1 flex flex-col gap-1 overflow-y-auto">
+                {isBlocked && (
+                  <div className="text-[10px] md:text-xs px-1.5 py-0.5 rounded bg-destructive/15 border border-destructive/30 text-destructive font-medium truncate">
+                    🚫 {blockedInfo.reason || (language === 'sk' ? 'Zablokované' : 'Blocked')}
+                  </div>
+                )}
                 {dayEvents.map(ev => (
                   <div
                     key={ev.id}
