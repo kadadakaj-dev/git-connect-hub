@@ -1,0 +1,1 @@
+ALTER TABLE public.bookings ADD COLUMN booking_duration integer NOT NULL DEFAULT 30;
