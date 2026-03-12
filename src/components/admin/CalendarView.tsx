@@ -53,7 +53,7 @@ const CalendarView = () => {
       rangeEnd = currentDate;
     }
 
-    const [bookingsRes, employeesRes] = await Promise.all([
+    const [bookingsRes, employeesRes, blockedRes] = await Promise.all([
       supabase
         .from('bookings')
         .select(`
