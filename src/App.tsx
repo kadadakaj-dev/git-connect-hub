@@ -43,7 +43,8 @@ const App = () => (
                    <Route path="/" element={<Index />} />
                    <Route path="/auth" element={<ClientAuth />} />
                    <Route path="/portal" element={<ClientPortal />} />
-                   <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin/reset-password" element={<AdminResetPassword />} />
                    <Route path="/admin" element={<AdminDashboard />} />
                    <Route path="/cancel" element={<CancelBooking />} />
                     <Route path="/legal" element={<Legal />} />
