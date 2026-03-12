@@ -79,6 +79,7 @@ const CalendarView = () => {
     ]);
 
     if (employeesRes.data) setEmployees(employeesRes.data);
+    if (blockedRes.data) setBlockedDates(blockedRes.data);
 
     if (bookingsRes.data) {
       const mapped: CalendarEvent[] = (bookingsRes.data as any[]).map(b => ({
