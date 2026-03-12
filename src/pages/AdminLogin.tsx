@@ -16,6 +16,7 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingReset, setIsSendingReset] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,6 +125,33 @@ const AdminLogin = () => {
               {isLoading 
                 ? (language === 'sk' ? 'Prihlasujem...' : 'Signing in...') 
                 : (language === 'sk' ? 'Prihlásiť sa' : 'Sign In')}
+            </Button>
+
+            <Button
+              type="button"
+              variant="link"
+              className="w-full text-muted-foreground text-sm"
+              disabled={isSendingReset}
+              onClick={async () => {
+                if (!email.trim()) {
+                  toast.error(language === 'sk' ? 'Zadajte email' : 'Enter your email');
+                  return;
+                }
+                setIsSendingReset(true);
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                  redirectTo: `${window.location.origin}/admin/reset-password`,
+                });
+                setIsSendingReset(false);
+                if (error) {
+                  toast.error(language === 'sk' ? 'Chyba pri odosielaní' : 'Error sending reset email');
+                } else {
+                  toast.success(language === 'sk' ? 'Email na reset hesla bol odoslaný' : 'Password reset email sent');
+                }
+              }}
+            >
+              {isSendingReset
+                ? (language === 'sk' ? 'Odosielam...' : 'Sending...')
+                : (language === 'sk' ? 'Zabudnuté heslo?' : 'Forgot password?')}
             </Button>
           </form>
           

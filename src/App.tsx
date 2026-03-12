@@ -11,7 +11,8 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
  // Lazy load pages for code splitting
  const Index = lazy(() => import("./pages/Index"));
  const NotFound = lazy(() => import("./pages/NotFound"));
- const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminResetPassword = lazy(() => import("./pages/AdminResetPassword"));
  const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
  const CancelBooking = lazy(() => import("./pages/CancelBooking"));
  const Legal = lazy(() => import("./pages/Legal"));
@@ -42,7 +43,8 @@ const App = () => (
                    <Route path="/" element={<Index />} />
                    <Route path="/auth" element={<ClientAuth />} />
                    <Route path="/portal" element={<ClientPortal />} />
-                   <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin/reset-password" element={<AdminResetPassword />} />
                    <Route path="/admin" element={<AdminDashboard />} />
                    <Route path="/cancel" element={<CancelBooking />} />
                     <Route path="/legal" element={<Legal />} />
