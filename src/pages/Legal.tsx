@@ -50,7 +50,7 @@ const Legal = () => {
         sections: [
           {
             heading: '1. Prevádzkovateľ',
-            text: 'Prevádzkovateľom osobných údajov je FYZIO&FIT, Krmanová 6, Košice. Kontakt: +421 905 307 198, info@fyziofit.sk',
+            text: 'Prevádzkovateľom osobných údajov je FYZIO&FIT, Krmanová 6, Košice. Kontakt: +421 905 307 198, booking@fyzioafit.sk',
           },
           {
             heading: '2. Aké údaje spracovávame',

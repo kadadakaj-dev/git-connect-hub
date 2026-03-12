@@ -14,7 +14,7 @@ const Footer = () => {
   const contactInfo = [
     { icon: MapPin, text: 'Krmanová 6, Košice', href: 'https://maps.google.com/?q=Krmanová+6,+Košice' },
     { icon: Phone, text: '+421 905 307 198', href: 'tel:+421905307198' },
-    { icon: Mail, text: 'info@fyziofit.sk', href: 'mailto:info@fyziofit.sk' },
+    { icon: Mail, text: 'booking@fyzioafit.sk', href: 'mailto:booking@fyzioafit.sk' },
     { icon: Clock, text: language === 'sk' ? 'Po-Pi: 8:00 - 18:00' : 'Mon-Fri: 8:00 - 18:00', href: null },
   ];
 
