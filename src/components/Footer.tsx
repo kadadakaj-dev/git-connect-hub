@@ -19,7 +19,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="w-full border-t border-white/20 bg-white/40 backdrop-blur-xl mt-auto">
+    <footer className="w-full border-t border-black/5 bg-white/60 backdrop-blur-xl mt-auto">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-4">
           {/* Contact */}
@@ -60,7 +60,7 @@ const Footer = () => {
         </div>
 
         {/* Legal */}
-        <div className="mt-5 pt-4 border-t border-white/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-5 pt-4 border-t border-black/5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-5">
             <Link to="/legal?tab=terms" className="inline-flex items-center gap-1.5 text-[11px] text-foreground/60 hover:text-foreground transition-colors duration-200">
               <FileText className="w-3 h-3" />

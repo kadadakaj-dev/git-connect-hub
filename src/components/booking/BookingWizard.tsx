@@ -191,7 +191,7 @@ const BookingWizard = () => {
 
   // Glassmorphism header
   const renderHeader = () => (
-    <header className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/30 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
+    <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-2xl border-b border-black/5">
       <div className="container max-w-2xl mx-auto px-4 h-12 flex items-center justify-between">
         <a href="https://booking.fyzioafit.sk" className="text-sm font-bold text-foreground tracking-tight hover:text-primary transition-colors">
           FYZIO&FIT
@@ -221,7 +221,7 @@ const BookingWizard = () => {
   // Glass card wrapper for sections
   const GlassCard = ({ children, className: cls }: { children: React.ReactNode; className?: string }) => (
     <div className={cn(
-      "bg-white/60 backdrop-blur-xl rounded-2xl border border-white/40 shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-4",
+      "bg-white/75 backdrop-blur-2xl rounded-2xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-4",
       cls
     )}>
       {children}
@@ -230,7 +230,7 @@ const BookingWizard = () => {
 
   if (isConfirmed) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/80 via-primary/60 to-ring/70 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex flex-col">
         {renderHeader()}
         <div className="container max-w-2xl mx-auto px-4 py-6 flex-1">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
@@ -245,7 +245,7 @@ const BookingWizard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/80 via-primary/60 to-ring/70 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex flex-col">
       {renderHeader()}
 
       <div className="container max-w-2xl mx-auto px-4 py-5 flex-1">
@@ -368,7 +368,7 @@ const BookingWizard = () => {
             size="lg"
             onClick={handleSubmit}
             disabled={!hasService || !hasDateTime || createBooking.isPending}
-            className="w-full gap-2 rounded-2xl text-sm font-semibold h-12 shadow-lg shadow-primary/20 bg-white/90 hover:bg-white text-primary border-0"
+            className="w-full gap-2 rounded-2xl text-sm font-semibold h-12 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground border-0"
           >
             {createBooking.isPending ? (
               <>
@@ -403,8 +403,8 @@ const SectionHeader = ({
       className={cn(
         "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0",
         completed
-          ? "bg-white text-primary shadow-sm"
-          : "bg-white/30 text-white border border-white/40"
+          ? "bg-primary text-primary-foreground shadow-sm"
+          : "bg-primary/10 text-primary border border-primary/20"
       )}
     >
       <AnimatePresence mode="wait">
@@ -431,7 +431,7 @@ const SectionHeader = ({
         )}
       </AnimatePresence>
     </motion.div>
-    <span className="text-sm font-semibold text-white drop-shadow-sm">{title}</span>
+    <span className="text-sm font-semibold text-foreground">{title}</span>
   </div>
 );
 
