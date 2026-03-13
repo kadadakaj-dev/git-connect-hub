@@ -11,6 +11,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { toast } from 'sonner';
 import { Mail, Lock, User, ArrowLeft, CalendarDays, Clock, Heart, Star } from 'lucide-react';
 import { z } from 'zod';
+import GlassBackground from '@/components/GlassBackground';
 
 const loginSchema = z.object({
   email: z.string().email('Neplatný email'),
