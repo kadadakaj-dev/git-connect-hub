@@ -188,7 +188,7 @@ const Legal = () => {
             </TabsList>
 
             <TabsContent value="terms">
-              <div className="bg-card rounded-xl border border-border p-6 md:p-8 shadow-elegant">
+              <div className="bg-white/75 backdrop-blur-2xl rounded-xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-6 md:p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6">{t.terms.title}</h2>
                 <div className="space-y-6">
                   {t.terms.sections.map((section, index) => (
