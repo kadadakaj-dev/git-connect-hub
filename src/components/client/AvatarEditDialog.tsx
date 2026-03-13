@@ -252,9 +252,18 @@ const AvatarEditDialog = ({
   };
 
   const handleCanvasTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    const touch = e.touches[0];
-    setIsDragging(true);
-    setDragStart({ x: touch.clientX - offsetX, y: touch.clientY - offsetY });
+    if (e.touches.length === 2) {
+      // Pinch-to-zoom start
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      setLastPinchDistance(dist);
+    } else if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({ x: touch.clientX - offsetX, y: touch.clientY - offsetY });
+    }
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -264,13 +273,26 @@ const AvatarEditDialog = ({
   };
 
   const handleCanvasTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDragging) return;
-    const touch = e.touches[0];
-    setOffsetX(touch.clientX - dragStart.x);
-    setOffsetY(touch.clientY - dragStart.y);
+    if (e.touches.length === 2 && lastPinchDistance !== null) {
+      // Pinch-to-zoom
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scale = dist / lastPinchDistance;
+      setZoom((prev) => Math.min(3, Math.max(0.5, prev * scale)));
+      setLastPinchDistance(dist);
+    } else if (isDragging && e.touches.length === 1) {
+      const touch = e.touches[0];
+      setOffsetX(touch.clientX - dragStart.x);
+      setOffsetY(touch.clientY - dragStart.y);
+    }
   };
 
-  const handleCanvasMouseUp = () => setIsDragging(false);
+  const handleCanvasMouseUp = () => {
+    setIsDragging(false);
+    setLastPinchDistance(null);
+  };
 
   const handleUpload = async () => {
     const canvas = canvasRef.current;
