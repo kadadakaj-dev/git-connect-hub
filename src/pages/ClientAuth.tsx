@@ -273,7 +273,7 @@ const ClientAuth = () => {
             <Button
               variant="ghost"
               onClick={() => navigate('/')}
-              className="text-white/70 hover:text-white hover:bg-white/10 text-sm"
+              className="text-muted-foreground hover:text-foreground hover:bg-black/5 text-sm"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               {text.backToBooking}
