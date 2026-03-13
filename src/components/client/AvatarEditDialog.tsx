@@ -79,6 +79,7 @@ const AvatarEditDialog = ({
       flip: 'Prevrátiť',
       reset: 'Resetovať',
       dragHint: 'Potiahnite obrázok pre zmenu pozície',
+      cropGrid: 'Mriežka',
       fileTooLarge: 'Súbor je príliš veľký (max 5MB)',
       invalidFileType: 'Neplatný typ súboru (JPG, PNG, WebP)',
     },
