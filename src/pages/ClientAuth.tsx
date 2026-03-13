@@ -374,7 +374,7 @@ const ClientAuth = () => {
                           <Input
                             id="login-password"
                             type="password"
-                            className="pl-10 h-11 bg-white/10 border-white/15 text-white placeholder:text-white/30 rounded-xl focus:border-white/40 focus:ring-white/20"
+                            className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                           />
