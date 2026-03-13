@@ -15,6 +15,7 @@ import { format, isPast, parseISO } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import {
   Calendar,
+  Camera,
   Clock,
   History,
   Heart,
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ProfileEditDialog from '@/components/client/ProfileEditDialog';
+import AvatarEditDialog from '@/components/client/AvatarEditDialog';
 import SettingsMenu from '@/components/client/SettingsMenu';
 import { useClientProfile } from '@/hooks/useClientProfile';
 import { useClientBookings } from '@/hooks/useClientBookings';
@@ -39,6 +41,7 @@ const ClientPortal = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -183,7 +186,7 @@ const ClientPortal = () => {
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => setIsProfileDialogOpen(true)}
+                onClick={() => setIsAvatarDialogOpen(true)}
                 className="relative group"
               >
                 <Avatar className="h-12 w-12 border-2 border-primary/20 group-hover:border-primary/50 transition-colors">
@@ -193,7 +196,7 @@ const ClientPortal = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Settings className="h-4 w-4 text-white" />
+                  <Camera className="h-4 w-4 text-white" />
                 </div>
               </button>
               <div>
@@ -475,6 +478,18 @@ const ClientPortal = () => {
           onOpenChange={setIsProfileDialogOpen}
           profile={profile}
           onProfileUpdated={handleProfileUpdated}
+        />
+      )}
+
+      {/* Avatar Edit Dialog */}
+      {profile && user && (
+        <AvatarEditDialog
+          open={isAvatarDialogOpen}
+          onOpenChange={setIsAvatarDialogOpen}
+          currentAvatarUrl={profile.avatar_url}
+          fullName={profile.full_name}
+          userId={user.id}
+          onAvatarUpdated={handleProfileUpdated}
         />
       )}
     </>
