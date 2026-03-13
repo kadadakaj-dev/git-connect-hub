@@ -230,6 +230,13 @@ const DateTimeSelection = ({
                 {renderSlotGrid(afternoonSlots)}
               </div>
             )}
+            {requiredSlots > 1 && (
+              <p className="text-[10px] text-muted-foreground text-center">
+                {language === 'sk'
+                  ? `Služba zaberie ${requiredSlots} po sebe idúcich slotov (${serviceDuration} min)`
+                  : `Service occupies ${requiredSlots} consecutive slots (${serviceDuration} min)`}
+              </p>
+            )}
           </div>
         )}
       </div>
