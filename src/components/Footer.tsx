@@ -19,7 +19,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="w-full border-t border-white/20 bg-white/40 backdrop-blur-xl mt-auto">
+    <footer className="w-full border-t border-black/5 bg-white/60 backdrop-blur-xl mt-auto">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-4">
           {/* Contact */}
