@@ -337,10 +337,10 @@ const BookingWizard = () => {
                     rows={2}
                     className={cn(
                       "w-full pl-8 pr-3 py-2.5 rounded-xl border text-foreground text-sm resize-none",
-                      "bg-white/70 backdrop-blur-sm",
-                      "placeholder:text-muted-foreground/50 transition-all duration-200",
-                      "focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
-                      "border-border/40 hover:border-muted-foreground/30"
+                      "bg-[var(--glass-white)] backdrop-blur-sm",
+                      "placeholder:text-muted-foreground/50 transition-all duration-300 ease-liquid",
+                      "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 focus:bg-[var(--glass-white-md)]",
+                      "border-[var(--glass-border-subtle)] hover:border-[var(--glass-border)]"
                     )}
                   />
                 </div>
