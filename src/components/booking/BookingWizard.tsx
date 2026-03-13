@@ -431,7 +431,7 @@ const SectionHeader = ({
         )}
       </AnimatePresence>
     </motion.div>
-    <span className="text-sm font-semibold text-white drop-shadow-sm">{title}</span>
+    <span className="text-sm font-semibold text-foreground">{title}</span>
   </div>
 );
 

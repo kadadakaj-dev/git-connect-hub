@@ -60,7 +60,7 @@ const Footer = () => {
         </div>
 
         {/* Legal */}
-        <div className="mt-5 pt-4 border-t border-white/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-5 pt-4 border-t border-black/5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-5">
             <Link to="/legal?tab=terms" className="inline-flex items-center gap-1.5 text-[11px] text-foreground/60 hover:text-foreground transition-colors duration-200">
               <FileText className="w-3 h-3" />
