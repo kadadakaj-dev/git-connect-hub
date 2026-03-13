@@ -435,7 +435,7 @@ const ClientAuth = () => {
                       <div className="space-y-1.5">
                         <Label htmlFor="register-password" className="text-foreground text-sm font-medium">{text.password}</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                             id="register-password"
                             type="password"
