@@ -11,6 +11,7 @@ import {
   Html,
   Link,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -27,32 +28,36 @@ export const SignupEmail = ({
   recipient,
   confirmationUrl,
 }: SignupEmailProps) => (
-  <Html lang="en" dir="ltr">
+  <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Confirm your email for {siteName}</Preview>
+    <Preview>Potvrďte svoj e-mail – FYZIO&FIT</Preview>
     <Body style={main}>
-      <Container style={container}>
-        <Heading style={h1}>Confirm your email</Heading>
-        <Text style={text}>
-          Thanks for signing up for{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          !
-        </Text>
-        <Text style={text}>
-          Please confirm your email address (
-          <Link href={`mailto:${recipient}`} style={link}>
-            {recipient}
-          </Link>
-          ) by clicking the button below:
-        </Text>
-        <Button style={button} href={confirmationUrl}>
-          Verify Email
-        </Button>
-        <Text style={footer}>
-          If you didn't create an account, you can safely ignore this email.
-        </Text>
+      <Container style={wrapper}>
+        <Section style={header}>
+          <Heading style={headerTitle}>FYZIO&FIT</Heading>
+        </Section>
+        <Section style={content}>
+          <Heading style={h1}>Potvrďte svoj e-mail</Heading>
+          <Text style={text}>
+            Ďakujeme za registráciu v{' '}
+            <Link href={siteUrl} style={link}><strong>FYZIO&FIT</strong></Link>!
+          </Text>
+          <Text style={text}>
+            Prosím, potvrďte svoju e-mailovú adresu (
+            <Link href={`mailto:${recipient}`} style={link}>{recipient}</Link>
+            ) kliknutím na tlačidlo nižšie:
+          </Text>
+          <Button style={button} href={confirmationUrl}>
+            Overiť e-mail
+          </Button>
+          <Text style={footerText}>
+            Ak ste si nevytvorili účet, tento e-mail môžete pokojne ignorovať.
+          </Text>
+        </Section>
+        <Section style={footer}>
+          <Text style={footerBrand}>Tešíme sa na vašu návštevu!</Text>
+          <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
+        </Section>
       </Container>
     </Body>
   </Html>
@@ -60,27 +65,16 @@ export const SignupEmail = ({
 
 export default SignupEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
-}
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
-const link = { color: 'inherit', textDecoration: 'underline' }
-const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
-  textDecoration: 'none',
-}
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const main = { backgroundColor: '#f0f5fa', fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }
+const wrapper = { backgroundColor: '#ffffff', borderRadius: '12px', overflow: 'hidden' as const, maxWidth: '600px', margin: '20px auto', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.07)' }
+const header = { background: 'linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%)', padding: '30px', textAlign: 'center' as const }
+const headerTitle = { color: '#ffffff', margin: '0', fontSize: '28px', fontWeight: '700' as const, letterSpacing: '1px' }
+const content = { padding: '40px 30px' }
+const h1 = { fontSize: '20px', fontWeight: 'bold' as const, color: '#1a2b42', margin: '0 0 20px' }
+const text = { fontSize: '16px', color: '#4b5e78', lineHeight: '1.5', margin: '0 0 25px' }
+const link = { color: '#4a90d9', textDecoration: 'underline' }
+const button = { backgroundColor: '#4a90d9', color: '#ffffff', fontSize: '14px', borderRadius: '8px', padding: '12px 24px', textDecoration: 'none', fontWeight: '500' as const }
+const footerText = { fontSize: '12px', color: '#6b7c94', margin: '30px 0 0' }
+const footer = { backgroundColor: '#f5f8fc', padding: '20px 30px', textAlign: 'center' as const, borderTop: '1px solid #dde5ef' }
+const footerBrand = { color: '#4a90d9', margin: '0 0 10px', fontSize: '16px', fontWeight: '500' as const }
+const footerContact = { color: '#6b7c94', margin: '0', fontSize: '14px' }

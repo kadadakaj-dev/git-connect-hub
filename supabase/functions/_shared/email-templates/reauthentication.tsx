@@ -9,6 +9,7 @@ import {
   Heading,
   Html,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -17,18 +18,27 @@ interface ReauthenticationEmailProps {
 }
 
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
-  <Html lang="en" dir="ltr">
+  <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Your verification code</Preview>
+    <Preview>Váš overovací kód – FYZIO&FIT</Preview>
     <Body style={main}>
-      <Container style={container}>
-        <Heading style={h1}>Confirm reauthentication</Heading>
-        <Text style={text}>Use the code below to confirm your identity:</Text>
-        <Text style={codeStyle}>{token}</Text>
-        <Text style={footer}>
-          This code will expire shortly. If you didn't request this, you can
-          safely ignore this email.
-        </Text>
+      <Container style={wrapper}>
+        <Section style={header}>
+          <Heading style={headerTitle}>FYZIO&FIT</Heading>
+        </Section>
+        <Section style={content}>
+          <Heading style={h1}>Overovací kód</Heading>
+          <Text style={text}>Použite kód nižšie na overenie vašej identity:</Text>
+          <Text style={codeStyle}>{token}</Text>
+          <Text style={footerText}>
+            Platnosť kódu je obmedzená. Ak ste o tento kód nežiadali,
+            môžete tento e-mail pokojne ignorovať.
+          </Text>
+        </Section>
+        <Section style={footer}>
+          <Text style={footerBrand}>FYZIO&FIT</Text>
+          <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
+        </Section>
       </Container>
     </Body>
   </Html>
@@ -36,25 +46,15 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
 
 export default ReauthenticationEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
-}
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
-const codeStyle = {
-  fontFamily: 'Courier, monospace',
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 30px',
-}
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const main = { backgroundColor: '#f0f5fa', fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }
+const wrapper = { backgroundColor: '#ffffff', borderRadius: '12px', overflow: 'hidden' as const, maxWidth: '600px', margin: '20px auto', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.07)' }
+const header = { background: 'linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%)', padding: '30px', textAlign: 'center' as const }
+const headerTitle = { color: '#ffffff', margin: '0', fontSize: '28px', fontWeight: '700' as const, letterSpacing: '1px' }
+const content = { padding: '40px 30px' }
+const h1 = { fontSize: '20px', fontWeight: 'bold' as const, color: '#1a2b42', margin: '0 0 20px' }
+const text = { fontSize: '16px', color: '#4b5e78', lineHeight: '1.5', margin: '0 0 25px' }
+const codeStyle = { fontFamily: 'Courier, monospace', fontSize: '28px', fontWeight: 'bold' as const, color: '#4a90d9', margin: '0 0 30px', textAlign: 'center' as const, backgroundColor: '#f5f8fc', padding: '16px', borderRadius: '8px' }
+const footerText = { fontSize: '12px', color: '#6b7c94', margin: '30px 0 0' }
+const footer = { backgroundColor: '#f5f8fc', padding: '20px 30px', textAlign: 'center' as const, borderTop: '1px solid #dde5ef' }
+const footerBrand = { color: '#4a90d9', margin: '0 0 10px', fontSize: '16px', fontWeight: '500' as const }
+const footerContact = { color: '#6b7c94', margin: '0', fontSize: '14px' }
