@@ -1,30 +1,50 @@
+# Zmena H1 + H2 + H3 + H4 nadpisov na Google Sans Flex
+
+## Zmeny
+
+### 1. `index.html`
+
+Pridať Google Sans Flex font link do `<head>` (vedľa existujúceho Inter fontu):
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
+```
+
+### 2. `tailwind.config.ts`
+
+Pridať `heading` font family:
+
+```ts
+fontFamily: {
+  heading: ['"Google Sans Flex"', 'system-ui', 'sans-serif'],
+  // ... existing sans, display, data
+}
+```
+
+### 3. `src/index.css`
+
+Aktualizovať base layer pre nadpisy:
+
+```css
+h1 { font-family: 'Google Sans Flex', system-ui, sans-serif; }
+```
+
+### 4. Súbory s H1 (9 súborov) — pridať `font-heading` triedu
 
 
-# Generovanie preview obrazku "Atmospheric Technical" dizajnu
+| Súbor                | Aktuálny štýl                        |
+| -------------------- | ------------------------------------ |
+| `SplashScreen.tsx`   | `text-4xl font-bold`                 |
+| `Preview.tsx`        | `text-3xl font-bold`                 |
+| `ClientAuth.tsx`     | `text-3xl lg:text-4xl font-semibold` |
+| `AdminDashboard.tsx` | `text-xl font-bold`                  |
+| `AdminLogin.tsx`     | `text-3xl lg:text-4xl font-semibold` |
+| `NotFound.tsx`       | `text-4xl font-bold`                 |
+| `Legal.tsx`          | `text-3xl md:text-4xl font-bold`     |
+| `CancelBooking.tsx`  | `text-3xl md:text-4xl font-bold`     |
+| `ClientPortal.tsx`   | `text-xl font-bold`                  |
 
-## Co spravim
-Vytvorim edge funkciu ktora vygeneruje 2k preview obrazok noveho dizajnu pomocou AI image generation (google/gemini-3-pro-image-preview pre vyssiu kvalitu). Obrazok zobrazim na jednoduchou stranku aby si ho mohol/a schvalit pred implementaciou.
 
-## Prompt pre generovanie
-Pouzije sa detailny prompt z tvojho zadania:
-- Dark mode zinc-950 pozadie
-- Glassmorphic karty s 5% opacitou a 12px blur
-- Emerald akcenty
-- Bento-grid layout
-- Spotlight hover efekty
-- Gradient headingy (biela -> zinc-400)
-- Minimalisticky booking wizard pre fyzioterapiu/chiroprakticke sluzby
-- Logo "FYZIO&FIT" v headeri
-
-## Kroky
-1. Vytvorim edge funkciu `generate-preview` ktora zavola AI image model s detailnym promptom
-2. Vygenerovany obrazok ulozim do storage bucketu
-3. Zobrazim ho na docasnej /preview stranke kde si ho mozes pozriet
-4. Po schvaleni prejdem na implementaciu plneho redizajnu
-
-## Technicke detaily
-- Model: `google/gemini-3-pro-image-preview` (najvyssia kvalita pre UI preview)
-- Vystup: PNG, zobrazeny inline na preview stranke
-- Edge funkcia bude jednorazova -- po schvaleni ju mozem odstranit
-- Ziadne zmeny existujuceho kodu, len novy endpoint a docasna stranka
-
+Ku každému H1 pridať `font-heading` a nastaviť variable font settings cez CSS (weight 600, optical sizing auto).
