@@ -104,7 +104,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
       <div className="relative z-10 flex flex-col items-center gap-4">
-        <h1 className="text-4xl font-bold text-white tracking-[0.2em] drop-shadow-lg">
+        <h1 className="text-4xl font-heading font-semibold text-white tracking-[0.2em] drop-shadow-lg">
           FYZIO&FIT
         </h1>
         <div className="w-48 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>

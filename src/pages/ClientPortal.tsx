@@ -208,7 +208,7 @@ const ClientPortal = () => {
                 </div>
               </button>
               <div>
-                <h1 className="text-xl font-bold">{text.title}</h1>
+                <h1 className="text-xl font-heading font-semibold">{text.title}</h1>
                 <p className="text-sm text-muted-foreground">
                   {text.welcome}, {profile?.full_name || user?.email}
                 </p>

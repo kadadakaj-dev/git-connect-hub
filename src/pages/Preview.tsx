@@ -26,7 +26,7 @@ const Preview = () => {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center p-8">
-      <h1 className="text-3xl font-bold mb-2">Atmospheric Technical — Preview</h1>
+      <h1 className="text-3xl font-heading font-semibold mb-2">Atmospheric Technical — Preview</h1>
       <p className="text-zinc-400 mb-8">
         Vygenerovaný AI preview nového dizajnu. Po schválení prejdem na implementáciu.
       </p>
