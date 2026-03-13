@@ -43,36 +43,50 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
               key={service.id}
               href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
               className={cn(
-                "flex items-start gap-3 px-3 py-3 rounded-xl border-2 border-primary/30",
-                "backdrop-blur-sm bg-primary/5",
-                "hover:border-primary/50 hover:bg-primary/10 hover:-translate-y-0.5 hover:shadow-glass",
+                "block rounded-2xl relative overflow-hidden",
+                "backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass",
+                "before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1]",
+                "hover:-translate-y-1 hover:shadow-glass-float",
                 "transition-all duration-300 ease-liquid",
-                "relative overflow-hidden group"
+                "group cursor-pointer"
               )}
             >
-              {/* Accent bar */}
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-xl" />
-              
-              <div className="mt-0.5 flex-shrink-0">
-                <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-colors">
-                  <Phone className="w-3.5 h-3.5 text-primary" />
+              {/* Amber gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/[0.08] to-orange-500/[0.05] pointer-events-none rounded-[inherit]" />
+
+              <div className="relative z-[2] p-4">
+                {/* Top row: badge + price */}
+                <div className="flex items-start justify-between mb-2.5">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                    ⚡ {t.expressLabel}
+                  </span>
+                  <div className="text-right">
+                    <span className="text-xl font-bold font-data text-amber-600 dark:text-amber-400 leading-none">
+                      +15 €
+                    </span>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      {t.expressSurcharge}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p className="text-sm text-muted-foreground mb-3">
+                  {t.expressDesc}
+                </p>
+
+                {/* CTA button */}
+                <div className={cn(
+                  "flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl",
+                  "backdrop-blur-xl bg-[var(--glass-white-md)] border border-amber-500/20",
+                  "group-hover:bg-amber-500/10 group-hover:border-amber-500/30",
+                  "transition-all duration-300"
+                )}>
+                  <Phone className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <span className="text-sm font-semibold text-foreground">{t.expressCta}</span>
+                  <span className="text-sm font-bold font-data text-amber-600 dark:text-amber-400">{EXPRESS_PHONE}</span>
                 </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground leading-snug">
-                  {service.name}
-                </p>
-                <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
-                  {service.description}
-                </p>
-                <span className="text-[11px] font-semibold text-primary mt-1 inline-flex items-center gap-1">
-                  <Phone className="w-2.5 h-2.5" />
-                  {EXPRESS_PHONE}
-                </span>
-              </div>
-              <span className="text-sm font-bold font-data text-primary whitespace-nowrap mt-0.5">
-                +15 €
-              </span>
             </a>
           );
         }
