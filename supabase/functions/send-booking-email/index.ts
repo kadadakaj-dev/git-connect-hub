@@ -181,7 +181,7 @@ serve(async (req) => {
         port: 465,
         tls: true,
         auth: {
-          username: 'info@chiropraxiakosice.eu',
+          username: 'booking@fyzioafit.sk',
           password: smtpPassword,
         },
       },
