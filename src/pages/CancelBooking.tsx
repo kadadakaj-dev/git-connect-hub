@@ -208,7 +208,7 @@ const CancelBooking = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-hero">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200">
       <div className="container max-w-2xl mx-auto px-4 py-8 md:py-12">
         <div className="flex justify-end mb-4">
           <LanguageSwitcher />
