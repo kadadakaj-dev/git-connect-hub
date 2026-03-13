@@ -179,7 +179,7 @@ const AdminLogin = () => {
             </div>
 
             {/* Glassmorphism form card */}
-            <div className="bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6 lg:p-8">
+            <div className="bg-white/75 backdrop-blur-2xl rounded-3xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-6 lg:p-8">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="email" className="text-white/80 text-sm font-medium">Email</Label>
