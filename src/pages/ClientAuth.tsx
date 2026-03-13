@@ -338,7 +338,7 @@ const ClientAuth = () => {
                   <TabsList className="grid w-full grid-cols-2 bg-black/5 rounded-xl border border-black/5 p-1">
                     <TabsTrigger
                       value="login"
-                      className="rounded-lg text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm font-medium text-sm transition-all"
+                      className="rounded-lg text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium text-sm transition-all"
                     >
                       {text.login}
                     </TabsTrigger>
