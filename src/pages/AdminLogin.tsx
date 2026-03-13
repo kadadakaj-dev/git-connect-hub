@@ -8,6 +8,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { toast } from 'sonner';
 import { Shield, Mail, Lock, ArrowLeft, Settings, Users, CalendarDays } from 'lucide-react';
 import { motion } from 'framer-motion';
+import GlassBackground from '@/components/GlassBackground';
 
 const sidebarItems = [
   { icon: CalendarDays, label: { sk: 'Kalendár', en: 'Calendar' }, active: false },
