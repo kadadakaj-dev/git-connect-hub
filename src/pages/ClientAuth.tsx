@@ -285,10 +285,10 @@ const ClientAuth = () => {
             <div className="w-full max-w-md space-y-6">
               {/* Welcome header */}
               <div className="text-center lg:text-left mb-2">
-                <h1 className="text-3xl lg:text-4xl font-semibold text-white tracking-tight mb-2">
+                <h1 className="text-3xl lg:text-4xl font-semibold text-foreground tracking-tight mb-2">
                   {text.welcome}
                 </h1>
-                <p className="text-base text-white/70">{text.welcomeSub}</p>
+                <p className="text-base text-muted-foreground">{text.welcomeSub}</p>
               </div>
 
               {/* Glassmorphism auth card */}
