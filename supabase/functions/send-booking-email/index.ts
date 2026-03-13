@@ -171,9 +171,7 @@ serve(async (req) => {
       throw new Error('SMTP_PASSWORD not configured')
     }
 
-    // Use SUPABASE_URL to derive base URL, fallback to published URL
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
-    const baseUrl = 'https://booking-black.lovable.app'
+    const baseUrl = Deno.env.get('SITE_URL') || 'https://booking-fyzioafit.lovable.app'
 
     const client = new SMTPClient({
       connection: {
