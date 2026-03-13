@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ProfileEditDialog from '@/components/client/ProfileEditDialog';
+import SettingsMenu from '@/components/client/SettingsMenu';
 import { useClientProfile } from '@/hooks/useClientProfile';
 import { useClientBookings } from '@/hooks/useClientBookings';
 import { useFavoriteServices } from '@/hooks/useFavoriteServices';
