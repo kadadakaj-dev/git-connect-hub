@@ -70,26 +70,26 @@ const CalendarHeader = ({
   };
 
   return (
-    <header className="flex flex-col md:flex-row items-center justify-between px-3 md:px-4 py-2 md:py-3 border-b border-border bg-card gap-3 flex-shrink-0">
+    <header className="flex flex-col md:flex-row items-center justify-between px-4 md:px-5 py-3 md:py-3.5 border-b border-border/40 bg-card gap-3 flex-shrink-0">
       {/* Actions & Filter */}
-      <div className="flex items-center justify-between w-full md:w-auto gap-3">
-        <div className="flex gap-2">
-          <Button size="sm" onClick={onCreateEvent} className="gap-1.5">
-            <Plus className="w-4 h-4" />
+      <div className="flex items-center justify-between w-full md:w-auto gap-2.5">
+        <div className="flex gap-1.5">
+          <Button size="sm" onClick={onCreateEvent} className="gap-1.5 h-8 rounded-lg text-xs font-medium shadow-sm">
+            <Plus className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{t.add}</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={onCreateBlock} className="gap-1.5">
-            <Ban className="w-4 h-4" />
+          <Button variant="outline" size="sm" onClick={onCreateBlock} className="gap-1.5 h-8 rounded-lg text-xs font-medium border-border/50 shadow-sm">
+            <Ban className="w-3.5 h-3.5" />
             <span className="hidden md:inline">{t.block}</span>
           </Button>
         </div>
 
-        <div className="flex items-center bg-secondary border border-border rounded-md px-2 py-1">
-          <Users className="w-4 h-4 text-muted-foreground mr-2" />
+        <div className="flex items-center bg-muted/50 border border-border/30 rounded-lg px-2.5 py-1.5">
+          <Users className="w-3.5 h-3.5 text-muted-foreground mr-2" />
           <select
             value={selectedTherapist}
             onChange={(e) => onTherapistChange(e.target.value)}
-            className="bg-transparent text-xs md:text-sm font-medium text-foreground focus:outline-none"
+            className="bg-transparent text-xs font-medium text-foreground focus:outline-none cursor-pointer"
           >
             <option value="all">{t.allEmployees}</option>
             {employees.map(emp => (
@@ -101,40 +101,42 @@ const CalendarHeader = ({
 
       {/* Navigation */}
       <div className="flex items-center justify-between w-full md:w-auto gap-2">
-        <div className="flex items-center border border-primary/30 rounded-md overflow-hidden bg-card flex-1 md:flex-none justify-between">
-          <Button variant="ghost" size="icon" onClick={onPrev} className="rounded-none border-r border-primary/30 h-8 w-8">
-            <ChevronLeft className="w-4 h-4" />
+        <div className="flex items-center border border-border/30 rounded-lg overflow-hidden bg-card flex-1 md:flex-none justify-between shadow-sm">
+          <Button variant="ghost" size="icon" onClick={onPrev} className="rounded-none border-r border-border/20 h-8 w-8 hover:bg-muted/50">
+            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
           </Button>
-          <div className="px-3 md:px-4 py-1 text-primary font-medium bg-accent text-xs md:text-sm text-center flex-1 whitespace-nowrap">
+          <div className="px-4 md:px-5 py-1.5 text-primary font-semibold bg-accent/40 text-xs tracking-wide text-center flex-1 whitespace-nowrap">
             {getRangeLabel()}
           </div>
-          <Button variant="ghost" size="icon" onClick={onNext} className="rounded-none border-l border-primary/30 h-8 w-8">
-            <ChevronRight className="w-4 h-4" />
+          <Button variant="ghost" size="icon" onClick={onNext} className="rounded-none border-l border-border/20 h-8 w-8 hover:bg-muted/50">
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </Button>
         </div>
-        <Button size="sm" onClick={onToday}>{t.today}</Button>
+        <Button size="sm" variant="outline" onClick={onToday} className="h-8 rounded-lg text-xs font-medium border-border/50 shadow-sm">
+          {t.today}
+        </Button>
       </div>
 
       {/* View toggles */}
-      <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-        <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+      <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+        <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
           <input
             type="checkbox"
             checked={preventOverlap}
             onChange={(e) => onPreventOverlapChange(e.target.checked)}
-            className="rounded border-border text-primary focus:ring-primary"
+            className="rounded border-border/50 text-primary focus:ring-primary/30 w-3.5 h-3.5"
           />
           {t.noOverlap}
         </label>
-        <div className="flex items-center gap-1 bg-secondary p-1 rounded-lg text-muted-foreground font-medium text-xs md:text-sm">
+        <div className="flex items-center gap-0.5 bg-muted/40 p-0.5 rounded-lg text-muted-foreground font-medium text-xs">
           {(['month', 'week', 'day'] as ViewMode[]).map(mode => (
             <button
               key={mode}
               onClick={() => onViewModeChange(mode)}
-              className={`px-3 py-1 rounded-md transition-all ${
+              className={`px-3 py-1.5 rounded-md transition-all text-[11px] tracking-wide ${
                 viewMode === mode
-                  ? 'bg-card shadow-sm text-primary font-bold'
-                  : 'hover:text-foreground'
+                  ? 'bg-card shadow-sm text-primary font-semibold'
+                  : 'hover:text-foreground hover:bg-card/50'
               }`}
             >
               {t[mode]}
