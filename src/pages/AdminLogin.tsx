@@ -100,7 +100,8 @@ const AdminLogin = () => {
   const text = t[language];
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 overflow-hidden">
+    <div className="min-h-screen flex relative overflow-hidden">
+      <GlassBackground />
       {/* Language switcher */}
       <div className="absolute top-4 right-4 z-20">
         <LanguageSwitcher />

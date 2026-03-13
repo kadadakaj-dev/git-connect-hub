@@ -251,7 +251,7 @@ const BookingWizard = () => {
       <GlassBackground />
       {renderHeader()}
 
-      <div className="container max-w-2xl mx-auto px-4 py-5 flex-1">
+      <div className="container max-w-2xl mx-auto px-4 py-5 flex-1 relative z-10">
         {/* Step 1: Service */}
         <motion.section
           initial={{ opacity: 0, y: 12 }}

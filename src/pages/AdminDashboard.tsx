@@ -97,7 +97,7 @@ const AdminDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-foreground mb-2">
             {language === 'sk' ? 'Vitajte späť!' : 'Welcome back!'}
