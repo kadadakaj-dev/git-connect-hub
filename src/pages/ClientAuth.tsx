@@ -335,7 +335,7 @@ const ClientAuth = () => {
 
                 {/* Tabs */}
                 <Tabs defaultValue="login" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 bg-white/10 rounded-xl border border-white/10 p-1">
+                  <TabsList className="grid w-full grid-cols-2 bg-black/5 rounded-xl border border-black/5 p-1">
                     <TabsTrigger
                       value="login"
                       className="rounded-lg text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm font-medium text-sm transition-all"
