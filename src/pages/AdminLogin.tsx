@@ -216,7 +216,7 @@ const AdminLogin = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-11 rounded-xl bg-white/90 hover:bg-white text-primary font-semibold text-sm transition-all duration-200 disabled:opacity-50 shadow-lg shadow-black/5 mt-2"
+                  className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm transition-all duration-200 disabled:opacity-50 shadow-lg shadow-primary/20 mt-2"
                 >
                   {isLoading ? text.signingIn : text.signIn}
                 </button>
