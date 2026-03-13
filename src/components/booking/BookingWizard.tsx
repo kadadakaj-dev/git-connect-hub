@@ -403,8 +403,8 @@ const SectionHeader = ({
       className={cn(
         "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0",
         completed
-          ? "bg-white text-primary shadow-sm"
-          : "bg-white/30 text-white border border-white/40"
+          ? "bg-primary text-primary-foreground shadow-sm"
+          : "bg-primary/10 text-primary border border-primary/20"
       )}
     >
       <AnimatePresence mode="wait">
