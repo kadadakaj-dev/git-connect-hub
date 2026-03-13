@@ -181,7 +181,7 @@ const AdminLogin = () => {
             </div>
 
             {/* Glassmorphism form card */}
-            <div className="bg-white/75 backdrop-blur-2xl rounded-3xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-6 lg:p-8">
+            <div className="backdrop-blur-2xl bg-[var(--glass-white)] rounded-3xl border border-[var(--glass-border)] shadow-glass relative overflow-hidden before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1] p-6 lg:p-8">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="email" className="text-foreground text-sm font-medium">Email</Label>
