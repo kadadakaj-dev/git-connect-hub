@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useCreateBooking } from '@/hooks/useCreateBooking';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const initialBookingData: BookingData = {
   service: null,
@@ -270,10 +270,14 @@ const BookingWizard = () => {
         {/* Step 2 & 3: Date & Time */}
         <motion.section
           ref={dateTimeRef}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.1 }}
-          className={cn("mb-4 transition-opacity duration-300", !hasService && "opacity-30 pointer-events-none")}
+          initial={{ opacity: 0.3, y: 12 }}
+          animate={{
+            opacity: hasService ? 1 : 0.3,
+            y: hasService ? 0 : 12,
+            scale: hasService ? 1 : 0.98,
+          }}
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className={cn("mb-4", !hasService && "pointer-events-none")}
         >
           <div className="flex items-center gap-6 mb-2">
             <SectionHeader number={2} title={language === 'sk' ? 'Vyberte dátum' : 'Select date'} completed={!!bookingData.date} />
@@ -295,10 +299,14 @@ const BookingWizard = () => {
         {/* Step 4: Client Details */}
         <motion.section
           ref={detailsRef}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.15 }}
-          className={cn("mb-4 transition-opacity duration-300", !hasDateTime && "opacity-30 pointer-events-none")}
+          initial={{ opacity: 0.3, y: 12 }}
+          animate={{
+            opacity: hasDateTime ? 1 : 0.3,
+            y: hasDateTime ? 0 : 12,
+            scale: hasDateTime ? 1 : 0.98,
+          }}
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className={cn("mb-4", !hasDateTime && "pointer-events-none")}
         >
           <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
           <div className="mt-2">
@@ -346,10 +354,14 @@ const BookingWizard = () => {
 
         {/* Submit */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.2 }}
-          className="pb-6"
+          initial={{ opacity: 0.3, y: 12 }}
+          animate={{
+            opacity: hasService && hasDateTime ? 1 : 0.3,
+            y: hasService && hasDateTime ? 0 : 12,
+            scale: hasService && hasDateTime ? 1 : 0.98,
+          }}
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className={cn("pb-6", (!hasService || !hasDateTime) && "pointer-events-none")}
         >
           <Button
             variant="default"
@@ -385,14 +397,40 @@ const SectionHeader = ({
   completed: boolean;
 }) => (
   <div className="flex items-center gap-2">
-    <div className={cn(
-      "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0",
-      completed
-        ? "bg-white text-primary shadow-sm"
-        : "bg-white/30 text-white border border-white/40"
-    )}>
-      {completed ? <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> : number}
-    </div>
+    <motion.div
+      animate={completed ? { scale: [1, 1.2, 1], backgroundColor: 'rgba(255,255,255,1)' } : {}}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className={cn(
+        "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0",
+        completed
+          ? "bg-white text-primary shadow-sm"
+          : "bg-white/30 text-white border border-white/40"
+      )}
+    >
+      <AnimatePresence mode="wait">
+        {completed ? (
+          <motion.span
+            key="check"
+            initial={{ scale: 0, rotate: -90 }}
+            animate={{ scale: 1, rotate: 0 }}
+            exit={{ scale: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
+            <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+          </motion.span>
+        ) : (
+          <motion.span
+            key="number"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {number}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.div>
     <span className="text-sm font-semibold text-white drop-shadow-sm">{title}</span>
   </div>
 );
