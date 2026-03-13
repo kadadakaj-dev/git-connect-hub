@@ -194,7 +194,7 @@ const BookingWizard = () => {
   const renderHeader = () => (
     <header className="sticky top-0 z-50 backdrop-blur-2xl bg-[var(--glass-white-md)] border-b border-[var(--glass-border-subtle)] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
       <div className="container max-w-2xl mx-auto px-4 h-12 flex items-center justify-between">
-        <a href="https://booking.fyzioafit.sk" className="text-sm font-bold text-foreground tracking-tight hover:text-primary transition-colors duration-200">
+        <a href="/" className="text-sm font-bold text-foreground tracking-tight hover:text-primary transition-colors duration-200">
           FYZIO&FIT
         </a>
         <div className="flex items-center gap-3">
