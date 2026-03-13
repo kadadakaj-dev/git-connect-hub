@@ -1,7 +1,7 @@
 const GlassBackground = () => (
-  <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+  <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-100 md:opacity-100">
     <div
-      className="glass-blob"
+      className="glass-blob max-md:!opacity-[0.15]"
       style={{
         width: 700,
         height: 700,
@@ -12,7 +12,7 @@ const GlassBackground = () => (
       }}
     />
     <div
-      className="glass-blob"
+      className="glass-blob max-md:!opacity-[0.12]"
       style={{
         width: 600,
         height: 600,
@@ -24,7 +24,7 @@ const GlassBackground = () => (
       }}
     />
     <div
-      className="glass-blob"
+      className="glass-blob max-md:!opacity-[0.1]"
       style={{
         width: 400,
         height: 400,
