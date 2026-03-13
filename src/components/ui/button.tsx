@@ -19,7 +19,7 @@ const buttonVariants = cva(
         subtle: "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground",
         success: "bg-success text-success-foreground hover:bg-success/90 shadow-soft",
         navy: "bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 active:scale-[0.98]",
-        glass: "bg-card border border-border/60 text-foreground hover:shadow-elevated active:scale-[0.98]",
+        glass: "backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass text-foreground hover:bg-[var(--glass-white-md)] hover:-translate-y-0.5 hover:shadow-glass-float active:scale-[0.96]",
       },
       size: {
         default: "h-10 px-5 py-2",
