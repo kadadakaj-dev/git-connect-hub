@@ -16,6 +16,8 @@ const CalendarView = () => {
   const { language } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [navDirection, setNavDirection] = useState<1 | -1>(1);
+  const [dateKey, setDateKey] = useState(0);
   const [selectedTherapist, setSelectedTherapist] = useState('all');
   const [preventOverlap, setPreventOverlap] = useState(true);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -144,16 +146,20 @@ const CalendarView = () => {
 
   // Navigation
   const handlePrev = () => {
+    setNavDirection(-1);
+    setDateKey(k => k + 1);
     if (viewMode === 'day') setCurrentDate(prev => addDays(prev, -1));
     else if (viewMode === 'week') setCurrentDate(prev => subWeeks(prev, 1));
     else setCurrentDate(prev => { const d = new Date(prev); d.setMonth(d.getMonth() - 1); return d; });
   };
   const handleNext = () => {
+    setNavDirection(1);
+    setDateKey(k => k + 1);
     if (viewMode === 'day') setCurrentDate(prev => addDays(prev, 1));
     else if (viewMode === 'week') setCurrentDate(prev => addWeeks(prev, 1));
     else setCurrentDate(prev => { const d = new Date(prev); d.setMonth(d.getMonth() + 1); return d; });
   };
-  const goToToday = () => setCurrentDate(new Date());
+  const goToToday = () => { setNavDirection(1); setDateKey(k => k + 1); setCurrentDate(new Date()); };
 
   // Active days calculation
   const getActiveDays = (): Date[] => {
@@ -362,7 +368,7 @@ const CalendarView = () => {
           onCreateBlock={() => openCreateModal(currentDate, '12:00', true)}
         />
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={navDirection}>
           {isLoading ? (
             <motion.div
               key="loading"
@@ -376,11 +382,12 @@ const CalendarView = () => {
             </motion.div>
           ) : viewMode === 'month' ? (
             <motion.div
-              key="month"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              key={`month-${dateKey}`}
+              custom={navDirection}
+              initial={{ opacity: 0, x: navDirection * 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: navDirection * -40 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="flex flex-col flex-1 overflow-hidden"
             >
               <MonthView
@@ -397,11 +404,12 @@ const CalendarView = () => {
             </motion.div>
           ) : (
             <motion.div
-              key={viewMode}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              key={`${viewMode}-${dateKey}`}
+              custom={navDirection}
+              initial={{ opacity: 0, x: navDirection * 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: navDirection * -40 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="flex flex-col flex-1 overflow-hidden"
             >
               <TimeGridView
