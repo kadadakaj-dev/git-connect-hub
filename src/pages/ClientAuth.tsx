@@ -396,7 +396,7 @@ const ClientAuth = () => {
                       <div className="space-y-1.5">
                         <Label htmlFor="register-name" className="text-foreground text-sm font-medium">{text.fullName}</Label>
                         <div className="relative">
-                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                             id="register-name"
                             type="text"
