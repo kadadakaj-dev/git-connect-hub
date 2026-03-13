@@ -24,6 +24,7 @@ import {
   Upload,
   Trash2,
   X,
+  Grid3X3 as Grid3x3,
 } from 'lucide-react';
 
 interface AvatarEditDialogProps {
