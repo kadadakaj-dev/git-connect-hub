@@ -32,7 +32,7 @@ const translations = {
     cancelButton: 'Zrušiť rezerváciu',
     footer: 'Tešíme sa na vašu návštevu!',
     clinicName: 'FYZIO&FIT',
-    contact: 'Kontakt: info@chiropraxiakosice.eu',
+    contact: 'Kontakt: booking@fyzioafit.sk',
   },
   en: {
     subject: 'Booking Confirmation - FYZIO&FIT',
