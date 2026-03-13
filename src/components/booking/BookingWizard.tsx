@@ -222,10 +222,12 @@ const BookingWizard = () => {
   // Glass card wrapper for sections
   const GlassCard = ({ children, className: cls }: { children: React.ReactNode; className?: string }) => (
     <div className={cn(
-      "bg-white/75 backdrop-blur-2xl rounded-2xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-4",
+      "backdrop-blur-xl rounded-2xl p-4 relative overflow-hidden",
+      "bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass",
+      "before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1]",
       cls
     )}>
-      {children}
+      <div className="relative z-[2]">{children}</div>
     </div>
   );
 
