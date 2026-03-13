@@ -100,6 +100,7 @@ const AvatarEditDialog = ({
       flip: 'Flip',
       reset: 'Reset',
       dragHint: 'Drag image to reposition',
+      cropGrid: 'Grid',
       fileTooLarge: 'File too large (max 5MB)',
       invalidFileType: 'Invalid file type (JPG, PNG, WebP)',
     },
