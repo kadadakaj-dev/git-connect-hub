@@ -22,6 +22,10 @@ export const translations = {
       physiotherapy: 'Fyzioterapia',
       chiropractic: 'Chiropraktika',
     },
+    expressLabel: 'Expresný termín',
+    expressDesc: 'Do 36h · víkendy · sviatky',
+    expressSurcharge: 'k cene služby',
+    expressCta: 'Zavolajte nám',
     min: 'min',
 
     // Services
