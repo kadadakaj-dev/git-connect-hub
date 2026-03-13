@@ -223,20 +223,20 @@ const ClientAuth = () => {
                 return (
                   <li
                     key={i}
-                    className={`relative rounded-2xl transition-all duration-200 ${
-                      item.active
-                        ? 'bg-white/25 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.3)]'
-                        : 'hover:bg-white/15 hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]'
-                    }`}
-                  >
-                    {item.active && (
-                      <span className="absolute -left-6 top-1/2 -translate-y-1/2 w-1 h-5 bg-white rounded-r-sm" />
-                    )}
-                    <span className="flex items-center gap-3.5 px-4 py-3 text-white font-medium tracking-wide text-[15px]">
-                      <Icon className="w-5 h-5 opacity-90" />
-                      {item.label[language]}
-                    </span>
-                  </li>
+                  className={`relative rounded-2xl transition-all duration-200 ${
+                    item.active
+                      ? 'bg-primary/10 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)]'
+                      : 'hover:bg-black/5 hover:shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]'
+                  }`}
+                >
+                  {item.active && (
+                    <span className="absolute -left-6 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-sm" />
+                  )}
+                  <span className="flex items-center gap-3.5 px-4 py-3 text-foreground font-medium tracking-wide text-[15px]">
+                    <Icon className="w-5 h-5 opacity-70" />
+                    {item.label[language]}
+                  </span>
+                </li>
                 );
               })}
             </ul>
