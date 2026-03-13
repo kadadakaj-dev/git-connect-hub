@@ -230,7 +230,7 @@ const BookingWizard = () => {
 
   if (isConfirmed) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/80 via-primary/60 to-ring/70 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex flex-col">
         {renderHeader()}
         <div className="container max-w-2xl mx-auto px-4 py-6 flex-1">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
