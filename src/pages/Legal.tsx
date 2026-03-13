@@ -177,13 +177,13 @@ const Legal = () => {
           {/* Tabs */}
           <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="terms" className="gap-2">
-                <FileText className="w-4 h-4" />
-                {t.terms.title}
+              <TabsTrigger value="terms" className="gap-1.5 text-xs sm:text-sm px-2 sm:px-3">
+                <FileText className="w-4 h-4 hidden sm:block shrink-0" />
+                <span className="truncate">{t.terms.title}</span>
               </TabsTrigger>
-              <TabsTrigger value="privacy" className="gap-2">
-                <Shield className="w-4 h-4" />
-                {t.privacy.title}
+              <TabsTrigger value="privacy" className="gap-1.5 text-xs sm:text-sm px-2 sm:px-3">
+                <Shield className="w-4 h-4 hidden sm:block shrink-0" />
+                <span className="truncate">{t.privacy.title}</span>
               </TabsTrigger>
             </TabsList>
 
