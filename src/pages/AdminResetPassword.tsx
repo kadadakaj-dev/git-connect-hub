@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useLanguage } from '@/i18n/LanguageContext';
 import { toast } from 'sonner';
 import { Lock, KeyRound } from 'lucide-react';
+import GlassBackground from '@/components/GlassBackground';
 
 const AdminResetPassword = () => {
   const { language } = useLanguage();
@@ -59,8 +60,9 @@ const AdminResetPassword = () => {
   if (!isValidSession) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-border/50 shadow-xl">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
+      <GlassBackground />
+      <Card className="w-full max-w-md glass rounded-2xl relative z-10">
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
             <KeyRound className="w-8 h-8 text-primary" />

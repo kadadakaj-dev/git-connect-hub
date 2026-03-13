@@ -8,6 +8,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { format } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
+import GlassBackground from '@/components/GlassBackground';
 
 type CancelStatus = 'loading' | 'confirm' | 'success' | 'error' | 'already_cancelled';
 
@@ -85,8 +86,6 @@ const CancelBooking = () => {
       setError(text.invalidToken);
       return;
     }
-    
-    // Verify the token exists and booking is cancellable
     verifyBooking();
   }, [token, text.invalidToken]);
 
@@ -95,13 +94,8 @@ const CancelBooking = () => {
       const response = await supabase.functions.invoke('get-booking-by-token', {
         body: { token },
       });
-
-      if (response.error) {
-        throw new Error(response.error.message);
-      }
-
+      if (response.error) throw new Error(response.error.message);
       const data = response.data;
-      
       if (!data.success) {
         if (data.error === 'Booking is already cancelled') {
           setBooking(data.booking);
@@ -112,7 +106,6 @@ const CancelBooking = () => {
         }
         return;
       }
-
       setBooking(data.booking);
       setStatus('confirm');
     } catch (err) {
@@ -124,20 +117,13 @@ const CancelBooking = () => {
 
   const handleCancel = async () => {
     if (!token) return;
-    
     setIsProcessing(true);
-    
     try {
       const response = await supabase.functions.invoke('cancel-booking', {
         body: { token },
       });
-
-      if (response.error) {
-        throw new Error(response.error.message);
-      }
-
+      if (response.error) throw new Error(response.error.message);
       const data = response.data;
-      
       if (!data.success) {
         if (data.error === 'Booking is already cancelled') {
           setStatus('already_cancelled');
@@ -147,7 +133,6 @@ const CancelBooking = () => {
         }
         return;
       }
-
       setBooking(data.booking);
       setStatus('success');
     } catch (err) {
@@ -161,14 +146,13 @@ const CancelBooking = () => {
 
   const renderBookingDetails = () => {
     if (!booking) return null;
-
     const serviceName = language === 'sk' ? booking.service_name_sk : booking.service_name_en;
-    const formattedDate = booking.date 
+    const formattedDate = booking.date
       ? format(new Date(booking.date), 'EEEE, d. MMMM yyyy', { locale })
       : '';
 
     return (
-      <div className="bg-white/75 backdrop-blur-2xl rounded-xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-6 text-left space-y-4 max-w-md mx-auto">
+      <div className="glass rounded-xl p-6 text-left space-y-4 max-w-md mx-auto">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Calendar className="w-5 h-5 text-primary" />
@@ -182,7 +166,6 @@ const CancelBooking = () => {
             </p>
           </div>
         </div>
-
         {serviceName && (
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -194,7 +177,6 @@ const CancelBooking = () => {
             </div>
           </div>
         )}
-
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
             <User className="w-5 h-5 text-primary" />
@@ -209,7 +191,8 @@ const CancelBooking = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200">
+    <div className="min-h-screen relative overflow-hidden">
+      <GlassBackground />
       <PageMeta
         titleSk="Zrušenie rezervácie | FYZIO&FIT"
         titleEn="Cancel Booking | FYZIO&FIT"
@@ -218,7 +201,7 @@ const CancelBooking = () => {
         path="/cancel"
         noindex
       />
-      <div className="container max-w-2xl mx-auto px-4 py-8 md:py-12">
+      <div className="container max-w-2xl mx-auto px-4 py-8 md:py-12 relative z-10">
         <div className="flex justify-end mb-4">
           <LanguageSwitcher />
         </div>
@@ -245,32 +228,17 @@ const CancelBooking = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-2">{text.confirmTitle}</h2>
                 <p className="text-muted-foreground">{text.confirmSubtitle}</p>
               </div>
-              
               {renderBookingDetails()}
-
               <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
-                <Button
-                  variant="destructive"
-                  size="lg"
-                  onClick={handleCancel}
-                  disabled={isProcessing}
-                  className="min-w-[180px]"
-                >
+                <Button variant="destructive" size="lg" onClick={handleCancel} disabled={isProcessing} className="min-w-[180px]">
                   {isProcessing ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       {language === 'sk' ? 'Ruším...' : 'Cancelling...'}
                     </>
-                  ) : (
-                    text.cancelButton
-                  )}
+                  ) : text.cancelButton}
                 </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => navigate('/')}
-                  className="min-w-[180px]"
-                >
+                <Button variant="outline" size="lg" onClick={() => navigate('/')} className="min-w-[180px]">
                   {text.keepButton}
                 </Button>
               </div>
@@ -286,15 +254,8 @@ const CancelBooking = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-2">{text.successTitle}</h2>
                 <p className="text-muted-foreground">{text.successSubtitle}</p>
               </div>
-              
               {renderBookingDetails()}
-
-              <Button
-                variant="booking"
-                size="lg"
-                onClick={() => navigate('/')}
-                className="mt-6"
-              >
+              <Button variant="booking" size="lg" onClick={() => navigate('/')} className="mt-6">
                 {text.newBooking}
               </Button>
             </div>
@@ -309,15 +270,8 @@ const CancelBooking = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-2">{text.alreadyCancelledTitle}</h2>
                 <p className="text-muted-foreground">{text.alreadyCancelledSubtitle}</p>
               </div>
-              
               {renderBookingDetails()}
-
-              <Button
-                variant="booking"
-                size="lg"
-                onClick={() => navigate('/')}
-                className="mt-6"
-              >
+              <Button variant="booking" size="lg" onClick={() => navigate('/')} className="mt-6">
                 {text.newBooking}
               </Button>
             </div>
@@ -332,12 +286,7 @@ const CancelBooking = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-2">{text.errorTitle}</h2>
                 <p className="text-muted-foreground">{error}</p>
               </div>
-              <Button
-                variant="subtle"
-                size="lg"
-                onClick={() => navigate('/')}
-                className="mt-6"
-              >
+              <Button variant="subtle" size="lg" onClick={() => navigate('/')} className="mt-6">
                 {text.backToHome}
               </Button>
             </div>
