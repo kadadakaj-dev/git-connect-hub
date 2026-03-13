@@ -136,6 +136,10 @@ export const translations = {
       physiotherapy: 'Physiotherapy',
       chiropractic: 'Chiropractic',
     },
+    expressLabel: 'Express Appointment',
+    expressDesc: 'Within 36h · weekends · holidays',
+    expressSurcharge: 'added to service price',
+    expressCta: 'Call us',
     min: 'min',
 
     // Services
