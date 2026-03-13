@@ -191,7 +191,7 @@ const AdminLogin = () => {
                       placeholder="admin@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 h-11 bg-white/10 border-white/15 text-white placeholder:text-white/30 rounded-xl focus:border-white/40 focus:ring-white/20"
+                      className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
                       required
                     />
                   </div>
