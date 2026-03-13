@@ -225,7 +225,7 @@ const AdminLogin = () => {
                   type="button"
                   disabled={isSendingReset}
                   onClick={handleResetPassword}
-                  className="w-full text-center text-white/50 hover:text-white/80 text-sm transition-colors py-1"
+                  className="w-full text-center text-muted-foreground hover:text-foreground text-sm transition-colors py-1"
                 >
                   {isSendingReset ? text.sending : text.forgotPassword}
                 </button>
