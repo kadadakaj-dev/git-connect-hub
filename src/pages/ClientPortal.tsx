@@ -18,7 +18,6 @@ import {
   Clock,
   History,
   Heart,
-  LogOut,
   Plus,
   Star,
   User as UserIcon,
