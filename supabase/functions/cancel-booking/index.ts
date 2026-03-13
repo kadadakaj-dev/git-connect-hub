@@ -27,6 +27,23 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+    // Rate limit: 20 cancel attempts per IP per 15 minutes
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const windowStart = new Date(Date.now() - 15 * 60 * 1000).toISOString()
+    const { count } = await supabase
+      .from('rate_limits')
+      .select('*', { count: 'exact', head: true })
+      .eq('identifier', clientIP)
+      .eq('endpoint', 'cancel-booking')
+      .gte('created_at', windowStart)
+    if ((count || 0) >= 20) {
+      return new Response(
+        JSON.stringify({ error: 'Too many requests, please try again later' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' } }
+      )
+    }
+    await supabase.from('rate_limits').insert({ identifier: clientIP, endpoint: 'cancel-booking' })
+
     const body: CancelRequest = await req.json()
     console.log('Received cancellation request for token:', body.token?.substring(0, 8) + '...')
 
