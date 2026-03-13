@@ -168,7 +168,45 @@ const AvatarEditDialog = ({
     );
 
     ctx.restore();
-  }, [selectedImage, zoom, rotation, flipH, brightness, offsetX, offsetY]);
+
+    // Draw crop grid overlay
+    if (showGrid) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE / 2, 0, Math.PI * 2);
+      ctx.clip();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.lineWidth = 0.5;
+
+      // Rule of thirds
+      const third = CANVAS_SIZE / 3;
+      for (let i = 1; i < 3; i++) {
+        ctx.beginPath();
+        ctx.moveTo(third * i, 0);
+        ctx.lineTo(third * i, CANVAS_SIZE);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, third * i);
+        ctx.lineTo(CANVAS_SIZE, third * i);
+        ctx.stroke();
+      }
+
+      // Center crosshair
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.lineWidth = 0.5;
+      const center = CANVAS_SIZE / 2;
+      const crossSize = 12;
+      ctx.beginPath();
+      ctx.moveTo(center - crossSize, center);
+      ctx.lineTo(center + crossSize, center);
+      ctx.moveTo(center, center - crossSize);
+      ctx.lineTo(center, center + crossSize);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+  }, [selectedImage, zoom, rotation, flipH, brightness, offsetX, offsetY, showGrid]);
 
   useEffect(() => {
     if (selectedImage) {
