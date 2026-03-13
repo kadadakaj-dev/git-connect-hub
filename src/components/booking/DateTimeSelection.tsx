@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useTimeSlots } from '@/hooks/useTimeSlots';
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import TimeSlotSkeleton from './TimeSlotSkeleton';
 
 interface DateTimeSelectionProps {
