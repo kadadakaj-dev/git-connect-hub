@@ -157,7 +157,7 @@ const Legal = () => {
         <meta name="description" content={t.pageDescription} />
       </Helmet>
 
-      <div className="min-h-screen gradient-hero flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex flex-col">
         <div className="container max-w-4xl mx-auto px-4 py-8 md:py-12 flex-1">
           {/* Back Button */}
           <Link to="/">
