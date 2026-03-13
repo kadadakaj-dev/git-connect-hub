@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Inter', 'system-ui', 'sans-serif'],
+        heading: ['"Google Sans Flex"', 'system-ui', 'sans-serif'],
         data: ["'JetBrains Mono'", "'SF Mono'", "'Fira Code'", 'monospace'],
       },
       colors: {
