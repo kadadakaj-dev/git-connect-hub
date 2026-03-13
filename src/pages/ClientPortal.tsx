@@ -479,6 +479,18 @@ const ClientPortal = () => {
           onProfileUpdated={handleProfileUpdated}
         />
       )}
+
+      {/* Avatar Edit Dialog */}
+      {profile && user && (
+        <AvatarEditDialog
+          open={isAvatarDialogOpen}
+          onOpenChange={setIsAvatarDialogOpen}
+          currentAvatarUrl={profile.avatar_url}
+          fullName={profile.full_name}
+          userId={user.id}
+          onAvatarUpdated={handleProfileUpdated}
+        />
+      )}
     </>
   );
 };
