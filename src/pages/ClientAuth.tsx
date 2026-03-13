@@ -444,7 +444,7 @@ const ClientAuth = () => {
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                           />
                         </div>
-                        {errors.password && <p className="text-sm text-red-300">{errors.password}</p>}
+                        {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                       </div>
                       <button
                         type="submit"
