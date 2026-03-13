@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import PageMeta from '@/components/seo/PageMeta';
 import { ArrowLeft, FileText, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
