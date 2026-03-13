@@ -200,7 +200,7 @@ const AdminLogin = () => {
                 <div className="space-y-1.5">
                   <Label htmlFor="password" className="text-foreground text-sm font-medium">{text.password}</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="password"
                       type="password"
