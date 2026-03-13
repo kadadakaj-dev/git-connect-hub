@@ -153,6 +153,16 @@ serve(async (req) => {
   }
 
   try {
+    // Protect: only allow calls with service role key
+    const authHeader = req.headers.get('authorization')
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    if (!authHeader || authHeader !== `Bearer ${supabaseServiceKey}`) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const data: EmailRequest = await req.json()
     console.log('Sending booking email to:', data.to, 'template:', data.template || 'confirmation')
 

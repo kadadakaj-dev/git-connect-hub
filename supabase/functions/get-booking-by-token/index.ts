@@ -27,6 +27,23 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+    // Rate limit: 30 token lookups per IP per 15 minutes
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const windowStart = new Date(Date.now() - 15 * 60 * 1000).toISOString()
+    const { count } = await supabase
+      .from('rate_limits')
+      .select('*', { count: 'exact', head: true })
+      .eq('identifier', clientIP)
+      .eq('endpoint', 'get-booking-by-token')
+      .gte('created_at', windowStart)
+    if ((count || 0) >= 30) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Too many requests, please try again later' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' } }
+      )
+    }
+    await supabase.from('rate_limits').insert({ identifier: clientIP, endpoint: 'get-booking-by-token' })
+
     const body: TokenRequest = await req.json()
     console.log('Looking up booking by token:', body.token?.substring(0, 8) + '...')
 

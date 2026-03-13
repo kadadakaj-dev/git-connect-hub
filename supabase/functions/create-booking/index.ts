@@ -49,6 +49,40 @@ function sanitizeString(str: string, maxLength: number): string {
   return str.trim().slice(0, maxLength)
 }
 
+// Rate limiting helper
+async function checkRateLimit(
+  supabase: ReturnType<typeof createClient>,
+  identifier: string,
+  endpoint: string,
+  maxRequests: number,
+  windowMinutes: number
+): Promise<{ allowed: boolean; remaining: number }> {
+  // Cleanup old entries periodically (1 in 10 chance)
+  if (Math.random() < 0.1) {
+    await supabase.rpc('cleanup_rate_limits').catch(() => {})
+  }
+
+  const windowStart = new Date(Date.now() - windowMinutes * 60 * 1000).toISOString()
+
+  const { count } = await supabase
+    .from('rate_limits')
+    .select('*', { count: 'exact', head: true })
+    .eq('identifier', identifier)
+    .eq('endpoint', endpoint)
+    .gte('created_at', windowStart)
+
+  const currentCount = count || 0
+
+  if (currentCount >= maxRequests) {
+    return { allowed: false, remaining: 0 }
+  }
+
+  // Record this request
+  await supabase.from('rate_limits').insert({ identifier, endpoint })
+
+  return { allowed: true, remaining: maxRequests - currentCount - 1 }
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -60,6 +94,16 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Rate limit: 10 bookings per IP per 15 minutes
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const rateCheck = await checkRateLimit(supabase, clientIP, 'create-booking', 10, 15)
+    if (!rateCheck.allowed) {
+      return new Response(
+        JSON.stringify({ error: 'Too many requests, please try again later' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' } }
+      )
+    }
 
     const body: BookingRequest = await req.json()
     console.log('Received booking request:', { ...body, client_email: '***', client_phone: '***' })
