@@ -118,6 +118,16 @@
   }
 }
 
+.month-blocked-pattern {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    hsl(var(--destructive) / 0.06) 4px,
+    hsl(var(--destructive) / 0.06) 5px
+  );
+}
+
 @layer components {
   .glass-card {
     @apply bg-card border border-border/60 shadow-soft;
