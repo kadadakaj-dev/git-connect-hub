@@ -9,6 +9,7 @@ interface ClientProfile {
   avatar_url: string | null;
   preferred_language: string;
   total_visits: number;
+  email_notifications: boolean;
   created_at: string;
   updated_at: string;
 }
