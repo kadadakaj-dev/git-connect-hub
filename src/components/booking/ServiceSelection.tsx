@@ -32,7 +32,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       {services.map((service) => {
         const isSelected = selectedService?.id === service.id;
         const isExpress = service.id === EXPRESS_SERVICE_ID;
@@ -43,14 +43,15 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
               key={service.id}
               href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
               className={cn(
-                "flex items-start gap-3 px-3 py-3 rounded-md border-2 border-primary/30",
-                "bg-gradient-to-r from-primary/8 via-primary/5 to-transparent",
-                "hover:border-primary/50 hover:from-primary/12 transition-all duration-200",
+                "flex items-start gap-3 px-3 py-3 rounded-xl border-2 border-primary/30",
+                "backdrop-blur-sm bg-primary/5",
+                "hover:border-primary/50 hover:bg-primary/10 hover:-translate-y-0.5 hover:shadow-glass",
+                "transition-all duration-300 ease-liquid",
                 "relative overflow-hidden group"
               )}
             >
               {/* Accent bar */}
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-md" />
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-xl" />
               
               <div className="mt-0.5 flex-shrink-0">
                 <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-colors">
@@ -81,24 +82,25 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
             key={service.id}
             onClick={() => onSelect(service)}
             className={cn(
-              "w-full flex items-start gap-3 px-3 py-2.5 rounded-md text-left transition-all duration-150",
+              "w-full flex items-start gap-3 px-3 py-2.5 rounded-xl text-left",
+              "transition-all duration-300 ease-liquid",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              "border",
+              "border backdrop-blur-sm",
               isSelected
-                ? "border-primary bg-primary/5"
-                : "border-border/40 hover:border-border hover:bg-accent/50"
+                ? "border-primary bg-primary/8 shadow-[0_0_16px_rgba(59,130,246,0.12)] -translate-y-0.5"
+                : "border-[var(--glass-border-subtle)] bg-[var(--glass-white)] hover:border-[var(--glass-border)] hover:bg-[var(--glass-white-md)] hover:-translate-y-0.5 hover:shadow-glass"
             )}
           >
             {/* Radio indicator */}
             <div className="mt-1 flex-shrink-0">
               <div className={cn(
-                "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors",
+                "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-300 ease-liquid",
                 isSelected
-                  ? "border-primary"
+                  ? "border-primary shadow-[0_0_8px_rgba(59,130,246,0.3)]"
                   : "border-muted-foreground/30"
               )}>
                 {isSelected && (
-                  <div className="w-2 h-2 rounded-full bg-primary" />
+                  <div className="w-2 h-2 rounded-full bg-primary animate-scale-in" />
                 )}
               </div>
             </div>
@@ -113,7 +115,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
             </div>
 
             <span className={cn(
-              "text-sm font-bold font-data whitespace-nowrap mt-0.5",
+              "text-sm font-bold font-data whitespace-nowrap mt-0.5 transition-colors duration-200",
               isSelected ? "text-primary" : "text-foreground"
             )}>
               {service.price} €

@@ -211,7 +211,7 @@ const ClientAuth = () => {
       <div className="min-h-screen flex relative overflow-hidden">
         <GlassBackground />
         {/* Glassmorphism Sidebar — hidden on mobile */}
-        <aside className="hidden lg:flex w-[280px] flex-col p-6 bg-white/70 backdrop-blur-2xl border-r border-black/5">
+        <aside className="hidden lg:flex w-[280px] flex-col p-6 backdrop-blur-2xl bg-[var(--glass-white-md)] border-r border-[var(--glass-border-subtle)]">
           {/* Logo */}
           <div className="text-center mb-10">
             <span className="text-3xl font-semibold text-foreground tracking-tight">FYZIO&FIT</span>
@@ -294,7 +294,7 @@ const ClientAuth = () => {
               </div>
 
               {/* Glassmorphism auth card */}
-              <div className="bg-white/75 backdrop-blur-2xl rounded-3xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-6 lg:p-8 space-y-6">
+              <div className="backdrop-blur-2xl bg-[var(--glass-white)] rounded-3xl border border-[var(--glass-border)] shadow-glass relative overflow-hidden before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1] p-6 lg:p-8 space-y-6">
                 {/* OAuth buttons */}
                 <div className="space-y-3">
                   <button

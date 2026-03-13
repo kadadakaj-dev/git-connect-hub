@@ -129,12 +129,12 @@ const BookingWizard = () => {
     const hasError = !!errors[field];
     return cn(
       "w-full pl-8 pr-8 py-2.5 rounded-xl border text-foreground text-sm",
-      "bg-white/70 backdrop-blur-sm",
-      "placeholder:text-muted-foreground/50 transition-all duration-200",
-      "focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+      "bg-[var(--glass-white)] backdrop-blur-sm",
+      "placeholder:text-muted-foreground/50 transition-all duration-300 ease-liquid",
+      "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 focus:bg-[var(--glass-white-md)]",
       hasError
         ? "border-destructive/50 bg-destructive/5"
-        : "border-border/40 hover:border-muted-foreground/30"
+        : "border-[var(--glass-border-subtle)] hover:border-[var(--glass-border)]"
     );
   };
 
@@ -192,9 +192,9 @@ const BookingWizard = () => {
 
   // Glassmorphism header
   const renderHeader = () => (
-    <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-2xl border-b border-black/5">
+    <header className="sticky top-0 z-50 backdrop-blur-2xl bg-[var(--glass-white-md)] border-b border-[var(--glass-border-subtle)] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
       <div className="container max-w-2xl mx-auto px-4 h-12 flex items-center justify-between">
-        <a href="https://booking.fyzioafit.sk" className="text-sm font-bold text-foreground tracking-tight hover:text-primary transition-colors">
+        <a href="https://booking.fyzioafit.sk" className="text-sm font-bold text-foreground tracking-tight hover:text-primary transition-colors duration-200">
           FYZIO&FIT
         </a>
         <div className="flex items-center gap-3">
@@ -222,10 +222,12 @@ const BookingWizard = () => {
   // Glass card wrapper for sections
   const GlassCard = ({ children, className: cls }: { children: React.ReactNode; className?: string }) => (
     <div className={cn(
-      "bg-white/75 backdrop-blur-2xl rounded-2xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-4",
+      "backdrop-blur-xl rounded-2xl p-4 relative overflow-hidden",
+      "bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass",
+      "before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1]",
       cls
     )}>
-      {children}
+      <div className="relative z-[2]">{children}</div>
     </div>
   );
 
@@ -335,10 +337,10 @@ const BookingWizard = () => {
                     rows={2}
                     className={cn(
                       "w-full pl-8 pr-3 py-2.5 rounded-xl border text-foreground text-sm resize-none",
-                      "bg-white/70 backdrop-blur-sm",
-                      "placeholder:text-muted-foreground/50 transition-all duration-200",
-                      "focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
-                      "border-border/40 hover:border-muted-foreground/30"
+                      "bg-[var(--glass-white)] backdrop-blur-sm",
+                      "placeholder:text-muted-foreground/50 transition-all duration-300 ease-liquid",
+                      "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 focus:bg-[var(--glass-white-md)]",
+                      "border-[var(--glass-border-subtle)] hover:border-[var(--glass-border)]"
                     )}
                   />
                 </div>
@@ -371,7 +373,7 @@ const BookingWizard = () => {
             size="lg"
             onClick={handleSubmit}
             disabled={!hasService || !hasDateTime || createBooking.isPending}
-            className="w-full gap-2 rounded-2xl text-sm font-semibold h-12 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground border-0"
+            className="w-full gap-2 rounded-2xl text-sm font-semibold h-12 shadow-[0_4px_24px_rgba(59,130,246,0.3)] bg-primary hover:bg-primary/90 text-primary-foreground border-0 hover:-translate-y-0.5 transition-all duration-300 ease-liquid active:scale-[0.98]"
           >
             {createBooking.isPending ? (
               <>

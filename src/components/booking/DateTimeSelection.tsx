@@ -104,17 +104,17 @@ const DateTimeSelection = ({
             onMouseLeave={() => setHoveredSlot(null)}
             disabled={!slot.available}
             className={cn(
-              "py-1.5 rounded text-xs font-medium font-data transition-all duration-150",
+              "py-1.5 rounded-lg text-xs font-medium font-data transition-all duration-300 ease-liquid backdrop-blur-sm",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               !slot.available && "opacity-25 cursor-not-allowed text-muted-foreground",
               isSlotSelected
-                ? "bg-primary text-primary-foreground"
+                ? "bg-primary text-primary-foreground shadow-[0_0_12px_rgba(59,130,246,0.3)]"
                 : isInSelectedRange
                   ? "bg-primary/20 text-primary ring-1 ring-primary/30"
                   : isHovered
-                    ? "bg-primary/15 text-primary"
+                    ? "bg-primary/15 text-primary -translate-y-0.5"
                     : slot.available
-                      ? "text-foreground hover:bg-primary/10 hover:text-primary"
+                      ? "text-foreground bg-[var(--glass-white)] border border-[var(--glass-border-subtle)] hover:bg-[var(--glass-white-md)] hover:border-[var(--glass-border)] hover:-translate-y-0.5"
                       : ""
             )}
           >

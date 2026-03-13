@@ -78,7 +78,7 @@ const AdminDashboard = () => {
     <div className="min-h-screen relative">
       <GlassBackground />
       {/* Header */}
-      <header className="border-b border-black/5 bg-white/70 backdrop-blur-2xl sticky top-0 z-50">
+      <header className="border-b border-[var(--glass-border-subtle)] backdrop-blur-2xl bg-[var(--glass-white-md)] sticky top-0 z-50 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-foreground">
