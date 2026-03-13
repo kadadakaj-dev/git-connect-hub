@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.4"
   }
   public: {
     Tables: {
@@ -35,52 +35,20 @@ export type Database = {
         }
         Relationships: []
       }
-      booking_reminders: {
-        Row: {
-          booking_id: string
-          created_at: string
-          id: string
-          reminder_sent_at: string | null
-          reminder_type: string | null
-        }
-        Insert: {
-          booking_id: string
-          created_at?: string
-          id?: string
-          reminder_sent_at?: string | null
-          reminder_type?: string | null
-        }
-        Update: {
-          booking_id?: string
-          created_at?: string
-          id?: string
-          reminder_sent_at?: string | null
-          reminder_type?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "booking_reminders_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: true
-            referencedRelation: "bookings"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       bookings: {
         Row: {
           booking_duration: number
           cancellation_token: string
           client_email: string
           client_name: string
-          client_phone: string
+          client_phone: string | null
           client_user_id: string | null
           created_at: string
           date: string
           employee_id: string | null
           id: string
           notes: string | null
-          service_id: string
+          service_id: string | null
           status: string
           time_slot: string
           updated_at: string
@@ -90,14 +58,14 @@ export type Database = {
           cancellation_token?: string
           client_email: string
           client_name: string
-          client_phone: string
+          client_phone?: string | null
           client_user_id?: string | null
           created_at?: string
           date: string
           employee_id?: string | null
           id?: string
           notes?: string | null
-          service_id: string
+          service_id?: string | null
           status?: string
           time_slot: string
           updated_at?: string
@@ -107,14 +75,14 @@ export type Database = {
           cancellation_token?: string
           client_email?: string
           client_name?: string
-          client_phone?: string
+          client_phone?: string | null
           client_user_id?: string | null
           created_at?: string
           date?: string
           employee_id?: string | null
           id?: string
           notes?: string | null
-          service_id?: string
+          service_id?: string | null
           status?: string
           time_slot?: string
           updated_at?: string
@@ -141,11 +109,11 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           email_notifications: boolean
-          full_name: string
+          full_name: string | null
           id: string
           phone: string | null
-          preferred_language: string | null
-          total_visits: number | null
+          preferred_language: string
+          total_visits: number
           updated_at: string
           user_id: string
         }
@@ -153,11 +121,11 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email_notifications?: boolean
-          full_name: string
+          full_name?: string | null
           id?: string
           phone?: string | null
-          preferred_language?: string | null
-          total_visits?: number | null
+          preferred_language?: string
+          total_visits?: number
           updated_at?: string
           user_id: string
         }
@@ -165,11 +133,11 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email_notifications?: boolean
-          full_name?: string
+          full_name?: string | null
           id?: string
           phone?: string | null
-          preferred_language?: string | null
-          total_visits?: number | null
+          preferred_language?: string
+          total_visits?: number
           updated_at?: string
           user_id?: string
         }
@@ -177,7 +145,6 @@ export type Database = {
       }
       employees: {
         Row: {
-          avatar_url: string | null
           bio_en: string | null
           bio_sk: string | null
           created_at: string
@@ -186,12 +153,11 @@ export type Database = {
           id: string
           is_active: boolean
           phone: string | null
-          position: string
+          position: string | null
           sort_order: number
           updated_at: string
         }
         Insert: {
-          avatar_url?: string | null
           bio_en?: string | null
           bio_sk?: string | null
           created_at?: string
@@ -200,12 +166,11 @@ export type Database = {
           id?: string
           is_active?: boolean
           phone?: string | null
-          position?: string
+          position?: string | null
           sort_order?: number
           updated_at?: string
         }
         Update: {
-          avatar_url?: string | null
           bio_en?: string | null
           bio_sk?: string | null
           created_at?: string
@@ -214,7 +179,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           phone?: string | null
-          position?: string
+          position?: string | null
           sort_order?: number
           updated_at?: string
         }
@@ -225,28 +190,21 @@ export type Database = {
           client_id: string
           created_at: string
           id: string
-          service_id: string
+          service_id: string | null
         }
         Insert: {
           client_id: string
           created_at?: string
           id?: string
-          service_id: string
+          service_id?: string | null
         }
         Update: {
           client_id?: string
           created_at?: string
           id?: string
-          service_id?: string
+          service_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "favorite_services_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "client_profiles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "favorite_services_service_id_fkey"
             columns: ["service_id"]
@@ -256,35 +214,14 @@ export type Database = {
           },
         ]
       }
-      rate_limits: {
-        Row: {
-          created_at: string
-          endpoint: string
-          id: string
-          identifier: string
-        }
-        Insert: {
-          created_at?: string
-          endpoint: string
-          id?: string
-          identifier: string
-        }
-        Update: {
-          created_at?: string
-          endpoint?: string
-          id?: string
-          identifier?: string
-        }
-        Relationships: []
-      }
       services: {
         Row: {
           category: string
           created_at: string
-          description_en: string
-          description_sk: string
+          description_en: string | null
+          description_sk: string | null
           duration: number
-          icon: string
+          icon: string | null
           id: string
           is_active: boolean
           name_en: string
@@ -294,27 +231,27 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          category: string
+          category?: string
           created_at?: string
-          description_en: string
-          description_sk: string
-          duration: number
-          icon: string
+          description_en?: string | null
+          description_sk?: string | null
+          duration?: number
+          icon?: string | null
           id?: string
           is_active?: boolean
           name_en: string
           name_sk: string
-          price: number
+          price?: number
           sort_order?: number
           updated_at?: string
         }
         Update: {
           category?: string
           created_at?: string
-          description_en?: string
-          description_sk?: string
+          description_en?: string | null
+          description_sk?: string | null
           duration?: number
-          icon?: string
+          icon?: string | null
           id?: string
           is_active?: boolean
           name_en?: string
@@ -327,28 +264,22 @@ export type Database = {
       }
       therapist_notes: {
         Row: {
-          booking_id: string
+          booking_id: string | null
           created_at: string
-          created_by: string | null
           id: string
           note: string
-          updated_at: string
         }
         Insert: {
-          booking_id: string
+          booking_id?: string | null
           created_at?: string
-          created_by?: string | null
           id?: string
           note: string
-          updated_at?: string
         }
         Update: {
-          booking_id?: string
+          booking_id?: string | null
           created_at?: string
-          created_by?: string | null
           id?: string
           note?: string
-          updated_at?: string
         }
         Relationships: [
           {
@@ -368,6 +299,7 @@ export type Database = {
           id: string
           is_active: boolean
           start_time: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
@@ -376,6 +308,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           start_time: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
@@ -384,6 +317,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           start_time?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -391,19 +325,19 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          role: Database["public"]["Enums"]["app_role"]
+          role: string
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          role: Database["public"]["Enums"]["app_role"]
+          role?: string
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: string
           user_id?: string
         }
         Relationships: []
@@ -413,17 +347,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      cleanup_rate_limits: { Args: never; Returns: undefined }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -550,8 +477,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      app_role: ["admin", "user"],
-    },
+    Enums: {},
   },
 } as const
