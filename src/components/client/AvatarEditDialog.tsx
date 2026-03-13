@@ -211,7 +211,10 @@ const AvatarEditDialog = ({
 
   useEffect(() => {
     if (selectedImage) {
-      drawCanvas();
+      // Use requestAnimationFrame to ensure canvas is mounted after conditional render
+      requestAnimationFrame(() => {
+        drawCanvas();
+      });
     }
   }, [drawCanvas, selectedImage]);
 
