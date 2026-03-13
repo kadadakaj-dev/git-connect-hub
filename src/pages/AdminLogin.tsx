@@ -170,7 +170,7 @@ const AdminLogin = () => {
             {/* Header */}
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 backdrop-blur-xl border border-primary/20 mb-4 lg:mx-0 mx-auto">
-                <Shield className="w-8 h-8 text-white" />
+                <Shield className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-3xl lg:text-4xl font-semibold text-white tracking-tight mb-2">
                 {text.title}
