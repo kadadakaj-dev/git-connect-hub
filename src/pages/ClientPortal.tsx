@@ -33,6 +33,7 @@ import { useClientProfile } from '@/hooks/useClientProfile';
 import { useClientBookings } from '@/hooks/useClientBookings';
 import { useFavoriteServices } from '@/hooks/useFavoriteServices';
 import { useQueryClient } from '@tanstack/react-query';
+import GlassBackground from '@/components/GlassBackground';
 
 const ClientPortal = () => {
   const navigate = useNavigate();
