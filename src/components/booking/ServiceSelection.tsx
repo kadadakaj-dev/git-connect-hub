@@ -51,17 +51,17 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                 "group cursor-pointer"
               )}
             >
-              {/* Amber gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/[0.08] to-orange-500/[0.05] pointer-events-none rounded-[inherit]" />
+              {/* Baby blue gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-sky-400/[0.08] to-blue-400/[0.05] pointer-events-none rounded-[inherit]" />
 
               <div className="relative z-[2] p-4">
                 {/* Top row: badge + price */}
                 <div className="flex items-start justify-between mb-2.5">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-sky-400/15 text-sky-600 dark:text-sky-400 border border-sky-400/20">
                     ⚡ {t.expressLabel}
                   </span>
                   <div className="text-right">
-                    <span className="text-xl font-bold font-data text-amber-600 dark:text-amber-400 leading-none">
+                    <span className="text-xl font-bold font-data text-sky-600 dark:text-sky-400 leading-none">
                       +15 €
                     </span>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -78,13 +78,13 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                 {/* CTA button */}
                 <div className={cn(
                   "flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl",
-                  "backdrop-blur-xl bg-[var(--glass-white-md)] border border-amber-500/20",
-                  "group-hover:bg-amber-500/10 group-hover:border-amber-500/30",
+                  "backdrop-blur-xl bg-[var(--glass-white-md)] border border-sky-400/20",
+                  "group-hover:bg-sky-400/10 group-hover:border-sky-400/30",
                   "transition-all duration-300"
                 )}>
-                  <Phone className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <Phone className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                   <span className="text-sm font-semibold text-foreground">{t.expressCta}</span>
-                  <span className="text-sm font-bold font-data text-amber-600 dark:text-amber-400">{EXPRESS_PHONE}</span>
+                  <span className="text-sm font-bold font-data text-sky-600 dark:text-sky-400">{EXPRESS_PHONE}</span>
                 </div>
               </div>
             </a>
