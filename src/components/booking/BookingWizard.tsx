@@ -270,10 +270,14 @@ const BookingWizard = () => {
         {/* Step 2 & 3: Date & Time */}
         <motion.section
           ref={dateTimeRef}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.1 }}
-          className={cn("mb-4 transition-opacity duration-300", !hasService && "opacity-30 pointer-events-none")}
+          initial={{ opacity: 0.3, y: 12 }}
+          animate={{
+            opacity: hasService ? 1 : 0.3,
+            y: hasService ? 0 : 12,
+            scale: hasService ? 1 : 0.98,
+          }}
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className={cn("mb-4", !hasService && "pointer-events-none")}
         >
           <div className="flex items-center gap-6 mb-2">
             <SectionHeader number={2} title={language === 'sk' ? 'Vyberte dátum' : 'Select date'} completed={!!bookingData.date} />
