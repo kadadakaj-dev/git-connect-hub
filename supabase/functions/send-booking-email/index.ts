@@ -32,7 +32,7 @@ const translations = {
     cancelButton: 'Zrušiť rezerváciu',
     footer: 'Tešíme sa na vašu návštevu!',
     clinicName: 'FYZIO&FIT',
-    contact: 'Kontakt: info@chiropraxiakosice.eu',
+    contact: 'Kontakt: booking@fyzioafit.sk',
   },
   en: {
     subject: 'Booking Confirmation - FYZIO&FIT',
@@ -48,7 +48,7 @@ const translations = {
     cancelButton: 'Cancel Booking',
     footer: 'We look forward to seeing you!',
     clinicName: 'FYZIO&FIT',
-    contact: 'Contact: info@chiropraxiakosice.eu',
+    contact: 'Contact: booking@fyzioafit.sk',
   },
 }
 
@@ -181,7 +181,7 @@ serve(async (req) => {
         port: 465,
         tls: true,
         auth: {
-          username: 'info@chiropraxiakosice.eu',
+          username: 'booking@fyzioafit.sk',
           password: smtpPassword,
         },
       },
@@ -193,7 +193,7 @@ serve(async (req) => {
     const html = generateEmailHtml(data, baseUrl)
 
     await client.send({
-      from: 'FYZIO&FIT <info@chiropraxiakosice.eu>',
+      from: 'FYZIO&FIT <booking@fyzioafit.sk>',
       to: data.to,
       subject: subject,
       html: html,
