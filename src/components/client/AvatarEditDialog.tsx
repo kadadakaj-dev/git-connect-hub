@@ -24,6 +24,7 @@ import {
   Upload,
   Trash2,
   X,
+  Grid3X3 as Grid3x3,
 } from 'lucide-react';
 
 interface AvatarEditDialogProps {
@@ -56,6 +57,8 @@ const AvatarEditDialog = ({
   const [offsetY, setOffsetY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [showGrid, setShowGrid] = useState(true);
+  const [lastPinchDistance, setLastPinchDistance] = useState<number | null>(null);
 
   const CANVAS_SIZE = 280;
 
@@ -77,6 +80,7 @@ const AvatarEditDialog = ({
       flip: 'Prevrátiť',
       reset: 'Resetovať',
       dragHint: 'Potiahnite obrázok pre zmenu pozície',
+      cropGrid: 'Mriežka',
       fileTooLarge: 'Súbor je príliš veľký (max 5MB)',
       invalidFileType: 'Neplatný typ súboru (JPG, PNG, WebP)',
     },
@@ -97,6 +101,7 @@ const AvatarEditDialog = ({
       flip: 'Flip',
       reset: 'Reset',
       dragHint: 'Drag image to reposition',
+      cropGrid: 'Grid',
       fileTooLarge: 'File too large (max 5MB)',
       invalidFileType: 'Invalid file type (JPG, PNG, WebP)',
     },
@@ -164,7 +169,45 @@ const AvatarEditDialog = ({
     );
 
     ctx.restore();
-  }, [selectedImage, zoom, rotation, flipH, brightness, offsetX, offsetY]);
+
+    // Draw crop grid overlay
+    if (showGrid) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE / 2, 0, Math.PI * 2);
+      ctx.clip();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.lineWidth = 0.5;
+
+      // Rule of thirds
+      const third = CANVAS_SIZE / 3;
+      for (let i = 1; i < 3; i++) {
+        ctx.beginPath();
+        ctx.moveTo(third * i, 0);
+        ctx.lineTo(third * i, CANVAS_SIZE);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, third * i);
+        ctx.lineTo(CANVAS_SIZE, third * i);
+        ctx.stroke();
+      }
+
+      // Center crosshair
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.lineWidth = 0.5;
+      const center = CANVAS_SIZE / 2;
+      const crossSize = 12;
+      ctx.beginPath();
+      ctx.moveTo(center - crossSize, center);
+      ctx.lineTo(center + crossSize, center);
+      ctx.moveTo(center, center - crossSize);
+      ctx.lineTo(center, center + crossSize);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+  }, [selectedImage, zoom, rotation, flipH, brightness, offsetX, offsetY, showGrid]);
 
   useEffect(() => {
     if (selectedImage) {
@@ -210,9 +253,18 @@ const AvatarEditDialog = ({
   };
 
   const handleCanvasTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    const touch = e.touches[0];
-    setIsDragging(true);
-    setDragStart({ x: touch.clientX - offsetX, y: touch.clientY - offsetY });
+    if (e.touches.length === 2) {
+      // Pinch-to-zoom start
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      setLastPinchDistance(dist);
+    } else if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({ x: touch.clientX - offsetX, y: touch.clientY - offsetY });
+    }
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -222,13 +274,26 @@ const AvatarEditDialog = ({
   };
 
   const handleCanvasTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDragging) return;
-    const touch = e.touches[0];
-    setOffsetX(touch.clientX - dragStart.x);
-    setOffsetY(touch.clientY - dragStart.y);
+    if (e.touches.length === 2 && lastPinchDistance !== null) {
+      // Pinch-to-zoom
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scale = dist / lastPinchDistance;
+      setZoom((prev) => Math.min(3, Math.max(0.5, prev * scale)));
+      setLastPinchDistance(dist);
+    } else if (isDragging && e.touches.length === 1) {
+      const touch = e.touches[0];
+      setOffsetX(touch.clientX - dragStart.x);
+      setOffsetY(touch.clientY - dragStart.y);
+    }
   };
 
-  const handleCanvasMouseUp = () => setIsDragging(false);
+  const handleCanvasMouseUp = () => {
+    setIsDragging(false);
+    setLastPinchDistance(null);
+  };
 
   const handleUpload = async () => {
     const canvas = canvasRef.current;
@@ -399,7 +464,16 @@ const AvatarEditDialog = ({
                 </div>
 
                 {/* Quick actions */}
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center justify-center gap-2 flex-wrap">
+                  <Button
+                    variant={showGrid ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowGrid((g) => !g)}
+                    className="gap-1.5"
+                  >
+                    <Grid3x3 className="h-3.5 w-3.5" />
+                    {text.cropGrid}
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
