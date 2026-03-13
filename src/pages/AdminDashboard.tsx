@@ -14,6 +14,7 @@ import OpeningHoursManagement from '@/components/admin/OpeningHoursManagement';
 import { toast } from 'sonner';
 import { LogOut, Calendar, Package, BarChart3, CalendarDays, Users, Clock } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
+import GlassBackground from '@/components/GlassBackground';
 
 const AdminDashboard = () => {
   const { language } = useLanguage();
