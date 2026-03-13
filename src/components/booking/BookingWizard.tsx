@@ -368,7 +368,7 @@ const BookingWizard = () => {
             size="lg"
             onClick={handleSubmit}
             disabled={!hasService || !hasDateTime || createBooking.isPending}
-            className="w-full gap-2 rounded-2xl text-sm font-semibold h-12 shadow-lg shadow-primary/20 bg-white/90 hover:bg-white text-primary border-0"
+            className="w-full gap-2 rounded-2xl text-sm font-semibold h-12 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground border-0"
           >
             {createBooking.isPending ? (
               <>
