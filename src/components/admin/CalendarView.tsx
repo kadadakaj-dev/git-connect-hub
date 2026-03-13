@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -361,39 +362,66 @@ const CalendarView = () => {
           onCreateBlock={() => openCreateModal(currentDate, '12:00', true)}
         />
 
-        {isLoading ? (
-          <div className="flex items-center justify-center flex-1">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-          </div>
-        ) : viewMode === 'month' ? (
-          <MonthView
-            language={language}
-            currentDate={currentDate}
-            events={events}
-            selectedTherapist={selectedTherapist}
-            blockedDates={blockedDates}
-            onCreateEvent={(date, time) => openCreateModal(date, time)}
-            onEditEvent={openEditModal}
-            onDragStart={handleDragStart}
-            onDropOnDay={handleDropOnMonthDay}
-          />
-        ) : (
-          <TimeGridView
-            language={language}
-            activeDays={getActiveDays()}
-            events={events}
-            selectedTherapist={selectedTherapist}
-            viewMode={viewMode}
-            blockedDates={blockedDates}
-            onCreateEvent={(date, time) => openCreateModal(date, time)}
-            onEditEvent={openEditModal}
-            onDragStart={handleDragStart}
-            onDropOnGrid={handleDropOnGrid}
-            onResizeStart={(id, startY, originalDuration) =>
-              setResizingState({ id, startY, originalDuration, currentDuration: originalDuration })
-            }
-          />
-        )}
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="flex items-center justify-center flex-1"
+            >
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+            </motion.div>
+          ) : viewMode === 'month' ? (
+            <motion.div
+              key="month"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="flex flex-col flex-1 overflow-hidden"
+            >
+              <MonthView
+                language={language}
+                currentDate={currentDate}
+                events={events}
+                selectedTherapist={selectedTherapist}
+                blockedDates={blockedDates}
+                onCreateEvent={(date, time) => openCreateModal(date, time)}
+                onEditEvent={openEditModal}
+                onDragStart={handleDragStart}
+                onDropOnDay={handleDropOnMonthDay}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key={viewMode}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="flex flex-col flex-1 overflow-hidden"
+            >
+              <TimeGridView
+                language={language}
+                activeDays={getActiveDays()}
+                events={events}
+                selectedTherapist={selectedTherapist}
+                viewMode={viewMode}
+                blockedDates={blockedDates}
+                onCreateEvent={(date, time) => openCreateModal(date, time)}
+                onEditEvent={openEditModal}
+                onDragStart={handleDragStart}
+                onDropOnGrid={handleDropOnGrid}
+                onResizeStart={(id, startY, originalDuration) =>
+                  setResizingState({ id, startY, originalDuration, currentDuration: originalDuration })
+                }
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <EventModal
