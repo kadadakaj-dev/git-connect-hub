@@ -15,6 +15,7 @@ import { format, isPast, parseISO } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import {
   Calendar,
+  Camera,
   Clock,
   History,
   Heart,
