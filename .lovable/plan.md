@@ -1,22 +1,37 @@
 
 
-# Rekonštrukcia Google a Apple OAuth prihlásenia
+# Liquid Glass zjednotenie — všetky stránky
 
-## Čo sa spraví
+Stránky **AdminLogin** a **ClientAuth** už používajú `GlassBackground` + glass karty. Tieto 4 stránky ešte používajú starý `bg-gradient-to-br from-slate-100` pozadie bez glass efektov:
 
-Znovu nakonfigurujem Google a Apple OAuth prihlásenie pomocou nástroja Configure Social Login, ktorý vygeneruje čerstvý `src/integrations/lovable/` modul s aktuálnym `@lovable.dev/cloud-auth-js` balíkom.
+## Stránky na úpravu
 
-Aktuálna implementácia v `ClientAuth.tsx` už správne používa `lovable.auth.signInWithOAuth()` -- po rekonfigurácii zostane kód rovnaký, len sa obnoví backend OAuth nastavenie.
+### 1. `src/pages/NotFound.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Zabaliť obsah do glass karty (`backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection `before:`)
 
-## Kroky
+### 2. `src/pages/AdminResetPassword.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Card komponent už má glass štýly, len treba zmeniť pozadie na GlassBackground
 
-1. Spustiť Configure Social Auth tool pre Google a Apple providera
-2. Overiť že `src/integrations/lovable/index.ts` bol správne pregenerovaný
-3. Žiadne zmeny v `ClientAuth.tsx` nie sú potrebné -- kód už používa správne API
+### 3. `src/pages/CancelBooking.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Inline glass štýly (`bg-white/75 backdrop-blur-2xl...`) nahradiť za konzistentné `var(--glass-*)` tokeny
 
-## Technické detaily
+### 4. `src/pages/Legal.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Inline glass štýly v tab content kartách nahradiť za `var(--glass-*)` tokeny
 
-- OAuth redirect URL: `window.location.origin + '/portal'`
-- Provideri: `google`, `apple`
-- Modul: `@lovable.dev/cloud-auth-js`
+## Vzor zmeny (rovnaký pre všetky)
+```
+- bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200
++ relative overflow-hidden
++ <GlassBackground />
+```
+
+Karty: použiť `backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection overlay, konzistentne s AdminLogin/ClientAuth.
 
