@@ -152,10 +152,13 @@ const Legal = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t.pageTitle}</title>
-        <meta name="description" content={t.pageDescription} />
-      </Helmet>
+      <PageMeta
+        titleSk="Právne dokumenty | FYZIO&FIT"
+        titleEn="Legal Documents | FYZIO&FIT"
+        descriptionSk="Obchodné podmienky a zásady ochrany osobných údajov FYZIO&FIT"
+        descriptionEn="Terms of service and privacy policy of FYZIO&FIT"
+        path={`/legal?tab=${defaultTab}`}
+      />
 
       <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex flex-col">
         <div className="container max-w-4xl mx-auto px-4 py-8 md:py-12 flex-1">

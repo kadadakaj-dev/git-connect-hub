@@ -204,9 +204,13 @@ const ClientAuth = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{text.title} | FYZIO&FIT</title>
-      </Helmet>
+      <PageMeta
+        titleSk="Prihlásenie | FYZIO&FIT"
+        titleEn="Sign In | FYZIO&FIT"
+        descriptionSk="Prihláste sa do klientského portálu FYZIO&FIT pre správu rezervácií a obľúbených služieb."
+        descriptionEn="Sign in to FYZIO&FIT client portal to manage bookings and favorite services."
+        path="/auth"
+      />
 
       <div className="min-h-screen flex relative overflow-hidden">
         <GlassBackground />

@@ -179,9 +179,14 @@ const ClientPortal = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{text.title} | FYZIO&FIT</title>
-      </Helmet>
+      <PageMeta
+        titleSk="Klientský portál | FYZIO&FIT"
+        titleEn="Client Portal | FYZIO&FIT"
+        descriptionSk="Spravujte svoje rezervácie, obľúbené služby a osobné údaje na jednom mieste."
+        descriptionEn="Manage your bookings, favorite services and personal details in one place."
+        path="/portal"
+        noindex
+      />
       <div className="min-h-screen relative">
         <GlassBackground />
         {/* Header */}
