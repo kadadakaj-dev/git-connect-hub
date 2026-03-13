@@ -405,7 +405,7 @@ const ClientAuth = () => {
                             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                           />
                         </div>
-                        {errors.fullName && <p className="text-sm text-red-300">{errors.fullName}</p>}
+                        {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
                       </div>
                       <div className="space-y-1.5">
                         <Label htmlFor="register-email" className="text-white/80 text-sm font-medium">{text.email}</Label>
