@@ -1,0 +1,1 @@
+UPDATE services SET name_sk = 'Naprávanie/Chiropraxia', name_en = 'Adjustment/Chiropractic' WHERE id = 'a86db78d-57c6-4269-ad63-722d78eb0530';
