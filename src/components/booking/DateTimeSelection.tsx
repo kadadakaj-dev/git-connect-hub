@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useTimeSlots } from '@/hooks/useTimeSlots';
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import TimeSlotSkeleton from './TimeSlotSkeleton';
 
 interface DateTimeSelectionProps {
@@ -25,7 +25,36 @@ const DateTimeSelection = ({
 }: DateTimeSelectionProps) => {
   const { t, language } = useLanguage();
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate, serviceDuration);
+
+  const requiredSlots = Math.ceil(serviceDuration / 30);
+
+  // Compute which slot times are highlighted on hover (consecutive slots the service would occupy)
+  const highlightedSlots = useMemo(() => {
+    if (!hoveredSlot || requiredSlots <= 1) return new Set<string>();
+    const [h, m] = hoveredSlot.split(':').map(Number);
+    const startMin = h * 60 + m;
+    const set = new Set<string>();
+    for (let i = 0; i < requiredSlots; i++) {
+      const min = startMin + i * 30;
+      set.add(`${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`);
+    }
+    return set;
+  }, [hoveredSlot, requiredSlots]);
+
+  // Same for selected slot
+  const selectedSlots = useMemo(() => {
+    if (!selectedTime || requiredSlots <= 1) return new Set<string>();
+    const [h, m] = selectedTime.split(':').map(Number);
+    const startMin = h * 60 + m;
+    const set = new Set<string>();
+    for (let i = 1; i < requiredSlots; i++) {
+      const min = startMin + i * 30;
+      set.add(`${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`);
+    }
+    return set;
+  }, [selectedTime, requiredSlots]);
 
   const locale = language === 'sk' ? sk : enUS;
   const today = startOfToday();
@@ -65,10 +94,14 @@ const DateTimeSelection = ({
     <div className="grid grid-cols-4 gap-1">
       {slots.map((slot) => {
         const isSlotSelected = selectedTime === slot.time && slot.available;
+        const isInSelectedRange = selectedSlots.has(slot.time);
+        const isHovered = highlightedSlots.has(slot.time) && slot.available;
         return (
           <button
             key={slot.time}
             onClick={() => slot.available && onTimeSelect(slot.time)}
+            onMouseEnter={() => slot.available && setHoveredSlot(slot.time)}
+            onMouseLeave={() => setHoveredSlot(null)}
             disabled={!slot.available}
             className={cn(
               "py-1.5 rounded text-xs font-medium font-data transition-all duration-150",
@@ -76,9 +109,13 @@ const DateTimeSelection = ({
               !slot.available && "opacity-25 cursor-not-allowed text-muted-foreground",
               isSlotSelected
                 ? "bg-primary text-primary-foreground"
-                : slot.available
-                  ? "text-foreground hover:bg-primary/10 hover:text-primary"
-                  : ""
+                : isInSelectedRange
+                  ? "bg-primary/20 text-primary ring-1 ring-primary/30"
+                  : isHovered
+                    ? "bg-primary/15 text-primary"
+                    : slot.available
+                      ? "text-foreground hover:bg-primary/10 hover:text-primary"
+                      : ""
             )}
           >
             {slot.time}
@@ -192,6 +229,13 @@ const DateTimeSelection = ({
                 </p>
                 {renderSlotGrid(afternoonSlots)}
               </div>
+            )}
+            {requiredSlots > 1 && (
+              <p className="text-[10px] text-muted-foreground text-center">
+                {language === 'sk'
+                  ? `Služba zaberie ${requiredSlots} po sebe idúcich slotov (${serviceDuration} min)`
+                  : `Service occupies ${requiredSlots} consecutive slots (${serviceDuration} min)`}
+              </p>
             )}
           </div>
         )}
