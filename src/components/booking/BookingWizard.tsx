@@ -191,7 +191,7 @@ const BookingWizard = () => {
 
   // Glassmorphism header
   const renderHeader = () => (
-    <header className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/30 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
+    <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-2xl border-b border-black/5">
       <div className="container max-w-2xl mx-auto px-4 h-12 flex items-center justify-between">
         <a href="https://booking.fyzioafit.sk" className="text-sm font-bold text-foreground tracking-tight hover:text-primary transition-colors">
           FYZIO&FIT
