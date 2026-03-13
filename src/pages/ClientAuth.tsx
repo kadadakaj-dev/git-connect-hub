@@ -423,7 +423,7 @@ const ClientAuth = () => {
                         {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="register-phone" className="text-white/80 text-sm font-medium">{text.phone}</Label>
+                        <Label htmlFor="register-phone" className="text-foreground text-sm font-medium">{text.phone}</Label>
                         <Input
                           id="register-phone"
                           type="tel"
