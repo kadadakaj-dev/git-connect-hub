@@ -140,7 +140,8 @@ const ClientPortal = () => {
 
   if (loading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 p-4 md:p-8">
+      <div className="min-h-screen relative p-4 md:p-8">
+        <GlassBackground />
         <div className="max-w-6xl mx-auto space-y-6">
           <Skeleton className="h-12 w-64" />
           <div className="grid md:grid-cols-3 gap-6">
