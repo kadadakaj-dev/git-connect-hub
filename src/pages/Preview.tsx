@@ -64,6 +64,8 @@ const Preview = () => {
           <img
             src={imageUrl}
             alt="Atmospheric Technical dizajn preview"
+            loading="lazy"
+            decoding="async"
             className="w-full rounded-2xl border border-white/10 shadow-2xl"
           />
           <p className="text-center text-zinc-500 mt-4 text-sm">
