@@ -48,7 +48,7 @@ const translations = {
     cancelButton: 'Cancel Booking',
     footer: 'We look forward to seeing you!',
     clinicName: 'FYZIO&FIT',
-    contact: 'Contact: info@chiropraxiakosice.eu',
+    contact: 'Contact: booking@fyzioafit.sk',
   },
 }
 
