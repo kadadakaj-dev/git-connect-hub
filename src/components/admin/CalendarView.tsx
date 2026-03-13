@@ -368,7 +368,7 @@ const CalendarView = () => {
           onCreateBlock={() => openCreateModal(currentDate, '12:00', true)}
         />
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={navDirection}>
           {isLoading ? (
             <motion.div
               key="loading"
@@ -382,11 +382,12 @@ const CalendarView = () => {
             </motion.div>
           ) : viewMode === 'month' ? (
             <motion.div
-              key="month"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              key={`month-${dateKey}`}
+              custom={navDirection}
+              initial={{ opacity: 0, x: navDirection * 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: navDirection * -40 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="flex flex-col flex-1 overflow-hidden"
             >
               <MonthView
@@ -403,11 +404,12 @@ const CalendarView = () => {
             </motion.div>
           ) : (
             <motion.div
-              key={viewMode}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              key={`${viewMode}-${dateKey}`}
+              custom={navDirection}
+              initial={{ opacity: 0, x: navDirection * 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: navDirection * -40 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="flex flex-col flex-1 overflow-hidden"
             >
               <TimeGridView
