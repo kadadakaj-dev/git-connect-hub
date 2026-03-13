@@ -207,7 +207,7 @@ const ClientAuth = () => {
         <title>{text.title} | FYZIO&FIT</title>
       </Helmet>
 
-      <div className="min-h-screen flex bg-gradient-to-br from-primary/90 via-primary/70 to-ring/80 overflow-hidden">
+      <div className="min-h-screen flex bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 overflow-hidden">
         {/* Glassmorphism Sidebar — hidden on mobile */}
         <aside className="hidden lg:flex w-[280px] flex-col p-6 bg-white/10 backdrop-blur-2xl border-r border-white/10">
           {/* Logo */}
