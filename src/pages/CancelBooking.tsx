@@ -167,7 +167,7 @@ const CancelBooking = () => {
       : '';
 
     return (
-      <div className="bg-card rounded-xl border border-border p-6 text-left space-y-4 max-w-md mx-auto">
+      <div className="bg-white/75 backdrop-blur-2xl rounded-xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-6 text-left space-y-4 max-w-md mx-auto">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Calendar className="w-5 h-5 text-primary" />
@@ -208,7 +208,7 @@ const CancelBooking = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-hero">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200">
       <div className="container max-w-2xl mx-auto px-4 py-8 md:py-12">
         <div className="flex justify-end mb-4">
           <LanguageSwitcher />

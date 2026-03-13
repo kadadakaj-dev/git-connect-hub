@@ -136,7 +136,7 @@ const ClientPortal = () => {
 
   if (loading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 p-4 md:p-8">
         <div className="max-w-6xl mx-auto space-y-6">
           <Skeleton className="h-12 w-64" />
           <div className="grid md:grid-cols-3 gap-6">
@@ -177,9 +177,9 @@ const ClientPortal = () => {
       <Helmet>
         <title>{text.title} | FYZIO&FIT</title>
       </Helmet>
-      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200">
         {/* Header */}
-        <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
+        <header className="border-b border-black/5 bg-white/70 backdrop-blur-2xl sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button

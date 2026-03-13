@@ -157,7 +157,7 @@ const Legal = () => {
         <meta name="description" content={t.pageDescription} />
       </Helmet>
 
-      <div className="min-h-screen gradient-hero flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex flex-col">
         <div className="container max-w-4xl mx-auto px-4 py-8 md:py-12 flex-1">
           {/* Back Button */}
           <Link to="/">
@@ -188,7 +188,7 @@ const Legal = () => {
             </TabsList>
 
             <TabsContent value="terms">
-              <div className="bg-card rounded-xl border border-border p-6 md:p-8 shadow-elegant">
+              <div className="bg-white/75 backdrop-blur-2xl rounded-xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-6 md:p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6">{t.terms.title}</h2>
                 <div className="space-y-6">
                   {t.terms.sections.map((section, index) => (
@@ -209,7 +209,7 @@ const Legal = () => {
             </TabsContent>
 
             <TabsContent value="privacy">
-              <div className="bg-card rounded-xl border border-border p-6 md:p-8 shadow-elegant">
+              <div className="bg-white/75 backdrop-blur-2xl rounded-xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.6)] p-6 md:p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6">{t.privacy.title}</h2>
                 <div className="space-y-6">
                   {t.privacy.sections.map((section, index) => (
