@@ -463,7 +463,16 @@ const AvatarEditDialog = ({
                 </div>
 
                 {/* Quick actions */}
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center justify-center gap-2 flex-wrap">
+                  <Button
+                    variant={showGrid ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowGrid((g) => !g)}
+                    className="gap-1.5"
+                  >
+                    <Grid3x3 className="h-3.5 w-3.5" />
+                    {text.cropGrid}
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
