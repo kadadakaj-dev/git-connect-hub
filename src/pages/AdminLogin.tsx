@@ -169,7 +169,7 @@ const AdminLogin = () => {
           >
             {/* Header */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-xl border border-white/20 mb-4 lg:mx-0 mx-auto">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 backdrop-blur-xl border border-primary/20 mb-4 lg:mx-0 mx-auto">
                 <Shield className="w-8 h-8 text-white" />
               </div>
               <h1 className="text-3xl lg:text-4xl font-semibold text-white tracking-tight mb-2">
