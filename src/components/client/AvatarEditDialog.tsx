@@ -56,6 +56,8 @@ const AvatarEditDialog = ({
   const [offsetY, setOffsetY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [showGrid, setShowGrid] = useState(true);
+  const [lastPinchDistance, setLastPinchDistance] = useState<number | null>(null);
 
   const CANVAS_SIZE = 280;
 
