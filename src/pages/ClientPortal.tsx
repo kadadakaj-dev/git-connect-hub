@@ -84,7 +84,7 @@ const ClientPortal = () => {
 
   const t = {
     sk: {
-      title: 'Klientský portál',
+      title: 'Dashboard',
       welcome: 'Vitajte späť',
       totalVisits: 'Celkom návštev',
       upcomingAppointments: 'Nadchádzajúce termíny',
