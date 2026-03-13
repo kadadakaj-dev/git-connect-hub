@@ -45,6 +45,7 @@ export type Database = {
           client_user_id: string | null
           created_at: string
           date: string
+          employee_id: string | null
           id: string
           notes: string | null
           service_id: string | null
@@ -61,6 +62,7 @@ export type Database = {
           client_user_id?: string | null
           created_at?: string
           date: string
+          employee_id?: string | null
           id?: string
           notes?: string | null
           service_id?: string | null
@@ -77,6 +79,7 @@ export type Database = {
           client_user_id?: string | null
           created_at?: string
           date?: string
+          employee_id?: string | null
           id?: string
           notes?: string | null
           service_id?: string | null
@@ -85,6 +88,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_service_id_fkey"
             columns: ["service_id"]
@@ -174,6 +184,35 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      favorite_services: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          service_id: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          service_id?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          service_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {
@@ -279,6 +318,27 @@ export type Database = {
           is_active?: boolean
           start_time?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
         }
         Relationships: []
       }
