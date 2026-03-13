@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PageMeta from '@/components/seo/PageMeta';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle2, XCircle, Loader2, Calendar, Clock, User, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
