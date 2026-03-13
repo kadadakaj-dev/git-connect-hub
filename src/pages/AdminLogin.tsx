@@ -108,7 +108,7 @@ const AdminLogin = () => {
       {/* Glassmorphism Sidebar — desktop only */}
       <aside className="hidden lg:flex w-[280px] flex-col p-6 bg-white/70 backdrop-blur-2xl border-r border-black/5">
         <div className="text-center mb-10">
-          <span className="text-3xl font-semibold text-white tracking-tight">FYZIO&FIT</span>
+          <span className="text-3xl font-semibold text-foreground tracking-tight">FYZIO&FIT</span>
         </div>
         <nav className="flex-1">
           <ul className="space-y-2">
