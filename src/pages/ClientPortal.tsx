@@ -18,7 +18,6 @@ import {
   Clock,
   History,
   Heart,
-  LogOut,
   Plus,
   Star,
   User as UserIcon,
@@ -27,6 +26,7 @@ import {
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ProfileEditDialog from '@/components/client/ProfileEditDialog';
+import SettingsMenu from '@/components/client/SettingsMenu';
 import { useClientProfile } from '@/hooks/useClientProfile';
 import { useClientBookings } from '@/hooks/useClientBookings';
 import { useFavoriteServices } from '@/hooks/useFavoriteServices';
@@ -204,20 +204,14 @@ const ClientPortal = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsProfileDialogOpen(true)}
-                className="hidden sm:flex"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                {text.editProfile}
-              </Button>
               <LanguageSwitcher />
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">{text.signOut}</span>
-              </Button>
+              <SettingsMenu
+                onEditProfile={() => setIsProfileDialogOpen(true)}
+                onSignOut={handleSignOut}
+                emailNotifications={profile?.email_notifications ?? true}
+                userId={user?.id || ''}
+                userEmail={user?.email || ''}
+              />
             </div>
           </div>
         </header>
