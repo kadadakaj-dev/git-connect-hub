@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import {
   Plus,
   Ban,
@@ -128,21 +128,30 @@ const CalendarHeader = ({
           />
           {t.noOverlap}
         </label>
-        <div className="flex items-center gap-0.5 bg-muted/40 p-0.5 rounded-lg text-muted-foreground font-medium text-xs">
-          {(['month', 'week', 'day'] as ViewMode[]).map(mode => (
-            <button
-              key={mode}
-              onClick={() => onViewModeChange(mode)}
-              className={`px-3 py-1.5 rounded-md transition-all text-[11px] tracking-wide ${
-                viewMode === mode
-                  ? 'bg-card shadow-sm text-primary font-semibold'
-                  : 'hover:text-foreground hover:bg-card/50'
-              }`}
-            >
-              {t[mode]}
-            </button>
-          ))}
-        </div>
+        <LayoutGroup>
+          <div className="flex items-center gap-0.5 bg-muted/40 p-0.5 rounded-lg text-muted-foreground font-medium text-xs relative">
+            {(['month', 'week', 'day'] as ViewMode[]).map(mode => (
+              <button
+                key={mode}
+                onClick={() => onViewModeChange(mode)}
+                className={`relative px-3 py-1.5 rounded-md text-[11px] tracking-wide z-10 transition-colors duration-200 ${
+                  viewMode === mode
+                    ? 'text-primary font-semibold'
+                    : 'hover:text-foreground hover:bg-card/50'
+                }`}
+              >
+                {viewMode === mode && (
+                  <motion.span
+                    layoutId="activeViewTab"
+                    className="absolute inset-0 bg-card shadow-sm rounded-md"
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10">{t[mode]}</span>
+              </button>
+            ))}
+          </div>
+        </LayoutGroup>
       </div>
     </header>
   );
