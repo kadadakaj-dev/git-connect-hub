@@ -94,10 +94,14 @@ const DateTimeSelection = ({
     <div className="grid grid-cols-4 gap-1">
       {slots.map((slot) => {
         const isSlotSelected = selectedTime === slot.time && slot.available;
+        const isInSelectedRange = selectedSlots.has(slot.time);
+        const isHovered = highlightedSlots.has(slot.time) && slot.available;
         return (
           <button
             key={slot.time}
             onClick={() => slot.available && onTimeSelect(slot.time)}
+            onMouseEnter={() => slot.available && setHoveredSlot(slot.time)}
+            onMouseLeave={() => setHoveredSlot(null)}
             disabled={!slot.available}
             className={cn(
               "py-1.5 rounded text-xs font-medium font-data transition-all duration-150",
@@ -105,9 +109,13 @@ const DateTimeSelection = ({
               !slot.available && "opacity-25 cursor-not-allowed text-muted-foreground",
               isSlotSelected
                 ? "bg-primary text-primary-foreground"
-                : slot.available
-                  ? "text-foreground hover:bg-primary/10 hover:text-primary"
-                  : ""
+                : isInSelectedRange
+                  ? "bg-primary/20 text-primary ring-1 ring-primary/30"
+                  : isHovered
+                    ? "bg-primary/15 text-primary"
+                    : slot.available
+                      ? "text-foreground hover:bg-primary/10 hover:text-primary"
+                      : ""
             )}
           >
             {slot.time}
