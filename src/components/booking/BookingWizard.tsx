@@ -129,12 +129,12 @@ const BookingWizard = () => {
     const hasError = !!errors[field];
     return cn(
       "w-full pl-8 pr-8 py-2.5 rounded-xl border text-foreground text-sm",
-      "bg-white/70 backdrop-blur-sm",
-      "placeholder:text-muted-foreground/50 transition-all duration-200",
-      "focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+      "bg-[var(--glass-white)] backdrop-blur-sm",
+      "placeholder:text-muted-foreground/50 transition-all duration-300 ease-liquid",
+      "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 focus:bg-[var(--glass-white-md)]",
       hasError
         ? "border-destructive/50 bg-destructive/5"
-        : "border-border/40 hover:border-muted-foreground/30"
+        : "border-[var(--glass-border-subtle)] hover:border-[var(--glass-border)]"
     );
   };
 
