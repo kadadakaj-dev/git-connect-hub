@@ -211,7 +211,10 @@ const AvatarEditDialog = ({
 
   useEffect(() => {
     if (selectedImage) {
-      drawCanvas();
+      // Use requestAnimationFrame to ensure canvas is mounted after conditional render
+      requestAnimationFrame(() => {
+        drawCanvas();
+      });
     }
   }, [drawCanvas, selectedImage]);
 
@@ -297,13 +300,49 @@ const AvatarEditDialog = ({
 
   const handleUpload = async () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !selectedImage) return;
 
     setIsUploading(true);
 
     try {
+      // Redraw without grid for export
+      const wasGridOn = showGrid;
+      setShowGrid(false);
+      
+      // Create a clean export canvas without grid overlay
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = CANVAS_SIZE;
+      exportCanvas.height = CANVAS_SIZE;
+      const ectx = exportCanvas.getContext('2d')!;
+
+      // Circular clip
+      ectx.beginPath();
+      ectx.arc(CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE / 2, 0, Math.PI * 2);
+      ectx.clip();
+      ectx.fillStyle = '#f1f5f9';
+      ectx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      // Apply transforms
+      ectx.translate(CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+      ectx.rotate((rotation * Math.PI) / 180);
+      ectx.scale(flipH ? -zoom : zoom, zoom);
+      ectx.filter = `brightness(${brightness}%)`;
+
+      const imgAspect = selectedImage.width / selectedImage.height;
+      let drawW: number, drawH: number;
+      if (imgAspect > 1) {
+        drawH = CANVAS_SIZE;
+        drawW = CANVAS_SIZE * imgAspect;
+      } else {
+        drawW = CANVAS_SIZE;
+        drawH = CANVAS_SIZE / imgAspect;
+      }
+      ectx.drawImage(selectedImage, -drawW / 2 + offsetX, -drawH / 2 + offsetY, drawW, drawH);
+
+      if (wasGridOn) setShowGrid(true);
+
       const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Canvas to blob failed'))), 'image/webp', 0.9);
+        exportCanvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Canvas to blob failed'))), 'image/webp', 0.9);
       });
 
       const fileName = `${userId}/${Date.now()}.webp`;
