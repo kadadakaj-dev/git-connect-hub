@@ -14,7 +14,274 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      blocked_dates: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          booking_duration: number
+          cancellation_token: string
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          client_user_id: string | null
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          service_id: string | null
+          status: string
+          time_slot: string
+          updated_at: string
+        }
+        Insert: {
+          booking_duration?: number
+          cancellation_token?: string
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          client_user_id?: string | null
+          created_at?: string
+          date: string
+          id?: string
+          notes?: string | null
+          service_id?: string | null
+          status?: string
+          time_slot: string
+          updated_at?: string
+        }
+        Update: {
+          booking_duration?: number
+          cancellation_token?: string
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          client_user_id?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          service_id?: string | null
+          status?: string
+          time_slot?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email_notifications: boolean
+          full_name: string | null
+          id: string
+          phone: string | null
+          preferred_language: string
+          total_visits: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email_notifications?: boolean
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          preferred_language?: string
+          total_visits?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email_notifications?: boolean
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          preferred_language?: string
+          total_visits?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      employees: {
+        Row: {
+          bio_en: string | null
+          bio_sk: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          is_active: boolean
+          phone: string | null
+          position: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          bio_en?: string | null
+          bio_sk?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          position?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          bio_en?: string | null
+          bio_sk?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          position?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          category: string
+          created_at: string
+          description_en: string | null
+          description_sk: string | null
+          duration: number
+          icon: string | null
+          id: string
+          is_active: boolean
+          name_en: string
+          name_sk: string
+          price: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description_en?: string | null
+          description_sk?: string | null
+          duration?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name_en: string
+          name_sk: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description_en?: string | null
+          description_sk?: string | null
+          duration?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name_en?: string
+          name_sk?: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      therapist_notes: {
+        Row: {
+          booking_id: string | null
+          created_at: string
+          id: string
+          note: string
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string
+          id?: string
+          note: string
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string
+          id?: string
+          note?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "therapist_notes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_slots_config: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_active: boolean
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          is_active?: boolean
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
