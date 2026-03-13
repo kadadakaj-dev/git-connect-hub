@@ -152,7 +152,7 @@ const AdminLogin = () => {
         <div className="p-4 lg:p-8 lg:pb-0">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-white/70 hover:text-white text-sm font-medium transition-colors"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             {text.back}
