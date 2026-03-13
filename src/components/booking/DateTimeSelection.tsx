@@ -25,7 +25,36 @@ const DateTimeSelection = ({
 }: DateTimeSelectionProps) => {
   const { t, language } = useLanguage();
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate, serviceDuration);
+
+  const requiredSlots = Math.ceil(serviceDuration / 30);
+
+  // Compute which slot times are highlighted on hover (consecutive slots the service would occupy)
+  const highlightedSlots = useMemo(() => {
+    if (!hoveredSlot || requiredSlots <= 1) return new Set<string>();
+    const [h, m] = hoveredSlot.split(':').map(Number);
+    const startMin = h * 60 + m;
+    const set = new Set<string>();
+    for (let i = 0; i < requiredSlots; i++) {
+      const min = startMin + i * 30;
+      set.add(`${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`);
+    }
+    return set;
+  }, [hoveredSlot, requiredSlots]);
+
+  // Same for selected slot
+  const selectedSlots = useMemo(() => {
+    if (!selectedTime || requiredSlots <= 1) return new Set<string>();
+    const [h, m] = selectedTime.split(':').map(Number);
+    const startMin = h * 60 + m;
+    const set = new Set<string>();
+    for (let i = 1; i < requiredSlots; i++) {
+      const min = startMin + i * 30;
+      set.add(`${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`);
+    }
+    return set;
+  }, [selectedTime, requiredSlots]);
 
   const locale = language === 'sk' ? sk : enUS;
   const today = startOfToday();
