@@ -107,7 +107,7 @@ const ClientPortal = () => {
       therapistNotes: 'Poznámky terapeuta',
     },
     en: {
-      title: 'Client Portal',
+      title: 'Dashboard',
       welcome: 'Welcome back',
       totalVisits: 'Total visits',
       upcomingAppointments: 'Upcoming Appointments',
