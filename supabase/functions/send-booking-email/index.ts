@@ -193,7 +193,7 @@ serve(async (req) => {
     const html = generateEmailHtml(data, baseUrl)
 
     await client.send({
-      from: 'FYZIO&FIT <info@chiropraxiakosice.eu>',
+      from: 'FYZIO&FIT <booking@fyzioafit.sk>',
       to: data.to,
       subject: subject,
       html: html,
