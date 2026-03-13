@@ -354,10 +354,14 @@ const BookingWizard = () => {
 
         {/* Submit */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.2 }}
-          className="pb-6"
+          initial={{ opacity: 0.3, y: 12 }}
+          animate={{
+            opacity: hasService && hasDateTime ? 1 : 0.3,
+            y: hasService && hasDateTime ? 0 : 12,
+            scale: hasService && hasDateTime ? 1 : 0.98,
+          }}
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className={cn("pb-6", (!hasService || !hasDateTime) && "pointer-events-none")}
         >
           <Button
             variant="default"
