@@ -185,7 +185,7 @@ const ClientPortal = () => {
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => setIsProfileDialogOpen(true)}
+                onClick={() => setIsAvatarDialogOpen(true)}
                 className="relative group"
               >
                 <Avatar className="h-12 w-12 border-2 border-primary/20 group-hover:border-primary/50 transition-colors">
@@ -195,7 +195,7 @@ const ClientPortal = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Settings className="h-4 w-4 text-white" />
+                  <Camera className="h-4 w-4 text-white" />
                 </div>
               </button>
               <div>
