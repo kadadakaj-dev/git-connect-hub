@@ -408,7 +408,7 @@ const ClientAuth = () => {
                         {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="register-email" className="text-white/80 text-sm font-medium">{text.email}</Label>
+                        <Label htmlFor="register-email" className="text-foreground text-sm font-medium">{text.email}</Label>
                         <div className="relative">
                           <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                           <Input
