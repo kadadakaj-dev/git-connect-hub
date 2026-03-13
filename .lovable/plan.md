@@ -1,30 +1,37 @@
 
 
-# Generovanie preview obrazku "Atmospheric Technical" dizajnu
+# Liquid Glass zjednotenie — všetky stránky
 
-## Co spravim
-Vytvorim edge funkciu ktora vygeneruje 2k preview obrazok noveho dizajnu pomocou AI image generation (google/gemini-3-pro-image-preview pre vyssiu kvalitu). Obrazok zobrazim na jednoduchou stranku aby si ho mohol/a schvalit pred implementaciou.
+Stránky **AdminLogin** a **ClientAuth** už používajú `GlassBackground` + glass karty. Tieto 4 stránky ešte používajú starý `bg-gradient-to-br from-slate-100` pozadie bez glass efektov:
 
-## Prompt pre generovanie
-Pouzije sa detailny prompt z tvojho zadania:
-- Dark mode zinc-950 pozadie
-- Glassmorphic karty s 5% opacitou a 12px blur
-- Emerald akcenty
-- Bento-grid layout
-- Spotlight hover efekty
-- Gradient headingy (biela -> zinc-400)
-- Minimalisticky booking wizard pre fyzioterapiu/chiroprakticke sluzby
-- Logo "FYZIO&FIT" v headeri
+## Stránky na úpravu
 
-## Kroky
-1. Vytvorim edge funkciu `generate-preview` ktora zavola AI image model s detailnym promptom
-2. Vygenerovany obrazok ulozim do storage bucketu
-3. Zobrazim ho na docasnej /preview stranke kde si ho mozes pozriet
-4. Po schvaleni prejdem na implementaciu plneho redizajnu
+### 1. `src/pages/NotFound.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Zabaliť obsah do glass karty (`backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection `before:`)
 
-## Technicke detaily
-- Model: `google/gemini-3-pro-image-preview` (najvyssia kvalita pre UI preview)
-- Vystup: PNG, zobrazeny inline na preview stranke
-- Edge funkcia bude jednorazova -- po schvaleni ju mozem odstranit
-- Ziadne zmeny existujuceho kodu, len novy endpoint a docasna stranka
+### 2. `src/pages/AdminResetPassword.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Card komponent už má glass štýly, len treba zmeniť pozadie na GlassBackground
+
+### 3. `src/pages/CancelBooking.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Inline glass štýly (`bg-white/75 backdrop-blur-2xl...`) nahradiť za konzistentné `var(--glass-*)` tokeny
+
+### 4. `src/pages/Legal.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Inline glass štýly v tab content kartách nahradiť za `var(--glass-*)` tokeny
+
+## Vzor zmeny (rovnaký pre všetky)
+```
+- bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200
++ relative overflow-hidden
++ <GlassBackground />
+```
+
+Karty: použiť `backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection overlay, konzistentne s AdminLogin/ClientAuth.
 
