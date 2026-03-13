@@ -11,6 +11,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { toast } from 'sonner';
 import { Mail, Lock, User, ArrowLeft, CalendarDays, Clock, Heart, Star } from 'lucide-react';
 import { z } from 'zod';
+import GlassBackground from '@/components/GlassBackground';
 
 const loginSchema = z.object({
   email: z.string().email('Neplatný email'),
@@ -207,7 +208,8 @@ const ClientAuth = () => {
         <title>{text.title} | FYZIO&FIT</title>
       </Helmet>
 
-      <div className="min-h-screen flex bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 overflow-hidden">
+      <div className="min-h-screen flex relative overflow-hidden">
+        <GlassBackground />
         {/* Glassmorphism Sidebar — hidden on mobile */}
         <aside className="hidden lg:flex w-[280px] flex-col p-6 bg-white/70 backdrop-blur-2xl border-r border-black/5">
           {/* Logo */}

@@ -14,6 +14,7 @@ import OpeningHoursManagement from '@/components/admin/OpeningHoursManagement';
 import { toast } from 'sonner';
 import { LogOut, Calendar, Package, BarChart3, CalendarDays, Users, Clock } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
+import GlassBackground from '@/components/GlassBackground';
 
 const AdminDashboard = () => {
   const { language } = useLanguage();
@@ -74,7 +75,8 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200">
+    <div className="min-h-screen relative">
+      <GlassBackground />
       {/* Header */}
       <header className="border-b border-black/5 bg-white/70 backdrop-blur-2xl sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -95,7 +97,7 @@ const AdminDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-foreground mb-2">
             {language === 'sk' ? 'Vitajte späť!' : 'Welcome back!'}

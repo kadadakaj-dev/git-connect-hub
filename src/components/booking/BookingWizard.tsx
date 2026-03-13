@@ -12,6 +12,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { useCreateBooking } from '@/hooks/useCreateBooking';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import GlassBackground from '../GlassBackground';
 
 const initialBookingData: BookingData = {
   service: null,
@@ -230,9 +231,10 @@ const BookingWizard = () => {
 
   if (isConfirmed) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex flex-col">
+      <div className="min-h-screen relative flex flex-col">
+        <GlassBackground />
         {renderHeader()}
-        <div className="container max-w-2xl mx-auto px-4 py-6 flex-1">
+        <div className="container max-w-2xl mx-auto px-4 py-6 flex-1 relative z-10">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <GlassCard>
               <Confirmation bookingData={bookingData} onNewBooking={handleNewBooking} />
@@ -245,10 +247,11 @@ const BookingWizard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex flex-col">
+    <div className="min-h-screen relative flex flex-col">
+      <GlassBackground />
       {renderHeader()}
 
-      <div className="container max-w-2xl mx-auto px-4 py-5 flex-1">
+      <div className="container max-w-2xl mx-auto px-4 py-5 flex-1 relative z-10">
         {/* Step 1: Service */}
         <motion.section
           initial={{ opacity: 0, y: 12 }}
