@@ -247,7 +247,8 @@ const BookingWizard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200 flex flex-col">
+    <div className="min-h-screen relative flex flex-col">
+      <GlassBackground />
       {renderHeader()}
 
       <div className="container max-w-2xl mx-auto px-4 py-5 flex-1">
