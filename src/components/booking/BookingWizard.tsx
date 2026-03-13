@@ -12,6 +12,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { useCreateBooking } from '@/hooks/useCreateBooking';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import GlassBackground from '../GlassBackground';
 
 const initialBookingData: BookingData = {
   service: null,
