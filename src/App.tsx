@@ -20,7 +20,7 @@ const AdminResetPassword = lazy(() => import("./pages/AdminResetPassword"));
  const Legal = lazy(() => import("./pages/Legal"));
  const ClientAuth = lazy(() => import("./pages/ClientAuth"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
-const Preview = lazy(() => import("./pages/Preview"));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
