@@ -344,7 +344,7 @@ const ClientAuth = () => {
                     </TabsTrigger>
                     <TabsTrigger
                       value="register"
-                      className="rounded-lg text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm font-medium text-sm transition-all"
+                      className="rounded-lg text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium text-sm transition-all"
                     >
                       {text.register}
                     </TabsTrigger>
