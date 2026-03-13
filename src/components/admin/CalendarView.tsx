@@ -16,6 +16,8 @@ const CalendarView = () => {
   const { language } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [navDirection, setNavDirection] = useState<1 | -1>(1);
+  const [dateKey, setDateKey] = useState(0);
   const [selectedTherapist, setSelectedTherapist] = useState('all');
   const [preventOverlap, setPreventOverlap] = useState(true);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
