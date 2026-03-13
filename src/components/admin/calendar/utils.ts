@@ -111,9 +111,9 @@ export const getDayEventsWithPositions = (
 };
 
 export const getEventColorClasses = (type: string, status?: string): string => {
-  if (type === 'block') return 'bg-muted border-border text-muted-foreground opacity-80';
-  if (status === 'pending') return 'bg-warning/20 border-warning/40 text-warning-foreground';
-  return 'bg-primary/15 border-primary/40 text-primary';
+  if (type === 'block') return 'bg-muted/80 border-l-muted-foreground/60 border-t-0 border-r-0 border-b-0 text-muted-foreground';
+  if (status === 'pending') return 'bg-warning/15 border-l-warning border-t-0 border-r-0 border-b-0 text-warning-foreground';
+  return 'bg-primary/10 border-l-primary border-t-0 border-r-0 border-b-0 text-primary';
 };
 
 export const WEEKDAYS_SK = ['po', 'ut', 'st', 'št', 'pi', 'so', 'ne'];
