@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
+import PageMeta from '@/components/seo/PageMeta';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
