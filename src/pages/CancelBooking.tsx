@@ -186,7 +186,7 @@ const CancelBooking = () => {
             <p className="font-medium text-foreground">{booking.client_name}</p>
           </div>
         </div>
-      </div>
+      </GlassCard>
     );
   };
 

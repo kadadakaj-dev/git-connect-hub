@@ -146,7 +146,7 @@ const Legal = () => {
                 <p className="text-sm text-muted-foreground mt-8 pt-6 border-t border-border">
                   {language === 'sk' ? 'Posledná aktualizácia: Február 2026' : 'Last updated: February 2026'}
                 </p>
-              </div>
+              </GlassCard>
             </TabsContent>
           </Tabs>
         </div>
