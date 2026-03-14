@@ -1,37 +1,51 @@
 
+## Plán: CI/CD Workflow pre booking projekt
 
-# Liquid Glass zjednotenie — všetky stránky
+### Problém
+- Navrhovaný workflow je pre iný repozitár (`git-connect-hub`)
+- Používa `npm install` namiesto `bun install`
+- Niekedy `actions/checkout@v2` (zastaralá verzia)
 
-Stránky **AdminLogin** a **ClientAuth** už používajú `GlassBackground` + glass karty. Tieto 4 stránky ešte používajú starý `bg-gradient-to-br from-slate-100` pozadie bez glass efektov:
+### Navrhované zmeny pre správny projekt
 
-## Stránky na úpravu
+**Súbor:** `.github/workflows/ci-cd.yml` v repozitári `EB-EU-s-r-o/booking-buddy`
 
-### 1. `src/pages/NotFound.tsx`
-- Pridať `GlassBackground` komponent
-- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
-- Zabaliť obsah do glass karty (`backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection `before:`)
+```yaml
+name: CI/CD
 
-### 2. `src/pages/AdminResetPassword.tsx`
-- Pridať `GlassBackground` komponent
-- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
-- Card komponent už má glass štýly, len treba zmeniť pozadie na GlassBackground
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
-### 3. `src/pages/CancelBooking.tsx`
-- Pridať `GlassBackground` komponent
-- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
-- Inline glass štýly (`bg-white/75 backdrop-blur-2xl...`) nahradiť za konzistentné `var(--glass-*)` tokeny
-
-### 4. `src/pages/Legal.tsx`
-- Pridať `GlassBackground` komponent
-- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
-- Inline glass štýly v tab content kartách nahradiť za `var(--glass-*)` tokeny
-
-## Vzor zmeny (rovnaký pre všetky)
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      
+      - name: Install dependencies
+        run: bun install
+      
+      - name: Run tests
+        run: bun run test
+      
+      - name: Lint code
+        run: bun run lint
+      
+      - name: Type check
+        run: bun run build  # TypeScript check je súčasťou buildu
+      
+      - name: Build verification
+        run: bun run build
 ```
-- bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200
-+ relative overflow-hidden
-+ <GlassBackground />
-```
 
-Karty: použiť `backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection overlay, konzistentne s AdminLogin/ClientAuth.
-
+### Čo potrebujem overiť
+1. Má váš projekt script `test` v package.json? (Vidím vitest v závislostiach)
+2. Chcete workflow pre **booking-buddy** repozitár alebo **git-connect-hub**?
