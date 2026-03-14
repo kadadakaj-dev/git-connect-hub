@@ -1,37 +1,16 @@
 
 
-# Liquid Glass zjednotenie — všetky stránky
+# Aktualizácia SMTP hesla a test emailu
 
-Stránky **AdminLogin** a **ClientAuth** už používajú `GlassBackground` + glass karty. Tieto 4 stránky ešte používajú starý `bg-gradient-to-br from-slate-100` pozadie bez glass efektov:
+## Čo sa urobí
 
-## Stránky na úpravu
+1. **Aktualizácia SMTP_PASSWORD** — nastavenie nového hesla `Booking1@@@` pre `booking@fyzioafit.sk`
+2. **Redeploy `send-booking-email`** edge funkcie, aby použila nové heslo
+3. **Test** — odoslanie testovacej požiadavky na edge funkciu a kontrola logov
 
-### 1. `src/pages/NotFound.tsx`
-- Pridať `GlassBackground` komponent
-- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
-- Zabaliť obsah do glass karty (`backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection `before:`)
+## Technické detaily
 
-### 2. `src/pages/AdminResetPassword.tsx`
-- Pridať `GlassBackground` komponent
-- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
-- Card komponent už má glass štýly, len treba zmeniť pozadie na GlassBackground
-
-### 3. `src/pages/CancelBooking.tsx`
-- Pridať `GlassBackground` komponent
-- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
-- Inline glass štýly (`bg-white/75 backdrop-blur-2xl...`) nahradiť za konzistentné `var(--glass-*)` tokeny
-
-### 4. `src/pages/Legal.tsx`
-- Pridať `GlassBackground` komponent
-- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
-- Inline glass štýly v tab content kartách nahradiť za `var(--glass-*)` tokeny
-
-## Vzor zmeny (rovnaký pre všetky)
-```
-- bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200
-+ relative overflow-hidden
-+ <GlassBackground />
-```
-
-Karty: použiť `backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection overlay, konzistentne s AdminLogin/ClientAuth.
+- Secret `SMTP_PASSWORD` už existuje, len sa prepíše novou hodnotou
+- SMTP server: `smtp.m1.websupport.sk:465` (SSL/TLS)
+- Po aktualizácii secretu je potrebný redeploy edge funkcie `send-booking-email`
 
