@@ -194,6 +194,9 @@ serve(async (req) => {
       from: 'FYZIO&FIT <booking@fyzioafit.sk>',
       to: data.to,
       subject: subject,
+      headers: {
+        'Content-Transfer-Encoding': 'quoted-printable',
+      },
       html: html,
     })
 
