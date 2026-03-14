@@ -16,13 +16,17 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    target: 'es2020',
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
           'supabase': ['@supabase/supabase-js'],
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'query': ['@tanstack/react-query'],
-          'proxy': ['framer-motion'],
+          'ui': ['framer-motion', 'sonner', 'next-themes', 'react-helmet-async'],
+          'date': ['date-fns', 'react-day-picker'],
+          'form': ['react-hook-form', '@hookform/resolvers', 'zod'],
         },
       },
     },
