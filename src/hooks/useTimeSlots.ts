@@ -126,6 +126,9 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
     queryFn: async (): Promise<TimeSlot[]> => {
       if (!selectedDate) return [];
 
+      const now = new Date();
+      const minBookableTime = new Date(now.getTime() + 36 * 60 * 60 * 1000);
+
       const dayOfWeek = selectedDate.getDay();
       const dateString = format(selectedDate, 'yyyy-MM-dd');
 
