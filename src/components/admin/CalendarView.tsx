@@ -70,9 +70,8 @@ const CalendarView = () => {
         .order('date')
         .order('time_slot'),
       supabase
-        .from('employees')
+        .from('employees_public' as any)
         .select('id, full_name, position, is_active')
-        .eq('is_active', true)
         .order('sort_order'),
       supabase
         .from('blocked_dates')
@@ -81,7 +80,7 @@ const CalendarView = () => {
         .lte('date', format(rangeEnd, 'yyyy-MM-dd')),
     ]);
 
-    if (employeesRes.data) setEmployees(employeesRes.data);
+    if (employeesRes.data) setEmployees(employeesRes.data as unknown as Employee[]);
     if (blockedRes.data) setBlockedDates(blockedRes.data);
 
     if (bookingsRes.data) {

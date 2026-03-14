@@ -1,46 +1,37 @@
 
 
-# Fix: Employee Phone and Email Publicly Readable
+# Liquid Glass zjednotenie — všetky stránky
 
-## Problem
-The `employees` table has a public SELECT policy exposing all columns including `phone` and `email` to unauthenticated users. Only admin views actually need these fields.
+Stránky **AdminLogin** a **ClientAuth** už používajú `GlassBackground` + glass karty. Tieto 4 stránky ešte používajú starý `bg-gradient-to-br from-slate-100` pozadie bez glass efektov:
 
-## Analysis
-- **Public/client-side queries** (CalendarView, useTimeSlots) only select `id`, `full_name`, `position`, `is_active` — never `phone` or `email`
-- **Admin** (EmployeeManagement) selects `*` but runs under an authenticated admin session with the admin ALL policy
-- **Edge functions** (create-booking) only select `id`
+## Stránky na úpravu
 
-Since no public query needs `phone` or `email`, the fix is to create a view exposing only safe columns and redirect the public SELECT policy to it.
+### 1. `src/pages/NotFound.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Zabaliť obsah do glass karty (`backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection `before:`)
 
-## Implementation
+### 2. `src/pages/AdminResetPassword.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Card komponent už má glass štýly, len treba zmeniť pozadie na GlassBackground
 
-**1. Database migration** — Create a public view and update RLS:
+### 3. `src/pages/CancelBooking.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Inline glass štýly (`bg-white/75 backdrop-blur-2xl...`) nahradiť za konzistentné `var(--glass-*)` tokeny
 
-```sql
--- Create a view with only non-sensitive columns
-CREATE VIEW public.employees_public AS
-SELECT id, full_name, position, bio_sk, bio_en, is_active, sort_order
-FROM public.employees
-WHERE is_active = true;
+### 4. `src/pages/Legal.tsx`
+- Pridať `GlassBackground` komponent
+- Nahradiť `bg-gradient-to-br from-slate-100...` za `relative overflow-hidden`
+- Inline glass štýly v tab content kartách nahradiť za `var(--glass-*)` tokeny
 
--- Drop the overly permissive public SELECT policy
-DROP POLICY "Employees are publicly viewable" ON public.employees;
-
--- Grant public access to the view instead
-GRANT SELECT ON public.employees_public TO anon, authenticated;
+## Vzor zmeny (rovnaký pre všetky)
+```
+- bg-gradient-to-br from-slate-100 via-blue-50/80 to-slate-200
++ relative overflow-hidden
++ <GlassBackground />
 ```
 
-This way:
-- Unauthenticated users query `employees_public` (no phone/email)
-- Admins still have full access via the existing admin ALL policy on the base table
-
-**2. Frontend code changes** — Update the two client-side queries to use `employees_public` view:
-- `src/hooks/useTimeSlots.ts` — change `.from('employees')` to `.from('employees_public')`
-- `src/components/admin/CalendarView.tsx` — change the non-admin employees query to `.from('employees_public')`
-
-Admin components (`EmployeeManagement.tsx`) keep querying the base `employees` table since they operate under admin RLS.
-
-## Security outcome
-- `phone` and `email` columns are no longer accessible to unauthenticated or non-admin users
-- No functional regression — public queries never used those fields
+Karty: použiť `backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass` + reflection overlay, konzistentne s AdminLogin/ClientAuth.
 

@@ -96,6 +96,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "bookings_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bookings_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
@@ -455,7 +462,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      employees_public: {
+        Row: {
+          bio_en: string | null
+          bio_sk: string | null
+          full_name: string | null
+          id: string | null
+          is_active: boolean | null
+          position: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          bio_en?: string | null
+          bio_sk?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          position?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          bio_en?: string | null
+          bio_sk?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          position?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_email: {

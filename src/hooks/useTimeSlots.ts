@@ -153,9 +153,8 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
           .eq('date', dateString)
           .neq('status', 'cancelled'),
         supabase
-          .from('employees')
-          .select('id')
-          .eq('is_active', true),
+          .from('employees_public' as any)
+          .select('id'),
       ]);
 
       if (configRes.error) throw configRes.error;
