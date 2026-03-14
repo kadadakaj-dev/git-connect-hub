@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { toast } from 'sonner';
 import { format, isPast, parseISO } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import {
@@ -23,7 +22,6 @@ import {
   Star,
   User as UserIcon,
   FileText,
-  Settings,
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ProfileEditDialog from '@/components/client/ProfileEditDialog';
@@ -34,6 +32,7 @@ import { useClientBookings } from '@/hooks/useClientBookings';
 import { useFavoriteServices } from '@/hooks/useFavoriteServices';
 import { useQueryClient } from '@tanstack/react-query';
 import GlassBackground from '@/components/GlassBackground';
+import { cn } from '@/lib/utils';
 
 const ClientPortal = () => {
   const navigate = useNavigate();
@@ -77,14 +76,13 @@ const ClientPortal = () => {
     queryClient.invalidateQueries({ queryKey: ['client-profile', user?.id] });
   };
 
-  const getInitials = (name: string) => {
-    return name
+  const getInitials = (name: string) =>
+    name
       .split(' ')
       .map((n) => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
-  };
 
   const t = {
     sk: {
@@ -94,14 +92,11 @@ const ClientPortal = () => {
       upcomingAppointments: 'Nadchádzajúce termíny',
       pastAppointments: 'História návštev',
       favorites: 'Obľúbené služby',
-      profile: 'Profil',
       noUpcoming: 'Žiadne nadchádzajúce termíny',
       noPast: 'Žiadna história návštev',
       noFavorites: 'Zatiaľ žiadne obľúbené služby',
       bookNow: 'Rezervovať teraz',
       quickBook: 'Rýchla rezervácia',
-      signOut: 'Odhlásiť sa',
-      editProfile: 'Upraviť profil',
       status: {
         pending: 'Čaká na potvrdenie',
         confirmed: 'Potvrdené',
@@ -109,6 +104,8 @@ const ClientPortal = () => {
         cancelled: 'Zrušené',
       },
       therapistNotes: 'Poznámky terapeuta',
+      favoritesHint: 'Vaše obľúbené služby pre rýchlu rezerváciu',
+      addToFavorites: 'Pridať medzi obľúbené',
     },
     en: {
       title: 'Dashboard',
@@ -117,14 +114,11 @@ const ClientPortal = () => {
       upcomingAppointments: 'Upcoming Appointments',
       pastAppointments: 'Visit History',
       favorites: 'Favorite Services',
-      profile: 'Profile',
       noUpcoming: 'No upcoming appointments',
       noPast: 'No visit history',
       noFavorites: 'No favorite services yet',
       bookNow: 'Book Now',
       quickBook: 'Quick Book',
-      signOut: 'Sign Out',
-      editProfile: 'Edit Profile',
       status: {
         pending: 'Pending',
         confirmed: 'Confirmed',
@@ -132,50 +126,63 @@ const ClientPortal = () => {
         cancelled: 'Cancelled',
       },
       therapistNotes: 'Therapist Notes',
+      favoritesHint: 'Your favorite services for quick booking',
+      addToFavorites: 'Add to favorites',
     },
   };
 
   const text = t[language];
   const dateLocale = language === 'sk' ? sk : enUS;
 
+  const getStatusBadge = (status: string) => {
+    const badgeClasses: Record<string, string> = {
+      pending:
+        'border-[rgba(79,149,213,0.16)] bg-white/74 text-[hsl(var(--soft-navy))] shadow-[0_10px_22px_rgba(126,195,255,0.12)]',
+      confirmed:
+        'border-transparent bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_14px_30px_rgba(79,149,213,0.24)]',
+      completed:
+        'border-[rgba(64,157,116,0.2)] bg-white/74 text-[hsl(152,55%,32%)] shadow-[0_10px_22px_rgba(64,157,116,0.1)]',
+      cancelled:
+        'border-transparent bg-destructive text-destructive-foreground shadow-[0_14px_26px_rgba(220,38,38,0.16)]',
+    };
+
+    return (
+      <Badge
+        variant="outline"
+        className={cn(
+          'border px-3 py-1 text-[11px] font-semibold tracking-[0.02em] backdrop-blur-md',
+          badgeClasses[status] || badgeClasses.pending,
+        )}
+      >
+        {text.status[status as keyof typeof text.status] || status}
+      </Badge>
+    );
+  };
+
   if (loading || profileLoading) {
     return (
-      <div className="min-h-screen relative p-4 md:p-8">
+      <div className="min-h-screen relative px-4 py-5 md:px-8 md:py-8">
         <GlassBackground />
-        <div className="max-w-6xl mx-auto space-y-6">
-          <Skeleton className="h-12 w-64" />
-          <div className="grid md:grid-cols-3 gap-6">
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
+        <div className="relative z-10 max-w-6xl mx-auto space-y-6">
+          <Skeleton className="h-14 w-72 rounded-[22px]" />
+          <div className="grid gap-6 md:grid-cols-3">
+            <Skeleton className="h-36 rounded-[24px]" />
+            <Skeleton className="h-36 rounded-[24px]" />
+            <Skeleton className="h-36 rounded-[24px]" />
           </div>
-          <Skeleton className="h-96" />
+          <Skeleton className="h-96 rounded-[28px]" />
         </div>
       </div>
     );
   }
 
   const upcomingBookings = bookings?.filter(
-    (b) => !isPast(parseISO(`${b.date}T${b.time_slot}`)) && b.status !== 'cancelled'
+    (b) => !isPast(parseISO(`${b.date}T${b.time_slot}`)) && b.status !== 'cancelled',
   ) || [];
 
   const pastBookings = bookings?.filter(
-    (b) => isPast(parseISO(`${b.date}T${b.time_slot}`)) || b.status === 'completed'
+    (b) => isPast(parseISO(`${b.date}T${b.time_slot}`)) || b.status === 'completed',
   ) || [];
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-      pending: 'secondary',
-      confirmed: 'default',
-      completed: 'outline',
-      cancelled: 'destructive',
-    };
-    return (
-      <Badge variant={variants[status] || 'secondary'}>
-        {text.status[status as keyof typeof text.status] || status}
-      </Badge>
-    );
-  };
 
   return (
     <>
@@ -189,32 +196,33 @@ const ClientPortal = () => {
       />
       <div className="min-h-screen relative">
         <GlassBackground />
-        {/* Header */}
-        <header className="border-b border-[var(--glass-border-subtle)] backdrop-blur-2xl bg-[var(--glass-white-md)] sticky top-0 z-50 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsAvatarDialogOpen(true)}
-                className="relative group"
-              >
-                <Avatar className="h-12 w-12 border-2 border-primary/20 group-hover:border-primary/50 transition-colors">
+
+        <header className="sticky top-0 z-50 px-3 pt-3">
+          <div className="surface-toolbar max-w-6xl mx-auto flex flex-col gap-3 border border-[var(--glass-border-subtle)] px-4 py-3 shadow-glass-soft sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-3.5">
+            <div className="flex min-w-0 items-center gap-4">
+              <button onClick={() => setIsAvatarDialogOpen(true)} className="relative group shrink-0">
+                <Avatar className="h-12 w-12 border-2 border-white/70 shadow-[0_14px_30px_rgba(126,195,255,0.16)] group-hover:border-[rgba(79,149,213,0.34)] transition-colors">
                   <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name} />
-                  <AvatarFallback className="bg-primary/10 text-primary">
+                  <AvatarFallback className="bg-white/82 text-[hsl(var(--soft-navy))]">
                     {profile?.full_name ? getInitials(profile.full_name) : <UserIcon className="h-5 w-5" />}
                   </AvatarFallback>
                 </Avatar>
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[rgba(36,71,107,0.3)] opacity-0 transition-opacity group-hover:opacity-100">
                   <Camera className="h-4 w-4 text-white" />
                 </div>
               </button>
-              <div>
-                <h1 className="text-xl font-heading font-semibold">{text.title}</h1>
-                <p className="text-sm text-muted-foreground">
+
+              <div className="min-w-0">
+                <h1 className="text-xl font-heading font-semibold tracking-tight text-[hsl(var(--soft-navy))] sm:text-2xl">
+                  {text.title}
+                </h1>
+                <p className="truncate text-sm text-muted-foreground">
                   {text.welcome}, {profile?.full_name || user?.email}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4">
+
+            <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
               <LanguageSwitcher />
               <SettingsMenu
                 onEditProfile={() => setIsProfileDialogOpen(true)}
@@ -227,86 +235,105 @@ const ClientPortal = () => {
           </div>
         </header>
 
-        <main className="max-w-6xl mx-auto p-4 md:p-8 space-y-6">
-          {/* Stats Cards */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <Card>
+        <main className="relative z-10 mx-auto max-w-6xl space-y-6 px-4 py-5 md:px-8 md:py-8">
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60 shadow-glass-soft">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{text.totalVisits}</p>
-                    <p className="text-3xl font-bold">{profile?.total_visits || 0}</p>
+                    <p className="text-3xl font-semibold tracking-tight text-[hsl(var(--deep-navy))]">
+                      {profile?.total_visits || 0}
+                    </p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Star className="h-6 w-6 text-primary" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/70 bg-white/72 shadow-[0_14px_30px_rgba(126,195,255,0.14)]">
+                    <Star className="h-5 w-5 text-[hsl(var(--navy))]" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60 shadow-glass-soft">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{text.upcomingAppointments}</p>
-                    <p className="text-3xl font-bold">{upcomingBookings.length}</p>
+                    <p className="text-3xl font-semibold tracking-tight text-[hsl(var(--deep-navy))]">
+                      {upcomingBookings.length}
+                    </p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-success" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/70 bg-white/72 shadow-[0_14px_30px_rgba(126,195,255,0.14)]">
+                    <Calendar className="h-5 w-5 text-[hsl(var(--navy))]" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/')}>
+            <Card
+              className="cursor-pointer rounded-[24px] border-[rgba(79,149,213,0.18)] bg-[linear-gradient(180deg,rgba(255,255,255,0.78)_0%,rgba(216,238,255,0.7)_100%)] shadow-[0_18px_42px_rgba(126,195,255,0.16)] transition-all hover:-translate-y-0.5 hover:shadow-[0_24px_54px_rgba(126,195,255,0.2)]"
+              onClick={() => navigate('/')}
+            >
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{text.bookNow}</p>
-                    <p className="text-lg font-medium text-primary">{text.quickBook}</p>
+                    <p className="text-lg font-semibold text-[hsl(var(--deep-navy))]">{text.quickBook}</p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center">
-                    <Plus className="h-6 w-6 text-primary-foreground" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_34px_rgba(79,149,213,0.3)]">
+                    <Plus className="h-5 w-5 text-white" />
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Main Content Tabs */}
           <Tabs defaultValue="upcoming" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="upcoming" className="flex items-center gap-2">
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-1.5 rounded-[24px] border-[var(--glass-border-subtle)] bg-white/62 p-1.5">
+              <TabsTrigger
+                value="upcoming"
+                className="min-h-[48px] gap-2 rounded-[18px] px-3 py-3 text-[13px] sm:text-sm data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_34px_rgba(126,195,255,0.16)]"
+              >
                 <Calendar className="h-4 w-4" />
                 <span className="hidden sm:inline">{text.upcomingAppointments}</span>
               </TabsTrigger>
-              <TabsTrigger value="history" className="flex items-center gap-2">
+              <TabsTrigger
+                value="history"
+                className="min-h-[48px] gap-2 rounded-[18px] px-3 py-3 text-[13px] sm:text-sm data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_34px_rgba(126,195,255,0.16)]"
+              >
                 <History className="h-4 w-4" />
                 <span className="hidden sm:inline">{text.pastAppointments}</span>
               </TabsTrigger>
-              <TabsTrigger value="favorites" className="flex items-center gap-2">
+              <TabsTrigger
+                value="favorites"
+                className="min-h-[48px] gap-2 rounded-[18px] px-3 py-3 text-[13px] sm:text-sm data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_34px_rgba(126,195,255,0.16)]"
+              >
                 <Heart className="h-4 w-4" />
                 <span className="hidden sm:inline">{text.favorites}</span>
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="upcoming">
-              <Card>
+              <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/60 shadow-glass-soft">
                 <CardHeader>
-                  <CardTitle>{text.upcomingAppointments}</CardTitle>
+                  <CardTitle className="text-[hsl(var(--soft-navy))]">{text.upcomingAppointments}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {bookingsLoading ? (
                     <div className="space-y-4">
                       {[1, 2].map((i) => (
-                        <Skeleton key={i} className="h-24" />
+                        <Skeleton key={i} className="h-24 rounded-[22px]" />
                       ))}
                     </div>
                   ) : upcomingBookings.length === 0 ? (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <div className="py-14 text-center text-muted-foreground">
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[20px] border border-white/70 bg-white/70 shadow-[0_12px_28px_rgba(126,195,255,0.14)]">
+                        <Calendar className="h-6 w-6 text-[hsl(var(--navy))]" />
+                      </div>
                       <p>{text.noUpcoming}</p>
-                      <Button className="mt-4" onClick={() => navigate('/')}>
+                      <Button
+                        className="mt-5 rounded-[18px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] px-6 shadow-[0_16px_34px_rgba(79,149,213,0.24)] hover:brightness-[1.03]"
+                        onClick={() => navigate('/')}
+                      >
                         {text.bookNow}
                       </Button>
                     </div>
@@ -315,11 +342,11 @@ const ClientPortal = () => {
                       {upcomingBookings.map((booking) => (
                         <div
                           key={booking.id}
-                          className="flex items-center justify-between p-4 rounded-lg border bg-card hover:shadow-sm transition-shadow"
+                          className="flex flex-col gap-3 rounded-[22px] border border-[var(--glass-border-subtle)] bg-white/58 p-4 shadow-[0_12px_28px_rgba(126,195,255,0.1)] transition-all hover:-translate-y-px hover:shadow-[0_18px_34px_rgba(126,195,255,0.14)] sm:flex-row sm:items-center sm:justify-between"
                         >
                           <div className="space-y-1">
-                            <p className="font-medium">{booking.service?.name}</p>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <p className="font-semibold text-[hsl(var(--soft-navy))]">{booking.service?.name}</p>
+                            <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:items-center sm:gap-4">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-4 w-4" />
                                 {format(parseISO(booking.date), 'PPP', { locale: dateLocale })}
@@ -340,20 +367,22 @@ const ClientPortal = () => {
             </TabsContent>
 
             <TabsContent value="history">
-              <Card>
+              <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/60 shadow-glass-soft">
                 <CardHeader>
-                  <CardTitle>{text.pastAppointments}</CardTitle>
+                  <CardTitle className="text-[hsl(var(--soft-navy))]">{text.pastAppointments}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {bookingsLoading ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
-                        <Skeleton key={i} className="h-24" />
+                        <Skeleton key={i} className="h-24 rounded-[22px]" />
                       ))}
                     </div>
                   ) : pastBookings.length === 0 ? (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <div className="py-14 text-center text-muted-foreground">
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[20px] border border-white/70 bg-white/70 shadow-[0_12px_28px_rgba(126,195,255,0.14)]">
+                        <History className="h-6 w-6 text-[hsl(var(--navy))]" />
+                      </div>
                       <p>{text.noPast}</p>
                     </div>
                   ) : (
@@ -361,13 +390,13 @@ const ClientPortal = () => {
                       {pastBookings.map((booking) => (
                         <div
                           key={booking.id}
-                          className="p-4 rounded-lg border bg-card"
+                          className="rounded-[22px] border border-[var(--glass-border-subtle)] bg-white/58 p-4 shadow-[0_12px_28px_rgba(126,195,255,0.1)]"
                         >
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="font-medium">{booking.service?.name}</p>
+                          <div className="mb-2 flex items-center justify-between gap-3">
+                            <p className="font-semibold text-[hsl(var(--soft-navy))]">{booking.service?.name}</p>
                             {getStatusBadge(booking.status)}
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                          <div className="mb-2 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:items-center sm:gap-4">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />
                               {format(parseISO(booking.date), 'PPP', { locale: dateLocale })}
@@ -378,22 +407,25 @@ const ClientPortal = () => {
                             </span>
                           </div>
                           {booking.therapist_notes && booking.therapist_notes.length > 0 && (
-                            <div className="mt-3 pt-3 border-t">
-                              <p className="text-sm font-medium flex items-center gap-2 mb-2">
+                            <div className="mt-3 border-t border-[var(--glass-border-subtle)] pt-3">
+                              <p className="mb-2 flex items-center gap-2 text-sm font-medium text-[hsl(var(--soft-navy))]">
                                 <FileText className="h-4 w-4" />
                                 {text.therapistNotes}
                               </p>
                               {booking.therapist_notes.map((note) => (
-                                <p key={note.id} className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
+                                <p
+                                  key={note.id}
+                                  className="rounded-2xl border border-[var(--glass-border-subtle)] bg-white/66 p-3 text-sm text-muted-foreground"
+                                >
                                   {note.note}
                                 </p>
                               ))}
                             </div>
                           )}
                           <Button
-                            variant="ghost"
+                            variant="glass"
                             size="sm"
-                            className="mt-2"
+                            className="mt-3 rounded-[16px]"
                             onClick={() => {
                               if (booking.service) {
                                 toggleFavorite(booking.service.id);
@@ -401,13 +433,14 @@ const ClientPortal = () => {
                             }}
                           >
                             <Heart
-                              className={`h-4 w-4 mr-2 ${
+                              className={cn(
+                                'mr-2 h-4 w-4',
                                 favorites?.some((f) => f.service_id === booking.service?.id)
                                   ? 'fill-current text-destructive'
-                                  : ''
-                              }`}
+                                  : '',
+                              )}
                             />
-                            {language === 'sk' ? 'Pridať medzi obľúbené' : 'Add to favorites'}
+                            {text.addToFavorites}
                           </Button>
                         </div>
                       ))}
@@ -418,51 +451,45 @@ const ClientPortal = () => {
             </TabsContent>
 
             <TabsContent value="favorites">
-              <Card>
+              <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/60 shadow-glass-soft">
                 <CardHeader>
-                  <CardTitle>{text.favorites}</CardTitle>
-                  <CardDescription>
-                    {language === 'sk'
-                      ? 'Vaše obľúbené služby pre rýchlu rezerváciu'
-                      : 'Your favorite services for quick booking'}
-                  </CardDescription>
+                  <CardTitle className="text-[hsl(var(--soft-navy))]">{text.favorites}</CardTitle>
+                  <CardDescription>{text.favoritesHint}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {favoritesLoading ? (
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       {[1, 2].map((i) => (
-                        <Skeleton key={i} className="h-32" />
+                        <Skeleton key={i} className="h-32 rounded-[22px]" />
                       ))}
                     </div>
                   ) : !favorites || favorites.length === 0 ? (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <Heart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <div className="py-14 text-center text-muted-foreground">
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[20px] border border-white/70 bg-white/70 shadow-[0_12px_28px_rgba(126,195,255,0.14)]">
+                        <Heart className="h-6 w-6 text-[hsl(var(--navy))]" />
+                      </div>
                       <p>{text.noFavorites}</p>
                     </div>
                   ) : (
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       {favorites.map((fav) => (
                         <div
                           key={fav.id}
-                          className="p-4 rounded-lg border bg-card hover:shadow-sm transition-shadow"
+                          className="rounded-[22px] border border-[var(--glass-border-subtle)] bg-white/58 p-4 shadow-[0_12px_28px_rgba(126,195,255,0.1)] transition-all hover:-translate-y-px hover:shadow-[0_18px_34px_rgba(126,195,255,0.14)]"
                         >
-                          <div className="flex items-start justify-between">
+                          <div className="flex items-start justify-between gap-3">
                             <div>
-                              <p className="font-medium">{fav.service?.name}</p>
+                              <p className="font-semibold text-[hsl(var(--soft-navy))]">{fav.service?.name}</p>
                               <p className="text-sm text-muted-foreground">
                                 {fav.service?.duration} min • €{fav.service?.price}
                               </p>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => toggleFavorite(fav.service_id)}
-                            >
+                            <Button variant="ghost" size="icon" onClick={() => toggleFavorite(fav.service_id)}>
                               <Heart className="h-4 w-4 fill-current text-destructive" />
                             </Button>
                           </div>
                           <Button
-                            className="w-full mt-4"
+                            className="mt-4 w-full rounded-[18px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_34px_rgba(79,149,213,0.24)] hover:brightness-[1.03]"
                             size="sm"
                             onClick={() => navigate(`/?service=${fav.service_id}`)}
                           >
@@ -479,7 +506,6 @@ const ClientPortal = () => {
         </main>
       </div>
 
-      {/* Profile Edit Dialog */}
       {profile && (
         <ProfileEditDialog
           open={isProfileDialogOpen}
@@ -489,7 +515,6 @@ const ClientPortal = () => {
         />
       )}
 
-      {/* Avatar Edit Dialog */}
       {profile && user && (
         <AvatarEditDialog
           open={isAvatarDialogOpen}

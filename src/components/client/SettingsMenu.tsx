@@ -191,11 +191,18 @@ const SettingsMenu = ({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 rounded-2xl border border-[var(--glass-border-subtle)] bg-white/64 text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.12)] hover:bg-white/78 hover:text-[hsl(var(--navy))]"
+          >
             <Settings className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 bg-white/90 backdrop-blur-2xl border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+        <DropdownMenuContent
+          align="end"
+          className="w-60 rounded-2xl border-[var(--glass-border)] bg-[var(--glass-white-lg)] backdrop-blur-2xl shadow-glass-float"
+        >
           <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
             {userEmail}
           </DropdownMenuLabel>
