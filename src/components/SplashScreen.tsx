@@ -85,8 +85,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
 
     render();
 
-    const fadeTimer = setTimeout(() => setIsFading(true), 2500);
-    const completeTimer = setTimeout(() => stableOnComplete(), 3000);
+    const fadeTimer = setTimeout(() => setIsFading(true), 1200);
+    const completeTimer = setTimeout(() => stableOnComplete(), 1700);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
@@ -121,6 +121,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         @keyframes splash-progress {
           0% { transform: scaleX(0); transform-origin: left; }
           100% { transform: scaleX(1); transform-origin: left; }
+        }
+        @keyframes splash-progress {
+          0% { width: 0; }
+          100% { width: 100%; }
         }
       `}} />
     </div>
