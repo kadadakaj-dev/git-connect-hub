@@ -217,7 +217,7 @@ export const translations = {
     service: 'Service',
     dateAndTime: 'Date & Time',
     location: 'Location',
-    clinicAddress: '123 Wellness Street, Suite 100',
+    clinicAddress: 'Krmanová 6, Košice',
     notes: 'Notes',
     emailSentTo: 'A confirmation email has been sent to',
     bookAnotherAppointment: 'Book Another Appointment',
