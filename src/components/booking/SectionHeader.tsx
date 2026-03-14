@@ -11,15 +11,15 @@ const SectionHeader = ({
   title: string;
   completed: boolean;
 }) => (
-  <div className="flex items-center gap-2">
+  <div className="flex items-center gap-3">
     <motion.div
-      animate={completed ? { scale: [1, 1.2, 1], backgroundColor: 'rgba(255,255,255,1)' } : {}}
+      animate={completed ? { scale: [1, 1.12, 1] } : {}}
       transition={{ duration: 0.35, ease: 'easeOut' }}
       className={cn(
-        "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0",
+        "w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold flex-shrink-0 shadow-[0_8px_20px_rgba(126,195,255,0.12)]",
         completed
-          ? "bg-primary text-primary-foreground shadow-sm"
-          : "bg-primary/10 text-primary border border-primary/20"
+          ? "bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white border border-white/50"
+          : "bg-white/72 text-[hsl(var(--navy))] border border-[rgba(64,114,163,0.16)] backdrop-blur-md"
       )}
     >
       <AnimatePresence mode="wait">
@@ -46,7 +46,7 @@ const SectionHeader = ({
         )}
       </AnimatePresence>
     </motion.div>
-    <span className="text-sm font-semibold text-foreground">{title}</span>
+    <span className="text-sm font-semibold tracking-tight text-[hsl(var(--soft-navy))]">{title}</span>
   </div>
 );
 

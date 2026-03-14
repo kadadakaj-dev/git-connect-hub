@@ -29,7 +29,7 @@ const SubmitButton = ({ enabled, isPending, onSubmit }: SubmitButtonProps) => {
         size="lg"
         onClick={onSubmit}
         disabled={!enabled || isPending}
-        className="w-full gap-2 rounded-2xl text-sm font-semibold h-12 shadow-[0_4px_24px_rgba(59,130,246,0.3)] bg-primary hover:bg-primary/90 text-primary-foreground border-0 hover:-translate-y-0.5 transition-all duration-300 ease-liquid active:scale-[0.98]"
+        className="w-full gap-2 rounded-[20px] text-sm font-semibold h-12 border border-[rgba(255,255,255,0.24)] bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] hover:brightness-[1.03] text-primary-foreground shadow-[0_16px_40px_rgba(79,149,213,0.28)] hover:-translate-y-0.5 transition-all duration-300 ease-liquid active:scale-[0.98]"
       >
         {isPending ? (
           <>

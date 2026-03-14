@@ -5,36 +5,39 @@ interface SplashScreenProps {
 }
 
 const splashStyles: React.CSSProperties = {
-  backgroundColor: '#BFE2FF',
+  background:
+    'radial-gradient(circle at top left, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 36%), linear-gradient(180deg, #BFE2FF 0%, #EAF6FF 100%)',
 };
 
 const progressBarBgStyle: React.CSSProperties = {
-  backgroundColor: 'rgba(255,255,255,0.15)',
+  backgroundColor: 'rgba(36, 71, 107, 0.12)',
 };
 
 const progressBarStyle: React.CSSProperties = {
-  backgroundColor: 'hsl(210, 70%, 55%)',
+  background: 'linear-gradient(135deg, #24476B 0%, #4F95D5 100%)',
   width: '0%',
-  transition: 'width 0.8s ease-in-out',
+  transition: 'width 0.64s ease-in-out',
 };
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   const [isFading, setIsFading] = useState(false);
   const [animate, setAnimate] = useState(false);
-  const stableOnComplete = useCallback(onComplete, []);
+  const handleComplete = useCallback(() => {
+    onComplete();
+  }, [onComplete]);
 
   useEffect(() => {
     // Trigger progress animation on next frame
     requestAnimationFrame(() => setAnimate(true));
 
-    const fadeTimer = setTimeout(() => setIsFading(true), 400);
-    const completeTimer = setTimeout(() => stableOnComplete(), 800);
+    const fadeTimer = setTimeout(() => setIsFading(true), 320);
+    const completeTimer = setTimeout(() => handleComplete(), 640);
 
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(completeTimer);
     };
-  }, [stableOnComplete]);
+  }, [handleComplete]);
 
   return (
     <div
@@ -43,8 +46,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       }`}
       style={splashStyles}
     >
-      <div className="relative z-10 flex flex-col items-center gap-4">
-        <h1 className="text-4xl font-heading font-semibold text-white tracking-[0.2em] drop-shadow-lg">
+      <div className="relative z-10 flex flex-col items-center gap-4 rounded-[28px] px-8 py-7 glass-soft">
+        <h1 className="text-4xl font-heading font-semibold text-[hsl(211,48%,29%)] tracking-[0.2em]">
           FYZIO&FIT
         </h1>
         <div className="w-48 h-1 rounded-full overflow-hidden" style={progressBarBgStyle}>
