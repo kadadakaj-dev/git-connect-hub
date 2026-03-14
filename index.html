@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="sk">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,9 +19,9 @@
     <!-- Inline critical CSS for instant FCP -->
     <style>
       body{margin:0;font-family:'Inter',system-ui,sans-serif;background:#f0f5fa;color:#1e2a3a;-webkit-font-smoothing:antialiased}
-      .initial-loader{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
-      .initial-spinner{width:2rem;height:2rem;border:4px solid #3b82f6;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
-      @keyframes spin{to{transform:rotate(360deg)}}
+      #root{min-height:100vh}
+      .initial-loader{min-height:100vh;display:flex;align-items:center;justify-content:center;background:hsl(215,25%,10%)}
+      .initial-logo{color:#fff;font-size:2.25rem;font-weight:600;letter-spacing:0.2em;font-family:'Google Sans Flex',system-ui,sans-serif}
     </style>
     
     <title>FYZIO&amp;FIT - Rezervačný systém</title>
@@ -31,17 +31,17 @@
     <!-- Plausible Analytics -->
     <script defer data-domain="booking.chiropraxiakosice.eu" src="https://plausible.io/js/script.js"></script>
     <meta property="og:title" content="FYZIO&amp;FIT - Rezervačný systém">
-  <meta name="twitter:title" content="FYZIO&amp;FIT - Rezervačný systém">
-  <meta property="og:description" content="Rezervujte si termín vo FYZIO&amp;FIT - fyzioterapia a chiropraktika v Košiciach, Krmanova 6">
-  <meta name="twitter:description" content="Rezervujte si termín vo FYZIO&amp;FIT - fyzioterapia a chiropraktika v Košiciach, Krmanova 6">
-  <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3192a2de-63c5-4e78-b11d-26fb9aacf5e6/id-preview-3cc16fbb--fd3f243b-3bec-4856-9798-dbbe3c83ea8d.lovable.app-1773441010521.png">
-  <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3192a2de-63c5-4e78-b11d-26fb9aacf5e6/id-preview-3cc16fbb--fd3f243b-3bec-4856-9798-dbbe3c83ea8d.lovable.app-1773441010521.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta property="og:type" content="website">
-</head>
+    <meta name="twitter:title" content="FYZIO&amp;FIT - Rezervačný systém">
+    <meta property="og:description" content="Rezervujte si termín vo FYZIO&amp;FIT - fyzioterapia a chiropraktika v Košiciach, Krmanova 6">
+    <meta name="twitter:description" content="Rezervujte si termín vo FYZIO&amp;FIT - fyzioterapia a chiropraktika v Košiciach, Krmanova 6">
+    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3192a2de-63c5-4e78-b11d-26fb9aacf5e6/id-preview-3cc16fbb--fd3f243b-3bec-4856-9798-dbbe3c83ea8d.lovable.app-1773441010521.png">
+    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3192a2de-63c5-4e78-b11d-26fb9aacf5e6/id-preview-3cc16fbb--fd3f243b-3bec-4856-9798-dbbe3c83ea8d.lovable.app-1773441010521.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:type" content="website">
+  </head>
 
   <body>
-    <div id="root"><div class="initial-loader"><div class="initial-spinner"></div></div></div>
+    <div id="root"><div class="initial-loader"><span class="initial-logo">FYZIO&amp;FIT</span></div></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

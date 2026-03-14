@@ -22,6 +22,7 @@ export default defineConfig(({ mode }) => ({
           'supabase': ['@supabase/supabase-js'],
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'query': ['@tanstack/react-query'],
+          'proxy': ['framer-motion'],
         },
       },
     },
