@@ -126,6 +126,9 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
     queryFn: async (): Promise<TimeSlot[]> => {
       if (!selectedDate) return [];
 
+      const now = new Date();
+      const minBookableTime = new Date(now.getTime() + 36 * 60 * 60 * 1000);
+
       const dayOfWeek = selectedDate.getDay();
       const dateString = format(selectedDate, 'yyyy-MM-dd');
 
@@ -186,7 +189,18 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
         (slot, index, self) => self.findIndex((s) => s.time === slot.time) === index
       );
 
-      return uniqueSlots;
+      // Filter out slots within the 36h lead time window
+      const filtered = uniqueSlots.map((slot) => {
+        const [h, m] = slot.time.split(':').map(Number);
+        const slotDateTime = new Date(selectedDate);
+        slotDateTime.setHours(h, m, 0, 0);
+        if (slotDateTime < minBookableTime) {
+          return { ...slot, available: false };
+        }
+        return slot;
+      });
+
+      return filtered;
     },
     enabled: !!selectedDate,
   });

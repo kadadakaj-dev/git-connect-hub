@@ -81,8 +81,16 @@ const DateTimeSelection = ({
     setCurrentMonth((prev) => addDays(endOfMonth(prev), 1));
   };
 
+  // Minimum 36h lead time — earliest bookable moment
+  const minBookableTime = new Date(Date.now() + 36 * 60 * 60 * 1000);
+
   const isDateDisabled = (date: Date) => {
-    return isBefore(date, today) || isSameDay(date, today) || date.getDay() === 0;
+    if (date.getDay() === 0) return true; // Sunday
+    // Disable if the entire day is before the 36h cutoff
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    if (endOfDay < minBookableTime) return true;
+    return false;
   };
 
   const allSlots = timeSlots;
