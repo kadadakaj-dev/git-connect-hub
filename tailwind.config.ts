@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -14,9 +15,39 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Inter', 'system-ui', 'sans-serif'],
-        heading: ['"Google Sans Flex"', 'system-ui', 'sans-serif'],
+        sans: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"SF Pro Text"',
+          '"SF Pro Display"',
+          '"Segoe UI"',
+          '"Helvetica Neue"',
+          'Arial',
+          'system-ui',
+          'sans-serif',
+        ],
+        display: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"SF Pro Display"',
+          '"SF Pro Text"',
+          '"Segoe UI"',
+          '"Helvetica Neue"',
+          'Arial',
+          'system-ui',
+          'sans-serif',
+        ],
+        heading: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"SF Pro Display"',
+          '"SF Pro Text"',
+          '"Segoe UI"',
+          '"Helvetica Neue"',
+          'Arial',
+          'system-ui',
+          'sans-serif',
+        ],
         data: ["'JetBrains Mono'", "'SF Mono'", "'Fira Code'", 'monospace'],
       },
       colors: {
@@ -131,5 +162,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;
