@@ -177,9 +177,9 @@ const BookingWizard = () => {
         {/* Step 4: Client Details */}
         <motion.section
           ref={detailsRef}
-          initial={{ opacity: 0.3, y: 12 }}
           animate={{ opacity: hasDateTime ? 1 : 0.3, y: hasDateTime ? 0 : 12, scale: hasDateTime ? 1 : 0.98 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          style={{ opacity: 0.3, transform: 'translateY(12px) scale(0.98)' }}
           className={cn("mb-4", !hasDateTime && "pointer-events-none")}
         >
           <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
