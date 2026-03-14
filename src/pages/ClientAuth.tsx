@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Mail, Lock, User, ArrowLeft, CalendarDays, Clock, Heart, Star } from 'lucide-react';
 import { z } from 'zod';
 import GlassBackground from '@/components/GlassBackground';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const loginSchema = z.object({
   email: z.string().email('Neplatný email'),
@@ -23,13 +24,21 @@ const registerSchema = loginSchema.extend({
   phone: z.string().optional(),
 });
 
-// Sidebar menu items
 const menuItems = [
   { icon: CalendarDays, label: { sk: 'Rezervácie', en: 'Bookings' }, active: false },
   { icon: Clock, label: { sk: 'História', en: 'History' }, active: false },
   { icon: Heart, label: { sk: 'Obľúbené', en: 'Favorites' }, active: false },
   { icon: Star, label: { sk: 'Prihlásenie', en: 'Sign In' }, active: true },
 ];
+
+const oauthButtonClass =
+  'w-full h-12 flex items-center justify-center gap-3 rounded-[18px] border border-[var(--glass-border-subtle)] bg-white/66 px-4 text-[15px] font-medium text-[hsl(var(--soft-navy))] shadow-[0_12px_28px_rgba(126,195,255,0.12)] transition-all duration-200 hover:-translate-y-px hover:bg-white/82 hover:shadow-[0_16px_34px_rgba(126,195,255,0.16)] disabled:opacity-50';
+
+const authInputClass =
+  'h-12 rounded-[16px] border-[var(--glass-border-subtle)] bg-white/72 text-[hsl(var(--soft-navy))] placeholder:text-muted-foreground/70 shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus-visible:border-[rgba(79,149,213,0.34)] focus-visible:ring-[rgba(126,195,255,0.24)] focus-visible:bg-white/82';
+
+const submitButtonClass =
+  'h-12 w-full rounded-[18px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_18px_36px_rgba(79,149,213,0.26)] hover:brightness-[1.03]';
 
 const ClientAuth = () => {
   const navigate = useNavigate();
@@ -57,9 +66,11 @@ const ClientAuth = () => {
     setIsLoading(true);
     try {
       const { error } = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: window.location.origin + '/portal',
+        redirect_uri: `${window.location.origin}/portal`,
       });
-      if (error) toast.error(language === 'sk' ? 'Chyba pri prihlásení cez Google' : 'Error signing in with Google');
+      if (error) {
+        toast.error(language === 'sk' ? 'Chyba pri prihlásení cez Google' : 'Error signing in with Google');
+      }
     } catch {
       toast.error(language === 'sk' ? 'Niečo sa pokazilo' : 'Something went wrong');
     } finally {
@@ -71,9 +82,11 @@ const ClientAuth = () => {
     setIsLoading(true);
     try {
       const { error } = await lovable.auth.signInWithOAuth('apple', {
-        redirect_uri: window.location.origin + '/portal',
+        redirect_uri: `${window.location.origin}/portal`,
       });
-      if (error) toast.error(language === 'sk' ? 'Chyba pri prihlásení cez Apple' : 'Error signing in with Apple');
+      if (error) {
+        toast.error(language === 'sk' ? 'Chyba pri prihlásení cez Apple' : 'Error signing in with Apple');
+      }
     } catch {
       toast.error(language === 'sk' ? 'Niečo sa pokazilo' : 'Something went wrong');
     } finally {
@@ -84,6 +97,7 @@ const ClientAuth = () => {
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+
     const result = loginSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -93,12 +107,14 @@ const ClientAuth = () => {
       setErrors(fieldErrors);
       return;
     }
+
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
+
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
           toast.error(language === 'sk' ? 'Nesprávny email alebo heslo' : 'Invalid email or password');
@@ -116,6 +132,7 @@ const ClientAuth = () => {
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+
     const result = registerSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -125,6 +142,7 @@ const ClientAuth = () => {
       setErrors(fieldErrors);
       return;
     }
+
     setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -135,6 +153,7 @@ const ClientAuth = () => {
           data: { full_name: formData.fullName, phone: formData.phone },
         },
       });
+
       if (error) {
         if (error.message.includes('already registered')) {
           toast.error(language === 'sk' ? 'Email je už zaregistrovaný' : 'Email already registered');
@@ -148,10 +167,11 @@ const ClientAuth = () => {
           phone: formData.phone || null,
           preferred_language: language,
         });
+
         toast.success(
           language === 'sk'
             ? 'Registrácia úspešná! Skontrolujte email pre overenie.'
-            : 'Registration successful! Check your email for verification.'
+            : 'Registration successful! Check your email for verification.',
         );
       }
     } catch {
@@ -179,6 +199,8 @@ const ClientAuth = () => {
       backToBooking: 'Späť na rezerváciu',
       welcome: 'Vitajte späť',
       welcomeSub: 'Spravujte svoje rezervácie a obľúbené služby',
+      guest: 'Hosť',
+      guestState: 'Neprihlásený',
     },
     en: {
       title: 'Client Portal',
@@ -197,6 +219,8 @@ const ClientAuth = () => {
       backToBooking: 'Back to booking',
       welcome: 'Welcome back',
       welcomeSub: 'Manage your bookings and favorite services',
+      guest: 'Guest',
+      guestState: 'Not signed in',
     },
   };
 
@@ -212,101 +236,85 @@ const ClientAuth = () => {
         path="/auth"
       />
 
-      <div className="min-h-screen flex relative overflow-hidden">
+      <div className="relative flex min-h-screen overflow-hidden">
         <GlassBackground />
-        {/* Glassmorphism Sidebar — hidden on mobile */}
-        <aside className="hidden lg:flex w-[280px] flex-col p-6 backdrop-blur-2xl bg-[var(--glass-white-md)] border-r border-[var(--glass-border-subtle)]">
-          {/* Logo */}
-          <div className="text-center mb-10">
-            <span className="text-3xl font-semibold text-foreground tracking-tight">FYZIO&FIT</span>
+
+        <aside className="hidden w-[296px] shrink-0 flex-col border-r border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.74)_0%,rgba(234,246,255,0.58)_100%)] p-5 backdrop-blur-2xl lg:flex xl:p-6">
+          <div className="mb-10 text-center">
+            <span className="font-heading text-3xl font-semibold tracking-[0.16em] text-[hsl(var(--soft-navy))]">
+              FYZIO&FIT
+            </span>
           </div>
 
-          {/* Menu */}
           <nav className="flex-1">
             <ul className="space-y-2">
               {menuItems.map((item, i) => {
                 const Icon = item.icon;
+
                 return (
                   <li
                     key={i}
-                  className={`relative rounded-2xl transition-all duration-200 ${
-                    item.active
-                      ? 'bg-primary/10 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)]'
-                      : 'hover:bg-black/5 hover:shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]'
-                  }`}
-                >
-                  {item.active && (
-                    <span className="absolute -left-6 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-sm" />
-                  )}
-                  <span className="flex items-center gap-3.5 px-4 py-3 text-foreground font-medium tracking-wide text-[15px]">
-                    <Icon className="w-5 h-5 opacity-70" />
-                    {item.label[language]}
-                  </span>
-                </li>
+                    className={`relative rounded-[22px] border transition-all duration-200 ${
+                      item.active
+                        ? 'border-[rgba(79,149,213,0.16)] bg-white/76 shadow-[0_14px_30px_rgba(126,195,255,0.14)]'
+                        : 'border-transparent hover:border-[var(--glass-border-subtle)] hover:bg-white/50'
+                    }`}
+                  >
+                    {item.active && (
+                      <span className="absolute -left-5 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-sm bg-[linear-gradient(180deg,#24476B_0%,#4F95D5_100%)]" />
+                    )}
+                    <span className="flex items-center gap-3.5 px-4 py-3 text-[15px] font-medium tracking-wide text-[hsl(var(--soft-navy))]">
+                      <Icon className={`h-5 w-5 ${item.active ? 'opacity-100' : 'opacity-65'}`} />
+                      {item.label[language]}
+                    </span>
+                  </li>
                 );
               })}
             </ul>
           </nav>
 
-          {/* Profile placeholder */}
-          <div className="mt-auto p-4 bg-white/60 rounded-2xl border border-black/5 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
-              <User className="w-5 h-5 text-primary" />
+          <div className="mt-auto flex items-center gap-3 rounded-[22px] border border-[var(--glass-border-subtle)] bg-white/68 p-4 shadow-[0_12px_28px_rgba(126,195,255,0.12)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/82">
+              <User className="h-5 w-5 text-[hsl(var(--navy))]" />
             </div>
             <div>
-              <p className="text-sm font-medium text-foreground">{language === 'sk' ? 'Hosť' : 'Guest'}</p>
-              <p className="text-xs text-muted-foreground">{language === 'sk' ? 'Neprihlásený' : 'Not signed in'}</p>
+              <p className="text-sm font-medium text-[hsl(var(--soft-navy))]">{text.guest}</p>
+              <p className="text-xs text-muted-foreground">{text.guestState}</p>
             </div>
           </div>
         </aside>
 
-        {/* Main content area */}
-        <main className="flex-1 flex flex-col overflow-y-auto">
-          {/* Mobile header */}
-          <div className="lg:hidden p-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/')}
-              className="text-muted-foreground hover:text-foreground hover:bg-black/5"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {text.backToBooking}
-            </Button>
+        <main className="relative z-10 flex flex-1 flex-col overflow-y-auto">
+          <div className="px-3 pt-3 lg:px-8 lg:pt-8">
+            <div className="surface-toolbar mx-auto flex w-full max-w-5xl items-center justify-between border border-[var(--glass-border-subtle)] px-3 py-2 shadow-glass-soft sm:px-4">
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/')}
+                className="rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/60 px-4 text-[hsl(var(--soft-navy))] hover:bg-white/78 hover:text-[hsl(var(--navy))]"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                {text.backToBooking}
+              </Button>
+              <LanguageSwitcher />
+            </div>
           </div>
 
-          {/* Desktop back button */}
-          <div className="hidden lg:block p-8 pb-0">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/')}
-              className="text-muted-foreground hover:text-foreground hover:bg-black/5 text-sm"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {text.backToBooking}
-            </Button>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
+          <div className="flex flex-1 items-center justify-center p-4 lg:p-8">
             <div className="w-full max-w-md space-y-6">
-              {/* Welcome header */}
-              <div className="text-center lg:text-left mb-2">
-                <h1 className="text-3xl lg:text-4xl font-heading font-semibold text-foreground tracking-tight mb-2">
+              <div className="mb-2 text-center lg:text-left">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-[hsl(var(--navy))]/75">
+                  {text.title}
+                </p>
+                <h1 className="mb-2 font-heading text-3xl font-semibold tracking-tight text-[hsl(var(--soft-navy))] lg:text-4xl">
                   {text.welcome}
                 </h1>
-                <p className="text-base text-muted-foreground">{text.welcomeSub}</p>
+                <p className="text-base text-muted-foreground">{text.subtitle}</p>
               </div>
 
-              {/* Glassmorphism auth card */}
-              <div className="backdrop-blur-2xl bg-[var(--glass-white)] rounded-3xl border border-[var(--glass-border)] shadow-glass relative overflow-hidden before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1] p-6 lg:p-8 space-y-6">
-                {/* OAuth buttons */}
+              <div className="surface-panel rounded-[30px] border border-[var(--glass-border)] p-6 shadow-glass-float lg:p-8">
                 <div className="space-y-3">
-                  <button
-                    onClick={handleGoogleSignIn}
-                    disabled={isLoading}
-                    className="w-full h-12 flex items-center justify-center gap-3 rounded-2xl bg-black/5 hover:bg-black/10 border border-black/5 hover:border-black/10 text-foreground font-medium text-[15px] transition-all duration-200 disabled:opacity-50"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 24 24">
+                  <button type="button" onClick={handleGoogleSignIn} disabled={isLoading} className={oauthButtonClass}>
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                       <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                       <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                       <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
@@ -315,150 +323,154 @@ const ClientAuth = () => {
                     {text.googleSignIn}
                   </button>
 
-                  <button
-                    onClick={handleAppleSignIn}
-                    disabled={isLoading}
-                    className="w-full h-12 flex items-center justify-center gap-3 rounded-2xl bg-black/5 hover:bg-black/10 border border-black/5 hover:border-black/10 text-foreground font-medium text-[15px] transition-all duration-200 disabled:opacity-50"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <button type="button" onClick={handleAppleSignIn} disabled={isLoading} className={oauthButtonClass}>
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                       <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
                     </svg>
                     {text.appleSignIn}
                   </button>
                 </div>
 
-                {/* Divider */}
-                <div className="relative">
+                <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border/40" />
+                    <span className="w-full border-t border-[var(--glass-border-subtle)]" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="px-3 text-muted-foreground bg-transparent">
+                    <span className="rounded-full bg-[rgba(248,252,255,0.75)] px-3 text-muted-foreground backdrop-blur-sm">
                       {text.orContinueWith}
                     </span>
                   </div>
                 </div>
 
-                {/* Tabs */}
                 <Tabs defaultValue="login" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 bg-black/5 rounded-xl border border-black/5 p-1">
+                  <TabsList className="grid h-auto w-full grid-cols-2 gap-1.5 rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/58 p-1.5">
                     <TabsTrigger
                       value="login"
-                      className="rounded-lg text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium text-sm transition-all"
+                      className="min-h-[46px] rounded-[16px] text-sm font-medium data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_30px_rgba(126,195,255,0.16)]"
                     >
                       {text.login}
                     </TabsTrigger>
                     <TabsTrigger
                       value="register"
-                      className="rounded-lg text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium text-sm transition-all"
+                      className="min-h-[46px] rounded-[16px] text-sm font-medium data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_30px_rgba(126,195,255,0.16)]"
                     >
                       {text.register}
                     </TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="login" className="space-y-4 mt-5">
+                  <TabsContent value="login" className="mt-5 space-y-4">
                     <form onSubmit={handleEmailSignIn} className="space-y-4">
                       <div className="space-y-1.5">
-                        <Label htmlFor="login-email" className="text-foreground text-sm font-medium">{text.email}</Label>
+                        <Label htmlFor="login-email" className="text-sm font-medium text-[hsl(var(--soft-navy))]">
+                          {text.email}
+                        </Label>
                         <div className="relative">
-                          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                           <Input
                             id="login-email"
                             type="email"
                             placeholder="email@example.com"
-                            className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
+                            className={`pl-10 ${authInputClass}`}
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           />
                         </div>
                         {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                       </div>
+
                       <div className="space-y-1.5">
-                        <Label htmlFor="login-password" className="text-foreground text-sm font-medium">{text.password}</Label>
+                        <Label htmlFor="login-password" className="text-sm font-medium text-[hsl(var(--soft-navy))]">
+                          {text.password}
+                        </Label>
                         <div className="relative">
-                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                           <Input
                             id="login-password"
                             type="password"
-                            className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
+                            className={`pl-10 ${authInputClass}`}
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                           />
                         </div>
                         {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                       </div>
-                      <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm transition-all duration-200 disabled:opacity-50 shadow-lg shadow-primary/20"
-                      >
+
+                      <Button type="submit" disabled={isLoading} className={submitButtonClass}>
                         {isLoading ? '...' : text.signIn}
-                      </button>
+                      </Button>
                     </form>
                   </TabsContent>
 
-                  <TabsContent value="register" className="space-y-4 mt-5">
+                  <TabsContent value="register" className="mt-5 space-y-4">
                     <form onSubmit={handleEmailSignUp} className="space-y-4">
                       <div className="space-y-1.5">
-                        <Label htmlFor="register-name" className="text-foreground text-sm font-medium">{text.fullName}</Label>
+                        <Label htmlFor="register-name" className="text-sm font-medium text-[hsl(var(--soft-navy))]">
+                          {text.fullName}
+                        </Label>
                         <div className="relative">
-                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                           <Input
                             id="register-name"
                             type="text"
-                            className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
+                            className={`pl-10 ${authInputClass}`}
                             value={formData.fullName}
                             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                           />
                         </div>
                         {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
                       </div>
+
                       <div className="space-y-1.5">
-                        <Label htmlFor="register-email" className="text-foreground text-sm font-medium">{text.email}</Label>
+                        <Label htmlFor="register-email" className="text-sm font-medium text-[hsl(var(--soft-navy))]">
+                          {text.email}
+                        </Label>
                         <div className="relative">
-                          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                           <Input
                             id="register-email"
                             type="email"
                             placeholder="email@example.com"
-                            className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
+                            className={`pl-10 ${authInputClass}`}
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           />
                         </div>
                         {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                       </div>
+
                       <div className="space-y-1.5">
-                        <Label htmlFor="register-phone" className="text-foreground text-sm font-medium">{text.phone}</Label>
+                        <Label htmlFor="register-phone" className="text-sm font-medium text-[hsl(var(--soft-navy))]">
+                          {text.phone}
+                        </Label>
                         <Input
                           id="register-phone"
                           type="tel"
-                          className="h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
+                          className={authInputClass}
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         />
                       </div>
+
                       <div className="space-y-1.5">
-                        <Label htmlFor="register-password" className="text-foreground text-sm font-medium">{text.password}</Label>
+                        <Label htmlFor="register-password" className="text-sm font-medium text-[hsl(var(--soft-navy))]">
+                          {text.password}
+                        </Label>
                         <div className="relative">
-                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                           <Input
                             id="register-password"
                             type="password"
-                            className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
+                            className={`pl-10 ${authInputClass}`}
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                           />
                         </div>
                         {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                       </div>
-                      <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm transition-all duration-200 disabled:opacity-50 shadow-lg shadow-primary/20"
-                      >
+
+                      <Button type="submit" disabled={isLoading} className={submitButtonClass}>
                         {isLoading ? '...' : text.signUp}
-                      </button>
+                      </Button>
                     </form>
                   </TabsContent>
                 </Tabs>
