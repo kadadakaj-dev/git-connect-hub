@@ -147,6 +147,31 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
 `
 }
 
+function generateEmailText(data: EmailRequest, baseUrl: string): string {
+  const t = translations[data.language]
+  const formattedDate = formatDate(data.date, data.language)
+  const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`
+  const isReminder = data.template === 'reminder'
+  const title = isReminder ? t.reminderTitle : t.confirmationTitle
+
+  return [
+    t.clinicName,
+    '',
+    `${t.greeting}, ${data.clientName}!`,
+    title,
+    '',
+    `${t.service}: ${data.serviceName}`,
+    `${t.dateTime}: ${formattedDate} ${data.time}`,
+    `${t.location}: ${t.address}`,
+    '',
+    t.cancelText,
+    cancelUrl,
+    '',
+    t.footer,
+    t.contact,
+  ].join('\n')
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -183,6 +208,9 @@ serve(async (req) => {
           password: smtpPassword,
         },
       },
+      debug: {
+        encodeLB: true,
+      },
     })
 
     const t = translations[data.language]
@@ -194,9 +222,7 @@ serve(async (req) => {
       from: 'FYZIO&FIT <booking@fyzioafit.sk>',
       to: data.to,
       subject: subject,
-      headers: {
-        'Content-Transfer-Encoding': 'quoted-printable',
-      },
+      content: generateEmailText(data, baseUrl),
       html: html,
     })
 

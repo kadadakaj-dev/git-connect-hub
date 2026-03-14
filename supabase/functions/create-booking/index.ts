@@ -294,7 +294,7 @@ serve(async (req) => {
       client_email: sanitizeString(body.client_email.toLowerCase(), 255),
       client_phone: sanitizeString(body.client_phone, 20),
       notes: body.notes ? sanitizeString(body.notes, 1000) : null,
-      status: 'pending',
+      status: 'confirmed',
       employee_id: assignedEmployeeId,
       booking_duration: bookingDuration
     }

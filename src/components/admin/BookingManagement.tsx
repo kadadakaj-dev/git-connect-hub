@@ -8,33 +8,18 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import BookingDetailsDialog, { type AdminBookingDetails } from '@/components/admin/BookingDetailsDialog';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { sk } from 'date-fns/locale';
-import { Search, Filter, CheckCircle, XCircle, Clock, Calendar } from 'lucide-react';
+import { Search, Filter, CheckCircle, XCircle, Clock, Calendar, Eye } from 'lucide-react';
 
 type BookingStatus = 'pending' | 'confirmed' | 'cancelled';
 
-interface Booking {
-  id: string;
-  client_name: string;
-  client_email: string;
-  client_phone: string;
-  date: string;
-  time_slot: string;
-  status: string;
-  notes: string | null;
-  created_at: string;
+type Booking = AdminBookingDetails & {
   service_id: string;
   employee_id: string | null;
-  services?: {
-    name_sk: string;
-    name_en: string;
-  };
-  employees?: {
-    full_name: string;
-  } | null;
-}
+};
 
 const BookingManagement = () => {
   const { language } = useLanguage();
@@ -42,6 +27,7 @@ const BookingManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('');
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const { data: bookings, isLoading } = useQuery({
     queryKey: ['admin-bookings'],
@@ -82,7 +68,7 @@ const BookingManagement = () => {
     const matchesSearch = 
       booking.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.client_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.client_phone.includes(searchTerm);
+      (booking.client_phone || '').includes(searchTerm);
     
     const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
     const matchesDate = !dateFilter || booking.date === dateFilter;
@@ -199,7 +185,7 @@ const BookingManagement = () => {
                       <div>
                         <p className="font-medium">{booking.client_name}</p>
                         <p className="text-sm text-muted-foreground">{booking.client_email}</p>
-                        <p className="text-sm text-muted-foreground">{booking.client_phone}</p>
+                        <p className="text-sm text-muted-foreground">{booking.client_phone || '—'}</p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -220,6 +206,14 @@ const BookingManagement = () => {
                     <TableCell>{getStatusBadge(booking.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedBooking(booking)}
+                          className="text-[hsl(var(--soft-navy))] hover:text-[hsl(var(--navy))]"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
                         {booking.status !== 'confirmed' && (
                           <Button
                             size="sm"
@@ -257,6 +251,16 @@ const BookingManagement = () => {
           </div>
         )}
       </CardContent>
+
+      <BookingDetailsDialog
+        booking={selectedBooking}
+        open={!!selectedBooking}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedBooking(null);
+          }
+        }}
+      />
     </Card>
   );
 };

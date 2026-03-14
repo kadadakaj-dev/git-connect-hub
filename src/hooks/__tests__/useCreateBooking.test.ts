@@ -8,7 +8,7 @@ const mockInvoke = vi.fn();
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     functions: {
-      invoke: (...args: any[]) => mockInvoke(...args),
+      invoke: (...args: unknown[]) => mockInvoke(...args),
     },
   },
 }));
@@ -31,7 +31,7 @@ describe('useCreateBooking', () => {
 
   it('should call create-booking edge function with correct payload', async () => {
     mockInvoke.mockResolvedValue({
-      data: { success: true, booking: { id: '123', date: '2026-03-15', time_slot: '10:00', status: 'pending' } },
+      data: { success: true, booking: { id: '123', date: '2026-03-15', time_slot: '10:00', status: 'confirmed' } },
       error: null,
     });
 
@@ -63,7 +63,7 @@ describe('useCreateBooking', () => {
 
     expect(result.current.data).toEqual({
       success: true,
-      booking: { id: '123', date: '2026-03-15', time_slot: '10:00', status: 'pending' },
+      booking: { id: '123', date: '2026-03-15', time_slot: '10:00', status: 'confirmed' },
     });
   });
 
@@ -111,7 +111,7 @@ describe('useCreateBooking', () => {
 
   it('should send null for empty notes', async () => {
     mockInvoke.mockResolvedValue({
-      data: { success: true, booking: { id: '456', date: '2026-03-15', time_slot: '11:00', status: 'pending' } },
+      data: { success: true, booking: { id: '456', date: '2026-03-15', time_slot: '11:00', status: 'confirmed' } },
       error: null,
     });
 

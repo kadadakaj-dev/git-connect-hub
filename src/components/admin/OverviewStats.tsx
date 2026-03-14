@@ -4,26 +4,18 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import BookingDetailsDialog, { type AdminBookingDetails } from '@/components/admin/BookingDetailsDialog';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday, isWithinInterval } from 'date-fns';
 import { sk } from 'date-fns/locale';
 import { Calendar, BarChart3, Package, TrendingUp, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { useState } from 'react';
 
-interface Booking {
-  id: string;
-  client_name: string;
-  date: string;
-  time_slot: string;
-  status: string;
-  created_at: string;
-  services?: {
-    name_sk: string;
-    name_en: string;
-  };
-}
+type Booking = AdminBookingDetails;
 
 const OverviewStats = () => {
   const { language } = useLanguage();
   const today = new Date();
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const { data: bookings, isLoading: bookingsLoading } = useQuery({
     queryKey: ['admin-bookings-stats'],
@@ -32,7 +24,8 @@ const OverviewStats = () => {
         .from('bookings')
         .select(`
           *,
-          services (name_sk, name_en)
+          services (name_sk, name_en),
+          employees (full_name)
         `)
         .order('created_at', { ascending: false });
       
@@ -222,34 +215,66 @@ const OverviewStats = () => {
         </CardHeader>
         <CardContent>
           {recentBookings.length > 0 ? (
-            <div className="rounded-md border overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{language === 'sk' ? 'Klient' : 'Client'}</TableHead>
-                    <TableHead>{language === 'sk' ? 'Služba' : 'Service'}</TableHead>
-                    <TableHead>{language === 'sk' ? 'Dátum' : 'Date'}</TableHead>
-                    <TableHead>{language === 'sk' ? 'Stav' : 'Status'}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentBookings.map((booking) => (
-                    <TableRow key={booking.id}>
-                      <TableCell className="font-medium">{booking.client_name}</TableCell>
-                      <TableCell>
-                        {booking.services 
-                          ? (language === 'sk' ? booking.services.name_sk : booking.services.name_en)
-                          : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {formatDate(booking.date)} • {booking.time_slot}
-                      </TableCell>
-                      <TableCell>{getStatusBadge(booking.status)}</TableCell>
+            <>
+              <div className="space-y-3 md:hidden">
+                {recentBookings.map((booking) => (
+                  <button
+                    key={booking.id}
+                    type="button"
+                    onClick={() => setSelectedBooking(booking)}
+                    className="w-full rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 text-left shadow-[0_12px_24px_rgba(126,195,255,0.08)] transition-colors hover:bg-white/82"
+                  >
+                    <div className="mb-2 flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-[hsl(var(--soft-navy))]">{booking.client_name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {booking.services
+                            ? (language === 'sk' ? booking.services.name_sk : booking.services.name_en)
+                            : '-'}
+                        </p>
+                      </div>
+                      {getStatusBadge(booking.status)}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(booking.date)} • {booking.time_slot}
+                    </p>
+                  </button>
+                ))}
+              </div>
+
+              <div className="hidden rounded-md border overflow-x-auto md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{language === 'sk' ? 'Klient' : 'Client'}</TableHead>
+                      <TableHead>{language === 'sk' ? 'Služba' : 'Service'}</TableHead>
+                      <TableHead>{language === 'sk' ? 'Dátum' : 'Date'}</TableHead>
+                      <TableHead>{language === 'sk' ? 'Stav' : 'Status'}</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {recentBookings.map((booking) => (
+                      <TableRow
+                        key={booking.id}
+                        className="cursor-pointer"
+                        onClick={() => setSelectedBooking(booking)}
+                      >
+                        <TableCell className="font-medium">{booking.client_name}</TableCell>
+                        <TableCell>
+                          {booking.services
+                            ? (language === 'sk' ? booking.services.name_sk : booking.services.name_en)
+                            : '-'}
+                        </TableCell>
+                        <TableCell>
+                          {formatDate(booking.date)} • {booking.time_slot}
+                        </TableCell>
+                        <TableCell>{getStatusBadge(booking.status)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
           ) : (
             <p className="text-muted-foreground text-center py-8">
               {language === 'sk' 
@@ -259,6 +284,16 @@ const OverviewStats = () => {
           )}
         </CardContent>
       </Card>
+
+      <BookingDetailsDialog
+        booking={selectedBooking}
+        open={!!selectedBooking}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedBooking(null);
+          }
+        }}
+      />
     </div>
   );
 };
