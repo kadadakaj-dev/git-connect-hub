@@ -70,9 +70,8 @@ const CalendarView = () => {
         .order('date')
         .order('time_slot'),
       supabase
-        .from('employees')
+        .from('employees_public' as any)
         .select('id, full_name, position, is_active')
-        .eq('is_active', true)
         .order('sort_order'),
       supabase
         .from('blocked_dates')
