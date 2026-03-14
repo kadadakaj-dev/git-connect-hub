@@ -6,6 +6,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import GlassBackground from '@/components/GlassBackground';
+import GlassCard from '@/components/booking/GlassCard';
 
 const Legal = () => {
   const { language } = useLanguage();
