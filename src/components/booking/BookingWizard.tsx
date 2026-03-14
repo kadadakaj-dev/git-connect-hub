@@ -140,26 +140,21 @@ const BookingWizard = () => {
 
       <div className="container max-w-2xl mx-auto px-4 py-5 flex-1 relative z-10">
         {/* Step 1: Service */}
-        <motion.section
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.05 }}
-          className="mb-4"
-        >
+        <section className="mb-4">
           <SectionHeader number={1} title={language === 'sk' ? 'Vyberte službu' : 'Select service'} completed={hasService} />
           <div className="mt-2">
             <GlassCard>
               <ServiceSelection selectedService={bookingData.service} onSelect={handleServiceSelect} />
             </GlassCard>
           </div>
-        </motion.section>
+        </section>
 
         {/* Step 2 & 3: Date & Time */}
         <motion.section
           ref={dateTimeRef}
-          initial={{ opacity: 0.3, y: 12 }}
           animate={{ opacity: hasService ? 1 : 0.3, y: hasService ? 0 : 12, scale: hasService ? 1 : 0.98 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          style={{ opacity: 0.3, transform: 'translateY(12px) scale(0.98)' }}
           className={cn("mb-4", !hasService && "pointer-events-none")}
         >
           <div className="flex items-center gap-6 mb-2">
@@ -182,9 +177,9 @@ const BookingWizard = () => {
         {/* Step 4: Client Details */}
         <motion.section
           ref={detailsRef}
-          initial={{ opacity: 0.3, y: 12 }}
           animate={{ opacity: hasDateTime ? 1 : 0.3, y: hasDateTime ? 0 : 12, scale: hasDateTime ? 1 : 0.98 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          style={{ opacity: 0.3, transform: 'translateY(12px) scale(0.98)' }}
           className={cn("mb-4", !hasDateTime && "pointer-events-none")}
         >
           <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
