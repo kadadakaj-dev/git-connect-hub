@@ -140,19 +140,14 @@ const BookingWizard = () => {
 
       <div className="container max-w-2xl mx-auto px-4 py-5 flex-1 relative z-10">
         {/* Step 1: Service */}
-        <motion.section
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.05 }}
-          className="mb-4"
-        >
+        <section className="mb-4">
           <SectionHeader number={1} title={language === 'sk' ? 'Vyberte službu' : 'Select service'} completed={hasService} />
           <div className="mt-2">
             <GlassCard>
               <ServiceSelection selectedService={bookingData.service} onSelect={handleServiceSelect} />
             </GlassCard>
           </div>
-        </motion.section>
+        </section>
 
         {/* Step 2 & 3: Date & Time */}
         <motion.section
