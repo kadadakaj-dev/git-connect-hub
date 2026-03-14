@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import PageMeta from '@/components/seo/PageMeta';
 import GlassBackground from '@/components/GlassBackground';
+import GlassCard from '@/components/booking/GlassCard';
 
 const NotFound = () => {
   const location = useLocation();
@@ -21,13 +22,13 @@ const NotFound = () => {
         path={location.pathname}
         noindex
       />
-      <div className="glass rounded-2xl p-8 md:p-12 text-center relative z-10 max-w-md mx-4">
+      <GlassCard className="p-8 md:p-12 text-center max-w-md mx-4 relative z-10">
         <h1 className="mb-4 text-4xl font-heading font-semibold text-foreground">404</h1>
         <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
         <a href="/" className="text-primary underline hover:text-primary/90">
           Return to Home
         </a>
-      </div>
+      </GlassCard>
     </div>
   );
 };

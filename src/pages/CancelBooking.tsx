@@ -9,6 +9,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { format } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import GlassBackground from '@/components/GlassBackground';
+import GlassCard from '@/components/booking/GlassCard';
 
 type CancelStatus = 'loading' | 'confirm' | 'success' | 'error' | 'already_cancelled';
 
@@ -152,7 +153,7 @@ const CancelBooking = () => {
       : '';
 
     return (
-      <div className="glass rounded-xl p-6 text-left space-y-4 max-w-md mx-auto">
+      <GlassCard className="rounded-xl p-6 text-left space-y-4 max-w-md mx-auto">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Calendar className="w-5 h-5 text-primary" />
@@ -186,7 +187,7 @@ const CancelBooking = () => {
             <p className="font-medium text-foreground">{booking.client_name}</p>
           </div>
         </div>
-      </div>
+      </GlassCard>
     );
   };
 

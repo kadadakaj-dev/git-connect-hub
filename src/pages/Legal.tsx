@@ -6,6 +6,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import GlassBackground from '@/components/GlassBackground';
+import GlassCard from '@/components/booking/GlassCard';
 
 const Legal = () => {
   const { language } = useLanguage();
@@ -115,7 +116,7 @@ const Legal = () => {
             </TabsList>
 
             <TabsContent value="terms">
-              <div className="glass rounded-xl p-6 md:p-8">
+              <GlassCard className="rounded-xl p-6 md:p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6">{t.terms.title}</h2>
                 <div className="space-y-6">
                   {t.terms.sections.map((section, index) => (
@@ -128,11 +129,11 @@ const Legal = () => {
                 <p className="text-sm text-muted-foreground mt-8 pt-6 border-t border-border">
                   {language === 'sk' ? 'Posledná aktualizácia: Február 2026' : 'Last updated: February 2026'}
                 </p>
-              </div>
+              </GlassCard>
             </TabsContent>
 
             <TabsContent value="privacy">
-              <div className="glass rounded-xl p-6 md:p-8">
+              <GlassCard className="rounded-xl p-6 md:p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6">{t.privacy.title}</h2>
                 <div className="space-y-6">
                   {t.privacy.sections.map((section, index) => (
@@ -145,7 +146,7 @@ const Legal = () => {
                 <p className="text-sm text-muted-foreground mt-8 pt-6 border-t border-border">
                   {language === 'sk' ? 'Posledná aktualizácia: Február 2026' : 'Last updated: February 2026'}
                 </p>
-              </div>
+              </GlassCard>
             </TabsContent>
           </Tabs>
         </div>
