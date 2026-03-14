@@ -152,9 +152,9 @@ const BookingWizard = () => {
         {/* Step 2 & 3: Date & Time */}
         <motion.section
           ref={dateTimeRef}
-          animate={{ opacity: hasService ? 1 : 0.3, y: hasService ? 0 : 12, scale: hasService ? 1 : 0.98 }}
+          animate={{ opacity: hasService ? 1 : 0.3 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{ opacity: 0.3, transform: 'translateY(12px) scale(0.98)' }}
+          style={{ opacity: 0.3 }}
           className={cn("mb-4", !hasService && "pointer-events-none")}
         >
           <div className="flex items-center gap-6 mb-2">
@@ -177,9 +177,9 @@ const BookingWizard = () => {
         {/* Step 4: Client Details */}
         <motion.section
           ref={detailsRef}
-          animate={{ opacity: hasDateTime ? 1 : 0.3, y: hasDateTime ? 0 : 12, scale: hasDateTime ? 1 : 0.98 }}
+          animate={{ opacity: hasDateTime ? 1 : 0.3 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{ opacity: 0.3, transform: 'translateY(12px) scale(0.98)' }}
+          style={{ opacity: 0.3 }}
           className={cn("mb-4", !hasDateTime && "pointer-events-none")}
         >
           <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
