@@ -66,7 +66,7 @@ const ClientPortal = () => {
 
   const { data: profile, isLoading: profileLoading } = useClientProfile(user?.id);
   const { data: bookings, isLoading: bookingsLoading } = useClientBookings(user?.id);
-  const { data: favorites, isLoading: favoritesLoading, toggleFavorite } = useFavoriteServices(profile?.id);
+  const { data: favorites, isLoading: favoritesLoading, toggleFavorite } = useFavoriteServices(user?.id);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
