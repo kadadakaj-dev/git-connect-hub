@@ -81,9 +81,9 @@ const EventModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg rounded-[28px] border-[var(--glass-border)] bg-[var(--glass-white-lg)] shadow-glass-float">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-[hsl(var(--soft-navy))]">
             {formData.type === 'block'
               ? <Ban className="w-5 h-5 text-muted-foreground" />
               : <CalendarDays className="w-5 h-5 text-primary" />
@@ -99,7 +99,7 @@ const EventModal = ({
               <select
                 value={formData.therapistId}
                 onChange={(e) => onChange({ therapistId: e.target.value })}
-                className="w-full border border-input rounded-lg p-2.5 text-sm focus:ring-1 focus:ring-ring bg-card font-medium text-foreground"
+                className="w-full rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2.5 text-sm font-medium text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
                 {employees.map(emp => (
                   <option key={emp.id} value={emp.id}>{emp.full_name}</option>
@@ -111,7 +111,7 @@ const EventModal = ({
               <select
                 value={formData.type}
                 onChange={(e) => onChange({ type: e.target.value as 'booking' | 'block' })}
-                className="w-full border border-input rounded-lg p-2.5 text-sm focus:ring-1 focus:ring-ring bg-card font-medium text-foreground"
+                className="w-full rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2.5 text-sm font-medium text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
                 <option value="booking">{t.physio}</option>
                 <option value="block">{t.block}</option>
@@ -160,7 +160,7 @@ const EventModal = ({
               <select
                 value={formData.duration}
                 onChange={(e) => onChange({ duration: Number(e.target.value) })}
-                className="w-full border border-input rounded-lg p-2.5 text-sm focus:ring-1 focus:ring-ring bg-card"
+                className="w-full rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2.5 text-sm text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
                 <option value="15">15 min</option>
                 <option value="30">30 min</option>
@@ -174,13 +174,13 @@ const EventModal = ({
 
           {/* Recurring */}
           {mode === 'create' && (
-            <div className="flex items-center gap-4 bg-secondary p-3 rounded-lg border border-border">
-              <label className="flex items-center gap-2 text-sm font-medium text-foreground cursor-pointer">
+            <div className="flex items-center gap-4 bg-white/62 p-3 rounded-[18px] border border-[var(--glass-border-subtle)] shadow-[0_10px_24px_rgba(126,195,255,0.08)]">
+              <label className="flex items-center gap-2 text-sm font-medium text-[hsl(var(--soft-navy))] cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.isRecurring}
                   onChange={(e) => onChange({ isRecurring: e.target.checked })}
-                  className="rounded border-border text-primary focus:ring-primary"
+                  className="rounded border-[var(--glass-border)] text-primary focus:ring-primary"
                 />
                 <Repeat className="w-4 h-4 text-muted-foreground" />
                 {t.repeatWeekly}
@@ -189,7 +189,7 @@ const EventModal = ({
                 <select
                   value={formData.recurringWeeks}
                   onChange={(e) => onChange({ recurringWeeks: Number(e.target.value) })}
-                  className="border border-input rounded p-1 text-xs"
+                  className="rounded-md border border-[var(--glass-border-subtle)] bg-white/72 p-1 text-xs text-[hsl(var(--soft-navy))]"
                 >
                   <option value="2">{t.weeks2}</option>
                   <option value="4">{t.weeks4}</option>
@@ -220,8 +220,19 @@ const EventModal = ({
             )}
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose}>{t.cancel}</Button>
-            <Button onClick={onSave}>{t.save}</Button>
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="rounded-[16px] border-[var(--glass-border-subtle)] bg-white/70 text-[hsl(var(--soft-navy))] hover:bg-white/82 hover:text-[hsl(var(--navy))]"
+            >
+              {t.cancel}
+            </Button>
+            <Button
+              onClick={onSave}
+              className="rounded-[16px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_30px_rgba(79,149,213,0.22)] hover:brightness-[1.03]"
+            >
+              {t.save}
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>

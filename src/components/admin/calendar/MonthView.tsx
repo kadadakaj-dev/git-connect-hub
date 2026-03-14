@@ -39,9 +39,9 @@ const MonthView = ({
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       {/* Weekday header */}
-      <div className="grid grid-cols-7 border-b border-border/30">
+      <div className="grid grid-cols-7 border-b border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.48)_0%,rgba(234,246,255,0.24)_100%)]">
         {weekdays.map(day => (
-          <div key={day} className="py-3 text-center border-r border-border/30 uppercase tracking-wider text-xs font-medium text-muted-foreground">
+          <div key={day} className="border-r border-[var(--glass-border-subtle)] py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
             <span className="hidden md:inline">{day}</span>
             <span className="md:hidden">{day.substring(0, 2)}</span>
           </div>
@@ -49,7 +49,7 @@ const MonthView = ({
       </div>
 
       {/* Day grid */}
-      <div className="flex-1 grid grid-cols-7 grid-rows-6 bg-card overflow-y-auto">
+      <div className="flex-1 grid grid-cols-7 grid-rows-6 overflow-y-auto bg-[rgba(255,255,255,0.18)]">
         {monthDays.map((date, i) => {
           const dateStr = formatDateForInput(date);
           let dayEvents = events.filter(e => e.date === dateStr);
@@ -62,8 +62,8 @@ const MonthView = ({
           return (
             <div
               key={i}
-              className={`border-r border-b border-border/30 p-2 flex flex-col gap-1 min-h-[100px] cursor-pointer transition-colors hover:bg-accent/20
-                ${!isCurrentMonth ? 'opacity-30' : 'bg-card'}
+              className={`border-r border-b border-[var(--glass-border-subtle)] p-2 flex flex-col gap-1 min-h-[108px] cursor-pointer transition-colors
+                ${!isCurrentMonth ? 'bg-white/12 opacity-55' : 'bg-white/30 hover:bg-white/58'}
                 ${isBlocked ? 'month-blocked-pattern' : ''}
               `}
               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
@@ -74,8 +74,8 @@ const MonthView = ({
               <div className="flex justify-end">
                 <span className={`text-base font-semibold leading-none
                   ${today
-                    ? 'bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center'
-                    : 'text-foreground'
+                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
+                    : 'text-[hsl(var(--soft-navy))]'
                   }`}
                 >
                   {date.getDate()}
@@ -85,7 +85,7 @@ const MonthView = ({
               {/* Events */}
               <div className="flex-1 flex flex-col gap-1 overflow-y-auto">
                 {isBlocked && (
-                  <div className="text-[10px] md:text-xs px-2 py-1 rounded-md border-l-3 border-destructive bg-destructive/10 text-destructive font-medium truncate">
+                  <div className="truncate rounded-xl border border-[rgba(220,38,38,0.12)] bg-[rgba(255,247,247,0.92)] px-2 py-1 text-[10px] font-medium text-destructive shadow-[0_10px_18px_rgba(220,38,38,0.08)] md:text-xs">
                     🚫 {blockedInfo.reason || (language === 'sk' ? 'Zablokované' : 'Blocked')}
                   </div>
                 )}
@@ -95,7 +95,7 @@ const MonthView = ({
                     draggable
                     onDragStart={(e) => { e.stopPropagation(); onDragStart(e, ev); }}
                     onClick={(e) => { e.stopPropagation(); onEditEvent(ev); }}
-                    className={`text-[10px] md:text-xs truncate px-2 py-1 rounded-md cursor-grab active:cursor-grabbing border-l-3 shadow-sm hover:shadow-md transition-shadow ${getEventColorClasses(ev.type, ev.status)}`}
+                    className={`text-[10px] md:text-xs truncate px-2 py-1 rounded-xl cursor-grab active:cursor-grabbing shadow-[0_10px_18px_rgba(126,195,255,0.08)] hover:shadow-[0_14px_22px_rgba(126,195,255,0.12)] transition-shadow ${getEventColorClasses(ev.type, ev.status)}`}
                   >
                     <span className="font-bold mr-1">{ev.startTime}</span><span className="font-normal">{ev.title}</span>
                   </div>

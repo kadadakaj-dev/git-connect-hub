@@ -11,6 +11,11 @@ import CalendarHeader from './calendar/CalendarHeader';
 import MonthView from './calendar/MonthView';
 import TimeGridView from './calendar/TimeGridView';
 import EventModal, { EventFormData } from './calendar/EventModal';
+import { Tables } from '@/integrations/supabase/types';
+
+type BookingWithService = Tables<'bookings'> & {
+  service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category'> | null;
+};
 
 const CalendarView = () => {
   const { language } = useLanguage();
@@ -70,7 +75,7 @@ const CalendarView = () => {
         .order('date')
         .order('time_slot'),
       supabase
-        .from('employees_public' as any)
+        .from('employees_public')
         .select('id, full_name, position, is_active')
         .order('sort_order'),
       supabase
@@ -84,7 +89,7 @@ const CalendarView = () => {
     if (blockedRes.data) setBlockedDates(blockedRes.data);
 
     if (bookingsRes.data) {
-      const mapped: CalendarEvent[] = (bookingsRes.data as any[]).map(b => ({
+      const mapped: CalendarEvent[] = (bookingsRes.data as BookingWithService[]).map(b => ({
         id: b.id,
         date: b.date,
         startTime: b.time_slot,
@@ -348,7 +353,7 @@ const CalendarView = () => {
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden rounded-[30px] border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.62)_0%,rgba(234,246,255,0.34)_100%)] shadow-glass-float">
       <div className="flex flex-col h-[calc(100vh-280px)] min-h-[500px]">
         <CalendarHeader
           language={language}

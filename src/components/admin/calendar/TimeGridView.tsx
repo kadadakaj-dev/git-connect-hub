@@ -52,16 +52,16 @@ const TimeGridView = ({
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       {/* Day headers — pixel-perfect style */}
-      <div className="flex border-b border-border/30 bg-card flex-shrink-0">
-        <div className="w-14 md:w-[72px] flex-shrink-0 border-r border-border/30" />
+      <div className="flex flex-shrink-0 border-b border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.48)_0%,rgba(234,246,255,0.24)_100%)]">
+        <div className="w-14 md:w-[72px] flex-shrink-0 border-r border-[var(--glass-border-subtle)]" />
         <div className={`flex flex-1 ${viewMode === 'week' ? 'min-w-[600px] md:min-w-0' : ''}`}>
           {activeDays.map((date, i) => {
             const today = isToday(date);
             return (
               <div
                 key={i}
-                className={`flex-1 py-3 text-center border-r border-border/30 transition-colors ${
-                  today ? 'bg-primary/5' : ''
+                className={`flex-1 py-3 text-center border-r border-[var(--glass-border-subtle)] transition-colors ${
+                  today ? 'bg-[rgba(191,226,255,0.18)]' : ''
                 }`}
               >
                 <div className="uppercase tracking-wider text-[10px] md:text-xs font-medium text-muted-foreground mb-1">
@@ -69,8 +69,8 @@ const TimeGridView = ({
                 </div>
                 <div className={`inline-flex items-center justify-center ${
                   today
-                    ? 'w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold text-base'
-                    : 'text-base font-semibold text-foreground'
+                    ? 'w-8 h-8 rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white font-bold text-base shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
+                    : 'text-base font-semibold text-[hsl(var(--soft-navy))]'
                 }`}>
                   {date.getDate()}
                 </div>
@@ -81,9 +81,9 @@ const TimeGridView = ({
       </div>
 
       {/* Time grid */}
-      <div className="flex-1 overflow-auto bg-card flex relative">
+      <div className="flex-1 overflow-auto bg-[rgba(255,255,255,0.18)] flex relative">
         {/* Time labels */}
-        <div className="w-14 md:w-[72px] flex-shrink-0 border-r border-border/30 bg-card z-20 sticky left-0">
+        <div className="w-14 md:w-[72px] flex-shrink-0 border-r border-[var(--glass-border-subtle)] bg-[rgba(255,255,255,0.52)] backdrop-blur-lg z-20 sticky left-0">
           {TIME_SLOTS.map((time, index) => (
             <div
               key={index}
@@ -92,7 +92,7 @@ const TimeGridView = ({
             >
               {/* Only show full-hour labels */}
               {time.endsWith(':00') && (
-                <span className="absolute top-0 right-2 md:right-3 -translate-y-1/2 bg-card px-1 text-[11px] md:text-xs font-semibold text-muted-foreground tabular-nums">
+                <span className="absolute top-0 right-2 md:right-3 -translate-y-1/2 rounded-full bg-white/84 px-1.5 text-[11px] md:text-xs font-semibold text-muted-foreground shadow-[0_8px_18px_rgba(126,195,255,0.1)] tabular-nums">
                   {time}
                 </span>
               )}
@@ -111,19 +111,19 @@ const TimeGridView = ({
             return (
               <div
                 key={dayIndex}
-                className={`flex-1 border-r border-border/30 relative group transition-colors ${
+                className={`flex-1 border-r border-[var(--glass-border-subtle)] relative group transition-colors ${
                   isBlocked
                     ? 'month-blocked-pattern'
                     : isToday(date)
-                    ? 'bg-primary/[0.03]'
-                    : 'bg-card hover:bg-accent/10'
+                    ? 'bg-[rgba(191,226,255,0.22)]'
+                    : 'bg-[rgba(255,255,255,0.24)] hover:bg-white/42'
                 }`}
                 onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
                 onDrop={(e) => onDropOnGrid(e, date)}
               >
                 {/* Blocked day label */}
                 {isBlocked && (
-                  <div className="absolute inset-x-0 top-0 z-20 bg-destructive/10 border-b border-destructive/20 px-2 py-1.5 text-[10px] md:text-xs text-destructive font-semibold truncate backdrop-blur-sm">
+                  <div className="absolute inset-x-0 top-0 z-20 truncate border-b border-[rgba(220,38,38,0.16)] bg-[rgba(255,247,247,0.9)] px-2 py-1.5 text-[10px] md:text-xs text-destructive font-semibold backdrop-blur-md">
                     🚫 {blockedInfo.reason || (language === 'sk' ? 'Zablokované' : 'Blocked')}
                   </div>
                 )}
@@ -134,10 +134,10 @@ const TimeGridView = ({
                     key={slotIndex}
                     onClick={() => onCreateEvent(date, time)}
                     style={{ height: `${SLOT_HEIGHT}px` }}
-                    className={`w-full border-b cursor-pointer hover:bg-primary/[0.06] transition-colors ${
+                    className={`w-full border-b cursor-pointer hover:bg-[rgba(126,195,255,0.08)] transition-colors ${
                       time.endsWith(':00')
-                        ? 'border-border/40'
-                        : 'border-border/15 border-dashed'
+                        ? 'border-[rgba(64,114,163,0.18)]'
+                        : 'border-[rgba(64,114,163,0.08)] border-dashed'
                     }`}
                   />
                 ))}
@@ -150,7 +150,7 @@ const TimeGridView = ({
                       key={event.id}
                       draggable
                       onDragStart={(e) => onDragStart(e, event)}
-                      className={`absolute rounded-md border-l-[3px] p-1.5 md:p-2 text-[10px] md:text-xs shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md transition-all overflow-hidden flex flex-col z-10 ${colorClasses}`}
+                      className={`absolute rounded-xl p-1.5 md:p-2 text-[10px] md:text-xs shadow-[0_10px_22px_rgba(126,195,255,0.12)] cursor-grab active:cursor-grabbing hover:shadow-[0_16px_28px_rgba(126,195,255,0.16)] transition-all overflow-hidden flex flex-col z-10 ${colorClasses}`}
                       style={event.style}
                       onClick={(e) => { e.stopPropagation(); onEditEvent(event); }}
                     >
@@ -169,7 +169,7 @@ const TimeGridView = ({
 
                       {/* Resize handle */}
                       <div
-                        className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize z-20 hover:bg-foreground/10 transition-colors rounded-b-md"
+                        className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize z-20 hover:bg-[rgba(36,71,107,0.08)] transition-colors rounded-b-xl"
                         onMouseDown={(e) => {
                           e.stopPropagation();
                           e.preventDefault();

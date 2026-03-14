@@ -111,9 +111,13 @@ export const getDayEventsWithPositions = (
 };
 
 export const getEventColorClasses = (type: string, status?: string): string => {
-  if (type === 'block') return 'bg-muted/80 border-l-muted-foreground/60 border-t-0 border-r-0 border-b-0 text-muted-foreground';
-  if (status === 'pending') return 'bg-warning/15 border-l-warning border-t-0 border-r-0 border-b-0 text-warning-foreground';
-  return 'bg-primary/10 border-l-primary border-t-0 border-r-0 border-b-0 text-primary';
+  if (type === 'block') {
+    return 'bg-white/76 border border-[rgba(87,107,129,0.12)] border-l-[rgba(87,107,129,0.55)] border-t-[rgba(87,107,129,0.12)] border-r-[rgba(87,107,129,0.12)] border-b-[rgba(87,107,129,0.12)] text-[hsl(var(--soft-navy))] backdrop-blur-md';
+  }
+  if (status === 'pending') {
+    return 'bg-[rgba(255,248,235,0.88)] border border-[rgba(245,158,11,0.12)] border-l-[rgba(245,158,11,0.65)] border-t-[rgba(245,158,11,0.12)] border-r-[rgba(245,158,11,0.12)] border-b-[rgba(245,158,11,0.12)] text-[hsl(35,88%,32%)] backdrop-blur-md';
+  }
+  return 'bg-[rgba(234,246,255,0.88)] border border-[rgba(79,149,213,0.12)] border-l-[rgba(79,149,213,0.65)] border-t-[rgba(79,149,213,0.12)] border-r-[rgba(79,149,213,0.12)] border-b-[rgba(79,149,213,0.12)] text-[hsl(var(--soft-navy))] backdrop-blur-md';
 };
 
 export const WEEKDAYS_SK = ['po', 'ut', 'st', 'št', 'pi', 'so', 'ne'];
