@@ -103,7 +103,7 @@ export const translations = {
     service: 'Služba',
     dateAndTime: 'Dátum a čas',
     location: 'Miesto',
-    clinicAddress: '123 Wellness Street, Suite 100',
+    clinicAddress: 'Krmanová 6, Košice',
     notes: 'Poznámky',
     emailSentTo: 'Potvrdzovací e-mail bol odoslaný na adresu',
     bookAnotherAppointment: 'Rezervovať ďalší termín',
