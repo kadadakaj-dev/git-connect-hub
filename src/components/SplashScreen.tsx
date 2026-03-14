@@ -85,8 +85,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
 
     render();
 
-    const fadeTimer = setTimeout(() => setIsFading(true), 2500);
-    const completeTimer = setTimeout(() => stableOnComplete(), 3000);
+    const fadeTimer = setTimeout(() => setIsFading(true), 1200);
+    const completeTimer = setTimeout(() => stableOnComplete(), 1700);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
