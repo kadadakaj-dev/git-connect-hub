@@ -80,7 +80,7 @@ const CalendarView = () => {
         .lte('date', format(rangeEnd, 'yyyy-MM-dd')),
     ]);
 
-    if (employeesRes.data) setEmployees(employeesRes.data);
+    if (employeesRes.data) setEmployees(employeesRes.data as unknown as Employee[]);
     if (blockedRes.data) setBlockedDates(blockedRes.data);
 
     if (bookingsRes.data) {
