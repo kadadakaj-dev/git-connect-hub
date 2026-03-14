@@ -152,9 +152,9 @@ const BookingWizard = () => {
         {/* Step 2 & 3: Date & Time */}
         <motion.section
           ref={dateTimeRef}
-          initial={{ opacity: 0.3, y: 12 }}
           animate={{ opacity: hasService ? 1 : 0.3, y: hasService ? 0 : 12, scale: hasService ? 1 : 0.98 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          style={{ opacity: 0.3, transform: 'translateY(12px) scale(0.98)' }}
           className={cn("mb-4", !hasService && "pointer-events-none")}
         >
           <div className="flex items-center gap-6 mb-2">
