@@ -36,7 +36,7 @@ const BookingWizard = () => {
   const dateTimeRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
 
-  const updateBookingData = (field: string, value: any) => {
+  const updateBookingData = <K extends keyof BookingData>(field: K, value: BookingData[K]) => {
     setBookingData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => {
@@ -73,7 +73,7 @@ const BookingWizard = () => {
     }
     if (!bookingData.clientPhone.trim()) {
       newErrors.clientPhone = t.errors.phoneRequired;
-    } else if (!/^[\+]?[0-9\s\-\(\)]{7,20}$/.test(bookingData.clientPhone.trim())) {
+    } else if (!/^[+]?[0-9\s\-()]{7,20}$/.test(bookingData.clientPhone.trim())) {
       newErrors.clientPhone = t.errors.phoneRequired;
     }
 
@@ -155,7 +155,7 @@ const BookingWizard = () => {
           animate={{ opacity: hasService ? 1 : 0.3 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{ opacity: 0.3 }}
-          className={cn("mb-4", !hasService && "pointer-events-none")}
+          className={cn("mb-4 scroll-mt-24 sm:scroll-mt-20", !hasService && "pointer-events-none")}
         >
           <div className="flex items-center gap-6 mb-2">
             <SectionHeader number={2} title={language === 'sk' ? 'Vyberte dátum' : 'Select date'} completed={!!bookingData.date} />
@@ -180,7 +180,7 @@ const BookingWizard = () => {
           animate={{ opacity: hasDateTime ? 1 : 0.3 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{ opacity: 0.3 }}
-          className={cn("mb-4", !hasDateTime && "pointer-events-none")}
+          className={cn("mb-4 scroll-mt-24 sm:scroll-mt-20", !hasDateTime && "pointer-events-none")}
         >
           <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
           <div className="mt-2">
