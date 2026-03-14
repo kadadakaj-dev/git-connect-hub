@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import { CheckCircle2, Calendar, Clock, User, Mail, Phone, MapPin, ArrowRight, CalendarPlus } from 'lucide-react';
@@ -15,6 +16,11 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
   const locale = language === 'sk' ? sk : enUS;
   const { service, date, time, clientName, clientEmail, clientPhone, notes } = bookingData;
 
+  // Stable confirmation code — generated once per mount
+  const [confirmationCode] = useState(() =>
+    Math.random().toString(36).substring(2, 8).toUpperCase()
+  );
+
   const handleAddToCalendar = () => {
     if (date && time && service) {
       const title = `FYZIO&FIT - ${service.name}`;
@@ -26,8 +32,6 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
       window.open(googleCalendarUrl, '_blank');
     }
   };
-
-  const confirmationCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
   return (
     <div className="animate-fade-in-up max-w-lg mx-auto">
@@ -85,7 +89,7 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
           {/* Location */}
           <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="w-3.5 h-3.5" />
-            <span className="text-xs">{t.clinicAddress}</span>
+            <span className="text-xs">Krmanová 6, Košice</span>
           </div>
 
           {/* Client */}

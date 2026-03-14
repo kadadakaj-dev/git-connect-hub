@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
 interface SubmitButtonProps {
   enabled: boolean;
@@ -10,7 +11,7 @@ interface SubmitButtonProps {
 }
 
 const SubmitButton = ({ enabled, isPending, onSubmit }: SubmitButtonProps) => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
 
   return (
     <motion.div
@@ -32,8 +33,8 @@ const SubmitButton = ({ enabled, isPending, onSubmit }: SubmitButtonProps) => {
       >
         {isPending ? (
           <>
-            <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-            <span>{t.booking}</span>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>{language === 'sk' ? 'Rezervujem...' : 'Booking...'}</span>
           </>
         ) : (
           <span>{language === 'sk' ? 'Rezervovať' : 'Book now'}</span>
