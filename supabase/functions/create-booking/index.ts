@@ -118,12 +118,23 @@ serve(async (req) => {
     if (!body.date || !isValidDate(body.date)) {
       errors.push('Invalid date format (expected YYYY-MM-DD)')
     } else {
-      // Check date is in the future
+      // Check date+time is at least 36h in the future
       const bookingDate = new Date(body.date)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       if (bookingDate <= today) {
         errors.push('Booking date must be in the future')
+      }
+
+      // 36h lead time validation
+      if (body.time_slot && isValidTimeSlot(body.time_slot)) {
+        const [slotH, slotM] = body.time_slot.split(':').map(Number)
+        const bookingDateTime = new Date(body.date)
+        bookingDateTime.setHours(slotH, slotM, 0, 0)
+        const minBookableTime = new Date(Date.now() + 36 * 60 * 60 * 1000)
+        if (bookingDateTime < minBookableTime) {
+          errors.push('Booking must be at least 36 hours in advance. For earlier appointments, call us for an Express booking.')
+        }
       }
     }
 
