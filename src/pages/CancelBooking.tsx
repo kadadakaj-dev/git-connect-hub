@@ -9,6 +9,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { format } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import GlassBackground from '@/components/GlassBackground';
+import GlassCard from '@/components/booking/GlassCard';
 
 type CancelStatus = 'loading' | 'confirm' | 'success' | 'error' | 'already_cancelled';
 
