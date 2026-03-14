@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import PageMeta from '@/components/seo/PageMeta';
 import GlassBackground from '@/components/GlassBackground';
+import GlassCard from '@/components/booking/GlassCard';
 
 const NotFound = () => {
   const location = useLocation();

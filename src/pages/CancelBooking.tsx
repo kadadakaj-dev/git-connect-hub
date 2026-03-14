@@ -152,7 +152,7 @@ const CancelBooking = () => {
       : '';
 
     return (
-      <div className="glass rounded-xl p-6 text-left space-y-4 max-w-md mx-auto">
+      <GlassCard className="rounded-xl p-6 text-left space-y-4 max-w-md mx-auto">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Calendar className="w-5 h-5 text-primary" />
