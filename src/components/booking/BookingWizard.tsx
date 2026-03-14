@@ -1,7 +1,4 @@
 import { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { User, Phone, Mail, Check, FileText, AlertCircle, CheckCircle2, Shield } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { BookingData, Service } from '@/types/booking';
 import ServiceSelection from './ServiceSelection';
 import DateTimeSelection from './DateTimeSelection';
@@ -11,8 +8,13 @@ import { toast } from 'sonner';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useCreateBooking } from '@/hooks/useCreateBooking';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import GlassBackground from '../GlassBackground';
+import BookingHeader from './BookingHeader';
+import ClientDetailsForm from './ClientDetailsForm';
+import GlassCard from './GlassCard';
+import SectionHeader from './SectionHeader';
+import SubmitButton from './SubmitButton';
 
 const initialBookingData: BookingData = {
   service: null,
@@ -24,22 +26,10 @@ const initialBookingData: BookingData = {
   notes: '',
 };
 
-const GlassCard = ({ children, className: cls }: { children: React.ReactNode; className?: string }) => (
-  <div className={cn(
-    "backdrop-blur-xl rounded-2xl p-4 relative overflow-hidden",
-    "bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass",
-    "before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1]",
-    cls
-  )}>
-    <div className="relative z-[2]">{children}</div>
-  </div>
-);
-
 const BookingWizard = () => {
   const { t, language } = useLanguage();
   const [bookingData, setBookingData] = useState<BookingData>(initialBookingData);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const createBooking = useCreateBooking();
 
@@ -69,16 +59,6 @@ const BookingWizard = () => {
     setTimeout(() => {
       detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 200);
-  };
-
-  const isFieldValid = (field: string, value: string) => {
-    if (!value.trim()) return null;
-    switch (field) {
-      case 'clientName': return value.trim().length >= 2;
-      case 'clientEmail': return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      case 'clientPhone': return /^[\+]?[0-9\s\-\(\)]{7,20}$/.test(value.trim());
-      default: return null;
-    }
   };
 
   const handleSubmit = async () => {
@@ -136,108 +116,11 @@ const BookingWizard = () => {
   const hasService = !!bookingData.service;
   const hasDateTime = !!bookingData.date && !!bookingData.time;
 
-  const inputClasses = (field: string) => {
-    const hasError = !!errors[field];
-    return cn(
-      "w-full pl-8 pr-8 py-2.5 rounded-xl border text-foreground text-sm",
-      "bg-[var(--glass-white)] backdrop-blur-sm",
-      "placeholder:text-muted-foreground/50 transition-all duration-300 ease-liquid",
-      "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 focus:bg-[var(--glass-white-md)]",
-      hasError
-        ? "border-destructive/50 bg-destructive/5"
-        : "border-[var(--glass-border-subtle)] hover:border-[var(--glass-border)]"
-    );
-  };
-
-  const renderField = (
-    field: string,
-    icon: React.ElementType,
-    placeholder: string,
-    type: string,
-    value: string,
-    autoComplete?: string
-  ) => {
-    const Icon = icon;
-    const hasError = !!errors[field];
-    const isValid = isFieldValid(field, value);
-    const isFocused = focusedField === field;
-
-    return (
-      <div>
-        <div className="relative">
-          <Icon className={cn(
-            "absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 transition-colors duration-200",
-            isFocused ? "text-primary" : hasError ? "text-destructive" : "text-muted-foreground"
-          )} />
-          <input
-            id={field}
-            type={type}
-            value={value}
-            onChange={(e) => updateBookingData(field, e.target.value)}
-            onFocus={() => setFocusedField(field)}
-            onBlur={() => setFocusedField(null)}
-            placeholder={placeholder}
-            className={inputClasses(field)}
-            autoComplete={autoComplete}
-          />
-          <div className={cn(
-            "absolute right-2.5 top-1/2 -translate-y-1/2 transition-all duration-200",
-            (isValid !== null || hasError) ? "opacity-100" : "opacity-0"
-          )}>
-            {hasError ? (
-              <AlertCircle className="w-3.5 h-3.5 text-destructive" />
-            ) : isValid === true ? (
-              <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-            ) : null}
-          </div>
-        </div>
-        {hasError && (
-          <p className="text-[11px] text-destructive mt-0.5 flex items-center gap-1">
-            <span className="w-1 h-1 rounded-full bg-destructive" />
-            {errors[field]}
-          </p>
-        )}
-      </div>
-    );
-  };
-
-  // Glassmorphism header
-  const renderHeader = () => (
-    <header className="sticky top-0 z-50 backdrop-blur-2xl bg-[var(--glass-white-md)] border-b border-[var(--glass-border-subtle)] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-      <div className="container max-w-2xl mx-auto px-4 h-12 flex items-center justify-between">
-        <a href="/" className="text-sm font-bold text-foreground tracking-tight hover:text-primary transition-colors duration-200">
-          FYZIO&FIT
-        </a>
-        <div className="flex items-center gap-3">
-          <a href="tel:+421905307198" className="hidden sm:flex items-center gap-1 text-[11px] text-foreground/70 hover:text-foreground transition-colors">
-            <Phone className="w-3 h-3" />
-            <span>+421 905 307 198</span>
-          </a>
-          <a href="mailto:booking@fyzioafit.sk" className="hidden sm:flex items-center gap-1 text-[11px] text-foreground/70 hover:text-foreground transition-colors">
-            <Mail className="w-3 h-3" />
-            <span>booking@fyzioafit.sk</span>
-          </a>
-          <Button variant="ghost" size="sm" asChild className="gap-1 text-foreground/70 hover:text-foreground h-7 px-2">
-            <Link to="/auth">
-              <User className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline text-[11px] font-medium">
-                {language === 'sk' ? 'Klientský portál' : 'Client Portal'}
-              </span>
-            </Link>
-          </Button>
-        </div>
-      </div>
-    </header>
-  );
-
-  // Glass card wrapper for sections
-  // GlassCard moved outside component
-
   if (isConfirmed) {
     return (
       <div className="min-h-screen relative flex flex-col">
         <GlassBackground />
-        {renderHeader()}
+        <BookingHeader />
         <div className="container max-w-2xl mx-auto px-4 py-6 flex-1 relative z-10">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <GlassCard>
@@ -253,7 +136,7 @@ const BookingWizard = () => {
   return (
     <div className="min-h-screen relative flex flex-col">
       <GlassBackground />
-      {renderHeader()}
+      <BookingHeader />
 
       <div className="container max-w-2xl mx-auto px-4 py-5 flex-1 relative z-10">
         {/* Step 1: Service */}
@@ -266,10 +149,7 @@ const BookingWizard = () => {
           <SectionHeader number={1} title={language === 'sk' ? 'Vyberte službu' : 'Select service'} completed={hasService} />
           <div className="mt-2">
             <GlassCard>
-              <ServiceSelection
-                selectedService={bookingData.service}
-                onSelect={handleServiceSelect}
-              />
+              <ServiceSelection selectedService={bookingData.service} onSelect={handleServiceSelect} />
             </GlassCard>
           </div>
         </motion.section>
@@ -278,11 +158,7 @@ const BookingWizard = () => {
         <motion.section
           ref={dateTimeRef}
           initial={{ opacity: 0.3, y: 12 }}
-          animate={{
-            opacity: hasService ? 1 : 0.3,
-            y: hasService ? 0 : 12,
-            scale: hasService ? 1 : 0.98,
-          }}
+          animate={{ opacity: hasService ? 1 : 0.3, y: hasService ? 0 : 12, scale: hasService ? 1 : 0.98 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           className={cn("mb-4", !hasService && "pointer-events-none")}
         >
@@ -307,139 +183,25 @@ const BookingWizard = () => {
         <motion.section
           ref={detailsRef}
           initial={{ opacity: 0.3, y: 12 }}
-          animate={{
-            opacity: hasDateTime ? 1 : 0.3,
-            y: hasDateTime ? 0 : 12,
-            scale: hasDateTime ? 1 : 0.98,
-          }}
+          animate={{ opacity: hasDateTime ? 1 : 0.3, y: hasDateTime ? 0 : 12, scale: hasDateTime ? 1 : 0.98 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           className={cn("mb-4", !hasDateTime && "pointer-events-none")}
         >
           <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
           <div className="mt-2">
             <GlassCard>
-              <div className="space-y-2.5">
-                {renderField('clientName', User, t.fullNamePlaceholder, 'text', bookingData.clientName, 'name')}
-                {renderField('clientEmail', Mail, t.emailPlaceholder, 'email', bookingData.clientEmail, 'email')}
-                {renderField('clientPhone', Phone, t.phonePlaceholder, 'tel', bookingData.clientPhone, 'tel')}
-
-                {/* Notes */}
-                <div className="relative">
-                  <FileText className={cn(
-                    "absolute left-2.5 top-2.5 w-3.5 h-3.5 transition-colors duration-200",
-                    focusedField === 'notes' ? "text-primary" : "text-muted-foreground"
-                  )} />
-                  <textarea
-                    id="notes"
-                    value={bookingData.notes}
-                    onChange={(e) => updateBookingData('notes', e.target.value)}
-                    onFocus={() => setFocusedField('notes')}
-                    onBlur={() => setFocusedField(null)}
-                    placeholder={t.notesPlaceholder}
-                    rows={2}
-                    className={cn(
-                      "w-full pl-8 pr-3 py-2.5 rounded-xl border text-foreground text-sm resize-none",
-                      "bg-[var(--glass-white)] backdrop-blur-sm",
-                      "placeholder:text-muted-foreground/50 transition-all duration-300 ease-liquid",
-                      "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 focus:bg-[var(--glass-white-md)]",
-                      "border-[var(--glass-border-subtle)] hover:border-[var(--glass-border)]"
-                    )}
-                  />
-                </div>
-
-                {/* GDPR */}
-                <div className="flex items-center gap-2">
-                  <Shield className="w-3 h-3 text-primary flex-shrink-0" />
-                  <p className="text-[10px] text-foreground/60">
-                    {language === 'sk' ? 'GDPR • Vaše údaje sú chránené' : 'GDPR • Your data is protected'}
-                  </p>
-                </div>
-              </div>
+              <ClientDetailsForm bookingData={bookingData} errors={errors} onUpdate={updateBookingData} />
             </GlassCard>
           </div>
         </motion.section>
 
         {/* Submit */}
-        <motion.div
-          initial={{ opacity: 0.3, y: 12 }}
-          animate={{
-            opacity: hasService && hasDateTime ? 1 : 0.3,
-            y: hasService && hasDateTime ? 0 : 12,
-            scale: hasService && hasDateTime ? 1 : 0.98,
-          }}
-          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className={cn("pb-6", (!hasService || !hasDateTime) && "pointer-events-none")}
-        >
-          <Button
-            variant="default"
-            size="lg"
-            onClick={handleSubmit}
-            disabled={!hasService || !hasDateTime || createBooking.isPending}
-            className="w-full gap-2 rounded-2xl text-sm font-semibold h-12 shadow-[0_4px_24px_rgba(59,130,246,0.3)] bg-primary hover:bg-primary/90 text-primary-foreground border-0 hover:-translate-y-0.5 transition-all duration-300 ease-liquid active:scale-[0.98]"
-          >
-            {createBooking.isPending ? (
-              <>
-                <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                <span>{t.booking}</span>
-              </>
-            ) : (
-              <span>{language === 'sk' ? 'Rezervovať' : 'Book now'}</span>
-            )}
-          </Button>
-        </motion.div>
+        <SubmitButton enabled={hasService && hasDateTime} isPending={createBooking.isPending} onSubmit={handleSubmit} />
       </div>
 
       <Footer />
     </div>
   );
 };
-
-const SectionHeader = ({
-  number,
-  title,
-  completed,
-}: {
-  number: number;
-  title: string;
-  completed: boolean;
-}) => (
-  <div className="flex items-center gap-2">
-    <motion.div
-      animate={completed ? { scale: [1, 1.2, 1], backgroundColor: 'rgba(255,255,255,1)' } : {}}
-      transition={{ duration: 0.35, ease: 'easeOut' }}
-      className={cn(
-        "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0",
-        completed
-          ? "bg-primary text-primary-foreground shadow-sm"
-          : "bg-primary/10 text-primary border border-primary/20"
-      )}
-    >
-      <AnimatePresence mode="wait">
-        {completed ? (
-          <motion.span
-            key="check"
-            initial={{ scale: 0, rotate: -90 }}
-            animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-          >
-            <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
-          </motion.span>
-        ) : (
-          <motion.span
-            key="number"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {number}
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </motion.div>
-    <span className="text-sm font-semibold text-foreground">{title}</span>
-  </div>
-);
 
 export default BookingWizard;
