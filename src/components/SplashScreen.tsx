@@ -5,7 +5,7 @@ interface SplashScreenProps {
 }
 
 const splashStyles: React.CSSProperties = {
-  backgroundColor: 'hsl(215, 25%, 10%)',
+  backgroundColor: '#BFE2FF',
 };
 
 const progressBarBgStyle: React.CSSProperties = {
