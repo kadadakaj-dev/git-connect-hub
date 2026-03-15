@@ -155,7 +155,7 @@ const BookingWizard = () => {
           animate={{ opacity: hasService ? 1 : 0.3 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{ opacity: 0.3 }}
-          className={cn("mb-4 scroll-mt-28 sm:scroll-mt-24", !hasService && "pointer-events-none")}
+          className={cn("mb-4 scroll-mt-36 sm:scroll-mt-28", !hasService && "pointer-events-none")}
         >
           <div className="flex items-center gap-6 mb-2">
             <SectionHeader number={2} title={language === 'sk' ? 'Vyberte dátum' : 'Select date'} completed={!!bookingData.date} />

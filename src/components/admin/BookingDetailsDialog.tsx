@@ -39,15 +39,7 @@ interface BookingDetailsDialogProps {
 const BookingDetailsDialog = ({ booking, open, onOpenChange }: BookingDetailsDialogProps) => {
   const { language } = useLanguage();
 
-  if (!booking) {
-    return null;
-  }
-
   const isSlovak = language === 'sk';
-  const serviceName = booking.services
-    ? (isSlovak ? booking.services.name_sk : booking.services.name_en)
-    : (isSlovak ? 'Bez služby' : 'No service');
-  const employeeName = booking.employees?.full_name || (isSlovak ? 'Nepriradený' : 'Unassigned');
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -72,85 +64,94 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange }: BookingDetailsDia
     }
   };
 
+  const serviceName = booking?.services
+    ? (isSlovak ? booking.services.name_sk : booking.services.name_en)
+    : (isSlovak ? 'Bez služby' : 'No service');
+  const employeeName = booking?.employees?.full_name || (isSlovak ? 'Nepriradený' : 'Unassigned');
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg rounded-[28px] border-[var(--glass-border)] bg-[var(--glass-white-lg)] shadow-glass-float">
-        <DialogHeader>
-          <div className="flex items-start justify-between gap-3 pr-8">
-            <div>
-              <DialogTitle className="text-[hsl(var(--soft-navy))]">
-                {isSlovak ? 'Detail rezervácie' : 'Booking details'}
-              </DialogTitle>
-              <DialogDescription className="mt-1">
-                {serviceName}
-              </DialogDescription>
-            </div>
-            {getStatusBadge(booking.status)}
-          </div>
-        </DialogHeader>
+        {booking && (
+          <>
+            <DialogHeader>
+              <div className="flex items-start justify-between gap-3 pr-8">
+                <div>
+                  <DialogTitle className="text-[hsl(var(--soft-navy))]">
+                    {isSlovak ? 'Detail rezervácie' : 'Booking details'}
+                  </DialogTitle>
+                  <DialogDescription className="mt-1">
+                    {serviceName}
+                  </DialogDescription>
+                </div>
+                {getStatusBadge(booking.status)}
+              </div>
+            </DialogHeader>
 
-        <div className="space-y-4 text-sm">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
-              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                {isSlovak ? 'Klient' : 'Client'}
-              </p>
-              <div className="space-y-2.5">
-                <div className="flex items-center gap-2 text-[hsl(var(--soft-navy))]">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{booking.client_name}</span>
+            <div className="space-y-4 text-sm">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
+                  <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    {isSlovak ? 'Klient' : 'Client'}
+                  </p>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-2 text-[hsl(var(--soft-navy))]">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">{booking.client_name}</span>
+                    </div>
+                    <div className="flex items-center gap-2 break-all text-muted-foreground">
+                      <Mail className="h-4 w-4 shrink-0" />
+                      <span>{booking.client_email}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Phone className="h-4 w-4 shrink-0" />
+                      <span>{booking.client_phone || (isSlovak ? 'Nezadané' : 'Not provided')}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 break-all text-muted-foreground">
-                  <Mail className="h-4 w-4 shrink-0" />
-                  <span>{booking.client_email}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Phone className="h-4 w-4 shrink-0" />
-                  <span>{booking.client_phone || (isSlovak ? 'Nezadané' : 'Not provided')}</span>
+
+                <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
+                  <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    {isSlovak ? 'Termín' : 'Appointment'}
+                  </p>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-2 text-[hsl(var(--soft-navy))]">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">
+                        {format(new Date(booking.date), 'd. MMMM yyyy', { locale: isSlovak ? sk : undefined })}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Clock className="h-4 w-4 shrink-0" />
+                      <span>{booking.time_slot}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <UserRoundCheck className="h-4 w-4 shrink-0" />
+                      <span>{employeeName}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
-              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                {isSlovak ? 'Termín' : 'Appointment'}
-              </p>
-              <div className="space-y-2.5">
-                <div className="flex items-center gap-2 text-[hsl(var(--soft-navy))]">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">
-                    {format(new Date(booking.date), 'd. MMMM yyyy', { locale: isSlovak ? sk : undefined })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Clock className="h-4 w-4 shrink-0" />
-                  <span>{booking.time_slot}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <UserRoundCheck className="h-4 w-4 shrink-0" />
-                  <span>{employeeName}</span>
+              <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
+                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                  {isSlovak ? 'Poznámka klienta' : 'Client note'}
+                </p>
+                <div className="flex items-start gap-2">
+                  <MessageSquareText className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <p className="text-[hsl(var(--soft-navy))]">
+                    {booking.notes?.trim() || (isSlovak ? 'Bez poznámky' : 'No note provided')}
+                  </p>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
-            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-              {isSlovak ? 'Poznámka klienta' : 'Client note'}
-            </p>
-            <div className="flex items-start gap-2">
-              <MessageSquareText className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-              <p className="text-[hsl(var(--soft-navy))]">
-                {booking.notes?.trim() || (isSlovak ? 'Bez poznámky' : 'No note provided')}
+              <p className="text-xs text-muted-foreground">
+                {isSlovak ? 'Vytvorené' : 'Created'}:{' '}
+                {format(new Date(booking.created_at), 'd. MMMM yyyy • HH:mm', { locale: isSlovak ? sk : undefined })}
               </p>
             </div>
-          </div>
-
-          <p className="text-xs text-muted-foreground">
-            {isSlovak ? 'Vytvorené' : 'Created'}:{' '}
-            {format(new Date(booking.created_at), 'd. MMMM yyyy • HH:mm', { locale: isSlovak ? sk : undefined })}
-          </p>
-        </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
