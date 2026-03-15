@@ -335,7 +335,7 @@ serve(async (req) => {
 
     console.log('Booking created successfully:', booking.id)
 
-    // Send confirmation email (fire-and-forget, non-blocking)
+    // Send confirmation email to client (fire-and-forget, non-blocking)
     const emailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
       method: 'POST',
       headers: {
@@ -356,9 +356,38 @@ serve(async (req) => {
       else console.log('Confirmation email sent successfully')
     }).catch(err => console.error('Error sending confirmation email:', err))
 
+    // Send admin notification email (fire-and-forget)
+    const adminEmail = 'booking@fyzioafit.sk'
+    const adminEmailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+      },
+      body: JSON.stringify({
+        to: adminEmail,
+        clientName: 'Admin',
+        serviceName: service.name_sk,
+        date: bookingData.date,
+        time: bookingData.time_slot,
+        cancellationToken: booking.cancellation_token,
+        language: 'sk',
+        template: 'admin-notification',
+        adminData: {
+          clientName: bookingData.client_name,
+          clientEmail: bookingData.client_email,
+          clientPhone: bookingData.client_phone,
+          notes: bookingData.notes,
+        },
+      }),
+    }).then(res => {
+      if (!res.ok) console.error('Failed to send admin notification email')
+      else console.log('Admin notification email sent successfully')
+    }).catch(err => console.error('Error sending admin notification email:', err))
+
     // Use waitUntil if available (Deno Deploy), otherwise just let it run
     if (typeof (globalThis as any).EdgeRuntime?.waitUntil === 'function') {
-      (globalThis as any).EdgeRuntime.waitUntil(emailPromise)
+      (globalThis as any).EdgeRuntime.waitUntil(Promise.all([emailPromise, adminEmailPromise]))
     }
 
     return new Response(
