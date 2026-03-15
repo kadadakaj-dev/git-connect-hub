@@ -315,7 +315,8 @@ serve(async (req) => {
       notes: body.notes ? sanitizeString(body.notes, 1000) : null,
       status: 'confirmed',
       employee_id: assignedEmployeeId,
-      booking_duration: bookingDuration
+      booking_duration: bookingDuration,
+      client_user_id: clientUserId,
     }
 
     const { data: booking, error: insertError } = await supabase
