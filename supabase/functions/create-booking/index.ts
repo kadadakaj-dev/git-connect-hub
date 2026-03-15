@@ -92,8 +92,27 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Try to extract logged-in user from auth header
+    let clientUserId: string | null = null
+    const authHeader = req.headers.get('authorization')
+    if (authHeader) {
+      try {
+        const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+          global: { headers: { Authorization: authHeader } }
+        })
+        const { data: { user } } = await userClient.auth.getUser()
+        if (user) {
+          clientUserId = user.id
+          console.log('Booking by authenticated user:', clientUserId)
+        }
+      } catch {
+        // Not authenticated, continue as guest
+      }
+    }
 
     // Rate limit: 10 bookings per IP per 15 minutes
     const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
