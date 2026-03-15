@@ -92,8 +92,27 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Try to extract logged-in user from auth header
+    let clientUserId: string | null = null
+    const authHeader = req.headers.get('authorization')
+    if (authHeader) {
+      try {
+        const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+          global: { headers: { Authorization: authHeader } }
+        })
+        const { data: { user } } = await userClient.auth.getUser()
+        if (user) {
+          clientUserId = user.id
+          console.log('Booking by authenticated user:', clientUserId)
+        }
+      } catch {
+        // Not authenticated, continue as guest
+      }
+    }
 
     // Rate limit: 10 bookings per IP per 15 minutes
     const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
@@ -296,7 +315,8 @@ serve(async (req) => {
       notes: body.notes ? sanitizeString(body.notes, 1000) : null,
       status: 'confirmed',
       employee_id: assignedEmployeeId,
-      booking_duration: bookingDuration
+      booking_duration: bookingDuration,
+      client_user_id: clientUserId,
     }
 
     const { data: booking, error: insertError } = await supabase
@@ -315,7 +335,7 @@ serve(async (req) => {
 
     console.log('Booking created successfully:', booking.id)
 
-    // Send confirmation email (fire-and-forget, non-blocking)
+    // Send confirmation email to client (fire-and-forget, non-blocking)
     const emailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
       method: 'POST',
       headers: {
@@ -336,9 +356,38 @@ serve(async (req) => {
       else console.log('Confirmation email sent successfully')
     }).catch(err => console.error('Error sending confirmation email:', err))
 
+    // Send admin notification email (fire-and-forget)
+    const adminEmail = 'booking@fyzioafit.sk'
+    const adminEmailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+      },
+      body: JSON.stringify({
+        to: adminEmail,
+        clientName: 'Admin',
+        serviceName: service.name_sk,
+        date: bookingData.date,
+        time: bookingData.time_slot,
+        cancellationToken: booking.cancellation_token,
+        language: 'sk',
+        template: 'admin-notification',
+        adminData: {
+          clientName: bookingData.client_name,
+          clientEmail: bookingData.client_email,
+          clientPhone: bookingData.client_phone,
+          notes: bookingData.notes,
+        },
+      }),
+    }).then(res => {
+      if (!res.ok) console.error('Failed to send admin notification email')
+      else console.log('Admin notification email sent successfully')
+    }).catch(err => console.error('Error sending admin notification email:', err))
+
     // Use waitUntil if available (Deno Deploy), otherwise just let it run
     if (typeof (globalThis as any).EdgeRuntime?.waitUntil === 'function') {
-      (globalThis as any).EdgeRuntime.waitUntil(emailPromise)
+      (globalThis as any).EdgeRuntime.waitUntil(Promise.all([emailPromise, adminEmailPromise]))
     }
 
     return new Response(
