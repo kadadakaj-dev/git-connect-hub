@@ -14,7 +14,13 @@ interface EmailRequest {
   time: string;
   cancellationToken: string;
   language: "sk" | "en";
-  template?: "confirmation" | "reminder";
+  template?: "confirmation" | "reminder" | "admin-notification";
+  adminData?: {
+    clientName: string;
+    clientEmail: string;
+    clientPhone: string;
+    notes: string | null;
+  };
 }
 
 const translations = {
