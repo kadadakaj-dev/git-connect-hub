@@ -334,11 +334,23 @@ serve(async (req) => {
       },
     });
 
+    const isAdminNotification = data.template === "admin-notification";
     const t = translations[data.language];
     const isReminder = data.template === "reminder";
-    const subject = isReminder ? t.reminderSubject : t.subject;
-    const html = generateEmailHtml(data, baseUrl);
-    const textContent = generateEmailText(data, baseUrl);
+
+    let subject: string;
+    let html: string;
+    let textContent: string;
+
+    if (isAdminNotification) {
+      subject = `Nova rezervacia: ${data.adminData?.clientName} - ${data.serviceName}`;
+      html = generateAdminNotificationHtml(data);
+      textContent = generateAdminNotificationText(data);
+    } else {
+      subject = isReminder ? t.reminderSubject : t.subject;
+      html = generateEmailHtml(data, baseUrl);
+      textContent = generateEmailText(data, baseUrl);
+    }
 
     await client.send({
       from: "FYZIO&FIT <booking@fyzioafit.sk>",
