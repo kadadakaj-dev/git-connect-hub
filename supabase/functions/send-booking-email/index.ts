@@ -224,9 +224,6 @@ serve(async (req) => {
           password: smtpPassword,
         },
       },
-      debug: {
-        encodeLB: true,
-      },
     });
 
     const t = translations[data.language];
