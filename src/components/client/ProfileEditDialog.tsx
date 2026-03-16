@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,6 +16,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { toast } from 'sonner';
 import { Camera, Loader2, User } from 'lucide-react';
 import { z } from 'zod';
+import AvatarEditDialog from './AvatarEditDialog';
 
 interface ClientProfile {
   id: string;
@@ -47,8 +48,7 @@ const ProfileEditDialog = ({
 }: ProfileEditDialogProps) => {
   const { language } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     full_name: profile.full_name,
     phone: profile.phone || '',
@@ -95,8 +95,9 @@ const ProfileEditDialog = ({
 
   const text = t[language];
 
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click();
+  const handleAvatarUpdated = () => {
+    // Refresh profile to get new avatar_url
+    onProfileUpdated();
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,42 +224,20 @@ const ProfileEditDialog = ({
               </Avatar>
               <button
                 type="button"
-                onClick={handleAvatarClick}
-                disabled={isUploading}
+                onClick={() => setIsAvatarDialogOpen(true)}
                 className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
               >
-                {isUploading ? (
-                  <Loader2 className="h-6 w-6 text-white animate-spin" />
-                ) : (
-                  <Camera className="h-6 w-6 text-white" />
-                )}
+                <Camera className="h-6 w-6 text-white" />
               </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={handleFileChange}
-                className="hidden"
-              />
             </div>
             <Button
               type="button"
               variant="outline"
               size="sm"
-              onClick={handleAvatarClick}
-              disabled={isUploading}
+              onClick={() => setIsAvatarDialogOpen(true)}
             >
-              {isUploading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {text.saving}
-                </>
-              ) : (
-                <>
-                  <Camera className="h-4 w-4 mr-2" />
-                  {text.changePhoto}
-                </>
-              )}
+              <Camera className="h-4 w-4 mr-2" />
+              {text.changePhoto}
             </Button>
           </div>
 
@@ -301,7 +280,7 @@ const ProfileEditDialog = ({
             >
               {text.cancel}
             </Button>
-            <Button type="submit" disabled={isLoading || isUploading}>
+            <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -313,6 +292,15 @@ const ProfileEditDialog = ({
             </Button>
           </DialogFooter>
         </form>
+
+        <AvatarEditDialog
+          open={isAvatarDialogOpen}
+          onOpenChange={setIsAvatarDialogOpen}
+          currentAvatarUrl={avatarUrl}
+          fullName={formData.full_name}
+          userId={profile.user_id}
+          onAvatarUpdated={handleAvatarUpdated}
+        />
       </DialogContent>
     </Dialog>
   );

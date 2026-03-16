@@ -277,6 +277,7 @@ const AvatarEditDialog = ({
   };
 
   const handleCanvasTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
     if (e.touches.length === 2 && lastPinchDistance !== null) {
       // Pinch-to-zoom
       const dist = Math.hypot(
@@ -298,6 +299,13 @@ const AvatarEditDialog = ({
     setLastPinchDistance(null);
   };
 
+  // Safely extract storage path from avatar URL (strips query params)
+  const extractStoragePath = (url: string): string | null => {
+    const pathPart = url.split('/avatars/')[1];
+    if (!pathPart) return null;
+    return decodeURIComponent(pathPart.split('?')[0]);
+  };
+
   const handleUpload = async () => {
     const canvas = canvasRef.current;
     if (!canvas || !selectedImage) return;
@@ -308,7 +316,7 @@ const AvatarEditDialog = ({
       // Redraw without grid for export
       const wasGridOn = showGrid;
       setShowGrid(false);
-      
+
       // Create a clean export canvas without grid overlay
       const exportCanvas = document.createElement('canvas');
       exportCanvas.width = CANVAS_SIZE;
@@ -341,23 +349,38 @@ const AvatarEditDialog = ({
 
       if (wasGridOn) setShowGrid(true);
 
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        exportCanvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Canvas to blob failed'))), 'image/webp', 0.9);
+      // Try WebP first, fall back to PNG for older browsers
+      let blob: Blob;
+      let ext = 'webp';
+      let contentType = 'image/webp';
+      const webpBlob = await new Promise<Blob | null>((resolve) => {
+        exportCanvas.toBlob((b) => resolve(b), 'image/webp', 0.9);
       });
+      if (webpBlob && webpBlob.size > 0) {
+        blob = webpBlob;
+      } else {
+        const pngBlob = await new Promise<Blob | null>((resolve) => {
+          exportCanvas.toBlob((b) => resolve(b), 'image/png');
+        });
+        if (!pngBlob) throw new Error('Canvas to blob failed');
+        blob = pngBlob;
+        ext = 'png';
+        contentType = 'image/png';
+      }
 
-      const fileName = `${userId}/${Date.now()}.webp`;
+      const fileName = `${userId}/${Date.now()}.${ext}`;
 
       // Delete old avatar
       if (currentAvatarUrl) {
-        const oldPath = currentAvatarUrl.split('/avatars/')[1];
+        const oldPath = extractStoragePath(currentAvatarUrl);
         if (oldPath) {
-          await supabase.storage.from('avatars').remove([decodeURIComponent(oldPath)]);
+          await supabase.storage.from('avatars').remove([oldPath]);
         }
       }
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, blob, { cacheControl: '3600', upsert: true, contentType: 'image/webp' });
+        .upload(fileName, blob, { cacheControl: '3600', upsert: true, contentType });
 
       if (uploadError) throw uploadError;
 
@@ -385,9 +408,9 @@ const AvatarEditDialog = ({
     setIsUploading(true);
     try {
       if (currentAvatarUrl) {
-        const oldPath = currentAvatarUrl.split('/avatars/')[1];
+        const oldPath = extractStoragePath(currentAvatarUrl);
         if (oldPath) {
-          await supabase.storage.from('avatars').remove([decodeURIComponent(oldPath)]);
+          await supabase.storage.from('avatars').remove([oldPath]);
         }
       }
 
