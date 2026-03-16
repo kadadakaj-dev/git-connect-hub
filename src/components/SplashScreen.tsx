@@ -1,66 +1,139 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SplashScreenProps {
   onComplete: () => void;
 }
 
-const splashStyles: React.CSSProperties = {
-  background:
-    'radial-gradient(circle at top left, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 36%), linear-gradient(180deg, #BFE2FF 0%, #EAF6FF 100%)',
-};
-
-const progressBarBgStyle: React.CSSProperties = {
-  backgroundColor: 'rgba(36, 71, 107, 0.12)',
-};
-
-const progressBarStyle: React.CSSProperties = {
-  background: 'linear-gradient(135deg, #24476B 0%, #4F95D5 100%)',
-  width: '0%',
-  transition: 'width 0.64s ease-in-out',
-};
+/* ── timing constants (seconds) ── */
+const LETTERS = 'FYZIO&FIT'.split('');
+const LETTER_STAGGER = 0.08;                           // gap between letters
+const GLOW_START = LETTERS.length * LETTER_STAGGER;     // ~0.72 s
+const BREATHE_START = GLOW_START + 0.5;                 // ~1.22 s
+const FADE_START = 3.4;                                 // begin exit fade
+const TOTAL_DURATION = 4000;                            // ms – fires onComplete
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
-  const [isFading, setIsFading] = useState(false);
-  const [animate, setAnimate] = useState(false);
+  const prefersReduced = useMemo(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    [],
+  );
+
   const handleComplete = useCallback(() => {
     onComplete();
   }, [onComplete]);
 
   useEffect(() => {
-    // Trigger progress animation on next frame
-    requestAnimationFrame(() => setAnimate(true));
+    const duration = prefersReduced ? 1200 : TOTAL_DURATION;
+    const timer = setTimeout(handleComplete, duration);
+    return () => clearTimeout(timer);
+  }, [handleComplete, prefersReduced]);
 
-    const fadeTimer = setTimeout(() => setIsFading(true), 320);
-    const completeTimer = setTimeout(() => handleComplete(), 640);
-
-    return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(completeTimer);
-    };
-  }, [handleComplete]);
-
-  return (
-    <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-400 ease-in-out ${
-        isFading ? 'opacity-0' : 'opacity-100'
-      }`}
-      style={splashStyles}
-    >
-      <div className="relative z-10 flex flex-col items-center gap-4 rounded-[28px] px-8 py-7 glass-soft">
+  /* ── reduced-motion: static text, quick fade ── */
+  if (prefersReduced) {
+    return (
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-b from-[#BFE2FF] to-[#EAF6FF]"
+        role="status"
+        aria-label="Loading FYZIO&FIT"
+      >
         <h1 className="text-4xl font-heading font-semibold text-[hsl(211,48%,29%)] tracking-[0.2em]">
           FYZIO&FIT
         </h1>
-        <div className="w-48 h-1 rounded-full overflow-hidden" style={progressBarBgStyle}>
-          <div
-            className="h-full rounded-full"
+      </div>
+    );
+  }
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-b from-[#BFE2FF] to-[#EAF6FF]"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.6, ease: 'easeInOut' }}
+        role="status"
+        aria-label="Loading FYZIO&FIT"
+      >
+        {/* ── breathing wrapper ── */}
+        <motion.div
+          className="flex flex-col items-center gap-6"
+          animate={{
+            scale: [1, 1.03, 1, 1.03, 1],
+          }}
+          transition={{
+            delay: BREATHE_START,
+            duration: FADE_START - BREATHE_START,
+            ease: 'easeInOut',
+          }}
+        >
+          {/* ── letter-by-letter reveal ── */}
+          <h1
+            className="text-4xl font-heading font-semibold text-[hsl(211,48%,29%)] tracking-[0.2em] flex"
+            aria-hidden="true"
+          >
+            {LETTERS.map((char, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: i * LETTER_STAGGER,
+                  duration: 0.35,
+                  ease: 'easeOut',
+                }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </h1>
+
+          {/* ── glow line ── */}
+          <motion.div
+            className="h-[2px] rounded-full"
             style={{
-              ...progressBarStyle,
-              width: animate ? '100%' : '0%',
+              background:
+                'linear-gradient(90deg, transparent, hsl(211,48%,29%) 30%, hsl(207,56%,58%) 70%, transparent)',
+            }}
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 192, opacity: 1 }}
+            transition={{
+              delay: GLOW_START,
+              duration: 0.5,
+              ease: 'easeOut',
             }}
           />
-        </div>
-      </div>
-    </div>
+
+          {/* ── progress dot on track ── */}
+          <div className="relative w-48 h-[2px] rounded-full bg-[hsl(211,48%,29%)]/10 overflow-hidden">
+            <motion.div
+              className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[hsl(211,48%,29%)]"
+              initial={{ left: 0 }}
+              animate={{ left: '100%' }}
+              transition={{
+                delay: GLOW_START + 0.5,
+                duration: FADE_START - GLOW_START - 0.5,
+                ease: 'linear',
+              }}
+            />
+          </div>
+        </motion.div>
+
+        {/* ── fade-out overlay ── */}
+        <motion.div
+          className="absolute inset-0 bg-white dark:bg-[hsl(211,48%,12%)]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            delay: FADE_START,
+            duration: 0.6,
+            ease: 'easeInOut',
+          }}
+        />
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

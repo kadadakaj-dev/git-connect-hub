@@ -56,13 +56,13 @@ describe('App Integration', () => {
         mockSessionStorage['fyzio_splash_shown'] = 'true';
         render(<App />);
         // Should not render splash
-        expect(screen.queryByText('FYZIO&FIT')).not.toBeInTheDocument();
+        expect(screen.queryByRole('status', { name: /FYZIO/i })).not.toBeInTheDocument();
     });
 
     it('should show splash screen on first visit', () => {
         delete mockSessionStorage['fyzio_splash_shown'];
         render(<App />);
-        expect(screen.getByText('FYZIO&FIT')).toBeInTheDocument();
+        expect(screen.getByRole('status', { name: /Loading FYZIO/i })).toBeInTheDocument();
     });
 
     it('should wrap app in required providers', () => {
