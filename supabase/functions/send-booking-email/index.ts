@@ -95,15 +95,11 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
             <td style="background: linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%); padding: 30px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px;">${t.clinicName}</h1>
             </td>
-          </tr>
-          
-          <!-- Content -->
+          </tr><!-- Content -->
           <tr>
             <td style="padding: 40px 30px;">
               <h2 style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px;">${t.greeting}, ${data.clientName}!</h2>
-              <p style="color: #4b5e78; margin: 0 0 30px 0; font-size: 16px;">${title}</p>
-              
-              <!-- Booking Details -->
+              <p style="color: #4b5e78; margin: 0 0 30px 0; font-size: 16px;">${title}</p><!-- Booking Details -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f8fc; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
                 <tr>
                   <td style="padding: 20px;">
@@ -130,18 +126,25 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
                     </table>
                   </td>
                 </tr>
+              </table><!-- Looking forward -->
+              <p style="color: #1a2b42; font-size: 18px; font-weight: 600; margin: 0 0 25px 0; text-align: center;">${t.footer}</p><!-- Cancel Section -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff8f0; border: 1px solid #fde0b0; border-radius: 8px; margin-bottom: 20px;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <p style="color: #92400e; font-size: 14px; font-weight: 600; margin: 0 0 10px 0;">${data.language === 'sk' ? 'Storno podmienky:' : 'Cancellation policy:'}</p>
+                    <p style="color: #92400e; font-size: 13px; margin: 0 0 6px 0;">• ${data.language === 'sk' ? 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.' : 'You can cancel online up to 12 hours before your appointment.'}</p>
+                    <p style="color: #92400e; font-size: 13px; margin: 0 0 6px 0;">• ${data.language === 'sk' ? 'Menej ako 12 hodín pred termínom je zrušenie možné len telefonicky:' : 'Less than 12 hours before — cancellation only by phone:'} <strong>+421 905 307 198</strong></p>
+                    <p style="color: #b91c1c; font-size: 13px; font-weight: 600; margin: 0;">• ${data.language === 'sk' ? 'V prípade nezrušenej rezervácie Vám bude pri ďalšej návšteve účtovaný storno poplatok 10 €.' : 'A no-show fee of €10 will be charged at your next visit for uncancelled reservations.'}</p>
+                  </td>
+                </tr>
               </table>
-              
-              <!-- Cancel Section -->
-              <p style="color: #6b7c94; font-size: 14px; margin: 0 0 15px 0;">${t.cancelText}</p>
-              <a href="${cancelUrl}" style="display: inline-block; background-color: #ef4444; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">${t.cancelButton}</a>
+              <div style="text-align: center;">
+                <a href="${cancelUrl}" style="display: inline-block; background-color: #ef4444; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">${t.cancelButton}</a>
+              </div>
             </td>
-          </tr>
-          
-          <!-- Footer -->
+          </tr><!-- Footer -->
           <tr>
             <td style="background-color: #f5f8fc; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
-              <p style="color: #4a90d9; margin: 0 0 10px 0; font-size: 16px; font-weight: 500;">${t.footer}</p>
               <p style="color: #6b7c94; margin: 0; font-size: 14px;">${t.contact}</p>
             </td>
           </tr>
