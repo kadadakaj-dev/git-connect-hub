@@ -26,7 +26,7 @@ const CancelBooking = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const locale = language === 'sk' ? sk : enUS;
-  
+
   const [status, setStatus] = useState<CancelStatus>('loading');
   const [error, setError] = useState<string>('');
   const [booking, setBooking] = useState<BookingDetails | null>(null);
@@ -202,7 +202,7 @@ const CancelBooking = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-app-screen relative overflow-hidden">
       <GlassBackground />
       <PageMeta
         titleSk="Zrušenie rezervácie | FYZIO&FIT"
@@ -212,7 +212,7 @@ const CancelBooking = () => {
         path="/cancel"
         noindex
       />
-      <div className="container max-w-2xl mx-auto px-4 py-8 md:py-12 relative z-10">
+      <div className="container max-w-2xl mx-auto px-4 py-5 sm:py-8 md:py-12 relative z-10">
         <div className="flex justify-end mb-4">
           <LanguageSwitcher />
         </div>

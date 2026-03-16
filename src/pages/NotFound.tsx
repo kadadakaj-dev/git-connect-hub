@@ -16,7 +16,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center relative overflow-hidden">
+    <div className="flex min-h-app-screen items-center justify-center relative overflow-hidden">
       <GlassBackground />
       <PageMeta
         titleSk="Stránka nenájdená | FYZIO&FIT"

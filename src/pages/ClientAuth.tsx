@@ -236,7 +236,7 @@ const ClientAuth = () => {
         path="/auth"
       />
 
-      <div className="relative flex min-h-screen overflow-hidden">
+      <div className="relative flex min-h-app-screen overflow-hidden">
         <GlassBackground />
 
         <aside className="hidden w-[296px] shrink-0 flex-col border-r border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.74)_0%,rgba(234,246,255,0.58)_100%)] p-5 backdrop-blur-2xl lg:flex xl:p-6">
@@ -254,11 +254,10 @@ const ClientAuth = () => {
                 return (
                   <li
                     key={i}
-                    className={`relative rounded-[22px] border transition-all duration-200 ${
-                      item.active
+                    className={`relative rounded-[22px] border transition-all duration-200 ${item.active
                         ? 'border-[rgba(79,149,213,0.16)] bg-white/76 shadow-[0_14px_30px_rgba(126,195,255,0.14)]'
                         : 'border-transparent hover:border-[var(--glass-border-subtle)] hover:bg-white/50'
-                    }`}
+                      }`}
                   >
                     {item.active && (
                       <span className="absolute -left-5 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-sm bg-[linear-gradient(180deg,#24476B_0%,#4F95D5_100%)]" />

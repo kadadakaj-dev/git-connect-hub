@@ -22,7 +22,7 @@ const SubmitButton = ({ enabled, isPending, onSubmit }: SubmitButtonProps) => {
         scale: enabled ? 1 : 0.98,
       }}
       transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className={cn("pb-6", !enabled && "pointer-events-none")}
+      className={cn("pb-4 sm:pb-6", !enabled && "pointer-events-none")}
     >
       <Button
         variant="default"

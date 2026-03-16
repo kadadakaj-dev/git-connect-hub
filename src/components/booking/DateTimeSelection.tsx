@@ -112,7 +112,7 @@ const DateTimeSelection = ({
             onMouseLeave={() => setHoveredSlot(null)}
             disabled={!slot.available}
             className={cn(
-              "py-1.5 rounded-lg text-xs font-medium font-data transition-all duration-300 ease-liquid backdrop-blur-sm",
+              "py-2 sm:py-1.5 rounded-lg text-xs font-medium font-data transition-all duration-300 ease-liquid backdrop-blur-sm",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               !slot.available && "opacity-25 cursor-not-allowed text-muted-foreground",
               isSlotSelected
@@ -134,10 +134,10 @@ const DateTimeSelection = ({
   );
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
       {/* Calendar */}
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-1.5 sm:mb-2">
           <h4 className="text-xs font-semibold text-foreground capitalize">
             {format(currentMonth, 'LLLL yyyy', { locale })}
           </h4>
@@ -175,7 +175,7 @@ const DateTimeSelection = ({
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-0">
           {Array.from({ length: startingDayIndex }).map((_, index) => (
-            <div key={`empty-${index}`} className="aspect-square" />
+            <div key={`empty-${index}`} className="h-9 sm:aspect-square sm:h-auto" />
           ))}
 
           {days.map((day) => {
@@ -191,7 +191,7 @@ const DateTimeSelection = ({
                 onClick={() => !isDisabled && onDateSelect(day)}
                 disabled={isDisabled}
                 className={cn(
-                  "aspect-square rounded text-xs font-medium transition-all duration-150 relative",
+                  "h-9 sm:aspect-square sm:h-auto rounded text-xs font-medium transition-all duration-150 relative flex items-center justify-center",
                   "focus:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                   isSelected && "bg-primary text-primary-foreground font-bold",
                   !isSelected && !isDisabled && "hover:bg-accent text-foreground",

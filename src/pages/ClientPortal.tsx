@@ -161,7 +161,7 @@ const ClientPortal = () => {
 
   if (loading || profileLoading) {
     return (
-      <div className="min-h-screen relative px-4 py-5 md:px-8 md:py-8">
+      <div className="min-h-app-screen relative px-4 py-5 md:px-8 md:py-8">
         <GlassBackground />
         <div className="relative z-10 max-w-6xl mx-auto space-y-6">
           <Skeleton className="h-14 w-72 rounded-[22px]" />
@@ -194,7 +194,7 @@ const ClientPortal = () => {
         path="/portal"
         noindex
       />
-      <div className="min-h-screen relative">
+      <div className="min-h-app-screen relative">
         <GlassBackground />
 
         <header className="sticky top-0 z-50 px-3 pt-3">

@@ -106,7 +106,7 @@ const ClientDetailsForm = ({ bookingData, errors, onUpdate }: ClientDetailsFormP
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-3">
       <FormField field="clientName" icon={User} placeholder={t.fullNamePlaceholder} type="text" value={bookingData.clientName} errors={errors} autoComplete="name" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
       <FormField field="clientEmail" icon={Mail} placeholder={t.emailPlaceholder} type="email" value={bookingData.clientEmail} errors={errors} autoComplete="email" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
       <FormField field="clientPhone" icon={Phone} placeholder={t.phonePlaceholder} type="tel" value={bookingData.clientPhone} errors={errors} autoComplete="tel" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
