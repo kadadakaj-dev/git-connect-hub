@@ -61,7 +61,7 @@ describe('useTimeSlots', () => {
   });
 
   it('should generate time slots from config', async () => {
-    const date = new Date('2026-03-16T12:00:00'); // Monday
+    const date = new Date('2026-12-07T12:00:00'); // Monday (far future, past 36h lead time)
 
     mockFrom.mockImplementation((table: string) => {
       if (table === 'blocked_dates') return mockChain({ data: null, error: null });
