@@ -35,6 +35,7 @@ const BookingWizard = () => {
 
   const dateTimeRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
+  const submitRef = useRef<HTMLDivElement>(null);
 
   const updateBookingData = <K extends keyof BookingData>(field: K, value: BookingData[K]) => {
     setBookingData((prev) => ({ ...prev, [field]: value }));
@@ -58,6 +59,14 @@ const BookingWizard = () => {
     updateBookingData('time', time);
     setTimeout(() => {
       detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // After scroll settles, ensure submit button is also visible
+      setTimeout(() => {
+        if (!submitRef.current) return;
+        const rect = submitRef.current.getBoundingClientRect();
+        if (rect.bottom > window.innerHeight) {
+          submitRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 600);
     }, 200);
   };
 
@@ -191,7 +200,9 @@ const BookingWizard = () => {
         </motion.section>
 
         {/* Submit */}
-        <SubmitButton enabled={hasService && hasDateTime} isPending={createBooking.isPending} onSubmit={handleSubmit} />
+        <div ref={submitRef}>
+          <SubmitButton enabled={hasService && hasDateTime} isPending={createBooking.isPending} onSubmit={handleSubmit} />
+        </div>
       </div>
 
       <Footer />

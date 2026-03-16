@@ -101,6 +101,9 @@ const EventModal = ({
                 onChange={(e) => onChange({ therapistId: e.target.value })}
                 className="w-full rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2.5 text-sm font-medium text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
+                {!formData.therapistId && (
+                  <option value="" disabled>{language === 'sk' ? 'Vyberte terapeuta' : 'Select therapist'}</option>
+                )}
                 {employees.map(emp => (
                   <option key={emp.id} value={emp.id}>{emp.full_name}</option>
                 ))}
@@ -143,19 +146,19 @@ const EventModal = ({
                 onChange={(e) => onChange({ date: e.target.value })}
               />
             </div>
-            <div>
+            <div className="min-w-0">
               <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.time}</label>
               <div className="relative">
-                <Clock className="w-4 h-4 text-muted-foreground absolute left-3 top-3" />
+                <Clock className="w-4 h-4 text-muted-foreground absolute left-3 top-3 hidden sm:block" />
                 <Input
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => onChange({ startTime: e.target.value })}
-                  className="pl-9"
+                  className="sm:pl-9"
                 />
               </div>
             </div>
-            <div>
+            <div className="min-w-0">
               <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.duration}</label>
               <select
                 value={formData.duration}
@@ -165,9 +168,9 @@ const EventModal = ({
                 <option value="15">15 min</option>
                 <option value="30">30 min</option>
                 <option value="45">45 min</option>
-                <option value="60">60m (1h)</option>
-                <option value="90">90m (1.5h)</option>
-                <option value="120">120m (2h)</option>
+                <option value="60">60 min</option>
+                <option value="90">90 min</option>
+                <option value="120">120 min</option>
               </select>
             </div>
           </div>
