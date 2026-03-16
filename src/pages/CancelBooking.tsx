@@ -50,6 +50,9 @@ const CancelBooking = () => {
       invalidToken: 'Neplatný odkaz na zrušenie',
       notFound: 'Rezervácia nebola nájdená',
       pastBooking: 'Nemožno zrušiť minulé rezervácie',
+      tooLateTitle: 'Zrušenie online nie je možné',
+      tooLateText: 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.',
+      tooLatePhone: 'Kontaktujte nás telefonicky:',
       backToHome: 'Späť na hlavnú stránku',
       newBooking: 'Nová rezervácia',
       service: 'Služba',
@@ -71,6 +74,9 @@ const CancelBooking = () => {
       invalidToken: 'Invalid cancellation link',
       notFound: 'Booking not found',
       pastBooking: 'Cannot cancel past bookings',
+      tooLateTitle: 'Online cancellation not available',
+      tooLateText: 'You can cancel online up to 12 hours before your appointment.',
+      tooLatePhone: 'Contact us by phone:',
       backToHome: 'Back to Home',
       newBooking: 'New Booking',
       service: 'Service',
@@ -128,6 +134,10 @@ const CancelBooking = () => {
       if (!data.success) {
         if (data.error === 'Booking is already cancelled') {
           setStatus('already_cancelled');
+        } else if (data.error === 'TOO_LATE_TO_CANCEL') {
+          setBooking(data.booking);
+          setError('TOO_LATE_TO_CANCEL');
+          setStatus('error');
         } else {
           setError(data.error);
           setStatus('error');
@@ -284,9 +294,22 @@ const CancelBooking = () => {
                 <XCircle className="w-12 h-12 text-destructive" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">{text.errorTitle}</h2>
-                <p className="text-muted-foreground">{error}</p>
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  {error === 'TOO_LATE_TO_CANCEL' ? text.tooLateTitle : text.errorTitle}
+                </h2>
+                {error === 'TOO_LATE_TO_CANCEL' ? (
+                  <div className="space-y-3">
+                    <p className="text-muted-foreground">{text.tooLateText}</p>
+                    <p className="text-foreground font-medium">
+                      {text.tooLatePhone}{' '}
+                      <a href="tel:+421905307198" className="text-primary underline">+421 905 307 198</a>
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground">{error}</p>
+                )}
               </div>
+              {error === 'TOO_LATE_TO_CANCEL' && renderBookingDetails()}
               <Button variant="subtle" size="lg" onClick={() => navigate('/')} className="mt-6">
                 {text.backToHome}
               </Button>
