@@ -22,7 +22,7 @@ const SectionHeader = ({
           : "bg-white/72 text-[hsl(var(--navy))] border border-[rgba(64,114,163,0.16)] backdrop-blur-md"
       )}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="popLayout">
         {completed ? (
           <motion.span
             key="check"

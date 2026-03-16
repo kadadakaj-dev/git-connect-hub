@@ -40,7 +40,7 @@ const BookingManagement = () => {
           employees (full_name)
         `)
         .order('date', { ascending: false });
-      
+
       if (error) throw error;
       return data as Booking[];
     }
@@ -52,7 +52,7 @@ const BookingManagement = () => {
         .from('bookings')
         .update({ status })
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -65,11 +65,11 @@ const BookingManagement = () => {
   });
 
   const filteredBookings = bookings?.filter(booking => {
-    const matchesSearch = 
+    const matchesSearch =
       booking.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.client_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (booking.client_phone || '').includes(searchTerm);
-    
+
     const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
     const matchesDate = !dateFilter || booking.date === dateFilter;
 
@@ -121,19 +121,19 @@ const BookingManagement = () => {
 
   return (
     <Card className="border-border/50">
-      <CardHeader>
-        <CardTitle>
+      <CardHeader className="p-3 sm:p-6">
+        <CardTitle className="text-base sm:text-2xl">
           {language === 'sk' ? 'Všetky rezervácie' : 'All Bookings'}
         </CardTitle>
         <CardDescription>
-          {language === 'sk' 
-            ? `Celkom ${bookings?.length || 0} rezervácií` 
+          {language === 'sk'
+            ? `Celkom ${bookings?.length || 0} rezervácií`
             : `Total ${bookings?.length || 0} bookings`}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="p-3 sm:p-6 pt-0 space-y-3 sm:space-y-4">
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -165,84 +165,138 @@ const BookingManagement = () => {
 
         {/* Table */}
         {filteredBookings && filteredBookings.length > 0 ? (
-          <div className="rounded-md border overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{language === 'sk' ? 'Klient' : 'Client'}</TableHead>
-                  <TableHead>{language === 'sk' ? 'Služba' : 'Service'}</TableHead>
-                  <TableHead>{language === 'sk' ? 'Zamestnanec' : 'Employee'}</TableHead>
-                  <TableHead>{language === 'sk' ? 'Dátum' : 'Date'}</TableHead>
-                  <TableHead>{language === 'sk' ? 'Čas' : 'Time'}</TableHead>
-                  <TableHead>{language === 'sk' ? 'Stav' : 'Status'}</TableHead>
-                  <TableHead className="text-right">{language === 'sk' ? 'Akcie' : 'Actions'}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredBookings.map((booking) => (
-                  <TableRow key={booking.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{booking.client_name}</p>
-                        <p className="text-sm text-muted-foreground">{booking.client_email}</p>
-                        <p className="text-sm text-muted-foreground">{booking.client_phone || '—'}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {booking.services 
-                        ? (language === 'sk' ? booking.services.name_sk : booking.services.name_en)
-                        : '-'}
-                    </TableCell>
-                    <TableCell>
-                      {booking.employees?.full_name || (language === 'sk' ? 'Nepriradený' : 'Unassigned')}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-muted-foreground" />
-                        {formatDate(booking.date)}
-                      </div>
-                    </TableCell>
-                    <TableCell>{booking.time_slot}</TableCell>
-                    <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+          <>
+            {/* Mobile card view */}
+            <div className="space-y-2 md:hidden">
+              {filteredBookings.map((booking) => (
+                <button
+                  key={booking.id}
+                  type="button"
+                  onClick={() => setSelectedBooking(booking)}
+                  className="w-full rounded-2xl border border-[var(--glass-border-subtle)] bg-white/72 p-3 text-left shadow-[0_8px_16px_rgba(126,195,255,0.06)] transition-colors hover:bg-white/82"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm text-[hsl(var(--soft-navy))] truncate">{booking.client_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {booking.services
+                          ? (language === 'sk' ? booking.services.name_sk : booking.services.name_en)
+                          : '-'}
+                      </p>
+                    </div>
+                    {getStatusBadge(booking.status)}
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{formatDate(booking.date)} • {booking.time_slot}</span>
+                    <div className="flex gap-1">
+                      {booking.status !== 'confirmed' && (
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setSelectedBooking(booking)}
-                          className="text-[hsl(var(--soft-navy))] hover:text-[hsl(var(--navy))]"
+                          className="h-7 w-7 p-0 text-green-600"
+                          onClick={(e) => { e.stopPropagation(); updateStatusMutation.mutate({ id: booking.id, status: 'confirmed' }); }}
+                          disabled={updateStatusMutation.isPending}
                         >
-                          <Eye className="w-4 h-4" />
+                          <CheckCircle className="w-3.5 h-3.5" />
                         </Button>
-                        {booking.status !== 'confirmed' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                            onClick={() => updateStatusMutation.mutate({ id: booking.id, status: 'confirmed' })}
-                            disabled={updateStatusMutation.isPending}
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </Button>
-                        )}
-                        {booking.status !== 'cancelled' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => updateStatusMutation.mutate({ id: booking.id, status: 'cancelled' })}
-                            disabled={updateStatusMutation.isPending}
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
+                      )}
+                      {booking.status !== 'cancelled' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 w-7 p-0 text-red-600"
+                          onClick={(e) => { e.stopPropagation(); updateStatusMutation.mutate({ id: booking.id, status: 'cancelled' }); }}
+                          disabled={updateStatusMutation.isPending}
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop table */}
+            <div className="hidden rounded-md border overflow-x-auto md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{language === 'sk' ? 'Klient' : 'Client'}</TableHead>
+                    <TableHead>{language === 'sk' ? 'Služba' : 'Service'}</TableHead>
+                    <TableHead>{language === 'sk' ? 'Zamestnanec' : 'Employee'}</TableHead>
+                    <TableHead>{language === 'sk' ? 'Dátum' : 'Date'}</TableHead>
+                    <TableHead>{language === 'sk' ? 'Čas' : 'Time'}</TableHead>
+                    <TableHead>{language === 'sk' ? 'Stav' : 'Status'}</TableHead>
+                    <TableHead className="text-right">{language === 'sk' ? 'Akcie' : 'Actions'}</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {filteredBookings.map((booking) => (
+                    <TableRow key={booking.id}>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{booking.client_name}</p>
+                          <p className="text-sm text-muted-foreground">{booking.client_email}</p>
+                          <p className="text-sm text-muted-foreground">{booking.client_phone || '—'}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {booking.services
+                          ? (language === 'sk' ? booking.services.name_sk : booking.services.name_en)
+                          : '-'}
+                      </TableCell>
+                      <TableCell>
+                        {booking.employees?.full_name || (language === 'sk' ? 'Nepriradený' : 'Unassigned')}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-muted-foreground" />
+                          {formatDate(booking.date)}
+                        </div>
+                      </TableCell>
+                      <TableCell>{booking.time_slot}</TableCell>
+                      <TableCell>{getStatusBadge(booking.status)}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setSelectedBooking(booking)}
+                            className="text-[hsl(var(--soft-navy))] hover:text-[hsl(var(--navy))]"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          {booking.status !== 'confirmed' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                              onClick={() => updateStatusMutation.mutate({ id: booking.id, status: 'confirmed' })}
+                              disabled={updateStatusMutation.isPending}
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                            </Button>
+                          )}
+                          {booking.status !== 'cancelled' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => updateStatusMutation.mutate({ id: booking.id, status: 'cancelled' })}
+                              disabled={updateStatusMutation.isPending}
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
             {searchTerm || statusFilter !== 'all' || dateFilter

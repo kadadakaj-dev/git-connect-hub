@@ -25,7 +25,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         navigate('/admin/login');
         return;
@@ -75,65 +75,65 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-app-screen relative">
       <GlassBackground />
       {/* Header */}
       <header className="border-b border-[var(--glass-border-subtle)] backdrop-blur-2xl bg-[var(--glass-white-md)] sticky top-0 z-50 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-heading font-semibold text-foreground">
+        <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-4 flex items-center justify-between">
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-xl font-heading font-semibold text-foreground">
               {language === 'sk' ? 'Admin Panel' : 'Admin Panel'}
             </h1>
-            <p className="text-sm text-muted-foreground">{user?.email}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground truncate">{user?.email}</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <LanguageSwitcher />
             <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              {language === 'sk' ? 'Odhlásiť' : 'Logout'}
+              <LogOut className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">{language === 'sk' ? 'Odhlásiť' : 'Logout'}</span>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 relative z-10">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-2">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 relative z-10">
+        <div className="mb-3 sm:mb-8">
+          <h2 className="text-lg sm:text-2xl font-bold text-foreground mb-1 sm:mb-2">
             {language === 'sk' ? 'Vitajte späť!' : 'Welcome back!'}
           </h2>
-          <p className="text-muted-foreground">
-            {language === 'sk' 
-              ? 'Tu je prehľad vášho booking systému' 
+          <p className="text-sm text-muted-foreground hidden sm:block">
+            {language === 'sk'
+              ? 'Tu je prehľad vášho booking systému'
               : 'Here is an overview of your booking system'}
           </p>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="overview" className="gap-2">
-              <BarChart3 className="w-4 h-4" />
-              {language === 'sk' ? 'Prehľad' : 'Overview'}
+        <Tabs defaultValue="overview" className="space-y-3 sm:space-y-6">
+          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start gap-0.5 sm:gap-1">
+            <TabsTrigger value="overview" className="gap-1.5 sm:gap-2 px-2 sm:px-3 text-xs sm:text-sm">
+              <BarChart3 className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">{language === 'sk' ? 'Prehľad' : 'Overview'}</span>
             </TabsTrigger>
-            <TabsTrigger value="calendar" className="gap-2">
-              <CalendarDays className="w-4 h-4" />
-              {language === 'sk' ? 'Kalendár' : 'Calendar'}
+            <TabsTrigger value="calendar" className="gap-1.5 sm:gap-2 px-2 sm:px-3 text-xs sm:text-sm">
+              <CalendarDays className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">{language === 'sk' ? 'Kalendár' : 'Calendar'}</span>
             </TabsTrigger>
-            <TabsTrigger value="bookings" className="gap-2">
-              <Calendar className="w-4 h-4" />
-              {language === 'sk' ? 'Rezervácie' : 'Bookings'}
+            <TabsTrigger value="bookings" className="gap-1.5 sm:gap-2 px-2 sm:px-3 text-xs sm:text-sm">
+              <Calendar className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">{language === 'sk' ? 'Rezervácie' : 'Bookings'}</span>
             </TabsTrigger>
-            <TabsTrigger value="services" className="gap-2">
-              <Package className="w-4 h-4" />
-              {language === 'sk' ? 'Služby' : 'Services'}
+            <TabsTrigger value="services" className="gap-1.5 sm:gap-2 px-2 sm:px-3 text-xs sm:text-sm">
+              <Package className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">{language === 'sk' ? 'Služby' : 'Services'}</span>
             </TabsTrigger>
-            <TabsTrigger value="employees" className="gap-2">
-              <Users className="w-4 h-4" />
-              {language === 'sk' ? 'Zamestnanci' : 'Employees'}
+            <TabsTrigger value="employees" className="gap-1.5 sm:gap-2 px-2 sm:px-3 text-xs sm:text-sm">
+              <Users className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">{language === 'sk' ? 'Zamestnanci' : 'Employees'}</span>
             </TabsTrigger>
-            <TabsTrigger value="hours" className="gap-2">
-              <Clock className="w-4 h-4" />
-              {language === 'sk' ? 'Hodiny' : 'Hours'}
+            <TabsTrigger value="hours" className="gap-1.5 sm:gap-2 px-2 sm:px-3 text-xs sm:text-sm">
+              <Clock className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">{language === 'sk' ? 'Hodiny' : 'Hours'}</span>
             </TabsTrigger>
           </TabsList>
 

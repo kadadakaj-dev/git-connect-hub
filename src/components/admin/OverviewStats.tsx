@@ -28,7 +28,7 @@ const OverviewStats = () => {
           employees (full_name)
         `)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as Booking[];
     }
@@ -41,7 +41,7 @@ const OverviewStats = () => {
         .from('services')
         .select('id')
         .eq('is_active', true);
-      
+
       if (error) throw error;
       return data;
     }
@@ -112,72 +112,72 @@ const OverviewStats = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         <Card className="border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-6 pb-1 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {language === 'sk' ? 'Rezervácie dnes' : "Today's Bookings"}
             </CardTitle>
-            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
-              <Calendar className="w-4 h-4" />
+            <div className="p-1.5 sm:p-2 rounded-lg bg-blue-500/10 text-blue-500">
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{todayBookings}</p>
-            <p className="text-xs text-muted-foreground mt-1">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <p className="text-xl sm:text-2xl font-bold">{todayBookings}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               {format(today, 'd. MMMM yyyy', { locale: language === 'sk' ? sk : undefined })}
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-6 pb-1 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {language === 'sk' ? 'Tento týždeň' : 'This Week'}
             </CardTitle>
-            <div className="p-2 rounded-lg bg-green-500/10 text-green-500">
-              <BarChart3 className="w-4 h-4" />
+            <div className="p-1.5 sm:p-2 rounded-lg bg-green-500/10 text-green-500">
+              <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{weekBookings}</p>
-            <p className="text-xs text-muted-foreground mt-1">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <p className="text-xl sm:text-2xl font-bold">{weekBookings}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               {format(weekStart, 'd. MMM', { locale: language === 'sk' ? sk : undefined })} - {format(weekEnd, 'd. MMM', { locale: language === 'sk' ? sk : undefined })}
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-6 pb-1 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {language === 'sk' ? 'Tento mesiac' : 'This Month'}
             </CardTitle>
-            <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500">
-              <TrendingUp className="w-4 h-4" />
+            <div className="p-1.5 sm:p-2 rounded-lg bg-purple-500/10 text-purple-500">
+              <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{monthBookings}</p>
-            <p className="text-xs text-muted-foreground mt-1">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <p className="text-xl sm:text-2xl font-bold">{monthBookings}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               {format(today, 'MMMM yyyy', { locale: language === 'sk' ? sk : undefined })}
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-6 pb-1 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {language === 'sk' ? 'Čakajúce' : 'Pending'}
             </CardTitle>
-            <div className="p-2 rounded-lg bg-yellow-500/10 text-yellow-500">
-              <Clock className="w-4 h-4" />
+            <div className="p-1.5 sm:p-2 rounded-lg bg-yellow-500/10 text-yellow-500">
+              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{pendingBookings}</p>
-            <p className="text-xs text-muted-foreground mt-1">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <p className="text-xl sm:text-2xl font-bold">{pendingBookings}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               {language === 'sk' ? 'Na potvrdenie' : 'Awaiting confirmation'}
             </p>
           </CardContent>
@@ -186,34 +186,34 @@ const OverviewStats = () => {
 
       {/* Active Services */}
       <Card className="border-border/50">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-6">
           <div>
-            <CardTitle className="text-lg">
+            <CardTitle className="text-base sm:text-lg">
               {language === 'sk' ? 'Aktívne služby' : 'Active Services'}
             </CardTitle>
             <CardDescription>
               {language === 'sk' ? `${services?.length || 0} aktívnych služieb` : `${services?.length || 0} active services`}
             </CardDescription>
           </div>
-          <div className="p-2 rounded-lg bg-primary/10 text-primary">
-            <Package className="w-5 h-5" />
+          <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 text-primary">
+            <Package className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </CardHeader>
       </Card>
 
       {/* Recent Bookings */}
       <Card className="border-border/50">
-        <CardHeader>
-          <CardTitle>
+        <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-4">
+          <CardTitle className="text-base sm:text-2xl">
             {language === 'sk' ? 'Posledné rezervácie' : 'Recent Bookings'}
           </CardTitle>
           <CardDescription>
-            {language === 'sk' 
-              ? 'Posledných 5 rezervácií' 
+            {language === 'sk'
+              ? 'Posledných 5 rezervácií'
               : 'Last 5 bookings'}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3 sm:p-6 pt-0">
           {recentBookings.length > 0 ? (
             <>
               <div className="space-y-3 md:hidden">
@@ -222,7 +222,7 @@ const OverviewStats = () => {
                     key={booking.id}
                     type="button"
                     onClick={() => setSelectedBooking(booking)}
-                    className="w-full rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 text-left shadow-[0_12px_24px_rgba(126,195,255,0.08)] transition-colors hover:bg-white/82"
+                    className="w-full rounded-[16px] sm:rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-3 sm:p-4 text-left shadow-[0_12px_24px_rgba(126,195,255,0.08)] transition-colors hover:bg-white/82"
                   >
                     <div className="mb-2 flex items-start justify-between gap-3">
                       <div>
@@ -242,7 +242,7 @@ const OverviewStats = () => {
                 ))}
               </div>
 
-              <div className="hidden rounded-md border overflow-x-auto md:block">
+              <div className="hidden rounded-md border overflow-x-auto md:block -mx-1">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -277,8 +277,8 @@ const OverviewStats = () => {
             </>
           ) : (
             <p className="text-muted-foreground text-center py-8">
-              {language === 'sk' 
-                ? 'Zatiaľ nie sú žiadne rezervácie' 
+              {language === 'sk'
+                ? 'Zatiaľ nie sú žiadne rezervácie'
                 : 'No bookings yet'}
             </p>
           )}
