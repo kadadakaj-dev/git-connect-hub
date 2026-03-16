@@ -1,3 +1,4 @@
+// @ts-nocheck — Deno Edge Function, not processed by local TS
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
@@ -85,7 +86,7 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${isReminder ? t.reminderSubject : t.subject}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f5fa;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f5fa;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f5fa; padding: 20px;">
     <tr>
       <td align="center">
@@ -130,11 +131,15 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
               <p style="color: #1a2b42; font-size: 18px; font-weight: 600; margin: 0 0 25px 0; text-align: center;">${t.footer}</p><!-- Cancel Section -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff8f0; border: 1px solid #fde0b0; border-radius: 8px; margin-bottom: 20px;">
                 <tr>
-                  <td style="padding: 20px;">
-                    <p style="color: #92400e; font-size: 14px; font-weight: 600; margin: 0 0 10px 0;">${data.language === 'sk' ? 'Storno podmienky:' : 'Cancellation policy:'}</p>
-                    <p style="color: #92400e; font-size: 13px; margin: 0 0 6px 0;">• ${data.language === 'sk' ? 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.' : 'You can cancel online up to 12 hours before your appointment.'}</p>
-                    <p style="color: #92400e; font-size: 13px; margin: 0 0 6px 0;">• ${data.language === 'sk' ? 'Menej ako 12 hodín pred termínom je zrušenie možné len telefonicky:' : 'Less than 12 hours before — cancellation only by phone:'} <strong>+421 905 307 198</strong></p>
-                    <p style="color: #b91c1c; font-size: 13px; font-weight: 600; margin: 0;">• ${data.language === 'sk' ? 'V prípade nezrušenej rezervácie Vám bude pri ďalšej návšteve účtovaný storno poplatok 10 €.' : 'A no-show fee of €10 will be charged at your next visit for uncancelled reservations.'}</p>
+                  <td style="padding: 24px; color: #92400e; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 1.6;">
+                    <p style="margin: 0 0 16px 0; font-weight: 600;">${data.language === 'sk' ? 'Storno podmienky:' : 'Cancellation policy:'}</p>
+                    <p style="margin: 0 0 14px 0;">• ${data.language === 'sk' ? 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.' : 'You can cancel online up to 12 hours before your appointment.'}</p>
+                    <p style="margin: 0 0 14px 0;">• ${data.language === 'sk'
+      ? 'Menej ako 12 hodín pred termínom je zrušenie možné,<br>len telefonicky: <strong>+421 905 307 198</strong>'
+      : 'Less than 12 hours before — cancellation only<br>by phone: <strong>+421 905 307 198</strong>'}</p>
+                    <p style="margin: 0; font-weight: 600; color: #b91c1c;">• ${data.language === 'sk'
+      ? 'V prípade nezrušenej rezervácie Vám bude pri ďalšej návšteve<br>účtovaný storno poplatok 10&nbsp;€.'
+      : 'A no-show fee of €10 will be charged at your next visit<br>for uncancelled reservations.'}</p>
                   </td>
                 </tr>
               </table>
@@ -166,23 +171,33 @@ function generateEmailText(data: EmailRequest, baseUrl: string): string {
 
   const cancelPolicy = data.language === 'sk'
     ? [
-        '',
-        t.footer,
-        '',
-        'STORNO PODMIENKY:',
-        '• Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.',
-        '• Menej ako 12 hodín pred termínom je zrušenie možné len telefonicky: +421 905 307 198',
-        '• V prípade nezrušenej rezervácie Vám bude pri ďalšej návšteve účtovaný storno poplatok 10 €.',
-      ]
+      '',
+      t.footer,
+      '',
+      'STORNO PODMIENKY:',
+      '',
+      '• Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.',
+      '',
+      '• Menej ako 12 hodín pred termínom je zrušenie možné,',
+      '  len telefonicky: +421 905 307 198',
+      '',
+      '• V prípade nezrušenej rezervácie Vám bude pri ďalšej návšteve',
+      '  účtovaný storno poplatok 10 €.',
+    ]
     : [
-        '',
-        t.footer,
-        '',
-        'CANCELLATION POLICY:',
-        '• You can cancel online up to 12 hours before your appointment.',
-        '• Less than 12 hours before — cancellation only by phone: +421 905 307 198',
-        '• A no-show fee of €10 will be charged at your next visit for uncancelled reservations.',
-      ];
+      '',
+      t.footer,
+      '',
+      'CANCELLATION POLICY:',
+      '',
+      '• You can cancel online up to 12 hours before your appointment.',
+      '',
+      '• Less than 12 hours before — cancellation only',
+      '  by phone: +421 905 307 198',
+      '',
+      '• A no-show fee of €10 will be charged at your next visit',
+      '  for uncancelled reservations.',
+    ];
 
   return [
     t.clinicName,
@@ -215,7 +230,7 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nova rezervacia - FYZIO&FIT</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f5fa;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f5fa;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f5fa; padding: 20px;">
     <tr>
       <td align="center">
