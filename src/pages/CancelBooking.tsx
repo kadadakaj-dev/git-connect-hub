@@ -134,6 +134,10 @@ const CancelBooking = () => {
       if (!data.success) {
         if (data.error === 'Booking is already cancelled') {
           setStatus('already_cancelled');
+        } else if (data.error === 'TOO_LATE_TO_CANCEL') {
+          setBooking(data.booking);
+          setError('TOO_LATE_TO_CANCEL');
+          setStatus('error');
         } else {
           setError(data.error);
           setStatus('error');
