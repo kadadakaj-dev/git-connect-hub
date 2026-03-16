@@ -1,3 +1,4 @@
+// @ts-nocheck — Deno Edge Function, not processed by local TS
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {

@@ -1,3 +1,4 @@
+// @ts-nocheck — Deno Edge Function, not processed by local TS
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
@@ -59,7 +60,7 @@ async function checkRateLimit(
 ): Promise<{ allowed: boolean; remaining: number }> {
   // Cleanup old entries periodically (1 in 10 chance)
   if (Math.random() < 0.1) {
-    await supabase.rpc('cleanup_rate_limits').catch(() => {})
+    await supabase.rpc('cleanup_rate_limits').catch(() => { })
   }
 
   const windowStart = new Date(Date.now() - windowMinutes * 60 * 1000).toISOString()
@@ -93,7 +94,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
-    
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     // Try to extract logged-in user from auth header

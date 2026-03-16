@@ -1,3 +1,4 @@
+// @ts-nocheck — Deno Edge Function, not processed by local TS
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
@@ -24,7 +25,7 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     // Rate limit: 20 cancel attempts per IP per 15 minutes
@@ -91,7 +92,7 @@ serve(async (req) => {
     bookingDateTime.setHours(hours, minutes, 0, 0)
     const now = new Date()
     const hoursUntilBooking = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
-    
+
     if (hoursUntilBooking < 0) {
       return new Response(
         JSON.stringify({ error: 'Cannot cancel past bookings' }),
@@ -130,8 +131,8 @@ serve(async (req) => {
     console.log('Booking cancelled successfully:', booking.id)
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         booking: {
           ...booking,
           status: 'cancelled',
