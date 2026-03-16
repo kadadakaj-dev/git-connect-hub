@@ -294,9 +294,22 @@ const CancelBooking = () => {
                 <XCircle className="w-12 h-12 text-destructive" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">{text.errorTitle}</h2>
-                <p className="text-muted-foreground">{error}</p>
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  {error === 'TOO_LATE_TO_CANCEL' ? text.tooLateTitle : text.errorTitle}
+                </h2>
+                {error === 'TOO_LATE_TO_CANCEL' ? (
+                  <div className="space-y-3">
+                    <p className="text-muted-foreground">{text.tooLateText}</p>
+                    <p className="text-foreground font-medium">
+                      {text.tooLatePhone}{' '}
+                      <a href="tel:+421905307198" className="text-primary underline">+421 905 307 198</a>
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground">{error}</p>
+                )}
               </div>
+              {error === 'TOO_LATE_TO_CANCEL' && renderBookingDetails()}
               <Button variant="subtle" size="lg" onClick={() => navigate('/')} className="mt-6">
                 {text.backToHome}
               </Button>
