@@ -164,6 +164,26 @@ function generateEmailText(data: EmailRequest, baseUrl: string): string {
   const isReminder = data.template === "reminder";
   const title = isReminder ? t.reminderTitle : t.confirmationTitle;
 
+  const cancelPolicy = data.language === 'sk'
+    ? [
+        '',
+        t.footer,
+        '',
+        'STORNO PODMIENKY:',
+        '• Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.',
+        '• Menej ako 12 hodín pred termínom je zrušenie možné len telefonicky: +421 905 307 198',
+        '• V prípade nezrušenej rezervácie Vám bude pri ďalšej návšteve účtovaný storno poplatok 10 €.',
+      ]
+    : [
+        '',
+        t.footer,
+        '',
+        'CANCELLATION POLICY:',
+        '• You can cancel online up to 12 hours before your appointment.',
+        '• Less than 12 hours before — cancellation only by phone: +421 905 307 198',
+        '• A no-show fee of €10 will be charged at your next visit for uncancelled reservations.',
+      ];
+
   return [
     t.clinicName,
     "----------------------------------------",
@@ -174,10 +194,11 @@ function generateEmailText(data: EmailRequest, baseUrl: string): string {
     `${t.dateTime}: ${formattedDate} ${data.time}`,
     `${t.location}: ${t.address}`,
     "----------------------------------------",
+    ...cancelPolicy,
+    '',
     t.cancelText,
     cancelUrl,
     "",
-    t.footer,
     t.contact,
   ].join("\n");
 }

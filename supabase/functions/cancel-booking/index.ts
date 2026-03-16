@@ -85,14 +85,23 @@ serve(async (req) => {
       )
     }
 
-    // Check if booking date is in the past
-    const bookingDate = new Date(booking.date)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    // Check if booking is within 12 hours
+    const [hours, minutes] = booking.time_slot.split(':').map(Number)
+    const bookingDateTime = new Date(booking.date)
+    bookingDateTime.setHours(hours, minutes, 0, 0)
+    const now = new Date()
+    const hoursUntilBooking = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
     
-    if (bookingDate < today) {
+    if (hoursUntilBooking < 0) {
       return new Response(
         JSON.stringify({ error: 'Cannot cancel past bookings' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (hoursUntilBooking < 12) {
+      return new Response(
+        JSON.stringify({ error: 'TOO_LATE_TO_CANCEL', message: 'Rezerváciu je možné zrušiť online len do 12 hodín pred termínom. Kontaktujte nás telefonicky: +421 905 307 198' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
