@@ -20,31 +20,31 @@
     --popover: 0 0% 100%;
     --popover-foreground: 211 42% 23%;
 
-    --primary: 206 74% 62%;
+    --primary: 206 74% 42%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 205 88% 94.5%;
     --secondary-foreground: 211 42% 23%;
 
     --muted: 206 66% 95.8%;
-    --muted-foreground: 211 20% 46%;
+    --muted-foreground: 211 20% 42%;
 
     --accent: 204 93% 92.5%;
     --accent-foreground: 211 42% 23%;
 
-    --destructive: 0 65% 55%;
+    --destructive: 0 65% 53%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 206 38% 84%;
     --input: 206 44% 88%;
-    --ring: 206 74% 62%;
+    --ring: 206 74% 42%;
 
     --radius: 1rem;
 
-    --success: 152 55% 48%;
+    --success: 152 60% 30%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
+    --warning: 38 92% 36%;
     --warning-foreground: 0 0% 100%;
 
     --navy: 211 48% 29%;
@@ -107,29 +107,29 @@
     --popover: 0 0% 100%;
     --popover-foreground: 211 42% 23%;
 
-    --primary: 206 74% 62%;
+    --primary: 206 74% 42%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 205 88% 94.5%;
     --secondary-foreground: 211 42% 23%;
 
     --muted: 206 66% 95.8%;
-    --muted-foreground: 211 20% 46%;
+    --muted-foreground: 211 20% 42%;
 
     --accent: 204 93% 92.5%;
     --accent-foreground: 211 42% 23%;
 
-    --destructive: 0 65% 55%;
+    --destructive: 0 65% 53%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 206 38% 84%;
     --input: 206 44% 88%;
-    --ring: 206 74% 62%;
+    --ring: 206 74% 42%;
 
-    --success: 152 55% 48%;
+    --success: 152 60% 30%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
+    --warning: 38 92% 36%;
     --warning-foreground: 0 0% 100%;
 
     --navy: 211 48% 29%;
@@ -167,9 +167,16 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     background-image:
       radial-gradient(circle at 12% 14%, rgba(191, 226, 255, 0.72), transparent 30%),
       radial-gradient(circle at 86% 18%, rgba(216, 238, 255, 0.9), transparent 28%),
@@ -177,13 +184,17 @@
     background-attachment: fixed;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
     font-optical-sizing: auto;
     @apply font-semibold;
   }
 
-  h5, h6 {
+  h5,
+  h6 {
     font-family: var(--font-sans);
     @apply font-bold;
   }
@@ -191,25 +202,30 @@
 
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .glass-blob { animation: none !important; }
+
+  .glass-blob {
+    animation: none !important;
+  }
 }
 
 .month-blocked-pattern {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 4px,
-    hsl(var(--destructive) / 0.06) 4px,
-    hsl(var(--destructive) / 0.06) 5px
-  );
+  background-image: repeating-linear-gradient(-45deg,
+      transparent,
+      transparent 4px,
+      hsl(var(--destructive) / 0.06) 4px,
+      hsl(var(--destructive) / 0.06) 5px);
 }
 
 @layer components {
+
   /* ── Glass base utility ── */
   .glass {
     backdrop-filter: var(--blur-md);
@@ -331,16 +347,17 @@
 
   .interactive-card {
     @apply transition-all duration-200 hover:-translate-y-px;
+
     &:hover {
       box-shadow: var(--shadow-glass-float);
     }
   }
 
-  .stagger-children > * {
+  .stagger-children>* {
     @apply animate-fade-in-up;
   }
 
-  .stagger-fade > * {
+  .stagger-fade>* {
     @apply animate-fade-in-up;
   }
 
@@ -359,6 +376,12 @@
   .animate-pulse-soft {
     /* disabled */
   }
+
+  /* ── Dynamic viewport height ── */
+  .min-h-app-screen {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
 }
 
 /* ── Glass blob background ── */
@@ -368,13 +391,26 @@
   filter: blur(96px);
   opacity: 0.24;
   animation: blob-drift var(--blob-dur, 18s) ease-in-out infinite alternate;
+  will-change: transform;
+  contain: layout style;
 }
 
 @keyframes blob-drift {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(60px, -40px) scale(1.08); }
-  66% { transform: translate(-40px, 60px) scale(0.94); }
-  100% { transform: translate(30px, 30px) scale(1.04); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(60px, -40px) scale(1.08);
+  }
+
+  66% {
+    transform: translate(-40px, 60px) scale(0.94);
+  }
+
+  100% {
+    transform: translate(30px, 30px) scale(1.04);
+  }
 }
 
 /* Scrollbar */
@@ -397,9 +433,9 @@
 }
 
 *:focus-visible {
-  outline: 2px solid rgba(87, 160, 228, 0.9);
+  outline: 2px solid rgba(55, 130, 210, 1);
   outline-offset: 2px;
-  box-shadow: 0 0 0 6px rgba(126, 195, 255, 0.18);
+  box-shadow: 0 0 0 6px rgba(55, 130, 210, 0.18);
 }
 
 ::selection {
@@ -409,7 +445,10 @@
 
 /* ── @supports fallback ── */
 @supports not (backdrop-filter: blur(1px)) {
-  .glass, .glass-card, .glass-premium {
+
+  .glass,
+  .glass-card,
+  .glass-premium {
     background: rgba(255, 255, 255, 0.92) !important;
     border-color: rgba(15, 23, 42, 0.18) !important;
   }
