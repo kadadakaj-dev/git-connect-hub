@@ -90,6 +90,7 @@ const CalendarView = () => {
     if (blockedRes.data) setBlockedDates(blockedRes.data);
 
     if (bookingsRes.data) {
+      const empMap = new Map((employeesRes.data || []).map((e: any) => [e.id, e.full_name]));
       const mapped: CalendarEvent[] = (bookingsRes.data as BookingWithService[]).map(b => ({
         id: b.id,
         date: b.date,
@@ -101,9 +102,10 @@ const CalendarView = () => {
         therapistId: b.employee_id,
         status: b.status,
         clientEmail: b.client_email,
-        clientPhone: b.client_phone,
-        serviceId: b.service_id,
+        clientPhone: b.client_phone ?? undefined,
+        serviceId: b.service_id ?? undefined,
         serviceName: b.service ? (language === 'sk' ? b.service.name_sk : b.service.name_en) : undefined,
+        employeeName: b.employee_id ? (empMap.get(b.employee_id) ?? undefined) : undefined,
       }));
       setEvents(mapped);
     }
