@@ -162,7 +162,7 @@ const TimeGridView = ({
                     >
                       {/* Time range — always visible */}
                       <div className="font-bold truncate leading-tight text-xs md:text-sm">
-                        {event.startTime} – {endTime}
+                        {formatTime(event.startTime)} – {endTime}
                         {event.status === 'pending' && <span className="ml-1 opacity-60">⏳</span>}
                       </div>
 
