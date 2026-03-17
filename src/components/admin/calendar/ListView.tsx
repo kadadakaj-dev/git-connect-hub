@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { CalendarEvent } from './types';
-import { getEndTime, getEventColorByCategory } from './utils';
+import { getEndTime, getEventColorByCategory, getLocale, formatTime } from './utils';
 import { Badge } from '@/components/ui/badge';
 import { Phone, Mail, Clock, User } from 'lucide-react';
 import type { Language } from '@/i18n/translations';
@@ -65,8 +65,9 @@ const ListView = ({ language, events, selectedTherapist, onEditEvent }: ListView
     <div className="flex-1 overflow-auto p-3 md:p-5">
       {Object.entries(grouped).map(([dateStr, dayEvents]) => {
         const dateObj = new Date(dateStr + 'T00:00:00');
+        const locale = getLocale(language);
         const dateLabel = format(dateObj, language === 'sk' ? 'EEEE d. MMMM' : 'EEEE, MMMM d', {
-          locale: language === 'sk' ? undefined : undefined,
+          locale,
         });
 
         return (
@@ -85,7 +86,7 @@ const ListView = ({ language, events, selectedTherapist, onEditEvent }: ListView
                   >
                     {/* Time block */}
                     <div className="flex-shrink-0 text-center min-w-[70px] md:min-w-[80px]">
-                      <div className="text-base md:text-lg font-bold leading-tight">{ev.startTime}</div>
+                      <div className="text-base md:text-lg font-bold leading-tight">{formatTime(ev.startTime)}</div>
                       <div className="text-xs opacity-60">{endTime}</div>
                       <div className="mt-1 flex items-center justify-center gap-1 text-[10px] opacity-50">
                         <Clock className="h-3 w-3" />

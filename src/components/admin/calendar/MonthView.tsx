@@ -6,6 +6,7 @@ import {
   isToday,
   getEventColorByCategory,
   getEndTime,
+  formatTime,
   FULL_WEEKDAYS_SK,
   FULL_WEEKDAYS_EN,
 } from './utils';
@@ -98,7 +99,7 @@ const MonthView = ({
                     onClick={(e) => { e.stopPropagation(); onEditEvent(ev); }}
                     className={`text-[10px] md:text-xs truncate px-2 py-1 rounded-xl cursor-grab active:cursor-grabbing shadow-[0_10px_18px_rgba(126,195,255,0.08)] hover:shadow-[0_14px_22px_rgba(126,195,255,0.12)] transition-shadow ${getEventColorByCategory(ev.type, ev.status)}`}
                   >
-                    <span className="font-bold mr-1">{ev.startTime}–{getEndTime(ev.startTime, ev.duration)}</span><span className="font-normal">{ev.serviceName || ev.title}</span>
+                    <span className="font-bold mr-1">{formatTime(ev.startTime)}–{getEndTime(ev.startTime, ev.duration)}</span><span className="font-normal">{ev.serviceName || ev.title}</span>
                   </div>
                 ))}
               </div>
