@@ -6,4 +6,16 @@ project_id = "bqoeopfgivbvyhonkree"
   [functions.process-email-queue]
     verify_jwt = true
   [functions.send-push-notification]
-    verify_jwt = true
+    verify_jwt = false
+  [functions.send-booking-reminder]
+    verify_jwt = false
+  [functions.create-booking]
+    verify_jwt = false
+  [functions.cancel-booking]
+    verify_jwt = false
+  [functions.send-booking-email]
+    verify_jwt = false
+  [functions.get-booking-by-token]
+    verify_jwt = false
+  [functions.delete-account]
+    verify_jwt = false
