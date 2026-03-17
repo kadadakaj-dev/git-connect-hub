@@ -386,9 +386,32 @@ serve(async (req) => {
       else console.log('Admin notification email sent successfully')
     }).catch(err => console.error('Error sending admin notification email:', err))
 
+    // Send push notification to client if authenticated (fire-and-forget)
+    let pushPromise = Promise.resolve()
+    if (clientUserId) {
+      pushPromise = fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+        },
+        body: JSON.stringify({
+          user_id: clientUserId,
+          payload: {
+            title: 'Rezervácia potvrdená',
+            body: `${service.name_sk} — ${bookingData.date} o ${bookingData.time_slot}`,
+            url: '/portal',
+          },
+        }),
+      }).then(res => {
+        if (!res.ok) console.error('Failed to send booking confirmation push')
+        else console.log('Booking confirmation push sent')
+      }).catch(err => console.error('Error sending booking confirmation push:', err))
+    }
+
     // Use waitUntil if available (Deno Deploy), otherwise just let it run
     if (typeof (globalThis as any).EdgeRuntime?.waitUntil === 'function') {
-      (globalThis as any).EdgeRuntime.waitUntil(Promise.all([emailPromise, adminEmailPromise]))
+      (globalThis as any).EdgeRuntime.waitUntil(Promise.all([emailPromise, adminEmailPromise, pushPromise]))
     }
 
     return new Response(

@@ -99,14 +99,15 @@ const handler = async (req: Request): Promise<Response> => {
 
     for (const booking of (bookings as unknown as BookingWithService[]) || []) {
       try {
-        // Check if reminder already sent
-        const { data: existingReminder } = await supabase
+        // Check if email reminder already sent
+        const { data: existingEmailReminder } = await supabase
           .from("booking_reminders")
           .select("id")
           .eq("booking_id", booking.id)
+          .eq("reminder_type", "email")
           .maybeSingle();
 
-        if (existingReminder) {
+        if (existingEmailReminder) {
           results.push({ booking_id: booking.id, status: "already_sent" });
           continue;
         }
@@ -136,20 +137,37 @@ const handler = async (req: Request): Promise<Response> => {
 
         // Send push notification if the client has a linked user account
         if (booking.client_user_id) {
-          try {
-            await supabase.functions.invoke("send-push-notification", {
-              body: {
-                user_id: booking.client_user_id,
-                payload: {
-                  title: "Pripomienka: Zajtra máte termín",
-                  body: `${booking.service?.name_sk || "Služba"} — ${booking.date} o ${booking.time_slot}`,
-                  url: "/portal",
+          // Check if push reminder already sent for this booking
+          const { data: existingPushReminder } = await supabase
+            .from("booking_reminders")
+            .select("id")
+            .eq("booking_id", booking.id)
+            .eq("reminder_type", "push")
+            .maybeSingle();
+
+          if (!existingPushReminder) {
+            try {
+              await supabase.functions.invoke("send-push-notification", {
+                body: {
+                  user_id: booking.client_user_id,
+                  payload: {
+                    title: "Pripomienka: Zajtra máte termín",
+                    body: `${booking.service?.name_sk || "Služba"} — ${booking.date} o ${booking.time_slot}`,
+                    url: "/portal",
+                  },
                 },
-              },
-            });
-          } catch (pushErr) {
-            // Push failure should not block the reminder flow
-            console.error(`Push notification failed for booking ${booking.id}:`, pushErr);
+              });
+
+              // Record push reminder sent
+              await supabase.from("booking_reminders").insert({
+                booking_id: booking.id,
+                reminder_sent_at: new Date().toISOString(),
+                reminder_type: "push",
+              });
+            } catch (pushErr) {
+              // Push failure should not block the reminder flow
+              console.error(`Push notification failed for booking ${booking.id}:`, pushErr);
+            }
           }
         }
 

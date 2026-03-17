@@ -59,7 +59,7 @@ serve(async (req) => {
     // Find booking by cancellation token
     const { data: booking, error: fetchError } = await supabase
       .from('bookings')
-      .select('id, status, date, time_slot, client_name, client_email, service_id')
+      .select('id, status, date, time_slot, client_name, client_email, client_user_id, service_id')
       .eq('cancellation_token', body.token)
       .maybeSingle()
 
@@ -129,6 +129,25 @@ serve(async (req) => {
     }
 
     console.log('Booking cancelled successfully:', booking.id)
+
+    // Send push notification about cancellation (fire-and-forget)
+    if (booking.client_user_id) {
+      fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+        },
+        body: JSON.stringify({
+          user_id: booking.client_user_id,
+          payload: {
+            title: 'Rezervácia zrušená',
+            body: `${service?.name_sk || 'Služba'} — ${booking.date} o ${booking.time_slot}`,
+            url: '/portal',
+          },
+        }),
+      }).catch(err => console.error('Error sending cancellation push:', err))
+    }
 
     return new Response(
       JSON.stringify({
