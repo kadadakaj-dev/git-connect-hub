@@ -86,7 +86,7 @@ export async function isSubscribedToPush(): Promise<boolean> {
 async function saveSubscriptionToServer(subscription: PushSubscription): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
 
-  await supabase.from('push_subscriptions').upsert(
+  await (supabase as any).from('push_subscriptions').upsert(
     {
       endpoint: subscription.endpoint,
       keys: JSON.stringify(subscription.toJSON().keys),
