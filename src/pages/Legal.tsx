@@ -26,7 +26,7 @@ const Legal = () => {
         sections: [
           { heading: '1. Základné ustanovenia', text: 'Tieto obchodné podmienky upravujú vzťahy medzi poskytovateľom služieb FYZIO&FIT (ďalej len \\\"poskytovateľ\\\") a klientom pri poskytovaní fyzioterapeutických a chiropraktických služieb.' },
           { heading: '2. Rezervácia termínu', text: 'Rezerváciu je možné vykonať prostredníctvom online rezervačného systému. Po úspešnej rezervácii obdrží klient potvrdzujúci email s detailmi o termíne. Rezervácia je záväzná po jej potvrdení.' },
-          { heading: '3. Zrušenie a zmena termínu', text: 'Klient môže bezplatne zrušiť alebo zmeniť rezerváciu najneskôr 24 hodín pred plánovaným termínom. Pri neskoršom zrušení alebo nedostavení sa na termín si poskytovateľ vyhradzuje právo účtovať storno poplatok vo výške 50% z ceny služby.' },
+          { heading: '3. Zrušenie a zmena termínu', text: 'Klient môže bezplatne zrušiť alebo zmeniť rezerváciu online najneskôr 12 hodín pred plánovaným termínom. Pri neskoršom zrušení je zrušenie možné len telefonicky na čísle +421 905 307 198 a bude účtovaný storno poplatok vo výške 10 €. Pri nedostavení sa na termín bez predchádzajúceho zrušenia si poskytovateľ vyhradzuje právo účtovať storno poplatok vo výške 10 €.' },
           { heading: '4. Platobné podmienky', text: 'Platba za služby sa uskutočňuje v hotovosti alebo platobnou kartou priamo na mieste po poskytnutí služby. Ceny služieb sú uvedené v cenníku na webovej stránke.' },
           { heading: '5. Zodpovednosť', text: 'Klient je povinný informovať poskytovateľa o svojom zdravotnom stave, prebiehajúcej liečbe a užívaných liekoch. Poskytovateľ nenesie zodpovednosť za komplikácie vzniknuté zatajením zdravotných informácií.' },
           { heading: '6. Záverečné ustanovenia', text: 'Tieto obchodné podmienky nadobúdajú platnosť dňom ich zverejnenia. Poskytovateľ si vyhradzuje právo na zmenu obchodných podmienok.' },
@@ -54,7 +54,7 @@ const Legal = () => {
         sections: [
           { heading: '1. General Provisions', text: 'These terms of service govern the relationship between the service provider FYZIO&FIT (hereinafter \\\"provider\\\") and the client in providing physiotherapy and chiropractic services.' },
           { heading: '2. Appointment Booking', text: 'Bookings can be made through the online reservation system. Upon successful booking, the client will receive a confirmation email with appointment details. The booking is binding upon confirmation.' },
-          { heading: '3. Cancellation and Rescheduling', text: 'The client may cancel or reschedule the appointment free of charge no later than 24 hours before the scheduled time. For later cancellations or no-shows, the provider reserves the right to charge a cancellation fee of 50% of the service price.' },
+          { heading: '3. Cancellation and Rescheduling', text: 'The client may cancel or reschedule the appointment free of charge online no later than 12 hours before the scheduled time. For later cancellations, cancellation is only possible by phone at +421 905 307 198 and a cancellation fee of €10 will be charged. For no-shows without prior cancellation, the provider reserves the right to charge a cancellation fee of €10.' },
           { heading: '4. Payment Terms', text: 'Payment for services is made in cash or by card directly on-site after the service is provided. Service prices are listed in the price list on the website.' },
           { heading: '5. Liability', text: 'The client is obliged to inform the provider about their health condition, ongoing treatment, and medications. The provider is not responsible for complications arising from concealment of health information.' },
           { heading: '6. Final Provisions', text: 'These terms of service become effective on the date of their publication. The provider reserves the right to change the terms of service.' },
@@ -127,7 +127,7 @@ const Legal = () => {
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground mt-8 pt-6 border-t border-border">
-                  {language === 'sk' ? 'Posledná aktualizácia: Február 2026' : 'Last updated: February 2026'}
+                  {language === 'sk' ? 'Posledná aktualizácia: Marec 2026' : 'Last updated: March 2026'}
                 </p>
               </GlassCard>
             </TabsContent>
@@ -144,7 +144,7 @@ const Legal = () => {
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground mt-8 pt-6 border-t border-border">
-                  {language === 'sk' ? 'Posledná aktualizácia: Február 2026' : 'Last updated: February 2026'}
+                  {language === 'sk' ? 'Posledná aktualizácia: Marec 2026' : 'Last updated: March 2026'}
                 </p>
               </GlassCard>
             </TabsContent>
