@@ -10,6 +10,7 @@ import { formatDateForInput, getWeekStart, hasOverlap } from './calendar/utils';
 import CalendarHeader from './calendar/CalendarHeader';
 import MonthView from './calendar/MonthView';
 import TimeGridView from './calendar/TimeGridView';
+import ListView from './calendar/ListView';
 import EventModal, { EventFormData } from './calendar/EventModal';
 import { Tables } from '@/integrations/supabase/types';
 
