@@ -13,6 +13,11 @@ export interface CalendarEvent {
   serviceId?: string;
   serviceName?: string;
   employeeName?: string;
+  createdAt?: string;
+  bookingDuration?: number;
+  serviceCategory?: string;
+  servicePrice?: number;
+  serviceDuration?: number;
 }
 
 export interface Employee {

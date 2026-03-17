@@ -21,9 +21,13 @@ export interface AdminBookingDetails {
   status: string;
   notes: string | null;
   created_at: string;
+  booking_duration?: number;
   services?: {
     name_sk: string;
     name_en: string;
+    category?: string;
+    price?: number;
+    duration?: number;
   } | null;
   employees?: {
     full_name: string;
