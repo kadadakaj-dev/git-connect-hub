@@ -68,6 +68,7 @@ const CalendarHeader = ({
     month: language === 'sk' ? 'Mesiac' : 'Month',
     week: language === 'sk' ? 'Týždeň' : 'Week',
     day: language === 'sk' ? 'Deň' : 'Day',
+    list: language === 'sk' ? 'Zoznam' : 'List',
   };
 
   return (
