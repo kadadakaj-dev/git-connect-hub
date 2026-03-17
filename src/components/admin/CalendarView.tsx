@@ -506,6 +506,12 @@ const CalendarView = () => {
         onSave={handleSave}
         onDelete={handleDelete}
       />
+
+      <BookingDetailsDialog
+        booking={detailBooking}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+      />
     </Card>
   );
 };
