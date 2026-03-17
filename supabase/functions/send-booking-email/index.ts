@@ -360,6 +360,12 @@ function generateCancellationAdminHtml(data: EmailRequest): string {
                         <span style="color: #1a2b42; font-size: 15px;">${admin.clientEmail}</span>
                       </td>
                     </tr>
+                    ${admin.clientPhone ? `<tr>
+                      <td style="padding: 8px 0; border-bottom: 1px solid #fecaca;">
+                        <span style="color: #6b7c94; font-size: 13px;">Telefon</span><br>
+                        <span style="color: #1a2b42; font-size: 15px;">${admin.clientPhone}</span>
+                      </td>
+                    </tr>` : ''}
                     <tr>
                       <td style="padding: 8px 0; border-bottom: 1px solid #fecaca;">
                         <span style="color: #6b7c94; font-size: 13px;">Sluzba</span><br>
