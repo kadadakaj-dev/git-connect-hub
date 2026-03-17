@@ -116,7 +116,7 @@ const Legal = () => {
             </TabsList>
 
             <TabsContent value="terms">
-              <GlassCard className="rounded-xl p-6 md:p-8">
+              <GlassCard className="rounded-[24px] p-6 md:p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6">{t.terms.title}</h2>
                 <div className="space-y-6">
                   {t.terms.sections.map((section, index) => (
@@ -133,7 +133,7 @@ const Legal = () => {
             </TabsContent>
 
             <TabsContent value="privacy">
-              <GlassCard className="rounded-xl p-6 md:p-8">
+              <GlassCard className="rounded-[24px] p-6 md:p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6">{t.privacy.title}</h2>
                 <div className="space-y-6">
                   {t.privacy.sections.map((section, index) => (

@@ -246,7 +246,7 @@ const ClientPortal = () => {
                       {profile?.total_visits || 0}
                     </p>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/70 bg-white/72 shadow-[0_14px_30px_rgba(126,195,255,0.14)]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[14px] border border-white/70 bg-white/72 shadow-[0_14px_30px_rgba(126,195,255,0.14)]">
                     <Star className="h-5 w-5 text-[hsl(var(--navy))]" />
                   </div>
                 </div>
@@ -262,7 +262,7 @@ const ClientPortal = () => {
                       {upcomingBookings.length}
                     </p>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/70 bg-white/72 shadow-[0_14px_30px_rgba(126,195,255,0.14)]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[14px] border border-white/70 bg-white/72 shadow-[0_14px_30px_rgba(126,195,255,0.14)]">
                     <Calendar className="h-5 w-5 text-[hsl(var(--navy))]" />
                   </div>
                 </div>
@@ -279,7 +279,7 @@ const ClientPortal = () => {
                     <p className="text-sm text-muted-foreground">{text.bookNow}</p>
                     <p className="text-lg font-semibold text-[hsl(var(--deep-navy))]">{text.quickBook}</p>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_34px_rgba(79,149,213,0.3)]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[14px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_34px_rgba(79,149,213,0.3)]">
                     <Plus className="h-5 w-5 text-white" />
                   </div>
                 </div>
@@ -291,21 +291,21 @@ const ClientPortal = () => {
             <TabsList className="grid h-auto w-full grid-cols-3 gap-1.5 rounded-[24px] border-[var(--glass-border-subtle)] bg-white/62 p-1.5">
               <TabsTrigger
                 value="upcoming"
-                className="min-h-[48px] gap-2 rounded-[18px] px-3 py-3 text-[13px] sm:text-sm data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_34px_rgba(126,195,255,0.16)]"
+                className="min-h-[48px] gap-2 rounded-[14px] px-3 py-3 text-[13px] sm:text-sm data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_34px_rgba(126,195,255,0.16)]"
               >
                 <Calendar className="h-4 w-4" />
                 <span className="hidden sm:inline">{text.upcomingAppointments}</span>
               </TabsTrigger>
               <TabsTrigger
                 value="history"
-                className="min-h-[48px] gap-2 rounded-[18px] px-3 py-3 text-[13px] sm:text-sm data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_34px_rgba(126,195,255,0.16)]"
+                className="min-h-[48px] gap-2 rounded-[14px] px-3 py-3 text-[13px] sm:text-sm data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_34px_rgba(126,195,255,0.16)]"
               >
                 <History className="h-4 w-4" />
                 <span className="hidden sm:inline">{text.pastAppointments}</span>
               </TabsTrigger>
               <TabsTrigger
                 value="favorites"
-                className="min-h-[48px] gap-2 rounded-[18px] px-3 py-3 text-[13px] sm:text-sm data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_34px_rgba(126,195,255,0.16)]"
+                className="min-h-[48px] gap-2 rounded-[14px] px-3 py-3 text-[13px] sm:text-sm data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_34px_rgba(126,195,255,0.16)]"
               >
                 <Heart className="h-4 w-4" />
                 <span className="hidden sm:inline">{text.favorites}</span>
@@ -313,7 +313,7 @@ const ClientPortal = () => {
             </TabsList>
 
             <TabsContent value="upcoming">
-              <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/60 shadow-glass-soft">
+              <Card className="rounded-[28px] border-[rgba(79,149,213,0.14)] bg-white/64 shadow-[0_18px_42px_rgba(126,195,255,0.14)]">
                 <CardHeader>
                   <CardTitle className="text-[hsl(var(--soft-navy))]">{text.upcomingAppointments}</CardTitle>
                 </CardHeader>
@@ -326,12 +326,12 @@ const ClientPortal = () => {
                     </div>
                   ) : upcomingBookings.length === 0 ? (
                     <div className="py-14 text-center text-muted-foreground">
-                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[20px] border border-white/70 bg-white/70 shadow-[0_12px_28px_rgba(126,195,255,0.14)]">
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[14px] border border-white/70 bg-white/70 shadow-[0_12px_28px_rgba(126,195,255,0.14)]">
                         <Calendar className="h-6 w-6 text-[hsl(var(--navy))]" />
                       </div>
                       <p>{text.noUpcoming}</p>
                       <Button
-                        className="mt-5 rounded-[18px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] px-6 shadow-[0_16px_34px_rgba(79,149,213,0.24)] hover:brightness-[1.03]"
+                        className="mt-5 rounded-[14px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] px-6 shadow-[0_16px_34px_rgba(79,149,213,0.24)] hover:brightness-[1.03]"
                         onClick={() => navigate('/')}
                       >
                         {text.bookNow}
@@ -339,10 +339,13 @@ const ClientPortal = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {upcomingBookings.map((booking) => (
+                      {upcomingBookings.map((booking, index) => (
                         <div
                           key={booking.id}
-                          className="flex flex-col gap-3 rounded-[22px] border border-[var(--glass-border-subtle)] bg-white/58 p-4 shadow-[0_12px_28px_rgba(126,195,255,0.1)] transition-all hover:-translate-y-px hover:shadow-[0_18px_34px_rgba(126,195,255,0.14)] sm:flex-row sm:items-center sm:justify-between"
+                          className={cn(
+                            'flex flex-col gap-3 rounded-[22px] border border-[var(--glass-border-subtle)] bg-white/58 p-4 shadow-[0_12px_28px_rgba(126,195,255,0.1)] transition-all hover:-translate-y-px hover:shadow-[0_18px_34px_rgba(126,195,255,0.14)] sm:flex-row sm:items-center sm:justify-between',
+                            index === 0 && 'border-[rgba(79,149,213,0.2)] bg-white/72 shadow-[0_16px_36px_rgba(126,195,255,0.16)]',
+                          )}
                         >
                           <div className="space-y-1">
                             <p className="font-semibold text-[hsl(var(--soft-navy))]">{booking.service?.name}</p>
@@ -367,7 +370,7 @@ const ClientPortal = () => {
             </TabsContent>
 
             <TabsContent value="history">
-              <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/60 shadow-glass-soft">
+              <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/56 shadow-glass-soft">
                 <CardHeader>
                   <CardTitle className="text-[hsl(var(--soft-navy))]">{text.pastAppointments}</CardTitle>
                 </CardHeader>
@@ -380,7 +383,7 @@ const ClientPortal = () => {
                     </div>
                   ) : pastBookings.length === 0 ? (
                     <div className="py-14 text-center text-muted-foreground">
-                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[20px] border border-white/70 bg-white/70 shadow-[0_12px_28px_rgba(126,195,255,0.14)]">
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[14px] border border-white/70 bg-white/70 shadow-[0_12px_28px_rgba(126,195,255,0.14)]">
                         <History className="h-6 w-6 text-[hsl(var(--navy))]" />
                       </div>
                       <p>{text.noPast}</p>
@@ -415,7 +418,7 @@ const ClientPortal = () => {
                               {booking.therapist_notes.map((note) => (
                                 <p
                                   key={note.id}
-                                  className="rounded-2xl border border-[var(--glass-border-subtle)] bg-white/66 p-3 text-sm text-muted-foreground"
+                                  className="rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/66 p-3 text-sm text-muted-foreground"
                                 >
                                   {note.note}
                                 </p>
@@ -425,7 +428,7 @@ const ClientPortal = () => {
                           <Button
                             variant="glass"
                             size="sm"
-                            className="mt-3 rounded-[16px]"
+                            className="mt-3 rounded-[14px]"
                             onClick={() => {
                               if (booking.service) {
                                 toggleFavorite(booking.service.id);
@@ -451,7 +454,7 @@ const ClientPortal = () => {
             </TabsContent>
 
             <TabsContent value="favorites">
-              <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/60 shadow-glass-soft">
+              <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/56 shadow-glass-soft">
                 <CardHeader>
                   <CardTitle className="text-[hsl(var(--soft-navy))]">{text.favorites}</CardTitle>
                   <CardDescription>{text.favoritesHint}</CardDescription>
@@ -465,7 +468,7 @@ const ClientPortal = () => {
                     </div>
                   ) : !favorites || favorites.length === 0 ? (
                     <div className="py-14 text-center text-muted-foreground">
-                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[20px] border border-white/70 bg-white/70 shadow-[0_12px_28px_rgba(126,195,255,0.14)]">
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[14px] border border-white/70 bg-white/70 shadow-[0_12px_28px_rgba(126,195,255,0.14)]">
                         <Heart className="h-6 w-6 text-[hsl(var(--navy))]" />
                       </div>
                       <p>{text.noFavorites}</p>
@@ -489,7 +492,7 @@ const ClientPortal = () => {
                             </Button>
                           </div>
                           <Button
-                            className="mt-4 w-full rounded-[18px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_34px_rgba(79,149,213,0.24)] hover:brightness-[1.03]"
+                            className="mt-4 w-full rounded-[14px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_34px_rgba(79,149,213,0.24)] hover:brightness-[1.03]"
                             size="sm"
                             onClick={() => navigate(`/?service=${fav.service_id}`)}
                           >

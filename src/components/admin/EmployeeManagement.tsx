@@ -121,7 +121,7 @@ const EmployeeManagement = () => {
   }
 
   return (
-    <Card className="border-border/50">
+    <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{language === 'sk' ? 'Správa zamestnancov' : 'Employee Management'}</CardTitle>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -197,8 +197,9 @@ const EmployeeManagement = () => {
         </Dialog>
       </CardHeader>
       <CardContent>
+        <div className="rounded-[16px] border border-[var(--glass-border-subtle)] overflow-x-auto">
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm">
             <TableRow>
               <TableHead>{language === 'sk' ? 'Meno' : 'Name'}</TableHead>
               <TableHead>{language === 'sk' ? 'Pozícia' : 'Position'}</TableHead>
@@ -210,7 +211,7 @@ const EmployeeManagement = () => {
           </TableHeader>
           <TableBody>
             {employees?.map((emp) => (
-              <TableRow key={emp.id}>
+              <TableRow key={emp.id} className="even:bg-muted/20">
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
                     <UserCircle className="w-5 h-5 text-muted-foreground" />
@@ -231,8 +232,8 @@ const EmployeeManagement = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex gap-2 justify-end">
-                    <Button variant="ghost" size="sm" onClick={() => handleEdit(emp)}><Pencil className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(emp.id)} className="text-destructive hover:text-destructive"><Trash2 className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleEdit(emp)} aria-label={language === 'sk' ? 'Upraviť' : 'Edit'}><Pencil className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(emp.id)} className="text-destructive hover:text-destructive" aria-label={language === 'sk' ? 'Odstrániť' : 'Delete'}><Trash2 className="w-4 h-4" /></Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -246,6 +247,7 @@ const EmployeeManagement = () => {
             )}
           </TableBody>
         </Table>
+        </div>
       </CardContent>
     </Card>
   );
