@@ -11,6 +11,8 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import SplashScreen from "@/components/SplashScreen";
 import OfflineBanner from "@/components/OfflineBanner";
 import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
+import PushOptIn from "@/components/PushOptIn";
+import { useServiceWorkerMessages } from "@/hooks/useServiceWorkerMessages";
  // Lazy load pages for code splitting
  const Index = lazy(() => import("./pages/Index"));
  const NotFound = lazy(() => import("./pages/NotFound"));
@@ -33,6 +35,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+  useServiceWorkerMessages();
   const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem('fyzio_splash_shown');
   });
@@ -71,6 +74,7 @@ const App = () => {
                   </Suspense>
                   <CookieBanner />
                   <PWAUpdatePrompt />
+                  <PushOptIn />
                 </BrowserRouter>
               </div>
             </TooltipProvider>

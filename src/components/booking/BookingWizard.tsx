@@ -97,7 +97,7 @@ const BookingWizard = () => {
     }
 
     try {
-      await createBooking.mutateAsync({
+      const result = await createBooking.mutateAsync({
         serviceId: bookingData.service.id,
         date: bookingData.date,
         timeSlot: bookingData.time,
@@ -106,8 +106,17 @@ const BookingWizard = () => {
         clientPhone: bookingData.clientPhone,
         notes: bookingData.notes || undefined,
       });
-      toast.success(t.bookingSuccess);
+      if (result.queued) {
+        toast.info(
+          language === 'sk'
+            ? 'Ste offline. Rezervácia bude odoslaná automaticky po obnovení pripojenia.'
+            : 'You are offline. Your booking will be sent automatically when you reconnect.'
+        );
+      } else {
+        toast.success(t.bookingSuccess);
+      }
       setIsConfirmed(true);
+      localStorage.setItem('fyzio_booking_completed', 'true');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Booking failed';

@@ -22,6 +22,7 @@ interface BookingResponse {
   };
   error?: string;
   details?: string[];
+  queued?: boolean;
 }
 
 export function useCreateBooking() {
@@ -39,7 +40,16 @@ export function useCreateBooking() {
         },
       });
 
+      // If offline, the SW BackgroundSync plugin will queue the request.
+      // supabase-js wraps fetch failures as FunctionsHttpError / FunctionsFetchError.
       if (response.error) {
+        // Network failure while offline → request was queued by SW
+        if (!navigator.onLine) {
+          return {
+            success: true,
+            queued: true,
+          };
+        }
         throw new Error(response.error.message || 'Failed to create booking');
       }
 
