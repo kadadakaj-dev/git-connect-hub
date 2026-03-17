@@ -100,7 +100,7 @@ const CalendarView = () => {
         id: b.id,
         date: b.date,
         startTime: b.time_slot,
-        duration: b.service?.duration || 60,
+        duration: b.booking_duration || b.service?.duration || 60,
         title: b.client_name,
         type: 'booking' as const,
         notes: b.notes,
@@ -111,6 +111,11 @@ const CalendarView = () => {
         serviceId: b.service_id ?? undefined,
         serviceName: b.service ? (language === 'sk' ? b.service.name_sk : b.service.name_en) : undefined,
         employeeName: b.employee_id ? (empMap.get(b.employee_id) ?? undefined) : undefined,
+        createdAt: b.created_at,
+        bookingDuration: b.booking_duration,
+        serviceCategory: b.service?.category ?? undefined,
+        servicePrice: b.service?.price != null ? Number(b.service.price) : undefined,
+        serviceDuration: b.service?.duration ?? undefined,
       }));
       setEvents(mapped);
     }
