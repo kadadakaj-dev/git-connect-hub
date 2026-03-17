@@ -24,7 +24,7 @@ const OverviewStats = () => {
         .from('bookings')
         .select(`
           *,
-          services (name_sk, name_en),
+          services (name_sk, name_en, category, price, duration),
           employees (full_name)
         `)
         .order('created_at', { ascending: false });
