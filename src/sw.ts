@@ -127,18 +127,19 @@ self.addEventListener('push', (event) => {
     data = { title: 'FYZIO&FIT', body: event.data.text() };
   }
 
-  const options = {
+  const options: NotificationOptions & { renotify: boolean } = {
     body: data.body || '',
     icon: '/pwa-192x192.png',
     badge: '/pwa-64x64.png',
     tag: 'fyziofit-notification',
     renotify: true,
     data: { url: data.url || '/' },
-    actions: [
-      { action: 'open', title: 'Otvoriť' },
-      { action: 'dismiss', title: 'Zavrieť' },
-    ],
-  } satisfies NotificationOptions & { renotify: boolean };
+  };
+  // @ts-expect-error — actions is valid for persistent notifications but missing from TS types
+  options.actions = [
+    { action: 'open', title: 'Otvoriť' },
+    { action: 'dismiss', title: 'Zavrieť' },
+  ];
 
   event.waitUntil(
     self.registration.showNotification(data.title || 'FYZIO&FIT', options)
