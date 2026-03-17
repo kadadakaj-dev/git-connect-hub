@@ -12,10 +12,11 @@ import MonthView from './calendar/MonthView';
 import TimeGridView from './calendar/TimeGridView';
 import ListView from './calendar/ListView';
 import EventModal, { EventFormData } from './calendar/EventModal';
+import BookingDetailsDialog, { AdminBookingDetails } from './BookingDetailsDialog';
 import { Tables } from '@/integrations/supabase/types';
 
 type BookingWithService = Tables<'bookings'> & {
-  service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category'> | null;
+  service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category' | 'price'> | null;
 };
 
 const CalendarView = () => {
