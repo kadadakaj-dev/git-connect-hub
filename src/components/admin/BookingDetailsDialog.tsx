@@ -178,10 +178,26 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onEdit }: BookingDe
                 </div>
               </div>
 
-              <p className="text-xs text-muted-foreground">
-                {isSlovak ? 'Vytvorené' : 'Created'}:{' '}
-                {format(new Date(booking.created_at), 'd. MMMM yyyy • HH:mm', { locale: isSlovak ? sk : undefined })}
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  {isSlovak ? 'Vytvorené' : 'Created'}:{' '}
+                  {booking.created_at && format(new Date(booking.created_at), 'd. MMMM yyyy • HH:mm', { locale: isSlovak ? sk : undefined })}
+                </p>
+                {onEdit && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      onOpenChange(false);
+                      onEdit(booking);
+                    }}
+                    className="gap-1.5 rounded-[16px] border-[var(--glass-border-subtle)] bg-white/70 text-[hsl(var(--soft-navy))] hover:bg-white/82 hover:text-[hsl(var(--navy))]"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    {isSlovak ? 'Upraviť' : 'Edit'}
+                  </Button>
+                )}
+              </div>
             </div>
           </>
         )}
