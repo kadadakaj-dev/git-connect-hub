@@ -10,6 +10,7 @@ import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import SplashScreen from "@/components/SplashScreen";
 import OfflineBanner from "@/components/OfflineBanner";
+import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
  // Lazy load pages for code splitting
  const Index = lazy(() => import("./pages/Index"));
  const NotFound = lazy(() => import("./pages/NotFound"));
@@ -69,6 +70,7 @@ const App = () => {
                     </Routes>
                   </Suspense>
                   <CookieBanner />
+                  <PWAUpdatePrompt />
                 </BrowserRouter>
               </div>
             </TooltipProvider>
