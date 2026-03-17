@@ -320,6 +320,94 @@ function generateAdminNotificationText(data: EmailRequest): string {
   ].filter(Boolean).join("\n");
 }
 
+function generateCancellationAdminHtml(data: EmailRequest): string {
+  const formattedDate = formatDate(data.date, "sk");
+  const admin = data.adminData!;
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zrusena rezervacia - FYZIO&FIT</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f5fa;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f5fa; padding: 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%); padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700;">Zrusena rezervacia</h1>
+              <p style="color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 14px;">FYZIO&FIT Booking System</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fef2f2; border-radius: 8px;">
+                <tr><td style="padding: 20px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding: 8px 0; border-bottom: 1px solid #fecaca;">
+                        <span style="color: #6b7c94; font-size: 13px;">Klient</span><br>
+                        <span style="color: #1a2b42; font-size: 15px; font-weight: 600;">${admin.clientName}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0; border-bottom: 1px solid #fecaca;">
+                        <span style="color: #6b7c94; font-size: 13px;">Email</span><br>
+                        <span style="color: #1a2b42; font-size: 15px;">${admin.clientEmail}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0; border-bottom: 1px solid #fecaca;">
+                        <span style="color: #6b7c94; font-size: 13px;">Sluzba</span><br>
+                        <span style="color: #1a2b42; font-size: 15px; font-weight: 500;">${data.serviceName}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0;">
+                        <span style="color: #6b7c94; font-size: 13px;">Datum a cas</span><br>
+                        <span style="color: #1a2b42; font-size: 15px; font-weight: 500;">${formattedDate}</span><br>
+                        <span style="color: #b91c1c; font-size: 15px; font-weight: 600;">${data.time}</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td></tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f5f8fc; padding: 16px 30px; text-align: center; border-top: 1px solid #dde5ef;">
+              <p style="color: #6b7c94; margin: 0; font-size: 13px;">Tento email bol automaticky vygenerovany rezervacnym systemom FYZIO&FIT.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+}
+
+function generateCancellationAdminText(data: EmailRequest): string {
+  const formattedDate = formatDate(data.date, "sk");
+  const admin = data.adminData!;
+
+  return [
+    "ZRUSENA REZERVACIA - FYZIO&FIT",
+    "========================================",
+    `Klient: ${admin.clientName}`,
+    `Email: ${admin.clientEmail}`,
+    `Sluzba: ${data.serviceName}`,
+    `Datum: ${formattedDate}`,
+    `Cas: ${data.time}`,
+    "========================================",
+  ].join("\n");
+}
+
 serve(async (req) => {
   // CORS Preflight request
   if (req.method === "OPTIONS") {
