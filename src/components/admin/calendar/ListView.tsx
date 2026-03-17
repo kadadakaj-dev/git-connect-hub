@@ -86,7 +86,7 @@ const ListView = ({ language, events, selectedTherapist, onEditEvent }: ListView
                   >
                     {/* Time block */}
                     <div className="flex-shrink-0 text-center min-w-[70px] md:min-w-[80px]">
-                      <div className="text-base md:text-lg font-bold leading-tight">{ev.startTime}</div>
+                      <div className="text-base md:text-lg font-bold leading-tight">{formatTime(ev.startTime)}</div>
                       <div className="text-xs opacity-60">{endTime}</div>
                       <div className="mt-1 flex items-center justify-center gap-1 text-[10px] opacity-50">
                         <Clock className="h-3 w-3" />
