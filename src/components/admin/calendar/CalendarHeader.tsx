@@ -5,6 +5,7 @@ import {
   Ban,
   ChevronLeft,
   ChevronRight,
+  Users,
   List,
 } from 'lucide-react';
 import { format } from 'date-fns';
