@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { CalendarEvent } from './types';
-import { getEndTime, getEventColorByCategory } from './utils';
+import { getEndTime, getEventColorByCategory, getLocale } from './utils';
 import { Badge } from '@/components/ui/badge';
 import { Phone, Mail, Clock, User } from 'lucide-react';
 import type { Language } from '@/i18n/translations';
