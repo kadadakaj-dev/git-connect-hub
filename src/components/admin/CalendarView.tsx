@@ -204,6 +204,35 @@ const CalendarView = () => {
   };
 
   const openEditModal = (event: CalendarEvent) => {
+    // For bookings, open the detail dialog; for blocks, open the edit modal
+    if (event.type === 'booking') {
+      const empName = event.employeeName || (event.therapistId
+        ? employees.find(e => e.id === event.therapistId)?.full_name
+        : undefined);
+      setDetailBooking({
+        id: event.id,
+        client_name: event.title,
+        client_email: event.clientEmail || '',
+        client_phone: event.clientPhone || null,
+        date: event.date,
+        time_slot: event.startTime,
+        status: event.status,
+        notes: event.notes,
+        created_at: event.createdAt || '',
+        booking_duration: event.bookingDuration,
+        services: event.serviceName ? {
+          name_sk: event.serviceName,
+          name_en: event.serviceName,
+          category: event.serviceCategory,
+          price: event.servicePrice,
+          duration: event.serviceDuration,
+        } : null,
+        employees: empName ? { full_name: empName } : null,
+      });
+      setDetailOpen(true);
+      return;
+    }
+
     setFormData({
       id: event.id,
       date: event.date,
