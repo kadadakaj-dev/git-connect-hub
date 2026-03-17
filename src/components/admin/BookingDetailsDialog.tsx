@@ -42,7 +42,7 @@ interface BookingDetailsDialogProps {
   onEdit?: (booking: AdminBookingDetails) => void;
 }
 
-const BookingDetailsDialog = ({ booking, open, onOpenChange }: BookingDetailsDialogProps) => {
+const BookingDetailsDialog = ({ booking, open, onOpenChange, onEdit }: BookingDetailsDialogProps) => {
   const { language } = useLanguage();
 
   const isSlovak = language === 'sk';
