@@ -40,6 +40,10 @@ const CalendarView = () => {
     type: 'booking', notes: '', therapistId: '', isRecurring: false, recurringWeeks: 4,
   });
 
+  // Booking detail dialog state
+  const [detailBooking, setDetailBooking] = useState<AdminBookingDetails | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
   // Resize state
   const [resizingState, setResizingState] = useState<{
     id: string; startY: number; originalDuration: number; currentDuration: number;
