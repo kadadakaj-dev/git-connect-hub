@@ -59,7 +59,7 @@ serve(async (req) => {
     // Find booking by cancellation token
     const { data: booking, error: fetchError } = await supabase
       .from('bookings')
-      .select('id, status, date, time_slot, client_name, client_email, client_user_id, service_id')
+      .select('id, status, date, time_slot, client_name, client_email, client_phone, client_user_id, service_id')
       .eq('cancellation_token', body.token)
       .maybeSingle()
 
