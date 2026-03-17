@@ -8,6 +8,7 @@ import {
   getDayEventsWithPositions,
   getEventColorByCategory,
   getEndTime,
+  formatTime,
   WEEKDAYS_SK,
   WEEKDAYS_EN,
 } from './utils';
