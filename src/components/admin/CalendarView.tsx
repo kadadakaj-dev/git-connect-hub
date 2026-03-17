@@ -54,7 +54,7 @@ const CalendarView = () => {
     if (viewMode === 'month') {
       rangeStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
       rangeEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
-    } else if (viewMode === 'week') {
+    } else if (viewMode === 'week' || viewMode === 'list') {
       rangeStart = getWeekStart(currentDate);
       rangeEnd = addDays(rangeStart, 6);
     } else {
