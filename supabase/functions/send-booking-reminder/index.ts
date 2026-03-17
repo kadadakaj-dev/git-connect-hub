@@ -42,6 +42,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const token = authHeader.replace("Bearer ", "");
+    console.log("Auth debug:", { tokenStart: token.substring(0, 20), anonKeyStart: supabaseAnonKey?.substring(0, 20), match: token === supabaseAnonKey });
     const isServiceRole = token === supabaseServiceKey;
 
     // For cron: pg_net sends the anon key. We compare directly.
