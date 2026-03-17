@@ -117,7 +117,7 @@ const ProfileEditDialog = ({
       return;
     }
 
-    setIsUploading(true);
+    setIsLoading(true);
 
     try {
       const fileExt = file.name.split('.').pop();
