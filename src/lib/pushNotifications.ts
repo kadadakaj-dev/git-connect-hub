@@ -44,7 +44,7 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY).buffer as ArrayBuffer,
   });
 
   // Store subscription on server via Supabase
@@ -86,7 +86,7 @@ export async function isSubscribedToPush(): Promise<boolean> {
 async function saveSubscriptionToServer(subscription: PushSubscription): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
 
-  await supabase.from('push_subscriptions').upsert(
+  await (supabase as any).from('push_subscriptions').upsert(
     {
       endpoint: subscription.endpoint,
       keys: JSON.stringify(subscription.toJSON().keys),
@@ -100,5 +100,5 @@ async function saveSubscriptionToServer(subscription: PushSubscription): Promise
  * Remove the push subscription from the server.
  */
 async function removeSubscriptionFromServer(subscription: PushSubscription): Promise<void> {
-  await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
+  await (supabase as any).from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
 }

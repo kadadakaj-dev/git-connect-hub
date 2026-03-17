@@ -117,7 +117,7 @@ const ProfileEditDialog = ({
       return;
     }
 
-    setIsUploading(true);
+    setIsLoading(true);
 
     try {
       const fileExt = file.name.split('.').pop();
@@ -152,7 +152,7 @@ const ProfileEditDialog = ({
       console.error('Upload error:', error);
       toast.error(text.uploadError);
     } finally {
-      setIsUploading(false);
+      setIsLoading(false);
     }
   };
 

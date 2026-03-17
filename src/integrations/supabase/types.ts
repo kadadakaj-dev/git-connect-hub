@@ -35,6 +35,35 @@ export type Database = {
         }
         Relationships: []
       }
+      booking_reminders: {
+        Row: {
+          booking_id: string
+          id: string
+          reminder_sent_at: string
+          reminder_type: string
+        }
+        Insert: {
+          booking_id: string
+          id?: string
+          reminder_sent_at?: string
+          reminder_type?: string
+        }
+        Update: {
+          booking_id?: string
+          id?: string
+          reminder_sent_at?: string
+          reminder_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_reminders_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           booking_duration: number
@@ -307,6 +336,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_subscriptions: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          keys: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          keys: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          keys?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       services: {
         Row: {
