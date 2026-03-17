@@ -4,6 +4,21 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
+// Plugin to make CSS non-render-blocking (async load with print/onload trick)
+function asyncCssPlugin() {
+  return {
+    name: 'async-css',
+    enforce: 'post' as const,
+    transformIndexHtml(html: string) {
+      return html.replace(
+        /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
+        '<link rel="stylesheet" href="$1" media="print" onload="this.media=\'all\'">' +
+        '<noscript><link rel="stylesheet" href="$1"></noscript>'
+      );
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -64,6 +79,7 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ['**/*.{js,css,html,ico,svg,png,woff2}'],
       },
     }),
+    asyncCssPlugin(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -74,6 +90,7 @@ export default defineConfig(({ mode }) => ({
     target: 'es2020',
     cssCodeSplit: true,
     modulePreload: { polyfill: false },
+    cssMinify: true,
     rollupOptions: {
       output: {
         manualChunks: {
