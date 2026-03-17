@@ -407,11 +407,12 @@ function generateCancellationAdminText(data: EmailRequest): string {
     "========================================",
     `Klient: ${admin.clientName}`,
     `Email: ${admin.clientEmail}`,
+    admin.clientPhone ? `Telefon: ${admin.clientPhone}` : '',
     `Sluzba: ${data.serviceName}`,
     `Datum: ${formattedDate}`,
     `Cas: ${data.time}`,
     "========================================",
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 }
 
 serve(async (req) => {
