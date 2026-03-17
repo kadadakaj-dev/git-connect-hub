@@ -51,7 +51,7 @@ const CancelBooking = () => {
       notFound: 'Rezervácia nebola nájdená',
       pastBooking: 'Nemožno zrušiť minulé rezervácie',
       tooLateTitle: 'Zrušenie online nie je možné',
-      tooLateText: 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.',
+      tooLateText: 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom. Pri neskoršom zrušení bude účtovaný storno poplatok 10 €.',
       tooLatePhone: 'Kontaktujte nás telefonicky:',
       backToHome: 'Späť na hlavnú stránku',
       newBooking: 'Nová rezervácia',
