@@ -225,7 +225,7 @@ const ServiceManagement = () => {
   }
 
   return (
-    <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60">
+    <Card className="border-border/50">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{language === 'sk' ? 'Správa služieb' : 'Service Management'}</CardTitle>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -383,9 +383,8 @@ const ServiceManagement = () => {
         </Dialog>
       </CardHeader>
       <CardContent>
-        <div className="rounded-[16px] border border-[var(--glass-border-subtle)] overflow-x-auto">
         <Table>
-          <TableHeader className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm">
+          <TableHeader>
             <TableRow>
               <TableHead>{language === 'sk' ? 'Názov' : 'Name'}</TableHead>
               <TableHead>{language === 'sk' ? 'Trvanie' : 'Duration'}</TableHead>
@@ -397,7 +396,7 @@ const ServiceManagement = () => {
           </TableHeader>
           <TableBody>
             {services?.map((service) => (
-              <TableRow key={service.id} className="even:bg-muted/20">
+              <TableRow key={service.id}>
                 <TableCell className="font-medium">
                   {language === 'sk' ? service.name_sk : service.name_en}
                 </TableCell>
@@ -431,7 +430,6 @@ const ServiceManagement = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleEdit(service)}
-                      aria-label={language === 'sk' ? 'Upraviť' : 'Edit'}
                     >
                       <Pencil className="w-4 h-4" />
                     </Button>
@@ -440,7 +438,6 @@ const ServiceManagement = () => {
                       size="sm"
                       onClick={() => handleDelete(service.id)}
                       className="text-destructive hover:text-destructive"
-                      aria-label={language === 'sk' ? 'Odstrániť' : 'Delete'}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -457,7 +454,6 @@ const ServiceManagement = () => {
             )}
           </TableBody>
         </Table>
-        </div>
       </CardContent>
     </Card>
   );

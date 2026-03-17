@@ -30,48 +30,10 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Auth: accept service_role key (cron), anon key (cron via pg_net), or admin user
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const isServiceRole = token === supabaseServiceKey;
-    const isAnonKey = token === supabaseAnonKey;
-
-    // If called by cron (anon key or service role), allow. Otherwise verify admin.
-    if (!isServiceRole && !isAnonKey) {
-      const userClient = createClient(supabaseUrl, supabaseAnonKey, {
-        global: { headers: { Authorization: authHeader } },
-      });
-      const { data: { user }, error: userError } = await userClient.auth.getUser();
-
-      if (userError || !user) {
-        return new Response(
-          JSON.stringify({ error: "Unauthorized" }),
-          { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
-        );
-      }
-
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
-      const { data: isAdmin } = await supabase.rpc("has_role", {
-        _user_id: user.id,
-        _role: "admin",
-      });
-
-      if (!isAdmin) {
-        return new Response(
-          JSON.stringify({ error: "Forbidden" }),
-          { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
-        );
-      }
-    }
+    // This function is triggered by pg_cron (pg_net with anon key) or manually.
+    // verify_jwt = false in config.toml. Cron sends Authorization header automatically.
+    console.log("send-booking-reminder: processing...");
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -79,19 +41,14 @@ const handler = async (req: Request): Promise<Response> => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toISOString().split("T")[0];
+    console.log("Looking for bookings on:", tomorrowStr);
 
     // Find bookings for tomorrow
     const { data: bookings, error: bookingsError } = await supabase
       .from("bookings")
       .select(`
-        id,
-        date,
-        time_slot,
-        client_name,
-        client_email,
-        client_user_id,
-        cancellation_token,
-        service:services(name_sk, name_en)
+        id, date, time_slot, client_name, client_email, client_user_id,
+        cancellation_token, service:services(name_sk, name_en)
       `)
       .eq("date", tomorrowStr)
       .in("status", ["pending", "confirmed"]);
@@ -100,6 +57,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Error fetching bookings: ${bookingsError.message}`);
     }
 
+    console.log(`Found ${bookings?.length || 0} bookings for tomorrow`);
     const results: { booking_id: string; status: string }[] = [];
 
     for (const booking of (bookings as unknown as BookingWithService[]) || []) {
@@ -118,27 +76,31 @@ const handler = async (req: Request): Promise<Response> => {
         }
 
         // Send reminder email
-        const { error: emailError } = await supabase.functions.invoke(
-          "send-booking-email",
-          {
-            body: {
-              to: booking.client_email,
-              clientName: booking.client_name,
-              serviceName: booking.service?.name_sk || "Služba",
-              date: booking.date,
-              time: booking.time_slot,
-              cancellationToken: booking.cancellation_token,
-              language: "sk",
-              template: "reminder",
-            },
-          }
-        );
+        const emailResp = await fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({
+            to: booking.client_email,
+            clientName: booking.client_name,
+            serviceName: booking.service?.name_sk || "Služba",
+            date: booking.date,
+            time: booking.time_slot,
+            cancellationToken: booking.cancellation_token,
+            language: "sk",
+            template: "reminder",
+          }),
+        });
 
-        if (emailError) {
-          console.error(`Error sending email for booking ${booking.id}:`, emailError);
+        if (!emailResp.ok) {
+          const errText = await emailResp.text();
+          console.error(`Email failed for booking ${booking.id}: ${errText}`);
           results.push({ booking_id: booking.id, status: "email_failed" });
           continue;
         }
+        await emailResp.text(); // consume body
 
         // Record email reminder sent
         await supabase.from("booking_reminders").insert({
@@ -147,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
           reminder_type: "email",
         });
 
-        // Send push notification if the client has a linked user account
+        // Send push notification if client has a linked user account
         if (booking.client_user_id) {
           const { data: existingPushReminder } = await supabase
             .from("booking_reminders")
@@ -158,7 +120,7 @@ const handler = async (req: Request): Promise<Response> => {
 
           if (!existingPushReminder) {
             try {
-              await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+              const pushResp = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -173,6 +135,7 @@ const handler = async (req: Request): Promise<Response> => {
                   },
                 }),
               });
+              await pushResp.text(); // consume body
 
               await supabase.from("booking_reminders").insert({
                 booking_id: booking.id,
@@ -181,7 +144,7 @@ const handler = async (req: Request): Promise<Response> => {
               });
             } catch (pushErr) {
               // Push failure does NOT block the reminder flow
-              console.error(`Push notification failed for booking ${booking.id}:`, pushErr);
+              console.error(`Push failed for booking ${booking.id}:`, pushErr);
             }
           }
         }
@@ -193,6 +156,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
+    console.log("Reminder results:", JSON.stringify(results));
     return new Response(
       JSON.stringify({ success: true, processed: results.length, results }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }

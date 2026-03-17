@@ -109,7 +109,7 @@ const BookingManagement = () => {
 
   if (isLoading) {
     return (
-      <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60">
+      <Card className="border-border/50">
         <CardContent className="py-8">
           <div className="flex justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -120,7 +120,7 @@ const BookingManagement = () => {
   }
 
   return (
-    <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60">
+    <Card className="border-border/50">
       <CardHeader className="p-3 sm:p-6">
         <CardTitle className="text-base sm:text-2xl">
           {language === 'sk' ? 'Všetky rezervácie' : 'All Bookings'}
@@ -133,18 +133,18 @@ const BookingManagement = () => {
       </CardHeader>
       <CardContent className="p-3 sm:p-6 pt-0 space-y-3 sm:space-y-4">
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/50 p-2.5 sm:p-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder={language === 'sk' ? 'Hľadať podľa mena, emailu alebo telefónu...' : 'Search by name, email or phone...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 rounded-[14px] border-[var(--glass-border-subtle)]"
+              className="pl-10"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px] rounded-[14px] border-[var(--glass-border-subtle)]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <Filter className="w-4 h-4 mr-2" />
               <SelectValue placeholder={language === 'sk' ? 'Stav' : 'Status'} />
             </SelectTrigger>
@@ -159,7 +159,7 @@ const BookingManagement = () => {
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="w-full sm:w-[180px] rounded-[14px] border-[var(--glass-border-subtle)]"
+            className="w-full sm:w-[180px]"
           />
         </div>
 
@@ -173,7 +173,7 @@ const BookingManagement = () => {
                   key={booking.id}
                   type="button"
                   onClick={() => setSelectedBooking(booking)}
-                  className="w-full rounded-[24px] border border-[var(--glass-border-subtle)] bg-white/72 p-3 text-left shadow-[0_8px_16px_rgba(126,195,255,0.06)] transition-colors hover:bg-white/82"
+                  className="w-full rounded-2xl border border-[var(--glass-border-subtle)] bg-white/72 p-3 text-left shadow-[0_8px_16px_rgba(126,195,255,0.06)] transition-colors hover:bg-white/82"
                 >
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <div className="min-w-0">
@@ -218,9 +218,9 @@ const BookingManagement = () => {
             </div>
 
             {/* Desktop table */}
-            <div className="hidden rounded-[16px] border border-[var(--glass-border-subtle)] overflow-x-auto md:block">
+            <div className="hidden rounded-md border overflow-x-auto md:block">
               <Table>
-                <TableHeader className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm">
+                <TableHeader>
                   <TableRow>
                     <TableHead>{language === 'sk' ? 'Klient' : 'Client'}</TableHead>
                     <TableHead>{language === 'sk' ? 'Služba' : 'Service'}</TableHead>
@@ -233,7 +233,7 @@ const BookingManagement = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredBookings.map((booking) => (
-                    <TableRow key={booking.id} className="even:bg-muted/20">
+                    <TableRow key={booking.id}>
                       <TableCell>
                         <div>
                           <p className="font-medium">{booking.client_name}</p>

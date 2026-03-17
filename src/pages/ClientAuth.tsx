@@ -32,13 +32,13 @@ const menuItems = [
 ];
 
 const oauthButtonClass =
-  'w-full h-12 flex items-center justify-center gap-3 rounded-[14px] border border-[var(--glass-border-subtle)] bg-white/66 px-4 text-[15px] font-medium text-[hsl(var(--soft-navy))] shadow-[0_12px_28px_rgba(126,195,255,0.12)] transition-all duration-200 hover:-translate-y-px hover:bg-white/82 hover:shadow-[0_16px_34px_rgba(126,195,255,0.16)] disabled:opacity-50';
+  'w-full h-12 flex items-center justify-center gap-3 rounded-[18px] border border-[var(--glass-border-subtle)] bg-white/66 px-4 text-[15px] font-medium text-[hsl(var(--soft-navy))] shadow-[0_12px_28px_rgba(126,195,255,0.12)] transition-all duration-200 hover:-translate-y-px hover:bg-white/82 hover:shadow-[0_16px_34px_rgba(126,195,255,0.16)] disabled:opacity-50';
 
 const authInputClass =
-  'h-12 rounded-[16px] border-[var(--glass-border-subtle)] bg-white/72 text-[hsl(var(--soft-navy))] placeholder:text-muted-foreground/70 shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus-visible:border-[rgba(79,149,213,0.34)] focus-visible:ring-2 focus-visible:ring-[rgba(126,195,255,0.28)] focus-visible:shadow-[0_0_0_4px_rgba(126,195,255,0.12)] focus-visible:bg-white/82';
+  'h-12 rounded-[16px] border-[var(--glass-border-subtle)] bg-white/72 text-[hsl(var(--soft-navy))] placeholder:text-muted-foreground/70 shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus-visible:border-[rgba(79,149,213,0.34)] focus-visible:ring-[rgba(126,195,255,0.24)] focus-visible:bg-white/82';
 
 const submitButtonClass =
-  'h-12 w-full rounded-[14px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_18px_36px_rgba(79,149,213,0.26)] hover:brightness-[1.03]';
+  'h-12 w-full rounded-[18px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_18px_36px_rgba(79,149,213,0.26)] hover:brightness-[1.03]';
 
 const ClientAuth = () => {
   const navigate = useNavigate();
@@ -254,8 +254,8 @@ const ClientAuth = () => {
                 return (
                   <li
                     key={i}
-                    className={`relative rounded-[24px] border transition-all duration-200 ${item.active
-                        ? 'border-[rgba(79,149,213,0.16)] bg-white/76 shadow-[0_10px_22px_rgba(126,195,255,0.1)]'
+                    className={`relative rounded-[22px] border transition-all duration-200 ${item.active
+                        ? 'border-[rgba(79,149,213,0.16)] bg-white/76 shadow-[0_14px_30px_rgba(126,195,255,0.14)]'
                         : 'border-transparent hover:border-[var(--glass-border-subtle)] hover:bg-white/50'
                       }`}
                   >
@@ -272,7 +272,7 @@ const ClientAuth = () => {
             </ul>
           </nav>
 
-          <div className="mt-auto flex items-center gap-3 rounded-[24px] border border-[var(--glass-border-subtle)] bg-white/68 p-4 shadow-[0_10px_22px_rgba(126,195,255,0.1)]">
+          <div className="mt-auto flex items-center gap-3 rounded-[22px] border border-[var(--glass-border-subtle)] bg-white/68 p-4 shadow-[0_12px_28px_rgba(126,195,255,0.12)]">
             <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/82">
               <User className="h-5 w-5 text-[hsl(var(--navy))]" />
             </div>
@@ -289,7 +289,7 @@ const ClientAuth = () => {
               <Button
                 variant="ghost"
                 onClick={() => navigate('/')}
-                className="rounded-[14px] border border-[var(--glass-border-subtle)] bg-white/60 px-4 text-[hsl(var(--soft-navy))] hover:bg-white/78 hover:text-[hsl(var(--navy))]"
+                className="rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/60 px-4 text-[hsl(var(--soft-navy))] hover:bg-white/78 hover:text-[hsl(var(--navy))]"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 {text.backToBooking}
@@ -299,7 +299,7 @@ const ClientAuth = () => {
           </div>
 
           <div className="flex flex-1 items-center justify-center p-4 lg:p-8">
-              <div className="w-full max-w-md space-y-5">
+            <div className="w-full max-w-md space-y-6">
               <div className="mb-2 text-center lg:text-left">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-[hsl(var(--navy))]/75">
                   {text.title}
@@ -310,7 +310,7 @@ const ClientAuth = () => {
                 <p className="text-base text-muted-foreground">{text.subtitle}</p>
               </div>
 
-              <div className="surface-panel rounded-[28px] border border-[var(--glass-border)] p-6 shadow-glass-float lg:p-8">
+              <div className="surface-panel rounded-[30px] border border-[var(--glass-border)] p-6 shadow-glass-float lg:p-8">
                 <div className="space-y-3">
                   <button type="button" onClick={handleGoogleSignIn} disabled={isLoading} className={oauthButtonClass}>
                     <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -330,7 +330,7 @@ const ClientAuth = () => {
                   </button>
                 </div>
 
-                <div className="relative my-5">
+                <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-[var(--glass-border-subtle)]" />
                   </div>
@@ -342,16 +342,16 @@ const ClientAuth = () => {
                 </div>
 
                 <Tabs defaultValue="login" className="w-full">
-                  <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/50 p-1">
+                  <TabsList className="grid h-auto w-full grid-cols-2 gap-1.5 rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/58 p-1.5">
                     <TabsTrigger
                       value="login"
-                      className="min-h-[44px] rounded-[14px] text-sm font-semibold tracking-wide data-[state=active]:bg-white/88 data-[state=active]:border data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_12px_24px_rgba(126,195,255,0.18)] data-[state=inactive]:text-muted-foreground"
+                      className="min-h-[46px] rounded-[16px] text-sm font-medium data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_30px_rgba(126,195,255,0.16)]"
                     >
                       {text.login}
                     </TabsTrigger>
                     <TabsTrigger
                       value="register"
-                      className="min-h-[44px] rounded-[14px] text-sm font-semibold tracking-wide data-[state=active]:bg-white/88 data-[state=active]:border data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_12px_24px_rgba(126,195,255,0.18)] data-[state=inactive]:text-muted-foreground"
+                      className="min-h-[46px] rounded-[16px] text-sm font-medium data-[state=active]:bg-white/82 data-[state=active]:border-[var(--glass-border)] data-[state=active]:shadow-[0_16px_30px_rgba(126,195,255,0.16)]"
                     >
                       {text.register}
                     </TabsTrigger>
@@ -374,7 +374,7 @@ const ClientAuth = () => {
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           />
                         </div>
-                        {errors.email && <p role="alert" className="text-sm text-destructive">{errors.email}</p>}
+                        {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                       </div>
 
                       <div className="space-y-1.5">
@@ -391,7 +391,7 @@ const ClientAuth = () => {
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                           />
                         </div>
-                        {errors.password && <p role="alert" className="text-sm text-destructive">{errors.password}</p>}
+                        {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                       </div>
 
                       <Button type="submit" disabled={isLoading} className={submitButtonClass}>
@@ -416,7 +416,7 @@ const ClientAuth = () => {
                             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                           />
                         </div>
-                        {errors.fullName && <p role="alert" className="text-sm text-destructive">{errors.fullName}</p>}
+                        {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
                       </div>
 
                       <div className="space-y-1.5">
@@ -434,7 +434,7 @@ const ClientAuth = () => {
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           />
                         </div>
-                        {errors.email && <p role="alert" className="text-sm text-destructive">{errors.email}</p>}
+                        {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                       </div>
 
                       <div className="space-y-1.5">
@@ -464,7 +464,7 @@ const ClientAuth = () => {
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                           />
                         </div>
-                        {errors.password && <p role="alert" className="text-sm text-destructive">{errors.password}</p>}
+                        {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                       </div>
 
                       <Button type="submit" disabled={isLoading} className={submitButtonClass}>

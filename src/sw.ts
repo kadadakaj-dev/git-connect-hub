@@ -127,7 +127,7 @@ self.addEventListener('push', (event) => {
     data = { title: 'FYZIO&FIT', body: event.data.text() };
   }
 
-  const options = {
+  const options: any = {
     body: data.body || '',
     icon: '/pwa-192x192.png',
     badge: '/pwa-64x64.png',
@@ -138,7 +138,7 @@ self.addEventListener('push', (event) => {
       { action: 'open', title: 'Otvoriť' },
       { action: 'dismiss', title: 'Zavrieť' },
     ],
-  } satisfies NotificationOptions & { renotify: boolean };
+  };
 
   event.waitUntil(
     self.registration.showNotification(data.title || 'FYZIO&FIT', options)

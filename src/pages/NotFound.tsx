@@ -31,7 +31,7 @@ const NotFound = () => {
         <p className="mb-6 text-lg text-muted-foreground">
           {language === 'sk' ? 'Stránka nenájdená' : 'Page not found'}
         </p>
-        <Button asChild variant="default" size="lg" className="gap-2 rounded-[14px]">
+        <Button asChild variant="default" size="lg" className="gap-2 rounded-xl">
           <Link to="/">
             <Home className="w-4 h-4" />
             {language === 'sk' ? 'Späť na hlavnú stránku' : 'Back to Home'}

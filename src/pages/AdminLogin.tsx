@@ -193,7 +193,7 @@ const AdminLogin = () => {
                       placeholder="admin@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-[16px] focus:border-primary focus:ring-primary/20"
+                      className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
                       required
                     />
                   </div>
@@ -209,7 +209,7 @@ const AdminLogin = () => {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-[16px] focus:border-primary focus:ring-primary/20"
+                      className="pl-10 h-11 bg-white/70 border-border/40 text-foreground placeholder:text-muted-foreground/50 rounded-xl focus:border-primary focus:ring-primary/20"
                       required
                     />
                   </div>
@@ -218,7 +218,7 @@ const AdminLogin = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-11 rounded-[14px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm transition-all duration-200 disabled:opacity-50 shadow-lg shadow-primary/20 mt-2"
+                  className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm transition-all duration-200 disabled:opacity-50 shadow-lg shadow-primary/20 mt-2"
                 >
                   {isLoading ? text.signingIn : text.signIn}
                 </button>
