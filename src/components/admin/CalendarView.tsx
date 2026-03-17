@@ -228,6 +228,7 @@ const CalendarView = () => {
           duration: event.serviceDuration,
         } : null,
         employees: empName ? { full_name: empName } : null,
+        employee_id: event.therapistId,
       });
       setDetailOpen(true);
       return;
@@ -511,24 +512,8 @@ const CalendarView = () => {
         booking={detailBooking}
         open={detailOpen}
         onOpenChange={setDetailOpen}
-        onEdit={(b) => {
-          const event = events.find(e => e.id === b.id);
-          if (!event) return;
-          setFormData({
-            id: event.id,
-            date: event.date,
-            startTime: event.startTime,
-            duration: event.duration,
-            title: event.title,
-            type: event.type,
-            notes: event.notes || '',
-            therapistId: event.therapistId || employees[0]?.id || '',
-            isRecurring: false,
-            recurringWeeks: 4,
-          });
-          setModalMode('edit');
-          setModalOpen(true);
-        }}
+        onSaved={fetchData}
+        employees={employees.map(e => ({ id: e.id, full_name: e.full_name }))}
       />
     </Card>
   );
