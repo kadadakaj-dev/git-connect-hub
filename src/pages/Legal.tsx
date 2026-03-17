@@ -127,7 +127,7 @@ const Legal = () => {
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground mt-8 pt-6 border-t border-border">
-                  {language === 'sk' ? 'Posledná aktualizácia: Február 2026' : 'Last updated: February 2026'}
+                  {language === 'sk' ? 'Posledná aktualizácia: Marec 2026' : 'Last updated: March 2026'}
                 </p>
               </GlassCard>
             </TabsContent>
