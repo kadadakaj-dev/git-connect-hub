@@ -4,7 +4,8 @@ import {
   formatDateForInput,
   getMonthDays,
   isToday,
-  getEventColorClasses,
+  getEventColorByCategory,
+  getEndTime,
   FULL_WEEKDAYS_SK,
   FULL_WEEKDAYS_EN,
 } from './utils';
