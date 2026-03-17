@@ -6,6 +6,7 @@ import {
   isToday,
   getEventColorByCategory,
   getEndTime,
+  formatTime,
   FULL_WEEKDAYS_SK,
   FULL_WEEKDAYS_EN,
 } from './utils';
