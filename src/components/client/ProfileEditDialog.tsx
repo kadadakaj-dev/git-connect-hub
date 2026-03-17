@@ -152,7 +152,7 @@ const ProfileEditDialog = ({
       console.error('Upload error:', error);
       toast.error(text.uploadError);
     } finally {
-      setIsUploading(false);
+      setIsLoading(false);
     }
   };
 

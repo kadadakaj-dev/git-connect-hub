@@ -127,7 +127,7 @@ self.addEventListener('push', (event) => {
     data = { title: 'FYZIO&FIT', body: event.data.text() };
   }
 
-  const options: NotificationOptions = {
+  const options: NotificationOptions & { renotify?: boolean } = {
     body: data.body || '',
     icon: '/pwa-192x192.png',
     badge: '/pwa-64x64.png',

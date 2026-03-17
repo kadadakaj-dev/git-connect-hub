@@ -100,5 +100,5 @@ async function saveSubscriptionToServer(subscription: PushSubscription): Promise
  * Remove the push subscription from the server.
  */
 async function removeSubscriptionFromServer(subscription: PushSubscription): Promise<void> {
-  await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
+  await (supabase as any).from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
 }
