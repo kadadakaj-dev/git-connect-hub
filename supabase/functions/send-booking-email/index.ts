@@ -15,7 +15,7 @@ interface EmailRequest {
   time: string;
   cancellationToken: string;
   language: "sk" | "en";
-  template?: "confirmation" | "reminder" | "admin-notification";
+  template?: "confirmation" | "reminder" | "admin-notification" | "cancellation-admin";
   adminData?: {
     clientName: string;
     clientEmail: string;
