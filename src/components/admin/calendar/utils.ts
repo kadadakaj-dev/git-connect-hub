@@ -126,6 +126,12 @@ export const minutesToTime = (totalMinutes: number): string => {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 };
 
+/** Strip seconds from time strings like "09:30:00" → "09:30" */
+export const formatTime = (time: string): string => {
+  const parts = time.split(':');
+  return `${parts[0]}:${parts[1]}`;
+};
+
 export const getEndTime = (startTime: string, duration: number): string => {
   const startMins = timeToMinutes(startTime);
   return minutesToTime(startMins + duration);
