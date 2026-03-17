@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { sk } from 'date-fns/locale';
-import { Calendar, Clock, Mail, MessageSquareText, Phone, User, UserRoundCheck, Timer, Tag, Banknote } from 'lucide-react';
+import { Calendar, Clock, Mail, MessageSquareText, Phone, User, UserRoundCheck, Timer, Tag, Banknote, Pencil } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -38,9 +39,10 @@ interface BookingDetailsDialogProps {
   booking: AdminBookingDetails | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onEdit?: (booking: AdminBookingDetails) => void;
 }
 
-const BookingDetailsDialog = ({ booking, open, onOpenChange }: BookingDetailsDialogProps) => {
+const BookingDetailsDialog = ({ booking, open, onOpenChange, onEdit }: BookingDetailsDialogProps) => {
   const { language } = useLanguage();
 
   const isSlovak = language === 'sk';
@@ -176,10 +178,26 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange }: BookingDetailsDia
                 </div>
               </div>
 
-              <p className="text-xs text-muted-foreground">
-                {isSlovak ? 'Vytvorené' : 'Created'}:{' '}
-                {format(new Date(booking.created_at), 'd. MMMM yyyy • HH:mm', { locale: isSlovak ? sk : undefined })}
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  {isSlovak ? 'Vytvorené' : 'Created'}:{' '}
+                  {booking.created_at && format(new Date(booking.created_at), 'd. MMMM yyyy • HH:mm', { locale: isSlovak ? sk : undefined })}
+                </p>
+                {onEdit && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      onOpenChange(false);
+                      onEdit(booking);
+                    }}
+                    className="gap-1.5 rounded-[16px] border-[var(--glass-border-subtle)] bg-white/70 text-[hsl(var(--soft-navy))] hover:bg-white/82 hover:text-[hsl(var(--navy))]"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    {isSlovak ? 'Upraviť' : 'Edit'}
+                  </Button>
+                )}
+              </div>
             </div>
           </>
         )}
