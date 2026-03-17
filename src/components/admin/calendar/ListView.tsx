@@ -65,8 +65,9 @@ const ListView = ({ language, events, selectedTherapist, onEditEvent }: ListView
     <div className="flex-1 overflow-auto p-3 md:p-5">
       {Object.entries(grouped).map(([dateStr, dayEvents]) => {
         const dateObj = new Date(dateStr + 'T00:00:00');
+        const locale = getLocale(language);
         const dateLabel = format(dateObj, language === 'sk' ? 'EEEE d. MMMM' : 'EEEE, MMMM d', {
-          locale: language === 'sk' ? undefined : undefined,
+          locale,
         });
 
         return (
