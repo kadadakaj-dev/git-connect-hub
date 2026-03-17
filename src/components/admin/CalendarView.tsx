@@ -72,8 +72,8 @@ const CalendarView = () => {
         .from('bookings')
         .select(`
           id, date, time_slot, client_name, client_email, client_phone,
-          status, notes, service_id, employee_id,
-          service:services(id, name_sk, name_en, duration, category)
+          status, notes, service_id, employee_id, created_at, booking_duration,
+          service:services(id, name_sk, name_en, duration, category, price)
         `)
         .gte('date', format(rangeStart, 'yyyy-MM-dd'))
         .lte('date', format(rangeEnd, 'yyyy-MM-dd'))
