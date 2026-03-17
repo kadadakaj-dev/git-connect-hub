@@ -32,7 +32,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Auth: accept service_role key (cron), anon key (cron via pg_net), or admin user
+    // Auth: accept service_role, anon key (cron via pg_net), or admin user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
@@ -43,10 +43,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     const token = authHeader.replace("Bearer ", "");
     const isServiceRole = token === supabaseServiceKey;
-    const isAnonKey = token === supabaseAnonKey;
 
-    // If called by cron (anon key or service role), allow. Otherwise verify admin.
+    // For cron: pg_net sends the anon key. We compare directly.
+    // The anon key is a JWT with role=anon, so we can also decode it to check.
+    let isAnonKey = token === supabaseAnonKey;
+    if (!isAnonKey) {
+      // Also accept if the token decodes to a Supabase anon JWT (role: "anon")
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        if (payload.role === "anon" && payload.ref === "bqoeopfgivbvyhonkree") {
+          isAnonKey = true;
+        }
+      } catch { /* not a JWT */ }
+    }
+
     if (!isServiceRole && !isAnonKey) {
+      // Try as authenticated admin user
       const userClient = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
       });
@@ -59,8 +71,8 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
 
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
-      const { data: isAdmin } = await supabase.rpc("has_role", {
+      const adminCheck = createClient(supabaseUrl, supabaseServiceKey);
+      const { data: isAdmin } = await adminCheck.rpc("has_role", {
         _user_id: user.id,
         _role: "admin",
       });
