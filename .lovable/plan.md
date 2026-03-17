@@ -1,51 +1,24 @@
 
-## Plán: CI/CD Workflow pre booking projekt
 
-### Problém
-- Navrhovaný workflow je pre iný repozitár (`git-connect-hub`)
-- Používa `npm install` namiesto `bun install`
-- Niekedy `actions/checkout@v2` (zastaralá verzia)
+## Plan: Aktualizácia textov služieb
 
-### Navrhované zmeny pre správny projekt
+Služby už existujú v databáze. Treba aktualizovať názvy a popisy podľa nových textov.
 
-**Súbor:** `.github/workflows/ci-cd.yml` v repozitári `EB-EU-s-r-o/booking-buddy`
+### Zmeny (SQL migrácia)
 
-```yaml
-name: CI/CD
+3 UPDATE príkazy na tabuľku `services`:
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+1. **Chiro masáž** (id: `46b646fd...`) — zmeniť `name_sk` na "Chiro masáž", `description_sk` na "klasická masáž chrbta a ramien, chiropraxia/naprávanie, mobilizácie, bankovanie, masážna pištol"
+   - Aktuálny popis: "chiropraxia, klasická masáž, mobilizácie, bankovanie, masážna pištol"
+   - Nový popis pridáva "chrbta a ramien" a "chiropraxia/naprávanie"
 
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-      
-      - name: Install dependencies
-        run: bun install
-      
-      - name: Run tests
-        run: bun run test
-      
-      - name: Lint code
-        run: bun run lint
-      
-      - name: Type check
-        run: bun run build  # TypeScript check je súčasťou buildu
-      
-      - name: Build verification
-        run: bun run build
-```
+2. **Naprávanie** (id: `a7adf1c3...`) — zmeniť `name_sk` na "Chiropraxia/Naprávanie", `description_sk` na "chiropraxia, masážna pištol"
+   - Aktuálny názov: "Naprávanie" → nový: "Chiropraxia/Naprávanie"
+   - Popis zostáva rovnaký
 
-### Čo potrebujem overiť
-1. Má váš projekt script `test` v package.json? (Vidím vitest v závislostiach)
-2. Chcete workflow pre **booking-buddy** repozitár alebo **git-connect-hub**?
+3. **Celotelová chiro masáž** (id: `bc350f40...`) — zmeniť `description_sk` na "klasická masáž celého tela, bankovanie, mobilizácie, chiropraxia/naprávanie a iné"
+   - Aktuálny popis: "klasická masáž, bankovanie, mobilizácie, chiropraxie a iné"
+   - Nový popis: "celého tela" a "chiropraxia/naprávanie"
+
+Ceny, trvanie a anglické texty zostávajú bez zmeny. Žiadne zmeny v kóde — len databázová migrácia.
+
