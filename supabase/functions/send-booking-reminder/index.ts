@@ -31,17 +31,9 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // This function is triggered by pg_cron (pg_net with anon key).
-    // verify_jwt = false in config.toml. We only require a Bearer token.
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized - missing Bearer token" }),
-        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    console.log("send-booking-reminder: authorized, processing...");
+    // This function is triggered by pg_cron (pg_net with anon key) or manually.
+    // verify_jwt = false in config.toml. Cron sends Authorization header automatically.
+    console.log("send-booking-reminder: processing...");
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
