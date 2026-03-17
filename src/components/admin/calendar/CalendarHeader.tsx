@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Users,
+  List,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ViewMode, Employee } from './types';
@@ -67,6 +68,7 @@ const CalendarHeader = ({
     month: language === 'sk' ? 'Mesiac' : 'Month',
     week: language === 'sk' ? 'Týždeň' : 'Week',
     day: language === 'sk' ? 'Deň' : 'Day',
+    list: language === 'sk' ? 'Zoznam' : 'List',
   };
 
   return (
@@ -154,7 +156,7 @@ const CalendarHeader = ({
         </label>
         <LayoutGroup>
           <div className="relative flex items-center gap-0.5 rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/58 p-1 text-xs font-medium text-muted-foreground shadow-[0_10px_24px_rgba(126,195,255,0.08)]">
-            {(['month', 'week', 'day'] as ViewMode[]).map(mode => (
+            {(['month', 'week', 'day', 'list'] as ViewMode[]).map(mode => (
               <button
                 key={mode}
                 onClick={() => onViewModeChange(mode)}

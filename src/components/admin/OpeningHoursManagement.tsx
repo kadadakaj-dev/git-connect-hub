@@ -91,7 +91,7 @@ const OpeningHoursManagement = () => {
   }
 
   return (
-    <Card className="border-border/50">
+    <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="flex items-center gap-2">
@@ -112,8 +112,8 @@ const OpeningHoursManagement = () => {
           {configs.map((config, index) => (
             <div
               key={config.day_of_week}
-              className={`flex items-center gap-4 p-4 rounded-xl border transition-colors ${
-                config.is_active ? 'bg-background border-border' : 'bg-muted/30 border-border/30'
+              className={`flex items-center gap-4 p-4 rounded-[16px] border transition-colors ${
+                config.is_active ? 'bg-white/60 border-[var(--glass-border-subtle)]' : 'bg-muted/20 border-[var(--glass-border-subtle)]/50'
               }`}
             >
               <Switch

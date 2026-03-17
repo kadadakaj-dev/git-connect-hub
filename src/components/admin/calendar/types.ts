@@ -34,7 +34,7 @@ export interface PositionedEvent extends CalendarEvent {
   colIdx: number;
 }
 
-export type ViewMode = 'day' | 'week' | 'month';
+export type ViewMode = 'day' | 'week' | 'month' | 'list';
 
 export const SLOT_HEIGHT = 40;
 

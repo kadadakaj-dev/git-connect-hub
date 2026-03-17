@@ -6,10 +6,12 @@ import {
   isToday,
   getCurrentTimePosition,
   getDayEventsWithPositions,
-  getEventColorClasses,
+  getEventColorByCategory,
+  getEndTime,
   WEEKDAYS_SK,
   WEEKDAYS_EN,
 } from './utils';
+import { Phone, Mail } from 'lucide-react';
 import type { Language } from '@/i18n/translations';
 
 interface TimeGridViewProps {
@@ -51,7 +53,7 @@ const TimeGridView = ({
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      {/* Day headers — pixel-perfect style */}
+      {/* Day headers */}
       <div className="flex flex-shrink-0 border-b border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.48)_0%,rgba(234,246,255,0.24)_100%)]">
         <div className="w-14 md:w-[72px] flex-shrink-0 border-r border-[var(--glass-border-subtle)]" />
         <div className={`flex flex-1 ${viewMode === 'week' ? 'min-w-[600px] md:min-w-0' : ''}`}>
@@ -90,7 +92,6 @@ const TimeGridView = ({
               className="relative pr-2 md:pr-3 text-right"
               style={{ height: `${SLOT_HEIGHT}px` }}
             >
-              {/* Only show full-hour labels */}
               {time.endsWith(':00') && (
                 <span className="absolute top-0 right-2 md:right-3 -translate-y-1/2 rounded-full bg-white/84 px-1.5 text-[11px] md:text-xs font-semibold text-muted-foreground shadow-[0_8px_18px_rgba(126,195,255,0.1)] tabular-nums">
                   {time}
@@ -142,28 +143,65 @@ const TimeGridView = ({
                   />
                 ))}
 
-                {/* Events — pill style with left accent bar */}
+                {/* Events — enhanced pill with full details */}
                 {dayEvents.map(event => {
-                  const colorClasses = getEventColorClasses(event.type, event.status);
+                  const colorClasses = getEventColorByCategory(event.type, event.status);
+                  const endTime = getEndTime(event.startTime, event.duration);
+                  const isSmall = event.duration <= 30;
+                  const isMedium = event.duration > 30 && event.duration <= 45;
+
                   return (
                     <div
                       key={event.id}
                       draggable
                       onDragStart={(e) => onDragStart(e, event)}
-                      className={`absolute rounded-xl p-1.5 md:p-2 text-[10px] md:text-xs shadow-[0_10px_22px_rgba(126,195,255,0.12)] cursor-grab active:cursor-grabbing hover:shadow-[0_16px_28px_rgba(126,195,255,0.16)] transition-all overflow-hidden flex flex-col z-10 ${colorClasses}`}
+                      className={`absolute rounded-xl p-1.5 md:p-2.5 shadow-[0_10px_22px_rgba(126,195,255,0.12)] cursor-grab active:cursor-grabbing hover:shadow-[0_16px_28px_rgba(126,195,255,0.16)] transition-all overflow-hidden flex flex-col z-10 ${colorClasses}`}
                       style={event.style}
                       onClick={(e) => { e.stopPropagation(); onEditEvent(event); }}
                     >
-                      <div className="font-bold truncate leading-tight">
-                        {event.startTime}
+                      {/* Time range — always visible */}
+                      <div className="font-bold truncate leading-tight text-xs md:text-sm">
+                        {event.startTime} – {endTime}
                         {event.status === 'pending' && <span className="ml-1 opacity-60">⏳</span>}
                       </div>
-                      <div className="font-normal truncate leading-tight mt-0.5 opacity-80">
-                        {event.title}
-                      </div>
-                      {event.duration > 30 && (
-                        <div className="text-[9px] md:text-[10px] opacity-60 truncate mt-auto">
-                          {event.duration} min{event.serviceName ? ` · ${event.serviceName}` : ''}
+
+                      {/* Service name */}
+                      {!isSmall && event.serviceName && (
+                        <div className="font-semibold truncate leading-tight mt-0.5 text-[10px] md:text-xs">
+                          {event.serviceName}
+                        </div>
+                      )}
+
+                      {/* Client name */}
+                      {!isSmall && (
+                        <div className="font-normal truncate leading-tight mt-0.5 opacity-80 text-[10px] md:text-xs">
+                          {event.title}
+                        </div>
+                      )}
+
+                      {/* Contact info — only on larger events or day view */}
+                      {!isSmall && !isMedium && (
+                        <div className="mt-auto flex flex-col gap-0.5 text-[9px] md:text-[10px] opacity-60 overflow-hidden">
+                          {event.clientPhone && (
+                            <span className="flex items-center gap-1 truncate">
+                              <Phone className="h-2.5 w-2.5 flex-shrink-0" /> {event.clientPhone}
+                            </span>
+                          )}
+                          {event.clientEmail && (
+                            <span className="flex items-center gap-1 truncate">
+                              <Mail className="h-2.5 w-2.5 flex-shrink-0" /> {event.clientEmail}
+                            </span>
+                          )}
+                          {event.employeeName && (
+                            <span className="truncate">{event.employeeName}</span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Small event: compact line */}
+                      {isSmall && (
+                        <div className="font-normal truncate leading-tight opacity-80 text-[9px] md:text-[10px]">
+                          {event.serviceName ? `${event.serviceName} · ` : ''}{event.title}
                         </div>
                       )}
 

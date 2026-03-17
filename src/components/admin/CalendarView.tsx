@@ -10,6 +10,7 @@ import { formatDateForInput, getWeekStart, hasOverlap } from './calendar/utils';
 import CalendarHeader from './calendar/CalendarHeader';
 import MonthView from './calendar/MonthView';
 import TimeGridView from './calendar/TimeGridView';
+import ListView from './calendar/ListView';
 import EventModal, { EventFormData } from './calendar/EventModal';
 import { Tables } from '@/integrations/supabase/types';
 
@@ -53,7 +54,7 @@ const CalendarView = () => {
     if (viewMode === 'month') {
       rangeStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
       rangeEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
-    } else if (viewMode === 'week') {
+    } else if (viewMode === 'week' || viewMode === 'list') {
       rangeStart = getWeekStart(currentDate);
       rangeEnd = addDays(rangeStart, 6);
     } else {
@@ -89,6 +90,7 @@ const CalendarView = () => {
     if (blockedRes.data) setBlockedDates(blockedRes.data);
 
     if (bookingsRes.data) {
+      const empMap = new Map((employeesRes.data || []).map((e: any) => [e.id, e.full_name]));
       const mapped: CalendarEvent[] = (bookingsRes.data as BookingWithService[]).map(b => ({
         id: b.id,
         date: b.date,
@@ -100,9 +102,10 @@ const CalendarView = () => {
         therapistId: b.employee_id,
         status: b.status,
         clientEmail: b.client_email,
-        clientPhone: b.client_phone,
-        serviceId: b.service_id,
+        clientPhone: b.client_phone ?? undefined,
+        serviceId: b.service_id ?? undefined,
         serviceName: b.service ? (language === 'sk' ? b.service.name_sk : b.service.name_en) : undefined,
+        employeeName: b.employee_id ? (empMap.get(b.employee_id) ?? undefined) : undefined,
       }));
       setEvents(mapped);
     }
@@ -153,14 +156,14 @@ const CalendarView = () => {
     setNavDirection(-1);
     setDateKey(k => k + 1);
     if (viewMode === 'day') setCurrentDate(prev => addDays(prev, -1));
-    else if (viewMode === 'week') setCurrentDate(prev => subWeeks(prev, 1));
+    else if (viewMode === 'week' || viewMode === 'list') setCurrentDate(prev => subWeeks(prev, 1));
     else setCurrentDate(prev => { const d = new Date(prev); d.setMonth(d.getMonth() - 1); return d; });
   };
   const handleNext = () => {
     setNavDirection(1);
     setDateKey(k => k + 1);
     if (viewMode === 'day') setCurrentDate(prev => addDays(prev, 1));
-    else if (viewMode === 'week') setCurrentDate(prev => addWeeks(prev, 1));
+    else if (viewMode === 'week' || viewMode === 'list') setCurrentDate(prev => addWeeks(prev, 1));
     else setCurrentDate(prev => { const d = new Date(prev); d.setMonth(d.getMonth() + 1); return d; });
   };
   const goToToday = () => { setNavDirection(1); setDateKey(k => k + 1); setCurrentDate(new Date()); };
@@ -406,6 +409,23 @@ const CalendarView = () => {
                 onDropOnDay={handleDropOnMonthDay}
               />
             </motion.div>
+          ) : viewMode === 'list' ? (
+            <motion.div
+              key={`list-${dateKey}`}
+              custom={navDirection}
+              initial={{ opacity: 0, x: navDirection * 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: navDirection * -40 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="flex flex-col flex-1 overflow-hidden"
+            >
+              <ListView
+                language={language}
+                events={events}
+                selectedTherapist={selectedTherapist}
+                onEditEvent={openEditModal}
+              />
+            </motion.div>
           ) : (
             <motion.div
               key={`${viewMode}-${dateKey}`}
@@ -421,7 +441,7 @@ const CalendarView = () => {
                 activeDays={getActiveDays()}
                 events={events}
                 selectedTherapist={selectedTherapist}
-                viewMode={viewMode}
+                viewMode={viewMode as 'day' | 'week'}
                 blockedDates={blockedDates}
                 onCreateEvent={(date, time) => openCreateModal(date, time)}
                 onEditEvent={openEditModal}
