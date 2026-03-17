@@ -1,51 +1,45 @@
 
-## Plán: CI/CD Workflow pre booking projekt
 
-### Problém
-- Navrhovaný workflow je pre iný repozitár (`git-connect-hub`)
-- Používa `npm install` namiesto `bun install`
-- Niekedy `actions/checkout@v2` (zastaralá verzia)
+## Code Review: Admin Calendar — All 4 Views
 
-### Navrhované zmeny pre správny projekt
+### Verified Components
 
-**Súbor:** `.github/workflows/ci-cd.yml` v repozitári `EB-EU-s-r-o/booking-buddy`
+**1. TimeGridView (Day/Week)** — `TimeGridView.tsx`
+- Event pills show: bold time range (`9:30 – 11:00`), service name, client name, phone/email, employee name
+- Small events (≤30min) show compact single-line with service + client
+- Medium events (30-45min) hide contact info to save space
+- Large events show full details including phone/email
+- Resize handles, drag-and-drop, current time indicator all present
 
-```yaml
-name: CI/CD
+**2. MonthView** — `MonthView.tsx`
+- Shows `startTime–endTime` and service name on each event pill
+- Color-coded by category via `getEventColorByCategory`
+- Blocked dates marked with 🚫
+- Drag-and-drop between days supported
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+**3. ListView** — `ListView.tsx` (new)
+- Groups events by date with localized date headers
+- Each card shows: time block (start/end + duration), service name, client name with icon, phone/email, employee name, status badge
+- Filtered by selected therapist
+- Click to edit event
+- Empty state message when no bookings
 
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-      
-      - name: Install dependencies
-        run: bun install
-      
-      - name: Run tests
-        run: bun run test
-      
-      - name: Lint code
-        run: bun run lint
-      
-      - name: Type check
-        run: bun run build  # TypeScript check je súčasťou buildu
-      
-      - name: Build verification
-        run: bun run build
-```
+**4. CalendarHeader** — `CalendarHeader.tsx`
+- 4 view toggles: Mesiac/Týždeň/Deň/Zoznam with animated active indicator
+- Employee filter, navigation, overlap prevention toggle
 
-### Čo potrebujem overiť
-1. Má váš projekt script `test` v package.json? (Vidím vitest v závislostiach)
-2. Chcete workflow pre **booking-buddy** repozitár alebo **git-connect-hub**?
+### Potential Issues Found
+
+1. **No issues in code logic** — all views correctly receive `events`, `selectedTherapist`, `language` props
+2. **ListView navigation** — correctly uses week-based navigation (same as week view) in `CalendarView.tsx` line 57-59
+3. **Employee name mapping** — correctly built from `employees_public` join in `CalendarView.tsx` line 93
+
+### To Complete Testing
+You need to log in as admin in the preview first. Then I can:
+- Switch between all 4 views
+- Verify event cards display all info
+- Test mobile responsiveness
+
+### No Code Changes Needed
+The implementation looks complete and correct based on code review. Browser testing requires admin authentication.
+
