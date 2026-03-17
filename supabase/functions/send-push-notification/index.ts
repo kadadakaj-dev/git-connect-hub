@@ -16,24 +16,17 @@ interface PushPayload {
 }
 
 interface PushRequest {
-  // Send to a specific user_id, or "all" for broadcast
   user_id?: string;
-  // Direct payload
   payload: PushPayload;
 }
 
 interface PushSubscriptionRow {
   id: string;
   endpoint: string;
-  keys: string; // JSON string: { p256dh, auth }
+  keys: string;
   user_id: string | null;
 }
 
-/**
- * Builds the unsigned JWT header + payload for VAPID.
- * Web Push uses ES256 (ECDSA P-256 + SHA-256) for VAPID auth.
- * In Deno we use the WebCrypto API directly — no npm dependencies.
- */
 async function sendWebPush(
   subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
   payload: PushPayload,
@@ -44,7 +37,6 @@ async function sendWebPush(
   const endpoint = new URL(subscription.endpoint);
   const audience = `${endpoint.protocol}//${endpoint.host}`;
 
-  // Import VAPID private key for signing
   const privateKeyBytes = base64UrlDecode(vapidPrivateKey);
   const publicKeyBytes = base64UrlDecode(vapidPublicKey);
 
@@ -62,7 +54,6 @@ async function sendWebPush(
     ["sign"]
   );
 
-  // Build VAPID JWT (valid for 12 hours)
   const header = { typ: "JWT", alg: "ES256" };
   const now = Math.floor(Date.now() / 1000);
   const jwtPayload = {
@@ -85,12 +76,10 @@ async function sendWebPush(
     new TextEncoder().encode(unsignedToken)
   );
 
-  // Convert DER signature to raw r||s format (64 bytes)
   const rawSignature = derToRaw(new Uint8Array(signature));
   const encodedSignature = base64UrlEncode(rawSignature);
   const jwt = `${unsignedToken}.${encodedSignature}`;
 
-  // Build the push request
   const body = JSON.stringify(payload);
 
   const response = await fetch(subscription.endpoint, {
@@ -107,27 +96,20 @@ async function sendWebPush(
   return response;
 }
 
-/** Convert DER-encoded ECDSA signature to raw 64-byte r||s format */
 function derToRaw(der: Uint8Array): Uint8Array {
-  // DER: 0x30 [total-len] 0x02 [r-len] [r] 0x02 [s-len] [s]
   const raw = new Uint8Array(64);
-  let offset = 2; // skip 0x30 and total length
-
-  // Read r
-  offset++; // skip 0x02
+  let offset = 2;
+  offset++;
   let rLen = der[offset++];
-  const rOffset = rLen === 33 ? offset + 1 : offset; // skip leading zero if present
+  const rOffset = rLen === 33 ? offset + 1 : offset;
   const rSize = rLen === 33 ? 32 : rLen;
   raw.set(der.slice(rOffset, rOffset + rSize), 32 - rSize);
   offset += rLen;
-
-  // Read s
-  offset++; // skip 0x02
+  offset++;
   let sLen = der[offset++];
   const sOffset = sLen === 33 ? offset + 1 : offset;
   const sSize = sLen === 33 ? 32 : sLen;
   raw.set(der.slice(sOffset, sOffset + sSize), 64 - sSize);
-
   return raw;
 }
 
@@ -171,7 +153,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // ─── Auth: require admin role or service-role internal call ───
+    // ─── Auth: require service-role or admin ───
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
@@ -181,28 +163,25 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const token = authHeader.replace("Bearer ", "");
-
-    // If the caller is the service_role key itself (internal edge-function-to-edge-function),
-    // we trust it. Otherwise, verify admin.
     const isServiceRole = token === supabaseServiceKey;
 
     if (!isServiceRole) {
-      const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+      // Verify the caller is an admin user
+      const userClient = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
       });
-
-      const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
-      if (claimsError || !claimsData?.claims) {
+      const { data: { user }, error: userError } = await userClient.auth.getUser();
+      
+      if (userError || !user) {
         return new Response(
           JSON.stringify({ error: "Unauthorized" }),
           { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
 
-      const userId = claimsData.claims.sub;
       const supabase = createClient(supabaseUrl, supabaseServiceKey);
       const { data: isAdmin } = await supabase.rpc("has_role", {
-        _user_id: userId,
+        _user_id: user.id,
         _role: "admin",
       });
 
@@ -280,15 +259,12 @@ const handler = async (req: Request): Promise<Response> => {
         if (response.ok || response.status === 201) {
           sent++;
         } else if (response.status === 404 || response.status === 410) {
-          // 404/410 = subscription expired or unsubscribed — mark for cleanup
           console.log(`Subscription ${sub.id} gone (${response.status}), marking for cleanup`);
           staleEndpoints.push(sub.endpoint);
           failed++;
         } else {
           const errorText = await response.text();
-          console.error(
-            `Push failed for ${sub.id}: ${response.status} ${errorText}`
-          );
+          console.error(`Push failed for ${sub.id}: ${response.status} ${errorText}`);
           failed++;
         }
       } catch (err) {
@@ -297,7 +273,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // ─── Cleanup stale subscriptions (404/410) ───
+    // ─── Cleanup stale subscriptions ───
     let cleaned = 0;
     if (staleEndpoints.length > 0) {
       const { count } = await supabase
@@ -309,13 +285,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        sent,
-        failed,
-        cleaned,
-        total: subscriptions.length,
-      }),
+      JSON.stringify({ success: true, sent, failed, cleaned, total: subscriptions.length }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error: unknown) {
