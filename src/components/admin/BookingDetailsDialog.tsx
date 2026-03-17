@@ -39,6 +39,7 @@ interface BookingDetailsDialogProps {
   booking: AdminBookingDetails | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onEdit?: (booking: AdminBookingDetails) => void;
 }
 
 const BookingDetailsDialog = ({ booking, open, onOpenChange }: BookingDetailsDialogProps) => {
