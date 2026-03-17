@@ -73,13 +73,15 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: 'es2020',
     cssCodeSplit: true,
+    modulePreload: { polyfill: false },
     rollupOptions: {
       output: {
         manualChunks: {
           'supabase': ['@supabase/supabase-js'],
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'query': ['@tanstack/react-query'],
-          'ui': ['framer-motion', 'sonner', 'next-themes', 'react-helmet-async'],
+          'motion': ['framer-motion'],
+          'ui': ['sonner', 'next-themes', 'react-helmet-async'],
           'date': ['date-fns', 'react-day-picker'],
           'form': ['react-hook-form', '@hookform/resolvers', 'zod'],
         },
