@@ -14,6 +14,7 @@ interface BookingWithService {
   time_slot: string;
   client_name: string;
   client_email: string;
+  client_user_id: string | null;
   cancellation_token: string;
   service: {
     name_sk: string;
@@ -83,6 +84,7 @@ const handler = async (req: Request): Promise<Response> => {
         time_slot,
         client_name,
         client_email,
+        client_user_id,
         cancellation_token,
         service:services(name_sk, name_en)
       `)
@@ -130,6 +132,25 @@ const handler = async (req: Request): Promise<Response> => {
           console.error(`Error sending email for booking ${booking.id}:`, emailError);
           results.push({ booking_id: booking.id, status: "email_failed" });
           continue;
+        }
+
+        // Send push notification if the client has a linked user account
+        if (booking.client_user_id) {
+          try {
+            await supabase.functions.invoke("send-push-notification", {
+              body: {
+                user_id: booking.client_user_id,
+                payload: {
+                  title: "Pripomienka: Zajtra máte termín",
+                  body: `${booking.service?.name_sk || "Služba"} — ${booking.date} o ${booking.time_slot}`,
+                  url: "/portal",
+                },
+              },
+            });
+          } catch (pushErr) {
+            // Push failure should not block the reminder flow
+            console.error(`Push notification failed for booking ${booking.id}:`, pushErr);
+          }
         }
 
         // Record that reminder was sent
