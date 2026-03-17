@@ -149,7 +149,7 @@ serve(async (req) => {
         adminData: {
           clientName: booking.client_name,
           clientEmail: booking.client_email,
-          clientPhone: '',
+          clientPhone: booking.client_phone || '',
           notes: null,
         },
       }),
