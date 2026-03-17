@@ -228,6 +228,7 @@ const CalendarView = () => {
           duration: event.serviceDuration,
         } : null,
         employees: empName ? { full_name: empName } : null,
+        employee_id: event.therapistId,
       });
       setDetailOpen(true);
       return;
