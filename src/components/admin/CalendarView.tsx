@@ -511,6 +511,24 @@ const CalendarView = () => {
         booking={detailBooking}
         open={detailOpen}
         onOpenChange={setDetailOpen}
+        onEdit={(b) => {
+          const event = events.find(e => e.id === b.id);
+          if (!event) return;
+          setFormData({
+            id: event.id,
+            date: event.date,
+            startTime: event.startTime,
+            duration: event.duration,
+            title: event.title,
+            type: event.type,
+            notes: event.notes || '',
+            therapistId: event.therapistId || employees[0]?.id || '',
+            isRecurring: false,
+            recurringWeeks: 4,
+          });
+          setModalMode('edit');
+          setModalOpen(true);
+        }}
       />
     </Card>
   );
