@@ -409,6 +409,23 @@ const CalendarView = () => {
                 onDropOnDay={handleDropOnMonthDay}
               />
             </motion.div>
+          ) : viewMode === 'list' ? (
+            <motion.div
+              key={`list-${dateKey}`}
+              custom={navDirection}
+              initial={{ opacity: 0, x: navDirection * 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: navDirection * -40 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="flex flex-col flex-1 overflow-hidden"
+            >
+              <ListView
+                language={language}
+                events={events}
+                selectedTherapist={selectedTherapist}
+                onEditEvent={openEditModal}
+              />
+            </motion.div>
           ) : (
             <motion.div
               key={`${viewMode}-${dateKey}`}
@@ -424,7 +441,7 @@ const CalendarView = () => {
                 activeDays={getActiveDays()}
                 events={events}
                 selectedTherapist={selectedTherapist}
-                viewMode={viewMode}
+                viewMode={viewMode as 'day' | 'week'}
                 blockedDates={blockedDates}
                 onCreateEvent={(date, time) => openCreateModal(date, time)}
                 onEditEvent={openEditModal}
