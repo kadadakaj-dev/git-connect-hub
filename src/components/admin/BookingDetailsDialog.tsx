@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { sk } from 'date-fns/locale';
-import { Calendar, Clock, Mail, MessageSquareText, Phone, User, UserRoundCheck } from 'lucide-react';
+import { Calendar, Clock, Mail, MessageSquareText, Phone, User, UserRoundCheck, Timer, Tag, Banknote } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -21,9 +21,13 @@ export interface AdminBookingDetails {
   status: string;
   notes: string | null;
   created_at: string;
+  booking_duration?: number;
   services?: {
     name_sk: string;
     name_en: string;
+    category?: string;
+    price?: number;
+    duration?: number;
   } | null;
   employees?: {
     full_name: string;
@@ -126,12 +130,39 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange }: BookingDetailsDia
                       <span>{booking.time_slot}</span>
                     </div>
                     <div className="flex items-center gap-2 text-muted-foreground">
+                      <Timer className="h-4 w-4 shrink-0" />
+                      <span>{booking.booking_duration || booking.services?.duration || '—'} min</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <UserRoundCheck className="h-4 w-4 shrink-0" />
                       <span>{employeeName}</span>
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Service details */}
+              {booking.services && (booking.services.category || booking.services.price != null) && (
+                <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    {isSlovak ? 'Služba' : 'Service'}
+                  </p>
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    {booking.services.category && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Tag className="h-4 w-4 shrink-0" />
+                        <span className="capitalize">{booking.services.category}</span>
+                      </div>
+                    )}
+                    {booking.services.price != null && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Banknote className="h-4 w-4 shrink-0" />
+                        <span>{booking.services.price} €</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
                 <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">

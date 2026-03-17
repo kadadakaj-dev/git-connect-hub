@@ -12,10 +12,11 @@ import MonthView from './calendar/MonthView';
 import TimeGridView from './calendar/TimeGridView';
 import ListView from './calendar/ListView';
 import EventModal, { EventFormData } from './calendar/EventModal';
+import BookingDetailsDialog, { AdminBookingDetails } from './BookingDetailsDialog';
 import { Tables } from '@/integrations/supabase/types';
 
 type BookingWithService = Tables<'bookings'> & {
-  service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category'> | null;
+  service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category' | 'price'> | null;
 };
 
 const CalendarView = () => {
@@ -38,6 +39,10 @@ const CalendarView = () => {
     id: '', date: '', startTime: '09:00', duration: 60, title: '',
     type: 'booking', notes: '', therapistId: '', isRecurring: false, recurringWeeks: 4,
   });
+
+  // Booking detail dialog state
+  const [detailBooking, setDetailBooking] = useState<AdminBookingDetails | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   // Resize state
   const [resizingState, setResizingState] = useState<{
@@ -67,8 +72,8 @@ const CalendarView = () => {
         .from('bookings')
         .select(`
           id, date, time_slot, client_name, client_email, client_phone,
-          status, notes, service_id, employee_id,
-          service:services(id, name_sk, name_en, duration, category)
+          status, notes, service_id, employee_id, created_at, booking_duration,
+          service:services(id, name_sk, name_en, duration, category, price)
         `)
         .gte('date', format(rangeStart, 'yyyy-MM-dd'))
         .lte('date', format(rangeEnd, 'yyyy-MM-dd'))
@@ -95,7 +100,7 @@ const CalendarView = () => {
         id: b.id,
         date: b.date,
         startTime: b.time_slot,
-        duration: b.service?.duration || 60,
+        duration: b.booking_duration || b.service?.duration || 60,
         title: b.client_name,
         type: 'booking' as const,
         notes: b.notes,
@@ -106,6 +111,11 @@ const CalendarView = () => {
         serviceId: b.service_id ?? undefined,
         serviceName: b.service ? (language === 'sk' ? b.service.name_sk : b.service.name_en) : undefined,
         employeeName: b.employee_id ? (empMap.get(b.employee_id) ?? undefined) : undefined,
+        createdAt: b.created_at,
+        bookingDuration: b.booking_duration,
+        serviceCategory: b.service?.category ?? undefined,
+        servicePrice: b.service?.price != null ? Number(b.service.price) : undefined,
+        serviceDuration: b.service?.duration ?? undefined,
       }));
       setEvents(mapped);
     }
@@ -194,6 +204,35 @@ const CalendarView = () => {
   };
 
   const openEditModal = (event: CalendarEvent) => {
+    // For bookings, open the detail dialog; for blocks, open the edit modal
+    if (event.type === 'booking') {
+      const empName = event.employeeName || (event.therapistId
+        ? employees.find(e => e.id === event.therapistId)?.full_name
+        : undefined);
+      setDetailBooking({
+        id: event.id,
+        client_name: event.title,
+        client_email: event.clientEmail || '',
+        client_phone: event.clientPhone || null,
+        date: event.date,
+        time_slot: event.startTime,
+        status: event.status,
+        notes: event.notes,
+        created_at: event.createdAt || '',
+        booking_duration: event.bookingDuration,
+        services: event.serviceName ? {
+          name_sk: event.serviceName,
+          name_en: event.serviceName,
+          category: event.serviceCategory,
+          price: event.servicePrice,
+          duration: event.serviceDuration,
+        } : null,
+        employees: empName ? { full_name: empName } : null,
+      });
+      setDetailOpen(true);
+      return;
+    }
+
     setFormData({
       id: event.id,
       date: event.date,
@@ -466,6 +505,12 @@ const CalendarView = () => {
         onChange={handleFormChange}
         onSave={handleSave}
         onDelete={handleDelete}
+      />
+
+      <BookingDetailsDialog
+        booking={detailBooking}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
       />
     </Card>
   );
