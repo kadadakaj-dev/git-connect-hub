@@ -163,7 +163,7 @@ const CalendarView = () => {
     setNavDirection(1);
     setDateKey(k => k + 1);
     if (viewMode === 'day') setCurrentDate(prev => addDays(prev, 1));
-    else if (viewMode === 'week') setCurrentDate(prev => addWeeks(prev, 1));
+    else if (viewMode === 'week' || viewMode === 'list') setCurrentDate(prev => addWeeks(prev, 1));
     else setCurrentDate(prev => { const d = new Date(prev); d.setMonth(d.getMonth() + 1); return d; });
   };
   const goToToday = () => { setNavDirection(1); setDateKey(k => k + 1); setCurrentDate(new Date()); };
