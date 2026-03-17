@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { sk } from 'date-fns/locale';
-import { Calendar, Clock, Mail, MessageSquareText, Phone, User, UserRoundCheck } from 'lucide-react';
+import { Calendar, Clock, Mail, MessageSquareText, Phone, User, UserRoundCheck, Timer, Tag, Banknote } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
