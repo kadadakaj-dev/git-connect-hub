@@ -130,6 +130,31 @@ serve(async (req) => {
 
     console.log('Booking cancelled successfully:', booking.id)
 
+    // Send cancellation admin email notification (fire-and-forget)
+    fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+      },
+      body: JSON.stringify({
+        to: 'booking@fyzioafit.sk',
+        clientName: booking.client_name,
+        serviceName: service?.name_sk || 'Služba',
+        date: booking.date,
+        time: booking.time_slot,
+        cancellationToken: '',
+        language: 'sk',
+        template: 'cancellation-admin',
+        adminData: {
+          clientName: booking.client_name,
+          clientEmail: booking.client_email,
+          clientPhone: '',
+          notes: null,
+        },
+      }),
+    }).catch(err => console.error('Error sending cancellation admin email:', err))
+
     // Send push notification about cancellation (fire-and-forget)
     if (booking.client_user_id) {
       fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {

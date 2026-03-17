@@ -462,6 +462,7 @@ serve(async (req) => {
     });
 
     const isAdminNotification = data.template === "admin-notification";
+    const isCancellationAdmin = data.template === "cancellation-admin";
     const t = translations[data.language];
     const isReminder = data.template === "reminder";
 
@@ -469,7 +470,11 @@ serve(async (req) => {
     let html: string;
     let textContent: string;
 
-    if (isAdminNotification) {
+    if (isCancellationAdmin) {
+      subject = `Zrusena rezervacia: ${data.adminData?.clientName} - ${data.serviceName}`;
+      html = generateCancellationAdminHtml(data);
+      textContent = generateCancellationAdminText(data);
+    } else if (isAdminNotification) {
       subject = `Nova rezervacia: ${data.adminData?.clientName} - ${data.serviceName}`;
       html = generateAdminNotificationHtml(data);
       textContent = generateAdminNotificationText(data);
