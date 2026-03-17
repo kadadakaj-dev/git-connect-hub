@@ -79,6 +79,7 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ['**/*.{js,css,html,ico,svg,png,woff2}'],
       },
     }),
+    asyncCssPlugin(),
   ].filter(Boolean),
   resolve: {
     alias: {
