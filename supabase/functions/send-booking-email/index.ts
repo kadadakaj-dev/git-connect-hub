@@ -358,6 +358,8 @@ function generateAdminNotificationText(data: EmailRequest): string {
     `Miesto: Krmanová 6, Košice`,
     admin.notes ? `Poznamky: ${admin.notes}` : '',
     "========================================",
+    '',
+    `Admin Dashboard: https://booking-fyzioafit.lovable.app/admin`,
   ].filter(Boolean).join("\n");
 }
 
