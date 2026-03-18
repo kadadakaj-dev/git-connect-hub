@@ -34,7 +34,7 @@ const translations = {
     service: "Služba",
     dateTime: "Dátum a čas",
     location: "Miesto",
-    address: "Košice",
+    address: "Krmanová 6, Košice",
     cancelText: "Ak potrebujete zrušiť rezerváciu, kliknite na nasledujúci odkaz:",
     cancelButton: "Zrušiť rezerváciu",
     footer: "Tešíme sa na vašu návštevu!",
@@ -50,7 +50,7 @@ const translations = {
     service: "Service",
     dateTime: "Date & Time",
     location: "Location",
-    address: "Košice",
+    address: "Krmanová 6, Košice",
     cancelText: "If you need to cancel your booking, click the following link:",
     cancelButton: "Cancel Booking",
     footer: "We look forward to seeing you!",
@@ -84,70 +84,93 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
   <title>${isReminder ? t.reminderSubject : t.subject}</title>
+  <style>
+    :root { color-scheme: light dark; }
+    @media (prefers-color-scheme: dark) {
+      .email-body { background-color: #18181b !important; }
+      .email-card { background-color: #242427 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important; border: 1px solid #3f3f46 !important; }
+      .detail-box { background-color: #2f2f36 !important; }
+      .detail-border { border-color: #3f3f46 !important; }
+      .text-heading { color: #e4e4e7 !important; }
+      .text-body { color: #d4d4d8 !important; }
+      .text-muted { color: #a1a1aa !important; }
+      .text-accent { color: #6ba3e0 !important; }
+      .cancel-section { background-color: #2e1616 !important; border-color: #7f1d1d !important; }
+      .cancel-heading { color: #f87171 !important; }
+      .footer-section { background-color: #1e1e22 !important; border-color: #3f3f46 !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f5fa;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f5fa; padding: 20px;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="email-body" style="background-color: #f7f9fc; padding: 20px;">
     <tr>
       <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+        <table width="600" cellpadding="0" cellspacing="0" class="email-card" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);">
           <!-- Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%); padding: 30px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px;">${t.clinicName}</h1>
+            <td style="background: linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%); padding: 36px 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1.5px;">${t.clinicName}</h1>
             </td>
-          </tr><!-- Content -->
+          </tr>
+          <!-- Content -->
           <tr>
             <td style="padding: 40px 30px;">
-              <h2 style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px;">${t.greeting}, ${data.clientName}!</h2>
-              <p style="color: #4b5e78; margin: 0 0 30px 0; font-size: 16px;">${title}</p><!-- Booking Details -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f8fc; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+              <h2 class="text-heading" style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px; font-weight: 600;">${t.greeting}, ${data.clientName}!</h2>
+              <p class="text-body" style="color: #4b5e78; margin: 0 0 30px 0; font-size: 16px; line-height: 1.5;">${title}</p>
+              <!-- Booking Details -->
+              <table width="100%" cellpadding="0" cellspacing="0" class="detail-box" style="background-color: #f0f4f8; border-radius: 12px; margin-bottom: 30px;">
                 <tr>
-                  <td style="padding: 20px;">
+                  <td style="padding: 24px;">
                     <table width="100%" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #dde5ef;">
-                          <span style="color: #6b7c94; font-size: 14px;">${t.service}</span><br>
-                          <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${data.serviceName}</span>
+                        <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                          <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.service}</span><br>
+                          <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 600;">${data.serviceName}</span>
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #dde5ef;">
-                          <span style="color: #6b7c94; font-size: 14px;">${t.dateTime}</span><br>
-                          <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${formattedDate}</span><br>
-                          <span style="color: #4a90d9; font-size: 16px; font-weight: 600;">${data.time}</span>
+                        <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                          <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.dateTime}</span><br>
+                          <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 500;">${formattedDate}</span><br>
+                          <span class="text-accent" style="color: #4a90d9; font-size: 16px; font-weight: 700;">${data.time}</span>
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding: 10px 0;">
-                          <span style="color: #6b7c94; font-size: 14px;">${t.location}</span><br>
-                          <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${t.address}</span>
+                        <td style="padding: 12px 0;">
+                          <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.location}</span><br>
+                          <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 500;">${t.address}</span>
                         </td>
                       </tr>
                     </table>
                   </td>
                 </tr>
-              </table><!-- Looking forward -->
-              <p style="color: #1a2b42; font-size: 18px; font-weight: 600; margin: 0 0 25px 0; text-align: center;">${t.footer}</p><!-- Cancel Section -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff8f0; border: 1px solid #fde0b0; border-radius: 8px; margin-bottom: 20px;">
+              </table>
+              <!-- Looking forward -->
+              <p class="text-heading" style="color: #1a2b42; font-size: 18px; font-weight: 600; margin: 0 0 28px 0; text-align: center;">${t.footer}</p>
+              <!-- Cancel Section - Alert style with left border -->
+              <table width="100%" cellpadding="0" cellspacing="0" class="cancel-section" style="background-color: #fef2f2; border-left: 4px solid #ef4444; border-radius: 0 12px 12px 0; margin-bottom: 24px;">
                 <tr>
-                  <td style="padding: 24px; color: #92400e; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 1.6;">
-                    <p style="margin: 0 0 16px 0; font-weight: 600;">${data.language === 'sk' ? 'Storno podmienky:' : 'Cancellation policy:'}</p>
-                    <p style="margin: 0 0 14px 0;">• ${data.language === 'sk' ? 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.' : 'You can cancel online up to 12 hours before your appointment.'}</p>
-                    <p style="margin: 0;">• ${data.language === 'sk'
+                  <td style="padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 1.7;">
+                    <p class="cancel-heading" style="margin: 0 0 14px 0; font-weight: 700; font-size: 15px; color: #dc2626;">${data.language === 'sk' ? 'Storno podmienky' : 'Cancellation policy'}</p>
+                    <p class="text-body" style="margin: 0 0 10px 0; color: #4b5e78;">• ${data.language === 'sk' ? 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.' : 'You can cancel online up to 12 hours before your appointment.'}</p>
+                    <p class="text-body" style="margin: 0; color: #4b5e78;">• ${data.language === 'sk'
       ? 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: <strong>+421 905 307 198</strong> ale bude Vám účtovaný storno poplatok 10&nbsp;€.'
       : 'Less than 12 hours before, cancellation is only possible by phone: <strong>+421 905 307 198</strong> and a cancellation fee of €10 will be charged.'}</p>
                   </td>
                 </tr>
               </table>
               <div style="text-align: center;">
-                <a href="${cancelUrl}" style="display: inline-block; background-color: #ef4444; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">${t.cancelButton}</a>
+                <a href="${cancelUrl}" style="display: inline-block; background-color: #ef4444; color: #ffffff; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; letter-spacing: 0.3px;">${t.cancelButton}</a>
               </div>
             </td>
-          </tr><!-- Footer -->
+          </tr>
+          <!-- Footer -->
           <tr>
-            <td style="background-color: #f5f8fc; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
-              <p style="color: #6b7c94; margin: 0; font-size: 14px;">${t.contact}</p>
+            <td class="footer-section" style="background-color: #f0f4f8; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
+              <p class="text-muted" style="color: #6b7c94; margin: 0; font-size: 14px;">${t.contact}</p>
             </td>
           </tr>
         </table>
