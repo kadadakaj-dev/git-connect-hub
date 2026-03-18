@@ -50,7 +50,7 @@ const translations = {
     service: "Service",
     dateTime: "Date & Time",
     location: "Location",
-    address: "Košice",
+    address: "Krmanová 6, Košice",
     cancelText: "If you need to cancel your booking, click the following link:",
     cancelButton: "Cancel Booking",
     footer: "We look forward to seeing you!",
