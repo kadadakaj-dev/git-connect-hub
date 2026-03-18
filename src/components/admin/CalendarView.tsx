@@ -110,7 +110,7 @@ const CalendarView = () => {
         clientPhone: b.client_phone ?? undefined,
         serviceId: b.service_id ?? undefined,
         serviceName: b.service ? (language === 'sk' ? b.service.name_sk : b.service.name_en) : undefined,
-        employeeName: b.employee_id ? (empMap.get(b.employee_id) ?? undefined) : undefined,
+        employeeName: b.employee_id ? (empMap.get(b.employee_id) as string ?? undefined) : undefined,
         createdAt: b.created_at,
         bookingDuration: b.booking_duration,
         serviceCategory: b.service?.category ?? undefined,
