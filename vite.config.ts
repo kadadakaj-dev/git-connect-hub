@@ -89,7 +89,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: 'es2020',
     cssCodeSplit: true,
-    modulePreload: { polyfill: false },
+    modulePreload: { polyfill: true },
     cssMinify: true,
     rollupOptions: {
       output: {
