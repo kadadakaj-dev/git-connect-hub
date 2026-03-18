@@ -322,6 +322,10 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
                   </table>
                 </td></tr>
               </table>
+              <!-- Admin Dashboard Button -->
+              <div style="text-align: center; padding: 0 30px 30px;">
+                <a href="https://booking-fyzioafit.lovable.app/admin" style="display: inline-block; background: linear-gradient(135deg, #2d8a5e 0%, #40b07a 100%); color: #ffffff; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-size: 15px; font-weight: 600; letter-spacing: 0.3px;">Otvoriť Admin Dashboard</a>
+              </div>
             </td>
           </tr>
           <tr>
