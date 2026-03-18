@@ -34,7 +34,7 @@ const translations = {
     service: "Služba",
     dateTime: "Dátum a čas",
     location: "Miesto",
-    address: "Košice",
+    address: "Krmanová 6, Košice",
     cancelText: "Ak potrebujete zrušiť rezerváciu, kliknite na nasledujúci odkaz:",
     cancelButton: "Zrušiť rezerváciu",
     footer: "Tešíme sa na vašu návštevu!",
