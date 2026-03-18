@@ -51,8 +51,8 @@ const CancelBooking = () => {
       notFound: 'Rezervácia nebola nájdená',
       pastBooking: 'Nemožno zrušiť minulé rezervácie',
       tooLateTitle: 'Zrušenie online nie je možné',
-      tooLateText: 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom. Pri neskoršom zrušení bude účtovaný storno poplatok 10 €.',
-      tooLatePhone: 'Kontaktujte nás telefonicky:',
+      tooLateText: 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.',
+      tooLatePhone: '',
       backToHome: 'Späť na hlavnú stránku',
       newBooking: 'Nová rezervácia',
       service: 'Služba',
@@ -75,8 +75,8 @@ const CancelBooking = () => {
       notFound: 'Booking not found',
       pastBooking: 'Cannot cancel past bookings',
       tooLateTitle: 'Online cancellation not available',
-      tooLateText: 'You can cancel online up to 12 hours before your appointment. A cancellation fee of €10 will be charged for late cancellations.',
-      tooLatePhone: 'Contact us by phone:',
+      tooLateText: 'Less than 12 hours before, cancellation is only possible by phone: +421 905 307 198 and a cancellation fee of €10 will be charged.',
+      tooLatePhone: '',
       backToHome: 'Back to Home',
       newBooking: 'New Booking',
       service: 'Service',
@@ -300,10 +300,6 @@ const CancelBooking = () => {
                 {error === 'TOO_LATE_TO_CANCEL' ? (
                   <div className="space-y-3">
                     <p className="text-muted-foreground">{text.tooLateText}</p>
-                    <p className="text-foreground font-medium">
-                      {text.tooLatePhone}{' '}
-                      <a href="tel:+421905307198" className="text-primary underline">+421 905 307 198</a>
-                    </p>
                   </div>
                 ) : (
                   <p className="text-muted-foreground">{error}</p>

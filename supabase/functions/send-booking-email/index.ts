@@ -134,12 +134,9 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
                   <td style="padding: 24px; color: #92400e; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 1.6;">
                     <p style="margin: 0 0 16px 0; font-weight: 600;">${data.language === 'sk' ? 'Storno podmienky:' : 'Cancellation policy:'}</p>
                     <p style="margin: 0 0 14px 0;">• ${data.language === 'sk' ? 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.' : 'You can cancel online up to 12 hours before your appointment.'}</p>
-                    <p style="margin: 0 0 14px 0;">• ${data.language === 'sk'
-      ? 'Menej ako 12 hodín pred termínom je zrušenie možné,<br>len telefonicky: <strong>+421 905 307 198</strong>'
-      : 'Less than 12 hours before — cancellation only<br>by phone: <strong>+421 905 307 198</strong>'}</p>
-                    <p style="margin: 0; font-weight: 600; color: #b91c1c;">• ${data.language === 'sk'
-      ? 'V prípade nezrušenej rezervácie Vám bude pri ďalšej návšteve<br>účtovaný storno poplatok 10&nbsp;€.'
-      : 'A no-show fee of €10 will be charged at your next visit<br>for uncancelled reservations.'}</p>
+                    <p style="margin: 0;">• ${data.language === 'sk'
+      ? 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: <strong>+421 905 307 198</strong> ale bude Vám účtovaný storno poplatok 10&nbsp;€.'
+      : 'Less than 12 hours before, cancellation is only possible by phone: <strong>+421 905 307 198</strong> and a cancellation fee of €10 will be charged.'}</p>
                   </td>
                 </tr>
               </table>
@@ -179,10 +176,7 @@ function generateEmailText(data: EmailRequest, baseUrl: string): string {
       '• Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.',
       '',
       '• Menej ako 12 hodín pred termínom je zrušenie možné,',
-      '  len telefonicky: +421 905 307 198',
-      '',
-      '• V prípade nezrušenej rezervácie Vám bude pri ďalšej návšteve',
-      '  účtovaný storno poplatok 10 €.',
+      '  len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.',
     ]
     : [
       '',
@@ -192,11 +186,8 @@ function generateEmailText(data: EmailRequest, baseUrl: string): string {
       '',
       '• You can cancel online up to 12 hours before your appointment.',
       '',
-      '• Less than 12 hours before — cancellation only',
-      '  by phone: +421 905 307 198',
-      '',
-      '• A no-show fee of €10 will be charged at your next visit',
-      '  for uncancelled reservations.',
+      '• Less than 12 hours before, cancellation is only possible',
+      '  by phone: +421 905 307 198 and a cancellation fee of €10 will be charged.',
     ];
 
   return [
