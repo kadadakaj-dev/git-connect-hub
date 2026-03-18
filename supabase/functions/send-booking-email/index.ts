@@ -351,6 +351,7 @@ function generateAdminNotificationText(data: EmailRequest): string {
     `Sluzba: ${data.serviceName}`,
     `Datum: ${formattedDate}`,
     `Cas: ${data.time}`,
+    `Miesto: Krmanová 6, Košice`,
     admin.notes ? `Poznamky: ${admin.notes}` : '',
     "========================================",
   ].filter(Boolean).join("\n");
