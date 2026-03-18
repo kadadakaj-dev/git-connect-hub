@@ -470,6 +470,7 @@ function generateCancellationAdminText(data: EmailRequest): string {
     `Sluzba: ${data.serviceName}`,
     `Datum: ${formattedDate}`,
     `Cas: ${data.time}`,
+    `Miesto: Krmanová 6, Košice`,
     "========================================",
   ].filter(Boolean).join("\n");
 }
