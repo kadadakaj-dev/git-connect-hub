@@ -442,9 +442,10 @@ function generateCancellationAdminHtml(data: EmailRequest): string {
                         <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 500;">Krmanová 6, Košice</span>
                       </td>
                     </tr>
-                  </table>
-                </td></tr>
-              </table>
+              <!-- Admin Dashboard Button -->
+              <div style="text-align: center; padding: 0 30px 30px;">
+                <a href="https://booking-fyzioafit.lovable.app/admin" style="display: inline-block; background: linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%); color: #ffffff; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-size: 15px; font-weight: 600; letter-spacing: 0.3px;">Otvoriť Admin Dashboard</a>
+              </div>
             </td>
           </tr>
           <tr>
