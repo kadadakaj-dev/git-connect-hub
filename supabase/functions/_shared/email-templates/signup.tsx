@@ -29,20 +29,32 @@ export const SignupEmail = ({
   confirmationUrl,
 }: SignupEmailProps) => (
   <Html lang="sk" dir="ltr">
-    <Head />
+    <Head>
+      <style dangerouslySetInnerHTML={{ __html: `
+        :root { color-scheme: light dark; }
+        @media (prefers-color-scheme: dark) {
+          .email-body { background-color: #18181b !important; }
+          .email-card { background-color: #242427 !important; border: 1px solid #3f3f46 !important; }
+          .text-heading { color: #e4e4e7 !important; }
+          .text-body { color: #d4d4d8 !important; }
+          .text-muted { color: #a1a1aa !important; }
+          .footer-section { background-color: #1e1e22 !important; border-color: #3f3f46 !important; }
+        }
+      `}} />
+    </Head>
     <Preview>Potvrďte svoj e-mail – FYZIO&FIT</Preview>
-    <Body style={main}>
-      <Container style={wrapper}>
+    <Body className="email-body" style={main}>
+      <Container className="email-card" style={wrapper}>
         <Section style={header}>
           <Heading style={headerTitle}>FYZIO&FIT</Heading>
         </Section>
         <Section style={content}>
-          <Heading style={h1}>Potvrďte svoj e-mail</Heading>
-          <Text style={text}>
+          <Heading className="text-heading" style={h1}>Potvrďte svoj e-mail</Heading>
+          <Text className="text-body" style={text}>
             Ďakujeme za registráciu v{' '}
             <Link href={siteUrl} style={link}><strong>FYZIO&FIT</strong></Link>!
           </Text>
-          <Text style={text}>
+          <Text className="text-body" style={text}>
             Prosím, potvrďte svoju e-mailovú adresu (
             <Link href={`mailto:${recipient}`} style={link}>{recipient}</Link>
             ) kliknutím na tlačidlo nižšie:
@@ -50,13 +62,13 @@ export const SignupEmail = ({
           <Button style={button} href={confirmationUrl}>
             Overiť e-mail
           </Button>
-          <Text style={footerText}>
+          <Text className="text-muted" style={footerText}>
             Ak ste si nevytvorili účet, tento e-mail môžete pokojne ignorovať.
           </Text>
         </Section>
-        <Section style={footer}>
-          <Text style={footerBrand}>Tešíme sa na vašu návštevu!</Text>
-          <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
+        <Section className="footer-section" style={footer}>
+          <Text className="text-muted" style={footerBrand}>Tešíme sa na vašu návštevu!</Text>
+          <Text className="text-muted" style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>
     </Body>
@@ -65,16 +77,16 @@ export const SignupEmail = ({
 
 export default SignupEmail
 
-const main = { backgroundColor: '#f0f5fa', fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }
-const wrapper = { backgroundColor: '#ffffff', borderRadius: '12px', overflow: 'hidden' as const, maxWidth: '600px', margin: '20px auto', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.07)' }
-const header = { background: 'linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%)', padding: '30px', textAlign: 'center' as const }
-const headerTitle = { color: '#ffffff', margin: '0', fontSize: '28px', fontWeight: '700' as const, letterSpacing: '1px' }
+const main = { backgroundColor: '#f7f9fc', fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }
+const wrapper = { backgroundColor: '#ffffff', borderRadius: '16px', overflow: 'hidden' as const, maxWidth: '600px', margin: '20px auto', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)' }
+const header = { background: 'linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%)', padding: '36px 30px', textAlign: 'center' as const }
+const headerTitle = { color: '#ffffff', margin: '0', fontSize: '28px', fontWeight: '700' as const, letterSpacing: '1.5px' }
 const content = { padding: '40px 30px' }
 const h1 = { fontSize: '20px', fontWeight: 'bold' as const, color: '#1a2b42', margin: '0 0 20px' }
 const text = { fontSize: '16px', color: '#4b5e78', lineHeight: '1.5', margin: '0 0 25px' }
 const link = { color: '#4a90d9', textDecoration: 'underline' }
-const button = { backgroundColor: '#4a90d9', color: '#ffffff', fontSize: '14px', borderRadius: '8px', padding: '12px 24px', textDecoration: 'none', fontWeight: '500' as const }
+const button = { backgroundColor: '#4a90d9', color: '#ffffff', fontSize: '14px', borderRadius: '10px', padding: '14px 28px', textDecoration: 'none', fontWeight: '600' as const }
 const footerText = { fontSize: '12px', color: '#6b7c94', margin: '30px 0 0' }
-const footer = { backgroundColor: '#f5f8fc', padding: '20px 30px', textAlign: 'center' as const, borderTop: '1px solid #dde5ef' }
+const footer = { backgroundColor: '#f0f4f8', padding: '20px 30px', textAlign: 'center' as const, borderTop: '1px solid #dde5ef' }
 const footerBrand = { color: '#4a90d9', margin: '0 0 10px', fontSize: '16px', fontWeight: '500' as const }
 const footerContact = { color: '#6b7c94', margin: '0', fontSize: '14px' }
