@@ -242,59 +242,75 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
   <title>Nova rezervacia - FYZIO&FIT</title>
+  <style>
+    :root { color-scheme: light dark; }
+    @media (prefers-color-scheme: dark) {
+      .email-body { background-color: #18181b !important; }
+      .email-card { background-color: #242427 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important; border: 1px solid #3f3f46 !important; }
+      .detail-box { background-color: #2f2f36 !important; }
+      .detail-border { border-color: #3f3f46 !important; }
+      .text-heading { color: #e4e4e7 !important; }
+      .text-body { color: #d4d4d8 !important; }
+      .text-muted { color: #a1a1aa !important; }
+      .text-accent { color: #6dd49e !important; }
+      .footer-section { background-color: #1e1e22 !important; border-color: #3f3f46 !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f5fa;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f5fa; padding: 20px;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="email-body" style="background-color: #f7f9fc; padding: 20px;">
     <tr>
       <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+        <table width="600" cellpadding="0" cellspacing="0" class="email-card" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);">
           <tr>
-            <td style="background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%); padding: 30px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700;">Nova rezervacia</h1>
-              <p style="color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 14px;">FYZIO&FIT Booking System</p>
+            <td style="background: linear-gradient(135deg, #2d8a5e 0%, #40b07a 100%); padding: 36px 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: 1px;">Nova rezervacia</h1>
+              <p style="color: rgba(255,255,255,0.85); margin: 10px 0 0; font-size: 14px; font-weight: 400;">FYZIO&FIT Booking System</p>
             </td>
           </tr>
           <tr>
-            <td style="padding: 30px;">
-              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f8fc; border-radius: 8px;">
-                <tr><td style="padding: 20px;">
+            <td style="padding: 40px 30px;">
+              <table width="100%" cellpadding="0" cellspacing="0" class="detail-box" style="background-color: #f0f4f8; border-radius: 12px;">
+                <tr><td style="padding: 24px;">
                   <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="padding: 8px 0; border-bottom: 1px solid #dde5ef;">
-                        <span style="color: #6b7c94; font-size: 13px;">Klient</span><br>
-                        <span style="color: #1a2b42; font-size: 15px; font-weight: 600;">${admin.clientName}</span>
+                      <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                        <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Klient</span><br>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 600;">${admin.clientName}</span>
                       </td>
                     </tr>
                     <tr>
-                      <td style="padding: 8px 0; border-bottom: 1px solid #dde5ef;">
-                        <span style="color: #6b7c94; font-size: 13px;">Email</span><br>
-                        <span style="color: #1a2b42; font-size: 15px;">${admin.clientEmail}</span>
+                      <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                        <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Email</span><br>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.clientEmail}</span>
                       </td>
                     </tr>
                     <tr>
-                      <td style="padding: 8px 0; border-bottom: 1px solid #dde5ef;">
-                        <span style="color: #6b7c94; font-size: 13px;">Telefon</span><br>
-                        <span style="color: #1a2b42; font-size: 15px;">${admin.clientPhone}</span>
+                      <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                        <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Telefon</span><br>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.clientPhone}</span>
                       </td>
                     </tr>
                     <tr>
-                      <td style="padding: 8px 0; border-bottom: 1px solid #dde5ef;">
-                        <span style="color: #6b7c94; font-size: 13px;">Sluzba</span><br>
-                        <span style="color: #1a2b42; font-size: 15px; font-weight: 500;">${data.serviceName}</span>
+                      <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                        <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Sluzba</span><br>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 600;">${data.serviceName}</span>
                       </td>
                     </tr>
                     <tr>
-                      <td style="padding: 8px 0; border-bottom: 1px solid #dde5ef;">
-                        <span style="color: #6b7c94; font-size: 13px;">Datum a cas</span><br>
-                        <span style="color: #1a2b42; font-size: 15px; font-weight: 500;">${formattedDate}</span><br>
-                        <span style="color: #2d6a4f; font-size: 15px; font-weight: 600;">${data.time}</span>
+                      <td class="detail-border" style="padding: 12px 0;${admin.notes ? ' border-bottom: 1px solid #dde5ef;' : ''}">
+                        <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Datum a cas</span><br>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 500;">${formattedDate}</span><br>
+                        <span class="text-accent" style="color: #2d8a5e; font-size: 16px; font-weight: 700;">${data.time}</span>
                       </td>
                     </tr>
                     ${admin.notes ? `<tr>
-                      <td style="padding: 8px 0;">
-                        <span style="color: #6b7c94; font-size: 13px;">Poznamky</span><br>
-                        <span style="color: #1a2b42; font-size: 15px;">${admin.notes}</span>
+                      <td style="padding: 12px 0;">
+                        <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Poznamky</span><br>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.notes}</span>
                       </td>
                     </tr>` : ''}
                   </table>
@@ -303,8 +319,8 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
             </td>
           </tr>
           <tr>
-            <td style="background-color: #f5f8fc; padding: 16px 30px; text-align: center; border-top: 1px solid #dde5ef;">
-              <p style="color: #6b7c94; margin: 0; font-size: 13px;">Tento email bol automaticky vygenerovany rezervacnym systemom FYZIO&FIT.</p>
+            <td class="footer-section" style="background-color: #f0f4f8; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
+              <p class="text-muted" style="color: #6b7c94; margin: 0; font-size: 13px;">Tento email bol automaticky vygenerovany rezervacnym systemom FYZIO&FIT.</p>
             </td>
           </tr>
         </table>
