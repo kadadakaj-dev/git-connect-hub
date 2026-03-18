@@ -1,51 +1,32 @@
 
-## Plán: CI/CD Workflow pre booking projekt
 
-### Problém
-- Navrhovaný workflow je pre iný repozitár (`git-connect-hub`)
-- Používa `npm install` namiesto `bun install`
-- Niekedy `actions/checkout@v2` (zastaralá verzia)
+## Analýza aktuálneho stavu a odporúčanie ďalšieho kroku
 
-### Navrhované zmeny pre správny projekt
+### Aktuálny problém: Build je rozbitý
 
-**Súbor:** `.github/workflows/ci-cd.yml` v repozitári `EB-EU-s-r-o/booking-buddy`
+Aplikácia sa momentálne nespúšťa kvôli chýbajúcemu `@swc/core` balíčku a nekompatibilným TypeScript typom. **Toto musí byť opravené ako prvé**, inak žiadna ďalšia práca nebude mať efekt.
 
-```yaml
-name: CI/CD
+**Plán opravy buildu:**
+1. Pridať `@swc/core` do devDependencies (chýba, ale `@vitejs/plugin-react-swc` ho vyžaduje)
+2. Opraviť TS chyby s `react-helmet-async` — pinúť kompatibilnú verziu alebo pridať `@types/react` override
+3. Opraviť `sheet.tsx` typy (chýbajúce `className`/`children` props)
+4. Supabase auth typy — pravdepodobne nesúlad verzie `@supabase/supabase-js`
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+### Po oprave buildu — najlogickejší ďalší krok
 
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-      
-      - name: Install dependencies
-        run: bun install
-      
-      - name: Run tests
-        run: bun run test
-      
-      - name: Lint code
-        run: bun run lint
-      
-      - name: Type check
-        run: bun run build  # TypeScript check je súčasťou buildu
-      
-      - name: Build verification
-        run: bun run build
-```
+Podľa `navod.md` a aktuálneho stavu kódu, všetky 5 hlavných bodov sú už implementované (DB, booking wizard, admin dashboard, správa služieb, emaily). Najlogickejšie pokračovanie:
 
-### Čo potrebujem overiť
-1. Má váš projekt script `test` v package.json? (Vidím vitest v závislostiach)
-2. Chcete workflow pre **booking-buddy** repozitár alebo **git-connect-hub**?
+**1. Online platby / storno poplatky** — Integrovať Stripe pre online platby za služby a automatické účtovanie storno poplatku 10 € (naviazané na aktuálne storno podmienky).
+
+**2. SMS notifikácie** — Pridať SMS pripomienky 24h pred termínom cez Twilio/externé API, keďže email pripomienky už existujú.
+
+**3. Google Calendar sync** — Dvojsmerná synchronizácia rezervácií s Google Calendar (uvedené v navod.md ako bonus).
+
+**4. Klientske hodnotenia** — Po návšteve umožniť klientom ohodnotiť službu (hviezdičky + recenzia), zobrazovať na hlavnej stránke.
+
+**5. Dashboard analytika** — Grafy tržieb, obsadenosti, najpopulárnejších služieb v admin paneli.
+
+### Odporúčanie
+
+**Najprv opraviť build**, potom by som odporučil **Google Calendar sync** alebo **klientske hodnotenia** — oboje výrazne zvýšia hodnotu pre koncových používateľov aj pre admina.
+
