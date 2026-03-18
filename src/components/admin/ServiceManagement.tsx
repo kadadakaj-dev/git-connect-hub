@@ -171,7 +171,7 @@ const ServiceManagement = () => {
     setIsDialogOpen(false);
   };
 
-  const handleEdit = (service: typeof services extends (infer T)[] ? T : never) => {
+  const handleEdit = (service: any) => {
     setEditingService({
       id: service.id,
       name_sk: service.name_sk,
