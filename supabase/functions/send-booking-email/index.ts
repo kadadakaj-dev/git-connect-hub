@@ -481,6 +481,8 @@ function generateCancellationAdminText(data: EmailRequest): string {
     `Cas: ${data.time}`,
     `Miesto: Krmanová 6, Košice`,
     "========================================",
+    '',
+    `Admin Dashboard: https://booking-fyzioafit.lovable.app/admin`,
   ].filter(Boolean).join("\n");
 }
 
