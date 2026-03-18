@@ -201,7 +201,7 @@ describe('CancelBooking', () => {
             expect(screen.getByText('Zrušenie online nie je možné')).toBeInTheDocument();
         });
         expect(screen.getByText(/12 hodín/)).toBeInTheDocument();
-        expect(screen.getByText('+421 905 307 198')).toBeInTheDocument();
+        expect(screen.getByText(/\+421 905 307 198/)).toBeInTheDocument();
     });
 
     it('should show error state on network error', async () => {
