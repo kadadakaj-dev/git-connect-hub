@@ -102,7 +102,7 @@ serve(async (req) => {
 
     if (hoursUntilBooking < 12) {
       return new Response(
-        JSON.stringify({ error: 'TOO_LATE_TO_CANCEL', message: 'Rezerváciu je možné zrušiť online len do 12 hodín pred termínom. Kontaktujte nás telefonicky: +421 905 307 198. Bude Vám účtovaný storno poplatok 10 €.' }),
+        JSON.stringify({ error: 'TOO_LATE_TO_CANCEL', message: 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }

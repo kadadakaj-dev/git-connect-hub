@@ -300,10 +300,6 @@ const CancelBooking = () => {
                 {error === 'TOO_LATE_TO_CANCEL' ? (
                   <div className="space-y-3">
                     <p className="text-muted-foreground">{text.tooLateText}</p>
-                    <p className="text-foreground font-medium">
-                      {text.tooLatePhone}{' '}
-                      <a href="tel:+421905307198" className="text-primary underline">+421 905 307 198</a>
-                    </p>
                   </div>
                 ) : (
                   <p className="text-muted-foreground">{error}</p>
