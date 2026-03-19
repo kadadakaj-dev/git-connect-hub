@@ -93,14 +93,17 @@ export default defineConfig(({ mode }) => ({
     cssMinify: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'supabase': ['@supabase/supabase-js'],
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'query': ['@tanstack/react-query'],
-          'motion': ['framer-motion'],
-          'ui': ['sonner', 'next-themes', 'react-helmet-async'],
-          'date': ['date-fns', 'react-day-picker'],
-          'form': ['react-hook-form', '@hookform/resolvers', 'zod'],
+        manualChunks(id) {
+          if (id.includes('/components/admin/') || id.includes('/pages/Admin')) {
+            return 'admin';
+          }
+          if (id.includes('@supabase/supabase-js')) return 'supabase';
+          if (id.includes('react-dom') || id.includes('react-router-dom')) return 'react-vendor';
+          if (id.includes('@tanstack/react-query')) return 'query';
+          if (id.includes('framer-motion')) return 'motion';
+          if (id.includes('sonner') || id.includes('next-themes') || id.includes('react-helmet-async')) return 'ui';
+          if (id.includes('date-fns') || id.includes('react-day-picker')) return 'date';
+          if (id.includes('react-hook-form') || id.includes('@hookform/resolvers') || id.includes('zod')) return 'form';
         },
       },
     },
