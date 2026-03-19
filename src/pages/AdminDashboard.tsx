@@ -1,20 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/i18n/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import ServiceManagement from '@/components/admin/ServiceManagement';
-import BookingManagement from '@/components/admin/BookingManagement';
-import OverviewStats from '@/components/admin/OverviewStats';
-import CalendarView from '@/components/admin/CalendarView';
-import EmployeeManagement from '@/components/admin/EmployeeManagement';
-import OpeningHoursManagement from '@/components/admin/OpeningHoursManagement';
 import { toast } from 'sonner';
-import { LogOut, Calendar, Package, BarChart3, CalendarDays, Users, Clock } from 'lucide-react';
+import { LogOut, Calendar, Package, BarChart3, CalendarDays, Users, Clock, Loader2 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import GlassBackground from '@/components/GlassBackground';
+
+const ServiceManagement = lazy(() => import('@/components/admin/ServiceManagement'));
+const BookingManagement = lazy(() => import('@/components/admin/BookingManagement'));
+const OverviewStats = lazy(() => import('@/components/admin/OverviewStats'));
+const CalendarView = lazy(() => import('@/components/admin/CalendarView'));
+const EmployeeManagement = lazy(() => import('@/components/admin/EmployeeManagement'));
+const OpeningHoursManagement = lazy(() => import('@/components/admin/OpeningHoursManagement'));
 
 const AdminDashboard = () => {
   const { language } = useLanguage();
