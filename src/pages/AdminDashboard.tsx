@@ -138,29 +138,31 @@ const AdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview">
-            <OverviewStats />
-          </TabsContent>
+          <Suspense fallback={<div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+            <TabsContent value="overview">
+              <OverviewStats />
+            </TabsContent>
 
-          <TabsContent value="calendar">
-            <CalendarView />
-          </TabsContent>
+            <TabsContent value="calendar">
+              <CalendarView />
+            </TabsContent>
 
-          <TabsContent value="bookings">
-            <BookingManagement />
-          </TabsContent>
+            <TabsContent value="bookings">
+              <BookingManagement />
+            </TabsContent>
 
-          <TabsContent value="services">
-            <ServiceManagement />
-          </TabsContent>
+            <TabsContent value="services">
+              <ServiceManagement />
+            </TabsContent>
 
-          <TabsContent value="employees">
-            <EmployeeManagement />
-          </TabsContent>
+            <TabsContent value="employees">
+              <EmployeeManagement />
+            </TabsContent>
 
-          <TabsContent value="hours">
-            <OpeningHoursManagement />
-          </TabsContent>
+            <TabsContent value="hours">
+              <OpeningHoursManagement />
+            </TabsContent>
+          </Suspense>
         </Tabs>
       </main>
     </div>
