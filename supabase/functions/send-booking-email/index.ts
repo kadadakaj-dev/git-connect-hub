@@ -301,16 +301,10 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
                       </td>
                     </tr>
                     <tr>
-                      <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                      <td class="detail-border" style="padding: 12px 0;${admin.notes ? ' border-bottom: 1px solid #dde5ef;' : ''}">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Datum a cas</span><br>
                         <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 500;">${formattedDate}</span><br>
                         <span class="text-accent" style="color: #2d8a5e; font-size: 16px; font-weight: 700;">${data.time}</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="detail-border" style="padding: 12px 0;${admin.notes ? ' border-bottom: 1px solid #dde5ef;' : ''}">
-                        <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Miesto</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 500;">Krmanová 6, Košice</span>
                       </td>
                     </tr>
                     ${admin.notes ? `<tr>
@@ -351,7 +345,6 @@ function generateAdminNotificationText(data: EmailRequest): string {
     `Sluzba: ${data.serviceName}`,
     `Datum: ${formattedDate}`,
     `Cas: ${data.time}`,
-    `Miesto: Krmanová 6, Košice`,
     admin.notes ? `Poznamky: ${admin.notes}` : '',
     "========================================",
   ].filter(Boolean).join("\n");
@@ -426,16 +419,10 @@ function generateCancellationAdminHtml(data: EmailRequest): string {
                       </td>
                     </tr>
                     <tr>
-                      <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
+                      <td style="padding: 12px 0;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Datum a cas</span><br>
                         <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 500;">${formattedDate}</span><br>
                         <span class="text-accent" style="color: #b91c1c; font-size: 16px; font-weight: 700;">${data.time}</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="padding: 12px 0;">
-                        <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Miesto</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 500;">Krmanová 6, Košice</span>
                       </td>
                     </tr>
                   </table>
@@ -470,7 +457,6 @@ function generateCancellationAdminText(data: EmailRequest): string {
     `Sluzba: ${data.serviceName}`,
     `Datum: ${formattedDate}`,
     `Cas: ${data.time}`,
-    `Miesto: Krmanová 6, Košice`,
     "========================================",
   ].filter(Boolean).join("\n");
 }
