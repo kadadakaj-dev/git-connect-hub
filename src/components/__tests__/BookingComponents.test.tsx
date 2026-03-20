@@ -68,7 +68,7 @@ describe('SplashScreen', () => {
 
         expect(onComplete).not.toHaveBeenCalled();
 
-        vi.advanceTimersByTime(3100);
+        vi.advanceTimersByTime(4100);
         expect(onComplete).toHaveBeenCalledTimes(1);
     });
 

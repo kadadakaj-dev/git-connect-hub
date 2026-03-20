@@ -5,11 +5,13 @@ interface SplashScreenProps {
   onComplete: () => void;
 }
 
+/* ── timing constants (seconds) ── */
 const LETTERS = 'FYZIO&FIT'.split('');
-const LETTER_STAGGER = 0.08;
-const GLOW_START = LETTERS.length * LETTER_STAGGER;
-const FADE_START = 2.6;
-const TOTAL_DURATION = 3000;
+const LETTER_STAGGER = 0.08;                           // gap between letters
+const GLOW_START = LETTERS.length * LETTER_STAGGER;     // ~0.72 s
+const BREATHE_START = GLOW_START + 0.5;                 // ~1.22 s
+const FADE_START = 3.4;                                 // begin exit fade
+const TOTAL_DURATION = 4000;                            // ms – fires onComplete
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   const prefersReduced = useMemo(
@@ -29,6 +31,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     return () => clearTimeout(timer);
   }, [handleComplete, prefersReduced]);
 
+  /* ── reduced-motion: static text, quick fade ── */
   if (prefersReduced) {
     return (
       <div
@@ -54,8 +57,19 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         role="status"
         aria-label="Loading FYZIO&FIT"
       >
-        <div className="flex flex-col items-center gap-6">
-          {/* letter-by-letter reveal — opacity only, no transform */}
+        {/* ── breathing wrapper ── */}
+        <motion.div
+          className="flex flex-col items-center gap-6"
+          animate={{
+            scale: [1, 1.03, 1, 1.03, 1],
+          }}
+          transition={{
+            delay: BREATHE_START,
+            duration: FADE_START - BREATHE_START,
+            ease: 'easeInOut',
+          }}
+        >
+          {/* ── letter-by-letter reveal ── */}
           <h1
             className="text-4xl font-heading font-semibold text-[hsl(211,48%,29%)] tracking-[0.2em] flex"
             aria-hidden="true"
@@ -63,9 +77,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             {LETTERS.map((char, i) => (
               <motion.span
                 key={i}
-                style={{ willChange: 'opacity' }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{
                   delay: i * LETTER_STAGGER,
                   duration: 0.35,
@@ -77,17 +90,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             ))}
           </h1>
 
-          {/* glow line — scaleX instead of width */}
+          {/* ── glow line ── */}
           <motion.div
-            className="h-[2px] rounded-full w-48"
+            className="h-[2px] rounded-full"
             style={{
               background:
                 'linear-gradient(90deg, transparent, hsl(211,48%,29%) 30%, hsl(207,56%,58%) 70%, transparent)',
-              transformOrigin: 'left center',
-              willChange: 'transform, opacity',
             }}
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 192, opacity: 1 }}
             transition={{
               delay: GLOW_START,
               duration: 0.5,
@@ -95,13 +106,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             }}
           />
 
-          {/* progress dot — translateX instead of left */}
+          {/* ── progress dot on track ── */}
           <div className="relative w-48 h-[2px] rounded-full bg-[hsl(211,48%,29%)]/10 overflow-hidden">
             <motion.div
-              className="absolute top-1/2 -translate-y-1/2 left-0 w-2 h-2 rounded-full bg-[hsl(211,48%,29%)]"
-              style={{ willChange: 'transform' }}
-              initial={{ x: 0 }}
-              animate={{ x: 192 }}
+              className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[hsl(211,48%,29%)]"
+              initial={{ left: 0 }}
+              animate={{ left: '100%' }}
               transition={{
                 delay: GLOW_START + 0.5,
                 duration: FADE_START - GLOW_START - 0.5,
@@ -109,17 +119,16 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
               }}
             />
           </div>
-        </div>
+        </motion.div>
 
-        {/* fade-out overlay */}
+        {/* ── fade-out overlay ── */}
         <motion.div
           className="absolute inset-0 bg-white dark:bg-[hsl(211,48%,12%)]"
-          style={{ willChange: 'opacity' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{
             delay: FADE_START,
-            duration: 0.4,
+            duration: 0.6,
             ease: 'easeInOut',
           }}
         />
