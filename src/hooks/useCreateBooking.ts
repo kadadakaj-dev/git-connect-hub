@@ -50,7 +50,25 @@ export function useCreateBooking() {
             queued: true,
           };
         }
-        throw new Error(response.error.message || 'Failed to create booking');
+
+        // Try to extract the specific error message from the edge function response
+        let errorMessage = 'Failed to create booking';
+        try {
+          // FunctionsHttpError carries the response body in context
+          const ctx = (response.error as any).context;
+          if (ctx && typeof ctx.json === 'function') {
+            const body = await ctx.json();
+            errorMessage = body?.error || errorMessage;
+          } else if (response.data && typeof response.data === 'object' && 'error' in (response.data as any)) {
+            errorMessage = (response.data as any).error;
+          } else {
+            errorMessage = response.error.message || errorMessage;
+          }
+        } catch {
+          errorMessage = response.error.message || errorMessage;
+        }
+
+        throw new Error(errorMessage);
       }
 
       const result = response.data as BookingResponse;
