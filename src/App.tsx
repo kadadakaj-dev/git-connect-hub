@@ -52,7 +52,7 @@ const App = () => {
           <QueryClientProvider client={queryClient}>
             <TooltipProvider>
               {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-              <div style={showSplash ? { visibility: 'hidden', position: 'absolute', width: '100%', height: '100%' } : undefined}>
+              <div style={showSplash ? { opacity: 0, pointerEvents: 'none', position: 'absolute', width: '100%', height: '100%' } : { opacity: 1, transition: 'opacity 0.3s ease' }}>
                 <Toaster />
                 <Sonner position="top-center" />
                 <BrowserRouter>

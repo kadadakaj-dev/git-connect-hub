@@ -65,6 +65,16 @@ describe('App Integration', () => {
         expect(screen.getByRole('status', { name: /Loading FYZIO/i })).toBeInTheDocument();
     });
 
+    it('should use opacity:0 for content during splash (allows parallel loading)', () => {
+        delete mockSessionStorage['fyzio_splash_shown'];
+        const { container } = render(<App />);
+        // Content wrapper should exist with opacity 0 (not visibility hidden)
+        const contentDiv = container.querySelector('[style*="opacity"]');
+        expect(contentDiv).toBeTruthy();
+        expect((contentDiv as HTMLElement).style.opacity).toBe('0');
+        expect((contentDiv as HTMLElement).style.visibility).not.toBe('hidden');
+    });
+
     it('should wrap app in required providers', () => {
         render(<App />);
         // If we get here without errors, providers are working correctly
