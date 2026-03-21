@@ -418,7 +418,7 @@ function generateCancellationAdminHtml(data: EmailRequest): string {
                     ${admin.clientPhone ? `<tr>
                       <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Telefon</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.clientPhone}</span>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin.clientPhone)}</span>
                       </td>
                     </tr>` : ''}
                     <tr>
