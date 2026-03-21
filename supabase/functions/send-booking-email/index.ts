@@ -460,9 +460,9 @@ function generateCancellationAdminText(data: EmailRequest): string {
   return [
     "ZRUSENA REZERVACIA - FYZIO&FIT",
     "========================================",
-    `Klient: ${admin.clientName}`,
-    `Email: ${admin.clientEmail}`,
-    admin.clientPhone ? `Telefon: ${admin.clientPhone}` : '',
+    `Klient: ${escapeHtml(admin.clientName)}`,
+    `Email: ${escapeHtml(admin.clientEmail)}`,
+    admin.clientPhone ? `Telefon: ${escapeHtml(admin.clientPhone)}` : '',
     `Sluzba: ${data.serviceName}`,
     `Datum: ${formattedDate}`,
     `Cas: ${data.time}`,

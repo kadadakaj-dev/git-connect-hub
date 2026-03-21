@@ -43,10 +43,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     const token = authHeader.replace("Bearer ", "");
     const isServiceRole = token === supabaseServiceKey;
-    const isAnonKey = token === supabaseAnonKey;
 
-    // If called by cron (anon key or service role), allow. Otherwise verify admin.
-    if (!isServiceRole && !isAnonKey) {
+    // Only service_role (cron) or verified admin user allowed
+    if (!isServiceRole) {
+      const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
       const userClient = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
       });
