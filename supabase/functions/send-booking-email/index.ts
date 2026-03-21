@@ -59,6 +59,15 @@ const translations = {
   },
 };
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 function formatDate(dateStr: string, language: "sk" | "en"): string {
   const date = new Date(dateStr);
   const options: Intl.DateTimeFormatOptions = {
@@ -118,7 +127,7 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
           <!-- Content -->
           <tr>
             <td style="padding: 40px 30px;">
-              <h2 class="text-heading" style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px; font-weight: 600;">${t.greeting}, ${data.clientName}!</h2>
+              <h2 class="text-heading" style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px; font-weight: 600;">${t.greeting}, ${escapeHtml(data.clientName)}!</h2>
               <p class="text-body" style="color: #4b5e78; margin: 0 0 30px 0; font-size: 16px; line-height: 1.5;">${title}</p>
               <!-- Booking Details -->
               <table width="100%" cellpadding="0" cellspacing="0" class="detail-box" style="background-color: #f0f4f8; border-radius: 12px; margin-bottom: 30px;">
@@ -279,19 +288,19 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
                     <tr>
                       <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Klient</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 600;">${admin.clientName}</span>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 600;">${escapeHtml(admin.clientName)}</span>
                       </td>
                     </tr>
                     <tr>
                       <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Email</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.clientEmail}</span>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin.clientEmail)}</span>
                       </td>
                     </tr>
                     <tr>
                       <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Telefon</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.clientPhone}</span>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin.clientPhone)}</span>
                       </td>
                     </tr>
                     <tr>
@@ -310,7 +319,7 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
                     ${admin.notes ? `<tr>
                       <td style="padding: 12px 0;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Poznamky</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.notes}</span>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin.notes || '')}</span>
                       </td>
                     </tr>` : ''}
                   </table>
@@ -339,13 +348,13 @@ function generateAdminNotificationText(data: EmailRequest): string {
   return [
     "NOVA REZERVACIA - FYZIO&FIT",
     "========================================",
-    `Klient: ${admin.clientName}`,
-    `Email: ${admin.clientEmail}`,
-    `Telefon: ${admin.clientPhone}`,
+    `Klient: ${escapeHtml(admin.clientName)}`,
+    `Email: ${escapeHtml(admin.clientEmail)}`,
+    `Telefon: ${escapeHtml(admin.clientPhone)}`,
     `Sluzba: ${data.serviceName}`,
     `Datum: ${formattedDate}`,
     `Cas: ${data.time}`,
-    admin.notes ? `Poznamky: ${admin.notes}` : '',
+    admin.notes ? `Poznamky: ${escapeHtml(admin.notes)}` : '',
     "========================================",
   ].filter(Boolean).join("\n");
 }
@@ -397,19 +406,19 @@ function generateCancellationAdminHtml(data: EmailRequest): string {
                     <tr>
                       <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Klient</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 600;">${admin.clientName}</span>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px; font-weight: 600;">${escapeHtml(admin.clientName)}</span>
                       </td>
                     </tr>
                     <tr>
                       <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Email</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.clientEmail}</span>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin.clientEmail)}</span>
                       </td>
                     </tr>
                     ${admin.clientPhone ? `<tr>
                       <td class="detail-border" style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Telefon</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.clientPhone}</span>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin.clientPhone)}</span>
                       </td>
                     </tr>` : ''}
                     <tr>
@@ -451,9 +460,9 @@ function generateCancellationAdminText(data: EmailRequest): string {
   return [
     "ZRUSENA REZERVACIA - FYZIO&FIT",
     "========================================",
-    `Klient: ${admin.clientName}`,
-    `Email: ${admin.clientEmail}`,
-    admin.clientPhone ? `Telefon: ${admin.clientPhone}` : '',
+    `Klient: ${escapeHtml(admin.clientName)}`,
+    `Email: ${escapeHtml(admin.clientEmail)}`,
+    admin.clientPhone ? `Telefon: ${escapeHtml(admin.clientPhone)}` : '',
     `Sluzba: ${data.serviceName}`,
     `Datum: ${formattedDate}`,
     `Cas: ${data.time}`,

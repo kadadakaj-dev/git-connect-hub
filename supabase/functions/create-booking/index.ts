@@ -47,7 +47,7 @@ function isValidPhone(str: string): boolean {
 }
 
 function sanitizeString(str: string, maxLength: number): string {
-  return str.trim().slice(0, maxLength)
+  return str.replace(/[\r\n]/g, ' ').trim().slice(0, maxLength)
 }
 
 // Rate limiting helper

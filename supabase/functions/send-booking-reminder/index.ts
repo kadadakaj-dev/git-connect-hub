@@ -30,7 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    // Anon key no longer used for auth - only service_role or admin user allowed
 
     // Auth: accept service_role key (cron), anon key (cron via pg_net), or admin user
     const authHeader = req.headers.get("Authorization");
@@ -43,10 +43,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     const token = authHeader.replace("Bearer ", "");
     const isServiceRole = token === supabaseServiceKey;
-    const isAnonKey = token === supabaseAnonKey;
 
-    // If called by cron (anon key or service role), allow. Otherwise verify admin.
-    if (!isServiceRole && !isAnonKey) {
+    // Only service_role (cron) or verified admin user allowed
+    if (!isServiceRole) {
+      const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
       const userClient = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
       });
