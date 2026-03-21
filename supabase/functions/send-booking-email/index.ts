@@ -127,7 +127,7 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
           <!-- Content -->
           <tr>
             <td style="padding: 40px 30px;">
-              <h2 class="text-heading" style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px; font-weight: 600;">${t.greeting}, ${data.clientName}!</h2>
+              <h2 class="text-heading" style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px; font-weight: 600;">${t.greeting}, ${escapeHtml(data.clientName)}!</h2>
               <p class="text-body" style="color: #4b5e78; margin: 0 0 30px 0; font-size: 16px; line-height: 1.5;">${title}</p>
               <!-- Booking Details -->
               <table width="100%" cellpadding="0" cellspacing="0" class="detail-box" style="background-color: #f0f4f8; border-radius: 12px; margin-bottom: 30px;">
