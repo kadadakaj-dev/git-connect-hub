@@ -348,13 +348,13 @@ function generateAdminNotificationText(data: EmailRequest): string {
   return [
     "NOVA REZERVACIA - FYZIO&FIT",
     "========================================",
-    `Klient: ${admin.clientName}`,
-    `Email: ${admin.clientEmail}`,
-    `Telefon: ${admin.clientPhone}`,
+    `Klient: ${escapeHtml(admin.clientName)}`,
+    `Email: ${escapeHtml(admin.clientEmail)}`,
+    `Telefon: ${escapeHtml(admin.clientPhone)}`,
     `Sluzba: ${data.serviceName}`,
     `Datum: ${formattedDate}`,
     `Cas: ${data.time}`,
-    admin.notes ? `Poznamky: ${admin.notes}` : '',
+    admin.notes ? `Poznamky: ${escapeHtml(admin.notes)}` : '',
     "========================================",
   ].filter(Boolean).join("\n");
 }
