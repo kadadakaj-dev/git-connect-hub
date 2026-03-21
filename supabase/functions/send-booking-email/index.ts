@@ -319,7 +319,7 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
                     ${admin.notes ? `<tr>
                       <td style="padding: 12px 0;">
                         <span class="text-muted" style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Poznamky</span><br>
-                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${admin.notes}</span>
+                        <span class="text-heading" style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin.notes || '')}</span>
                       </td>
                     </tr>` : ''}
                   </table>
