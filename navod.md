@@ -94,6 +94,6 @@ Pridaj Google Calendar sync:
 
 Po vytvorení admin účtu cez Supabase dashboard:
 - Email: booking@fyzioafit.sk
-- Heslo: Booking1@
+- Heslo: oUjuGUYMuzxtCiQy
 
 **Dôležité:** Najprv musíš vytvoriť používateľa v Supabase a potom mu priradiť admin rolu v tabuľke user_roles.
