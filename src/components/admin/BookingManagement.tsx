@@ -87,6 +87,7 @@ const BookingManagement = () => {
     }
   });
 
+  const filteredBookings = bookings?.filter(booking => {
     const matchesSearch =
       booking.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.client_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
