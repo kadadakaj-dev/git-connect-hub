@@ -8,6 +8,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ServiceManagement from '@/components/admin/ServiceManagement';
 import BookingManagement from '@/components/admin/BookingManagement';
 import OverviewStats from '@/components/admin/OverviewStats';
+import AnalyticsCharts from '@/components/admin/AnalyticsCharts';
 import CalendarView from '@/components/admin/CalendarView';
 import EmployeeManagement from '@/components/admin/EmployeeManagement';
 import OpeningHoursManagement from '@/components/admin/OpeningHoursManagement';
