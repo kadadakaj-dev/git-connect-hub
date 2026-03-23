@@ -114,7 +114,7 @@ const DateTimeSelection = ({
             className={cn(
               "py-2 sm:py-1.5 rounded-lg text-xs font-medium font-data transition-all duration-300 ease-liquid backdrop-blur-sm",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              !slot.available && "opacity-25 cursor-not-allowed text-muted-foreground",
+              !slot.available && "opacity-60 cursor-not-allowed bg-destructive/15 text-destructive line-through border border-destructive/20",
               isSlotSelected
                 ? "bg-primary text-primary-foreground shadow-[0_0_12px_rgba(59,130,246,0.3)]"
                 : isInSelectedRange
