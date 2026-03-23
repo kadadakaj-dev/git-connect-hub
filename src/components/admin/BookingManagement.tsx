@@ -12,7 +12,7 @@ import BookingDetailsDialog, { type AdminBookingDetails } from '@/components/adm
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { sk } from 'date-fns/locale';
-import { Search, Filter, CheckCircle, XCircle, Clock, Calendar, Eye } from 'lucide-react';
+import { Search, Filter, CheckCircle, XCircle, Clock, Calendar, Eye, Trash2 } from 'lucide-react';
 
 type BookingStatus = 'pending' | 'confirmed' | 'cancelled';
 
@@ -61,6 +61,24 @@ const BookingManagement = () => {
     },
     onError: () => {
       toast.error(language === 'sk' ? 'Chyba pri aktualizácii' : 'Error updating status');
+    }
+  });
+
+  const deleteAllMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('bookings')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000');
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-bookings'] });
+      toast.success(language === 'sk' ? 'Všetky rezervácie boli vymazané' : 'All bookings deleted');
+    },
+    onError: () => {
+      toast.error(language === 'sk' ? 'Chyba pri mazaní rezervácií' : 'Error deleting bookings');
     }
   });
 
@@ -130,6 +148,25 @@ const BookingManagement = () => {
             ? `Celkom ${bookings?.length || 0} rezervácií`
             : `Total ${bookings?.length || 0} bookings`}
         </CardDescription>
+        {bookings && bookings.length > 0 && (
+          <Button
+            variant="destructive"
+            size="sm"
+            className="mt-2 w-fit"
+            disabled={deleteAllMutation.isPending}
+            onClick={() => {
+              const msg = language === 'sk'
+                ? 'Naozaj chcete vymazať VŠETKY rezervácie? Táto akcia je nevratná!'
+                : 'Are you sure you want to delete ALL bookings? This action cannot be undone!';
+              if (window.confirm(msg)) {
+                deleteAllMutation.mutate();
+              }
+            }}
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            {language === 'sk' ? 'Vymazať všetky rezervácie' : 'Delete all bookings'}
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="p-3 sm:p-6 pt-0 space-y-3 sm:space-y-4">
         {/* Filters */}
