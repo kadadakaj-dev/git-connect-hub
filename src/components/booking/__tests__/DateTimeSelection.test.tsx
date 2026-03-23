@@ -120,7 +120,7 @@ describe('DateTimeSelection', () => {
 
         // Should show the slot (red), not the "no slots" message
         expect(screen.getByText('09:00')).toBeInTheDocument();
-        expect(screen.getByText('09:00')).toHaveClass('bg-red-500/20');
+        expect(screen.getByText('09:00')).toHaveClass('bg-red-500/30');
         expect(screen.queryByText('Pre tento deň nie sú dostupné žiadne termíny.')).not.toBeInTheDocument();
     });
 
@@ -264,14 +264,14 @@ describe('DateTimeSelection', () => {
 
         const bookedSlot = screen.getByText('09:00');
         expect(bookedSlot).toBeDisabled();
-        expect(bookedSlot).toHaveClass('bg-red-500/20');
-        expect(bookedSlot).toHaveClass('border-red-500/40');
+        expect(bookedSlot).toHaveClass('bg-red-500/30');
+        expect(bookedSlot).toHaveClass('border-red-500/50');
         expect(bookedSlot).not.toHaveClass('opacity-25');
 
         const unavailableSlot = screen.getByText('09:30');
         expect(unavailableSlot).toBeDisabled();
         expect(unavailableSlot).toHaveClass('opacity-25');
-        expect(unavailableSlot).not.toHaveClass('bg-red-500/20');
+        expect(unavailableSlot).not.toHaveClass('bg-red-500/30');
     });
 
     it('should disable Sundays in the calendar', () => {

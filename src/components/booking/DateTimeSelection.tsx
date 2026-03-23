@@ -20,7 +20,7 @@ interface DateTimeSelectionProps {
 function getSlotUnavailableClass(slot: TimeSlot): string {
   if (slot.available) return '';
   if (slot.bookedCount > 0) {
-    return 'bg-red-500/20 text-red-400 dark:text-red-300 border border-red-500/40 shadow-[0_0_8px_rgba(239,68,68,0.25)] cursor-not-allowed';
+    return 'bg-red-500/30 text-red-500 dark:text-red-300 border-2 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.3)] cursor-not-allowed line-through decoration-red-500/60';
   }
   return 'opacity-25 cursor-not-allowed text-muted-foreground';
 }
@@ -205,6 +205,7 @@ const DateTimeSelection = ({
             onMouseEnter={() => slot.available && setHoveredSlot(slot.time)}
             onMouseLeave={() => setHoveredSlot(null)}
             disabled={!slot.available}
+            title={!slot.available && slot.bookedCount > 0 ? (language === 'sk' ? 'Obsadené' : 'Booked') : undefined}
             className={cn(
               "py-2 sm:py-1.5 rounded-lg text-xs font-medium font-data transition-all duration-300 ease-liquid backdrop-blur-sm",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
