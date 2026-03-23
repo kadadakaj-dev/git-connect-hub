@@ -50,10 +50,29 @@ export function useCreateBooking() {
             queued: true,
           };
         }
-        throw new Error(response.error.message || 'Failed to create booking');
+        // Try to extract the real error message from the response body
+        let errorMessage = response.error.message || 'Failed to create booking';
+        try {
+          const context = (response.error as any).context;
+          if (context && typeof context.json === 'function') {
+            const body = await context.json();
+            if (body?.error) {
+              errorMessage = (Array.isArray(body.details) && body.details.length > 0)
+                ? body.details.join(', ')
+                : body.error;
+            }
+          }
+        } catch {
+          // Ignore body-parsing errors — fall back to the generic message
+        }
+        throw new Error(errorMessage);
       }
 
       const result = response.data as BookingResponse;
+
+      if (!result) {
+        throw new Error('Unexpected empty response from booking service');
+      }
 
       if (!result.success && result.error) {
         throw new Error(result.error);

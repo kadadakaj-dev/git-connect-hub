@@ -138,19 +138,15 @@ serve(async (req) => {
     if (!body.date || !isValidDate(body.date)) {
       errors.push('Invalid date format (expected YYYY-MM-DD)')
     } else {
-      // Check date+time is at least 36h in the future
-      const bookingDate = new Date(body.date)
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      if (bookingDate <= today) {
+      // Compare date strings in UTC to avoid timezone ambiguity
+      const todayStr = new Date().toISOString().split('T')[0] // YYYY-MM-DD in UTC
+      if (body.date <= todayStr) {
         errors.push('Booking date must be in the future')
       }
 
-      // 36h lead time validation
+      // 36h lead time validation — build an explicit UTC datetime to avoid setHours() locale issues
       if (body.time_slot && isValidTimeSlot(body.time_slot)) {
-        const [slotH, slotM] = body.time_slot.split(':').map(Number)
-        const bookingDateTime = new Date(body.date)
-        bookingDateTime.setHours(slotH, slotM, 0, 0)
+        const bookingDateTime = new Date(`${body.date}T${body.time_slot}:00Z`)
         const minBookableTime = new Date(Date.now() + 36 * 60 * 60 * 1000)
         if (bookingDateTime < minBookableTime) {
           errors.push('Booking must be at least 36 hours in advance. For earlier appointments, call us for an Express booking.')

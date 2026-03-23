@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState, useCallback } from "react";
+import { Suspense, lazy, useState, useCallback, Component, ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import CookieBanner from "@/components/CookieBanner";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -13,6 +13,46 @@ import OfflineBanner from "@/components/OfflineBanner";
 import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
 import PushOptIn from "@/components/PushOptIn";
 import { useServiceWorkerMessages } from "@/hooks/useServiceWorkerMessages";
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    console.error('App error boundary caught:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center p-4 text-center">
+          <div>
+            <p className="text-lg font-semibold text-foreground mb-2">Nastala neočakávaná chyba</p>
+            <p className="text-sm text-muted-foreground mb-4">An unexpected error occurred</p>
+            <button
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm"
+              onClick={() => { this.setState({ hasError: false }); window.location.reload(); }}
+            >
+              Reload
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
  // Lazy load pages for code splitting
  const Index = lazy(() => import("./pages/Index"));
  const NotFound = lazy(() => import("./pages/NotFound"));
@@ -46,6 +86,7 @@ const App = () => {
   }, []);
 
   return (
+    <ErrorBoundary>
     <HelmetProvider>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
         <LanguageProvider>
@@ -82,6 +123,7 @@ const App = () => {
         </LanguageProvider>
       </ThemeProvider>
     </HelmetProvider>
+    </ErrorBoundary>
   );
 };
 
