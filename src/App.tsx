@@ -11,17 +11,18 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import SplashScreen from "@/components/SplashScreen";
 import OfflineBanner from "@/components/OfflineBanner";
 import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import PushOptIn from "@/components/PushOptIn";
 import { useServiceWorkerMessages } from "@/hooks/useServiceWorkerMessages";
- // Lazy load pages for code splitting
- const Index = lazy(() => import("./pages/Index"));
- const NotFound = lazy(() => import("./pages/NotFound"));
+// Lazy load pages for code splitting
+const Index = lazy(() => import("./pages/Index"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AdminResetPassword = lazy(() => import("./pages/AdminResetPassword"));
- const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
- const CancelBooking = lazy(() => import("./pages/CancelBooking"));
- const Legal = lazy(() => import("./pages/Legal"));
- const ClientAuth = lazy(() => import("./pages/ClientAuth"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const CancelBooking = lazy(() => import("./pages/CancelBooking"));
+const Legal = lazy(() => import("./pages/Legal"));
+const ClientAuth = lazy(() => import("./pages/ClientAuth"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 
 
@@ -49,36 +50,38 @@ const App = () => {
     <HelmetProvider>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
         <LanguageProvider>
-          <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
-              {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-              <div style={showSplash ? { opacity: 0, pointerEvents: 'none', position: 'absolute', width: '100%', height: '100%' } : { opacity: 1, transition: 'opacity 0.3s ease' }}>
-                <Toaster />
-                <Sonner position="top-center" />
-                <BrowserRouter>
-                  <OfflineBanner />
-                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/auth" element={<ClientAuth />} />
-                      <Route path="/portal" element={<ClientPortal />} />
-                      <Route path="/admin/login" element={<AdminLogin />} />
-                      <Route path="/admin/reset-password" element={<AdminResetPassword />} />
-                      <Route path="/admin" element={<AdminDashboard />} />
-                      <Route path="/cancel" element={<CancelBooking />} />
-                      <Route path="/legal" element={<Legal />} />
-                      
-                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </Suspense>
-                  <CookieBanner />
-                  <PWAUpdatePrompt />
-                  <PushOptIn />
-                </BrowserRouter>
-              </div>
-            </TooltipProvider>
-          </QueryClientProvider>
+          <ErrorBoundary>
+            <QueryClientProvider client={queryClient}>
+              <TooltipProvider>
+                {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+                <div style={showSplash ? { opacity: 0, pointerEvents: 'none', position: 'absolute', width: '100%', height: '100%' } : { opacity: 1, transition: 'opacity 0.3s ease' }}>
+                  <Toaster />
+                  <Sonner position="top-center" />
+                  <BrowserRouter>
+                    <OfflineBanner />
+                    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/auth" element={<ClientAuth />} />
+                        <Route path="/portal" element={<ClientPortal />} />
+                        <Route path="/admin/login" element={<AdminLogin />} />
+                        <Route path="/admin/reset-password" element={<AdminResetPassword />} />
+                        <Route path="/admin" element={<AdminDashboard />} />
+                        <Route path="/cancel" element={<CancelBooking />} />
+                        <Route path="/legal" element={<Legal />} />
+
+                        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
+                    <CookieBanner />
+                    <PWAUpdatePrompt />
+                    <PushOptIn />
+                  </BrowserRouter>
+                </div>
+              </TooltipProvider>
+            </QueryClientProvider>
+          </ErrorBoundary>
         </LanguageProvider>
       </ThemeProvider>
     </HelmetProvider>
