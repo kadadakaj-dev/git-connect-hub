@@ -30,36 +30,36 @@ type FunctionInvokeError = {
   context?: Response;
 };
 
+async function extractMessageFromResponse(response: Response): Promise<string | null> {
+  try {
+    const payload: unknown = await response.clone().json();
+    if (payload && typeof payload === 'object') {
+      if ('error' in payload && typeof (payload as Record<string, unknown>).error === 'string') {
+        return (payload as Record<string, unknown>).error as string;
+      }
+      if ('message' in payload && typeof (payload as Record<string, unknown>).message === 'string') {
+        return (payload as Record<string, unknown>).message as string;
+      }
+    }
+  } catch {
+    // Response body not JSON — fall through
+  }
+
+  if (response.status === 429) {
+    return 'Too many requests, please try again later';
+  }
+
+  return null;
+}
+
 async function getFunctionErrorMessage(error: FunctionInvokeError | null | undefined): Promise<string> {
   if (!error) {
     return 'Failed to create booking';
   }
 
   if (error.context instanceof Response) {
-    let payload: unknown;
-
-    try {
-      payload = await error.context.clone().json();
-    } catch {
-      payload = null;
-    }
-
-    if (payload && typeof payload === 'object') {
-      const apiError = 'error' in payload && typeof payload.error === 'string' ? payload.error : null;
-      const apiMessage = 'message' in payload && typeof payload.message === 'string' ? payload.message : null;
-
-      if (apiError) {
-        return apiError;
-      }
-
-      if (apiMessage) {
-        return apiMessage;
-      }
-    }
-
-    if (error.context.status === 429) {
-      return 'Too many requests, please try again later';
-    }
+    const extracted = await extractMessageFromResponse(error.context);
+    if (extracted) return extracted;
   }
 
   return error.message || 'Failed to create booking';

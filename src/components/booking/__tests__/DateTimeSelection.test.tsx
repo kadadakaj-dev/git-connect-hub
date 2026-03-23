@@ -88,10 +88,9 @@ describe('DateTimeSelection', () => {
         expect(screen.getByTestId('time-slot-skeleton')).toBeInTheDocument();
     });
 
-    it('should show "no slots" message when no available slots', () => {
+    it('should show "no slots" message when no slots at all', () => {
         const futureDate = new Date(2027, 5, 15);
-        const emptySlots = [{ time: '09:00', available: false, bookedCount: 1, totalCapacity: 1 }];
-        mockUseTimeSlots.mockReturnValue({ data: emptySlots, isLoading: false });
+        mockUseTimeSlots.mockReturnValue({ data: [], isLoading: false });
 
         render(
             <DateTimeSelection
@@ -103,6 +102,26 @@ describe('DateTimeSelection', () => {
         );
 
         expect(screen.getByText('Pre tento deň nie sú dostupné žiadne termíny.')).toBeInTheDocument();
+    });
+
+    it('should still show booked slots when all slots are unavailable', () => {
+        const futureDate = new Date(2027, 5, 15);
+        const allBookedSlots = [{ time: '09:00', available: false, bookedCount: 1, totalCapacity: 1 }];
+        mockUseTimeSlots.mockReturnValue({ data: allBookedSlots, isLoading: false });
+
+        render(
+            <DateTimeSelection
+                selectedDate={futureDate}
+                selectedTime={null}
+                onDateSelect={onDateSelect}
+                onTimeSelect={onTimeSelect}
+            />
+        );
+
+        // Should show the slot (red), not the "no slots" message
+        expect(screen.getByText('09:00')).toBeInTheDocument();
+        expect(screen.getByText('09:00')).toHaveClass('bg-red-500/20');
+        expect(screen.queryByText('Pre tento deň nie sú dostupné žiadne termíny.')).not.toBeInTheDocument();
     });
 
     it('should render morning and afternoon slot groups', () => {
@@ -225,9 +244,37 @@ describe('DateTimeSelection', () => {
         expect(buttons.length).toBeGreaterThanOrEqual(2);
     });
 
+    it('should show booked slots with red styling', () => {
+        const futureDate = new Date(2027, 5, 15);
+        const slotsWithBookedAndUnavailable = [
+            { time: '08:00', available: true, bookedCount: 0, totalCapacity: 1 },
+            { time: '09:00', available: false, bookedCount: 1, totalCapacity: 1 }, // booked
+            { time: '09:30', available: false, bookedCount: 0, totalCapacity: 1 }, // unavailable but not booked
+        ];
+        mockUseTimeSlots.mockReturnValue({ data: slotsWithBookedAndUnavailable, isLoading: false });
+
+        render(
+            <DateTimeSelection
+                selectedDate={futureDate}
+                selectedTime={null}
+                onDateSelect={onDateSelect}
+                onTimeSelect={onTimeSelect}
+            />
+        );
+
+        const bookedSlot = screen.getByText('09:00');
+        expect(bookedSlot).toBeDisabled();
+        expect(bookedSlot).toHaveClass('bg-red-500/20');
+        expect(bookedSlot).toHaveClass('border-red-500/40');
+        expect(bookedSlot).not.toHaveClass('opacity-25');
+
+        const unavailableSlot = screen.getByText('09:30');
+        expect(unavailableSlot).toBeDisabled();
+        expect(unavailableSlot).toHaveClass('opacity-25');
+        expect(unavailableSlot).not.toHaveClass('bg-red-500/20');
+    });
+
     it('should disable Sundays in the calendar', () => {
-        // Use a known month — January 2028: Sunday = 2, 9, 16, 23, 30
-        const jan2028 = new Date(2028, 0, 1);
         mockUseTimeSlots.mockReturnValue({ data: [], isLoading: false });
 
         render(
@@ -241,7 +288,7 @@ describe('DateTimeSelection', () => {
 
         // Sundays should be disabled — we can check by finding all disabled buttons
         // that are calendar day buttons (they contain a number)
-        const allButtons = screen.getAllByRole('button') as HTMLButtonElement[];
+        const allButtons = screen.getAllByRole('button');
         const disabledDayButtons = allButtons.filter(
             (btn) => btn.disabled && /^\d+$/.test(btn.textContent || '')
         );

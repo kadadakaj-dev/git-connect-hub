@@ -27,7 +27,7 @@ function isValidDate(str: string): boolean {
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/
   if (!dateRegex.test(str)) return false
   const date = new Date(str)
-  return !isNaN(date.getTime())
+  return !Number.isNaN(date.getTime())
 }
 
 function isValidTimeSlot(str: string): boolean {
@@ -42,12 +42,12 @@ function isValidEmail(str: string): boolean {
 
 function isValidPhone(str: string): boolean {
   // Allow various phone formats: +421..., 0905..., etc.
-  const phoneRegex = /^[\+]?[0-9\s\-\(\)]{7,20}$/
+  const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/
   return phoneRegex.test(str.trim())
 }
 
 function sanitizeString(str: string, maxLength: number): string {
-  return str.replace(/[\r\n]/g, ' ').trim().slice(0, maxLength)
+  return str.replaceAll(/[\r\n]/g, ' ').trim().slice(0, maxLength)
 }
 
 function getClientIP(req: Request): string | null {
@@ -79,7 +79,7 @@ async function buildRateLimitIdentifier(
     ? body.client_email.trim().toLowerCase()
     : ''
   const normalizedPhone = typeof body.client_phone === 'string'
-    ? body.client_phone.replace(/\D/g, '')
+    ? body.client_phone.replaceAll(/\D/g, '')
     : ''
   const clientIP = getClientIP(req)
 
