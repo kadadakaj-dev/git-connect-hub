@@ -140,6 +140,9 @@ const AdminDashboard = () => {
 
           <TabsContent value="overview">
             <OverviewStats />
+            <div className="mt-4 sm:mt-6">
+              <AnalyticsCharts />
+            </div>
           </TabsContent>
 
           <TabsContent value="calendar">
