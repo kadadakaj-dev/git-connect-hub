@@ -8,7 +8,6 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ServiceManagement from '@/components/admin/ServiceManagement';
 import BookingManagement from '@/components/admin/BookingManagement';
 import OverviewStats from '@/components/admin/OverviewStats';
-import AnalyticsCharts from '@/components/admin/AnalyticsCharts';
 import CalendarView from '@/components/admin/CalendarView';
 import EmployeeManagement from '@/components/admin/EmployeeManagement';
 import OpeningHoursManagement from '@/components/admin/OpeningHoursManagement';
@@ -140,9 +139,6 @@ const AdminDashboard = () => {
 
           <TabsContent value="overview">
             <OverviewStats />
-            <div className="mt-4 sm:mt-6">
-              <AnalyticsCharts />
-            </div>
           </TabsContent>
 
           <TabsContent value="calendar">
