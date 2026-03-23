@@ -25,6 +25,46 @@ interface BookingResponse {
   queued?: boolean;
 }
 
+type FunctionInvokeError = {
+  message?: string;
+  context?: Response;
+};
+
+async function getFunctionErrorMessage(error: FunctionInvokeError | null | undefined): Promise<string> {
+  if (!error) {
+    return 'Failed to create booking';
+  }
+
+  if (error.context instanceof Response) {
+    let payload: unknown;
+
+    try {
+      payload = await error.context.clone().json();
+    } catch {
+      payload = null;
+    }
+
+    if (payload && typeof payload === 'object') {
+      const apiError = 'error' in payload && typeof payload.error === 'string' ? payload.error : null;
+      const apiMessage = 'message' in payload && typeof payload.message === 'string' ? payload.message : null;
+
+      if (apiError) {
+        return apiError;
+      }
+
+      if (apiMessage) {
+        return apiMessage;
+      }
+    }
+
+    if (error.context.status === 429) {
+      return 'Too many requests, please try again later';
+    }
+  }
+
+  return error.message || 'Failed to create booking';
+}
+
 export function useCreateBooking() {
   return useMutation({
     mutationFn: async (data: BookingData): Promise<BookingResponse> => {
@@ -50,7 +90,8 @@ export function useCreateBooking() {
             queued: true,
           };
         }
-        throw new Error(response.error.message || 'Failed to create booking');
+
+        throw new Error(await getFunctionErrorMessage(response.error));
       }
 
       const result = response.data as BookingResponse;
