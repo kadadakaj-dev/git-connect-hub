@@ -65,7 +65,28 @@ const BookingManagement = () => {
     }
   });
 
-  const filteredBookings = bookings?.filter(booking => {
+  const deleteAllMutation = useMutation({
+    mutationFn: async () => {
+      // First delete related booking_reminders and therapist_notes
+      const { data: allBookings } = await supabase.from('bookings').select('id');
+      if (allBookings && allBookings.length > 0) {
+        const ids = allBookings.map(b => b.id);
+        await supabase.from('booking_reminders').delete().in('booking_id', ids);
+        await supabase.from('therapist_notes').delete().in('booking_id', ids);
+      }
+      const { error } = await supabase.from('bookings').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['timeSlots'] });
+      toast.success(language === 'sk' ? 'Všetky rezervácie boli vymazané' : 'All bookings deleted');
+    },
+    onError: () => {
+      toast.error(language === 'sk' ? 'Chyba pri mazaní' : 'Error deleting bookings');
+    }
+  });
+
     const matchesSearch =
       booking.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.client_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
