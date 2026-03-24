@@ -22,6 +22,7 @@ interface MonthViewProps {
   onEditEvent: (event: CalendarEvent) => void;
   onDragStart: (e: React.DragEvent, event: CalendarEvent) => void;
   onDropOnDay: (e: React.DragEvent, date: Date) => void;
+  onDayClick?: (date: Date) => void;
 }
 
 const MonthView = ({
@@ -34,6 +35,7 @@ const MonthView = ({
   onEditEvent,
   onDragStart,
   onDropOnDay,
+  onDayClick,
 }: MonthViewProps) => {
   const weekdays = language === 'sk' ? FULL_WEEKDAYS_SK : FULL_WEEKDAYS_EN;
   const monthDays = getMonthDays(currentDate);
@@ -72,13 +74,18 @@ const MonthView = ({
               onDrop={(e) => onDropOnDay(e, date)}
               onClick={() => onCreateEvent(date, '09:00')}
             >
-              {/* Day number — top right */}
+              {/* Day number — clickable to switch to day view */}
               <div className="flex justify-end">
-                <span className={`text-base font-semibold leading-none
-                  ${today
-                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
-                    : 'text-[hsl(var(--soft-navy))]'
-                  }`}
+                <span
+                  className={`text-base font-semibold leading-none cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-1 rounded-full transition-all
+                    ${today
+                      ? 'flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
+                      : 'flex h-8 w-8 items-center justify-center text-[hsl(var(--soft-navy))] hover:bg-primary/10'
+                    }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDayClick?.(date);
+                  }}
                 >
                   {date.getDate()}
                 </span>

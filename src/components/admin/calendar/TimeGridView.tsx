@@ -27,6 +27,7 @@ interface TimeGridViewProps {
   onDragStart: (e: React.DragEvent, event: CalendarEvent) => void;
   onDropOnGrid: (e: React.DragEvent, date: Date) => void;
   onResizeStart: (id: string, startY: number, originalDuration: number) => void;
+  onDayClick?: (date: Date) => void;
 }
 
 const TimeGridView = ({
@@ -41,6 +42,7 @@ const TimeGridView = ({
   onDragStart,
   onDropOnGrid,
   onResizeStart,
+  onDayClick,
 }: TimeGridViewProps) => {
   const [, setTick] = useState(0);
   const weekdays = language === 'sk' ? WEEKDAYS_SK : WEEKDAYS_EN;
@@ -70,11 +72,14 @@ const TimeGridView = ({
                 <div className="uppercase tracking-wider text-[10px] md:text-xs font-medium text-muted-foreground mb-1">
                   {weekdays[getDayIndex(date)]}
                 </div>
-                <div className={`inline-flex items-center justify-center ${
-                  today
-                    ? 'w-8 h-8 rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white font-bold text-base shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
-                    : 'text-base font-semibold text-[hsl(var(--soft-navy))]'
-                }`}>
+                <div
+                  className={`inline-flex items-center justify-center cursor-pointer transition-all hover:ring-2 hover:ring-primary/30 hover:ring-offset-1 rounded-full ${
+                    today
+                      ? 'w-8 h-8 rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white font-bold text-base shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
+                      : 'w-8 h-8 text-base font-semibold text-[hsl(var(--soft-navy))] hover:bg-primary/10'
+                  }`}
+                  onClick={() => onDayClick?.(date)}
+                >
                   {date.getDate()}
                 </div>
               </div>
