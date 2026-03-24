@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import { format } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import { CheckCircle2, Calendar, Clock, User, Mail, Phone, MapPin, ArrowRight, CalendarPlus } from 'lucide-react';
 import { BookingData } from '@/types/booking';
