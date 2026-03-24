@@ -10,7 +10,7 @@ describe('getSlotUnavailableClass', () => {
                 bookedCount: 1,
                 totalCapacity: 1,
             }),
-        ).toContain('bg-red-500/18');
+        ).toContain('bg-red-500/30');
 
         expect(
             getSlotUnavailableClass({
