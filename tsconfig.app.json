@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "types": [
-      "vitest/globals",
-      "vite/client"
-    ],
+    "types": [],
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
