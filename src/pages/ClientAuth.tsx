@@ -230,6 +230,10 @@ const ClientAuth = () => {
       welcomeSub: 'Spravujte svoje rezervácie a obľúbené služby',
       guest: 'Hosť',
       guestState: 'Neprihlásený',
+      forgotPassword: 'Zabudli ste heslo?',
+      resetPassword: 'Obnoviť heslo',
+      backToLogin: 'Späť na prihlásenie',
+      resetInstructions: 'Zadajte email a pošleme vám odkaz na obnovenie hesla.',
     },
     en: {
       title: 'Client Portal',
