@@ -144,7 +144,7 @@ const BookingWizard = () => {
         <div className="container max-w-2xl mx-auto px-4 py-3 sm:py-6 flex-1 relative z-10">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <GlassCard>
-              <Confirmation bookingData={bookingData} onNewBooking={handleNewBooking} />
+              <Confirmation bookingData={bookingData} onNewBooking={handleNewBooking} bookingId={bookingId} />
             </GlassCard>
           </motion.div>
         </div>

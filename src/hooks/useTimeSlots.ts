@@ -156,7 +156,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
           .eq('date', dateString)
           .neq('status', 'cancelled'),
         supabase
-          .from('employees_public' as any)
+          .from('employees_public')
           .select('id'),
       ]);
 
