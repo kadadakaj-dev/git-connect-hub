@@ -181,6 +181,35 @@ const ClientAuth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail.trim()) {
+      toast.error(language === 'sk' ? 'Zadajte email' : 'Enter your email');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/portal`,
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success(
+          language === 'sk'
+            ? 'Email na obnovenie hesla bol odoslaný. Skontrolujte svoju schránku.'
+            : 'Password reset email sent. Check your inbox.'
+        );
+        setShowForgotPassword(false);
+        setResetEmail('');
+      }
+    } catch {
+      toast.error(language === 'sk' ? 'Niečo sa pokazilo' : 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const t = {
     sk: {
       title: 'Klientský portál',
