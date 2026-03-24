@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import { CheckCircle2, Calendar, Clock, User, Mail, Phone, MapPin, ArrowRight, CalendarPlus } from 'lucide-react';
@@ -8,18 +9,17 @@ import { useLanguage } from '@/i18n/LanguageContext';
 interface ConfirmationProps {
   bookingData: BookingData;
   onNewBooking: () => void;
-  bookingId?: string;
 }
 
-const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProps) => {
+const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
   const { t, language } = useLanguage();
   const locale = language === 'sk' ? sk : enUS;
   const { service, date, time, clientName, clientEmail, clientPhone, notes } = bookingData;
 
-  // Use first 8 chars of booking ID if available, otherwise generate fallback
-  const confirmationCode = bookingId
-    ? bookingId.substring(0, 8).toUpperCase()
-    : Math.random().toString(36).substring(2, 8).toUpperCase();
+  // Stable confirmation code — generated once per mount
+  const [confirmationCode] = useState(() =>
+    Math.random().toString(36).substring(2, 8).toUpperCase()
+  );
 
   const handleAddToCalendar = () => {
     if (date && time && service) {

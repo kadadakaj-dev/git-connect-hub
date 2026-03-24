@@ -31,7 +31,6 @@ const BookingWizard = () => {
   const [bookingData, setBookingData] = useState<BookingData>(initialBookingData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const [bookingId, setBookingId] = useState<string | undefined>();
   const createBooking = useCreateBooking();
 
   const dateTimeRef = useRef<HTMLDivElement>(null);
@@ -116,7 +115,6 @@ const BookingWizard = () => {
       } else {
         toast.success(t.bookingSuccess);
       }
-      setBookingId(result.booking?.id);
       setIsConfirmed(true);
       localStorage.setItem('fyzio_booking_completed', 'true');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -130,7 +128,6 @@ const BookingWizard = () => {
     setBookingData(initialBookingData);
     setErrors({});
     setIsConfirmed(false);
-    setBookingId(undefined);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -145,7 +142,7 @@ const BookingWizard = () => {
         <div className="container max-w-2xl mx-auto px-4 py-3 sm:py-6 flex-1 relative z-10">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <GlassCard>
-              <Confirmation bookingData={bookingData} onNewBooking={handleNewBooking} bookingId={bookingId} />
+              <Confirmation bookingData={bookingData} onNewBooking={handleNewBooking} />
             </GlassCard>
           </motion.div>
         </div>
