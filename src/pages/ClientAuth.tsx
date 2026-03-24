@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageMeta from '@/components/seo/PageMeta';
 import { Button } from '@/components/ui/button';
@@ -44,6 +44,8 @@ const ClientAuth = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -51,16 +53,36 @@ const ClientAuth = () => {
     phone: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const profileCreatedRef = useRef(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) navigate('/portal');
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        // Create profile on first verified login (not during unverified signup)
+        if (!profileCreatedRef.current) {
+          profileCreatedRef.current = true;
+          const { data: existing } = await supabase
+            .from('client_profiles')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+          if (!existing) {
+            await supabase.from('client_profiles').insert({
+              user_id: session.user.id,
+              full_name: session.user.user_metadata?.full_name || null,
+              phone: session.user.user_metadata?.phone || null,
+              preferred_language: language,
+            });
+          }
+        }
+        navigate('/portal');
+      }
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) navigate('/portal');
     });
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, language]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -146,18 +168,40 @@ const ClientAuth = () => {
           toast.error(error.message);
         }
       } else if (data.user) {
-        await supabase.from('client_profiles').insert({
-          user_id: data.user.id,
-          full_name: formData.fullName,
-          phone: formData.phone || null,
-          preferred_language: language,
-        });
-
         toast.success(
           language === 'sk'
             ? 'Registrácia úspešná! Skontrolujte email pre overenie.'
             : 'Registration successful! Check your email for verification.',
         );
+      }
+    } catch {
+      toast.error(language === 'sk' ? 'Niečo sa pokazilo' : 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail.trim()) {
+      toast.error(language === 'sk' ? 'Zadajte email' : 'Enter your email');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/portal`,
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success(
+          language === 'sk'
+            ? 'Email na obnovenie hesla bol odoslaný. Skontrolujte svoju schránku.'
+            : 'Password reset email sent. Check your inbox.'
+        );
+        setShowForgotPassword(false);
+        setResetEmail('');
       }
     } catch {
       toast.error(language === 'sk' ? 'Niečo sa pokazilo' : 'Something went wrong');
@@ -186,6 +230,10 @@ const ClientAuth = () => {
       welcomeSub: 'Spravujte svoje rezervácie a obľúbené služby',
       guest: 'Hosť',
       guestState: 'Neprihlásený',
+      forgotPassword: 'Zabudli ste heslo?',
+      resetPassword: 'Obnoviť heslo',
+      backToLogin: 'Späť na prihlásenie',
+      resetInstructions: 'Zadajte email a pošleme vám odkaz na obnovenie hesla.',
     },
     en: {
       title: 'Client Portal',
@@ -206,6 +254,10 @@ const ClientAuth = () => {
       welcomeSub: 'Manage your bookings and favorite services',
       guest: 'Guest',
       guestState: 'Not signed in',
+      forgotPassword: 'Forgot password?',
+      resetPassword: 'Reset Password',
+      backToLogin: 'Back to login',
+      resetInstructions: 'Enter your email and we\'ll send you a reset link.',
     },
   };
 
@@ -296,6 +348,41 @@ const ClientAuth = () => {
               </div>
 
               <div className="surface-panel rounded-[28px] border border-[var(--glass-border)] p-6 shadow-glass-float lg:p-8">
+                {showForgotPassword ? (
+                  <form onSubmit={handleForgotPassword} className="space-y-4">
+                    <div className="text-center mb-2">
+                      <h3 className="text-lg font-semibold text-[hsl(var(--soft-navy))]">{text.resetPassword}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">{text.resetInstructions}</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="reset-email" className="text-sm font-medium text-[hsl(var(--soft-navy))]">
+                        {text.email}
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          id="reset-email"
+                          type="email"
+                          placeholder="email@example.com"
+                          className={`pl-10 ${authInputClass}`}
+                          value={resetEmail}
+                          onChange={(e) => setResetEmail(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <Button type="submit" disabled={isLoading} className={submitButtonClass}>
+                      {isLoading ? '...' : text.resetPassword}
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPassword(false)}
+                      className="w-full text-center text-sm text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors"
+                    >
+                      {text.backToLogin}
+                    </button>
+                  </form>
+                ) : (
+                  <>
                 <div className="space-y-3">
                   <button type="button" onClick={handleGoogleSignIn} disabled={isLoading} className={oauthButtonClass}>
                     <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -376,6 +463,13 @@ const ClientAuth = () => {
                       <Button type="submit" disabled={isLoading} className={submitButtonClass}>
                         {isLoading ? '...' : text.signIn}
                       </Button>
+                      <button
+                        type="button"
+                        onClick={() => setShowForgotPassword(true)}
+                        className="w-full text-center text-sm text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors"
+                      >
+                        {text.forgotPassword}
+                      </button>
                     </form>
                   </TabsContent>
 
@@ -452,6 +546,8 @@ const ClientAuth = () => {
                     </form>
                   </TabsContent>
                 </Tabs>
+                  </>
+                )}
               </div>
             </div>
           </div>
