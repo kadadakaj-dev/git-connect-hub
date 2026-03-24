@@ -31,6 +31,7 @@ const BookingWizard = () => {
   const [bookingData, setBookingData] = useState<BookingData>(initialBookingData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [bookingId, setBookingId] = useState<string | undefined>();
   const createBooking = useCreateBooking();
 
   const dateTimeRef = useRef<HTMLDivElement>(null);
