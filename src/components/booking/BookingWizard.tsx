@@ -83,7 +83,7 @@ const BookingWizard = () => {
     if (!bookingData.clientPhone.trim()) {
       newErrors.clientPhone = t.errors.phoneRequired;
     } else if (!/^[+]?[0-9\s\-()]{7,20}$/.test(bookingData.clientPhone.trim())) {
-      newErrors.clientPhone = t.errors.phoneRequired;
+      newErrors.clientPhone = language === 'sk' ? 'Neplatné telefónne číslo' : 'Invalid phone number';
     }
 
     if (Object.keys(newErrors).length > 0) {
