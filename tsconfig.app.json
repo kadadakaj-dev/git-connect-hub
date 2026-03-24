@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "types": [
-      "vitest/globals"
+      "vitest/globals",
+      "vite/client",
+      "vite-plugin-pwa/client"
     ],
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
