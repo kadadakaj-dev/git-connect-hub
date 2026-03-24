@@ -10,7 +10,7 @@ describe('getSlotUnavailableClass', () => {
                 bookedCount: 1,
                 totalCapacity: 1,
             }),
-        ).toContain('bg-red-500/18');
+        ).toContain('bg-red-500/30');
 
         expect(
             getSlotUnavailableClass({
@@ -19,7 +19,7 @@ describe('getSlotUnavailableClass', () => {
                 bookedCount: 1,
                 totalCapacity: 1,
             }),
-        ).toContain('border-red-500/45');
+        ).toContain('border-red-500/60');
     });
 
     it('keeps non-booked unavailable slots muted', () => {
