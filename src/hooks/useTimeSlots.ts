@@ -154,10 +154,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
           .eq('day_of_week', dayOfWeek)
           .eq('is_active', true),
         supabase
-          .from('bookings')
-          .select('time_slot, booking_duration')
-          .eq('date', dateString)
-          .neq('status', 'cancelled'),
+          .rpc('get_booking_slot_counts', { _date: dateString }),
         supabase
           .from('employees_public')
           .select('id'),

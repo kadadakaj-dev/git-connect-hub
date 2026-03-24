@@ -265,7 +265,7 @@ describe('DateTimeSelection', () => {
         const bookedSlot = screen.getByText('09:00');
         expect(bookedSlot).toBeDisabled();
         expect(bookedSlot).toHaveClass('bg-red-500/30');
-        expect(bookedSlot).toHaveClass('border-red-500/50');
+        expect(bookedSlot).toHaveClass('border-red-500/60');
         expect(bookedSlot).not.toHaveClass('opacity-25');
 
         const unavailableSlot = screen.getByText('09:30');

@@ -580,6 +580,13 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_booking_slot_counts: {
+        Args: { _date: string }
+        Returns: {
+          booking_duration: number
+          time_slot: string
+        }[]
+      }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
