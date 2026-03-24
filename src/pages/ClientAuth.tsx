@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageMeta from '@/components/seo/PageMeta';
 import { Button } from '@/components/ui/button';
