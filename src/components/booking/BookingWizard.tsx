@@ -116,6 +116,7 @@ const BookingWizard = () => {
       } else {
         toast.success(t.bookingSuccess);
       }
+      setBookingId(result.booking?.id);
       setIsConfirmed(true);
       localStorage.setItem('fyzio_booking_completed', 'true');
       window.scrollTo({ top: 0, behavior: 'smooth' });
