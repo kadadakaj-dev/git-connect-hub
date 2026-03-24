@@ -342,20 +342,6 @@ function generateCancellationAdminHtml(data: EmailRequest): string {
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
   <title>Zrusena rezervacia - FYZIO&FIT</title>
-  <style>
-    :root { color-scheme: light dark; }
-    @media (prefers-color-scheme: dark) {
-      .email-body { background-color: #18181b !important; }
-      .email-card { background-color: #242427 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important; border: 1px solid #3f3f46 !important; }
-      .detail-box { background-color: #2e1616 !important; }
-      .detail-border { border-color: #5c2020 !important; }
-      .text-heading { color: #e4e4e7 !important; }
-      .text-body { color: #d4d4d8 !important; }
-      .text-muted { color: #a1a1aa !important; }
-      .text-accent { color: #f87171 !important; }
-      .footer-section { background-color: #1e1e22 !important; border-color: #3f3f46 !important; }
-    }
-  </style>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" class="email-body" style="background-color: #f7f9fc; padding: 20px;">
