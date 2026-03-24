@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Active employees are publicly viewable" ON public.employees;
