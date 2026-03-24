@@ -539,6 +539,15 @@ export type Database = {
       }
     }
     Views: {
+      booking_slot_counts: {
+        Row: {
+          booking_count: number | null
+          booking_duration: number | null
+          date: string | null
+          time_slot: string | null
+        }
+        Relationships: []
+      }
       employees_public: {
         Row: {
           bio_en: string | null
