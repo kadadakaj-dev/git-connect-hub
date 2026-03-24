@@ -168,13 +168,6 @@ const ClientAuth = () => {
           toast.error(error.message);
         }
       } else if (data.user) {
-        await supabase.from('client_profiles').insert({
-          user_id: data.user.id,
-          full_name: formData.fullName,
-          phone: formData.phone || null,
-          preferred_language: language,
-        });
-
         toast.success(
           language === 'sk'
             ? 'Registrácia úspešná! Skontrolujte email pre overenie.'
