@@ -130,6 +130,7 @@ const BookingWizard = () => {
     setBookingData(initialBookingData);
     setErrors({});
     setIsConfirmed(false);
+    setBookingId(undefined);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
