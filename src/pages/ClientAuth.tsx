@@ -428,6 +428,13 @@ const ClientAuth = () => {
                       <Button type="submit" disabled={isLoading} className={submitButtonClass}>
                         {isLoading ? '...' : text.signIn}
                       </Button>
+                      <button
+                        type="button"
+                        onClick={() => setShowForgotPassword(true)}
+                        className="w-full text-center text-sm text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors"
+                      >
+                        {text.forgotPassword}
+                      </button>
                     </form>
                   </TabsContent>
 
