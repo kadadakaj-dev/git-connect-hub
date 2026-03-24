@@ -44,6 +44,8 @@ const ClientAuth = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -51,6 +53,7 @@ const ClientAuth = () => {
     phone: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const profileCreatedRef = useRef(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
