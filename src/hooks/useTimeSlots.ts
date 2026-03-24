@@ -53,6 +53,8 @@ function generateSlotsFromConfig(
       }
     }
 
+    let maxOccupiedCount = occupiedCount;
+
     // For multi-slot services, check if all consecutive slots are available
     let canBook = occupiedCount < totalCapacity;
     if (canBook && requiredSlots > 1) {
@@ -76,6 +78,7 @@ function generateSlotsFromConfig(
             nextOccupied++;
           }
         }
+        maxOccupiedCount = Math.max(maxOccupiedCount, nextOccupied);
         if (nextOccupied >= totalCapacity) {
           canBook = false;
           break;
@@ -86,7 +89,7 @@ function generateSlotsFromConfig(
     slots.push({
       time: timeString,
       available: canBook,
-      bookedCount: occupiedCount,
+      bookedCount: maxOccupiedCount,
       totalCapacity,
     });
 

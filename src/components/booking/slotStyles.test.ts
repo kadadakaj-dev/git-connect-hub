@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getSlotUnavailableClass } from './slotStyles';
 
 describe('getSlotUnavailableClass', () => {
-    it('uses a subtle red highlight for booked unavailable slots', () => {
+    it('uses a visible red highlight for booked unavailable slots', () => {
         expect(
             getSlotUnavailableClass({
                 time: '10:00',
@@ -10,7 +10,7 @@ describe('getSlotUnavailableClass', () => {
                 bookedCount: 1,
                 totalCapacity: 1,
             }),
-        ).toContain('bg-red-500/12');
+        ).toContain('bg-red-500/18');
 
         expect(
             getSlotUnavailableClass({
@@ -19,7 +19,7 @@ describe('getSlotUnavailableClass', () => {
                 bookedCount: 1,
                 totalCapacity: 1,
             }),
-        ).toContain('border-red-400/35');
+        ).toContain('border-red-500/45');
     });
 
     it('keeps non-booked unavailable slots muted', () => {
