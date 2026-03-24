@@ -1,30 +1,19 @@
 
 
-# Pridať zamestnanca "Personál FYZIO&FIT"
+# Zvýrazniť obsadené sloty výraznejšou červenou
 
 ## Problém
-Tabuľka `employees` je prázdna — booking flow nemôže priradiť terapeuta a všetky time sloty sa zobrazujú ako nedostupné.
-
-## Riešenie
-Vložiť jedného zamestnanca ktorý bude reprezentovať celú kliniku — jednoduchšie pre malú prevádzku kde je jeden fyzioterapeut.
+Obsadené (rezervované) sloty majú príliš jemné červené pozadie (`bg-red-500/18` = 18% opacity), takže na prvý pohľad nie sú dostatočne viditeľné.
 
 ## Zmeny
 
-### 1. SQL migrácia — vložiť zamestnanca
-```sql
-INSERT INTO public.employees (full_name, email, is_active)
-VALUES ('Personál FYZIO&FIT', 'booking@fyzioafit.sk', true);
-```
+### 1. Súbor `src/components/booking/slotStyles.ts`
+Zvýšiť viditeľnosť červenej pre obsadené sloty:
+- Pozadie: `bg-red-500/18` → `bg-red-500/30` (výraznejšie červené pozadie)
+- Border: `border-red-500/45` → `border-red-500/60` (viditeľnejší okraj)
+- Pridať `line-through` pre prečiarknutie textu času
+- Zvýšiť vnútorný tieň pre lepší kontrast
 
-### 2. Priradiť všetky aktívne služby tomuto zamestnancovi
-```sql
-INSERT INTO public.employee_services (employee_id, service_id)
-SELECT e.id, s.id
-FROM public.employees e
-CROSS JOIN public.services s
-WHERE e.email = 'booking@fyzioafit.sk'
-  AND s.active = true;
-```
-
-Tým sa sprístupnia time sloty pre všetky služby a booking flow bude plne funkčný.
+### 2. Aktualizovať test `slotStyles.test.ts`
+Upraviť expected hodnoty v teste aby zodpovedali novým triedam (`bg-red-500/30`, `border-red-500/60`).
 
