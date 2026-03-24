@@ -98,7 +98,7 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
   <title>${isReminder ? t.reminderSubject : t.subject}</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" class="email-body" style="background-color: #f7f9fc; padding: 20px;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="email-body" style="background-color: #ffffff; padding: 20px;">
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" class="email-card" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);">
