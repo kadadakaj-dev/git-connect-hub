@@ -56,14 +56,33 @@ const ClientAuth = () => {
   const profileCreatedRef = useRef(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) navigate('/portal');
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        // Create profile on first verified login (not during unverified signup)
+        if (!profileCreatedRef.current) {
+          profileCreatedRef.current = true;
+          const { data: existing } = await supabase
+            .from('client_profiles')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+          if (!existing) {
+            await supabase.from('client_profiles').insert({
+              user_id: session.user.id,
+              full_name: session.user.user_metadata?.full_name || null,
+              phone: session.user.user_metadata?.phone || null,
+              preferred_language: language,
+            });
+          }
+        }
+        navigate('/portal');
+      }
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) navigate('/portal');
     });
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, language]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
