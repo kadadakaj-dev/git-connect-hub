@@ -290,7 +290,7 @@ describe('DateTimeSelection', () => {
         // that are calendar day buttons (they contain a number)
         const allButtons = screen.getAllByRole('button');
         const disabledDayButtons = allButtons.filter(
-            (btn) => btn.disabled && /^\d+$/.test(btn.textContent || '')
+            (btn) => (btn as HTMLButtonElement).disabled && /^\d+$/.test(btn.textContent || '')
         );
         // At least some days should be disabled (Sundays + past dates)
         expect(disabledDayButtons.length).toBeGreaterThan(0);
