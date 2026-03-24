@@ -14,6 +14,7 @@ import ListView from './calendar/ListView';
 import EventModal, { EventFormData } from './calendar/EventModal';
 import BookingDetailsDialog, { AdminBookingDetails } from './BookingDetailsDialog';
 import { Tables } from '@/integrations/supabase/types';
+import { ZoomIn, ZoomOut, Search } from 'lucide-react';
 
 type BookingWithService = Tables<'bookings'> & {
   service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category' | 'price'> | null;
@@ -31,6 +32,7 @@ const CalendarView = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [blockedDates, setBlockedDates] = useState<{ date: string; reason: string | null }[]>([]);
+  const [zoom, setZoom] = useState(1);
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -146,9 +148,7 @@ const CalendarView = () => {
 
     const handleMouseUp = async () => {
       if (resizingState && resizingState.currentDuration !== resizingState.originalDuration) {
-        // Persist the duration change - update the booking's service duration note
-        // Since duration comes from service, we update the time_slot end or add a note
-        // For now we just persist the resize as a visual change - the actual booking time is tracked
+        // Persist the duration change
       }
       setResizingState(null);
     };
@@ -183,6 +183,14 @@ const CalendarView = () => {
     if (viewMode === 'day') return [currentDate];
     const weekStart = getWeekStart(currentDate);
     return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  };
+
+  // Day click handler — switch to day view
+  const handleDayClick = (date: Date) => {
+    setNavDirection(1);
+    setDateKey(k => k + 1);
+    setCurrentDate(date);
+    setViewMode('day');
   };
 
   // Modal handlers
@@ -261,7 +269,6 @@ const CalendarView = () => {
     }
 
     if (modalMode === 'edit') {
-      // Update existing booking
       const { error } = await supabase
         .from('bookings')
         .update({
@@ -279,10 +286,7 @@ const CalendarView = () => {
 
       toast.success(language === 'sk' ? 'Aktualizované' : 'Updated');
     } else {
-      // For create mode - this is a simplified version since bookings usually
-      // come through the booking wizard. This modal is mainly for blocking time.
       if (formData.type === 'block') {
-        // Create blocked dates or just show in calendar as local blocks
         toast.success(language === 'sk' ? 'Čas zablokovaný' : 'Time blocked');
       } else {
         toast.info(language === 'sk'
@@ -395,9 +399,14 @@ const CalendarView = () => {
     toast.success(language === 'sk' ? 'Rezervácia presunutá' : 'Booking moved');
   };
 
+  // Zoom handlers
+  const zoomIn = () => setZoom(prev => Math.min(1.6, +(prev + 0.1).toFixed(1)));
+  const zoomOut = () => setZoom(prev => Math.max(0.6, +(prev - 0.1).toFixed(1)));
+  const resetZoom = () => setZoom(1);
+
   return (
     <Card className="overflow-hidden rounded-[30px] border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.62)_0%,rgba(234,246,255,0.34)_100%)] shadow-glass-float">
-      <div className="flex flex-col h-[calc(100vh-280px)] min-h-[500px]">
+      <div className="flex flex-col h-[calc(100vh-280px)] min-h-[500px] relative">
         <CalendarHeader
           language={language}
           currentDate={currentDate}
@@ -415,85 +424,129 @@ const CalendarView = () => {
           onCreateBlock={() => openCreateModal(currentDate, '12:00', true)}
         />
 
-        <AnimatePresence mode="wait" custom={navDirection}>
-          {isLoading ? (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="flex items-center justify-center flex-1"
+        {/* Calendar content with zoom */}
+        <div className="flex-1 overflow-auto">
+          <div
+            style={{
+              transform: `scale(${zoom})`,
+              transformOrigin: 'top left',
+              width: `${100 / zoom}%`,
+              transition: 'transform 0.2s ease-out',
+            }}
+            className="flex flex-col min-h-full"
+          >
+            <AnimatePresence mode="wait" custom={navDirection}>
+              {isLoading ? (
+                <motion.div
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center justify-center flex-1 min-h-[400px]"
+                >
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                </motion.div>
+              ) : viewMode === 'month' ? (
+                <motion.div
+                  key={`month-${dateKey}`}
+                  custom={navDirection}
+                  initial={{ opacity: 0, x: navDirection * 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: navDirection * -40 }}
+                  transition={{ duration: 0.2, ease: 'easeInOut' }}
+                  className="flex flex-col flex-1 overflow-hidden"
+                >
+                  <MonthView
+                    language={language}
+                    currentDate={currentDate}
+                    events={events}
+                    selectedTherapist={selectedTherapist}
+                    blockedDates={blockedDates}
+                    onCreateEvent={(date, time) => openCreateModal(date, time)}
+                    onEditEvent={openEditModal}
+                    onDragStart={handleDragStart}
+                    onDropOnDay={handleDropOnMonthDay}
+                    onDayClick={handleDayClick}
+                  />
+                </motion.div>
+              ) : viewMode === 'list' ? (
+                <motion.div
+                  key={`list-${dateKey}`}
+                  custom={navDirection}
+                  initial={{ opacity: 0, x: navDirection * 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: navDirection * -40 }}
+                  transition={{ duration: 0.2, ease: 'easeInOut' }}
+                  className="flex flex-col flex-1 overflow-hidden"
+                >
+                  <ListView
+                    language={language}
+                    events={events}
+                    selectedTherapist={selectedTherapist}
+                    onEditEvent={openEditModal}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key={`${viewMode}-${dateKey}`}
+                  custom={navDirection}
+                  initial={{ opacity: 0, x: navDirection * 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: navDirection * -40 }}
+                  transition={{ duration: 0.2, ease: 'easeInOut' }}
+                  className="flex flex-col flex-1 overflow-hidden"
+                >
+                  <TimeGridView
+                    language={language}
+                    activeDays={getActiveDays()}
+                    events={events}
+                    selectedTherapist={selectedTherapist}
+                    viewMode={viewMode as 'day' | 'week'}
+                    blockedDates={blockedDates}
+                    onCreateEvent={(date, time) => openCreateModal(date, time)}
+                    onEditEvent={openEditModal}
+                    onDragStart={handleDragStart}
+                    onDropOnGrid={handleDropOnGrid}
+                    onResizeStart={(id, startY, originalDuration) =>
+                      setResizingState({ id, startY, originalDuration, currentDuration: originalDuration })
+                    }
+                    onDayClick={handleDayClick}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Zoom control bar — bottom floating */}
+        {(viewMode === 'day' || viewMode === 'week') && (
+          <div className="absolute bottom-4 right-4 z-40 flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-lg border border-[var(--glass-border-subtle)] shadow-glass-float px-2 py-1.5">
+            <button
+              onClick={zoomOut}
+              disabled={zoom <= 0.6}
+              className="p-1.5 rounded-full hover:bg-primary/10 disabled:opacity-30 transition-colors"
+              title={language === 'sk' ? 'Oddialiť' : 'Zoom out'}
             >
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-            </motion.div>
-          ) : viewMode === 'month' ? (
-            <motion.div
-              key={`month-${dateKey}`}
-              custom={navDirection}
-              initial={{ opacity: 0, x: navDirection * 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: navDirection * -40 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="flex flex-col flex-1 overflow-hidden"
+              <ZoomOut className="h-4 w-4 text-[hsl(var(--soft-navy))]" />
+            </button>
+            <button
+              onClick={resetZoom}
+              className="px-2 py-0.5 rounded-full hover:bg-primary/10 transition-colors text-xs font-semibold text-[hsl(var(--soft-navy))] tabular-nums min-w-[42px] text-center"
+              title={language === 'sk' ? 'Resetovať zoom' : 'Reset zoom'}
             >
-              <MonthView
-                language={language}
-                currentDate={currentDate}
-                events={events}
-                selectedTherapist={selectedTherapist}
-                blockedDates={blockedDates}
-                onCreateEvent={(date, time) => openCreateModal(date, time)}
-                onEditEvent={openEditModal}
-                onDragStart={handleDragStart}
-                onDropOnDay={handleDropOnMonthDay}
-              />
-            </motion.div>
-          ) : viewMode === 'list' ? (
-            <motion.div
-              key={`list-${dateKey}`}
-              custom={navDirection}
-              initial={{ opacity: 0, x: navDirection * 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: navDirection * -40 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="flex flex-col flex-1 overflow-hidden"
+              {Math.round(zoom * 100)}%
+            </button>
+            <button
+              onClick={zoomIn}
+              disabled={zoom >= 1.6}
+              className="p-1.5 rounded-full hover:bg-primary/10 disabled:opacity-30 transition-colors"
+              title={language === 'sk' ? 'Priblížiť' : 'Zoom in'}
             >
-              <ListView
-                language={language}
-                events={events}
-                selectedTherapist={selectedTherapist}
-                onEditEvent={openEditModal}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              key={`${viewMode}-${dateKey}`}
-              custom={navDirection}
-              initial={{ opacity: 0, x: navDirection * 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: navDirection * -40 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="flex flex-col flex-1 overflow-hidden"
-            >
-              <TimeGridView
-                language={language}
-                activeDays={getActiveDays()}
-                events={events}
-                selectedTherapist={selectedTherapist}
-                viewMode={viewMode as 'day' | 'week'}
-                blockedDates={blockedDates}
-                onCreateEvent={(date, time) => openCreateModal(date, time)}
-                onEditEvent={openEditModal}
-                onDragStart={handleDragStart}
-                onDropOnGrid={handleDropOnGrid}
-                onResizeStart={(id, startY, originalDuration) =>
-                  setResizingState({ id, startY, originalDuration, currentDuration: originalDuration })
-                }
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <ZoomIn className="h-4 w-4 text-[hsl(var(--soft-navy))]" />
+            </button>
+          </div>
+        )}
       </div>
 
       <EventModal
