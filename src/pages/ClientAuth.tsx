@@ -78,21 +78,6 @@ const ClientAuth = () => {
     }
   };
 
-  const handleAppleSignIn = async () => {
-    setIsLoading(true);
-    try {
-      const { error } = await lovable.auth.signInWithOAuth('apple', {
-        redirect_uri: `${window.location.origin}/portal`,
-      });
-      if (error) {
-        toast.error(language === 'sk' ? 'Chyba pri prihlásení cez Apple' : 'Error signing in with Apple');
-      }
-    } catch {
-      toast.error(language === 'sk' ? 'Niečo sa pokazilo' : 'Something went wrong');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

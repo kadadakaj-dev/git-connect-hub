@@ -26,9 +26,16 @@ const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
       const title = `FYZIO&FIT - ${service.name}`;
       const startDate = new Date(date);
       const [hours, minutes] = time.split(':');
-      startDate.setHours(parseInt(hours), parseInt(minutes));
+      startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
       const endDate = new Date(startDate.getTime() + (service.duration || 60) * 60000);
-      const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(language === 'sk' ? 'Rezervácia fyzioterapie' : 'Physiotherapy appointment')}&location=${encodeURIComponent('Krmanová 6, Košice')}`;
+      
+      // Format dates for Google Calendar in local time (YYYYMMDDTHHMMSS without Z = local time)
+      const formatLocalDate = (d: Date) => {
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+      };
+      
+      const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatLocalDate(startDate)}/${formatLocalDate(endDate)}&ctz=Europe/Bratislava&details=${encodeURIComponent(language === 'sk' ? 'Rezervácia fyzioterapie' : 'Physiotherapy appointment')}&location=${encodeURIComponent('Krmanová 6, Košice')}`;
       window.open(googleCalendarUrl, '_blank');
     }
   };
