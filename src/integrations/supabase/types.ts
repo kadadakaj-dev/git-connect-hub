@@ -539,15 +539,6 @@ export type Database = {
       }
     }
     Views: {
-      booking_slot_counts: {
-        Row: {
-          booking_count: number | null
-          booking_duration: number | null
-          date: string | null
-          time_slot: string | null
-        }
-        Relationships: []
-      }
       employees_public: {
         Row: {
           bio_en: string | null
@@ -588,6 +579,13 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      get_booking_slot_counts: {
+        Args: { _date: string }
+        Returns: {
+          booking_duration: number
+          time_slot: string
+        }[]
       }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
       move_to_dlq: {
