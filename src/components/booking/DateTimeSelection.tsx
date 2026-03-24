@@ -8,6 +8,7 @@ import { useTimeSlots } from '@/hooks/useTimeSlots';
 import { useState, useMemo } from 'react';
 import TimeSlotSkeleton from './TimeSlotSkeleton';
 import { TimeSlot } from '@/types/booking';
+import { getSlotUnavailableClass } from './slotStyles';
 
 interface DateTimeSelectionProps {
   selectedDate: Date | null;
@@ -15,14 +16,6 @@ interface DateTimeSelectionProps {
   onDateSelect: (date: Date) => void;
   onTimeSelect: (time: string) => void;
   serviceDuration?: number;
-}
-
-function getSlotUnavailableClass(slot: TimeSlot): string {
-  if (slot.available) return '';
-  if (slot.bookedCount > 0) {
-    return 'bg-red-500/30 text-red-500 dark:text-red-300 border-2 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.3)] cursor-not-allowed line-through decoration-red-500/60';
-  }
-  return 'opacity-25 cursor-not-allowed text-muted-foreground';
 }
 
 function getSlotAvailableClass(

@@ -94,6 +94,10 @@ export const translations = {
       selectDate: 'Prosím, vyberte dátum',
       selectTime: 'Prosím, vyberte čas',
     },
+    bookingErrors: {
+      fullyBooked: 'Tento termín je už plne obsadený. Vyberte si, prosím, iný čas.',
+      occupied: 'Tento termín je už obsadený. Vyberte si, prosím, iný čas.',
+    },
 
     // Confirmation
     bookingConfirmed: 'Rezervácia potvrdená!',
@@ -207,6 +211,10 @@ export const translations = {
       selectService: 'Please select a service',
       selectDate: 'Please select a date',
       selectTime: 'Please select a time slot',
+    },
+    bookingErrors: {
+      fullyBooked: 'This time slot is fully booked. Please choose another time.',
+      occupied: 'This time slot is already occupied. Please choose another time.',
     },
 
     // Confirmation

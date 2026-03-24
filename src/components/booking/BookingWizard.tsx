@@ -15,6 +15,7 @@ import ClientDetailsForm from './ClientDetailsForm';
 import GlassCard from './GlassCard';
 import SectionHeader from './SectionHeader';
 import SubmitButton from './SubmitButton';
+import { mapBookingErrorMessage } from './bookingErrorMessages';
 
 const initialBookingData: BookingData = {
   service: null,
@@ -122,7 +123,7 @@ const BookingWizard = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Booking failed';
-      toast.error(message);
+      toast.error(mapBookingErrorMessage(message, t.bookingErrors));
     }
   };
 

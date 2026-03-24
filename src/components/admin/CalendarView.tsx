@@ -343,7 +343,7 @@ const CalendarView = () => {
 
     const tempEvent = { ...eventToMove, date: newDateStr, startTime: newTimeStr };
     if (preventOverlap && hasOverlap(tempEvent, events.filter(e => e.id !== eventId))) {
-      toast.error(language === 'sk' ? 'Tento termín je už obsadený' : 'This time slot is occupied');
+      toast.error(language === 'sk' ? 'Tento termín je už plne obsadený' : 'This time slot is fully booked');
       return;
     }
 
