@@ -348,6 +348,41 @@ const ClientAuth = () => {
               </div>
 
               <div className="surface-panel rounded-[28px] border border-[var(--glass-border)] p-6 shadow-glass-float lg:p-8">
+                {showForgotPassword ? (
+                  <form onSubmit={handleForgotPassword} className="space-y-4">
+                    <div className="text-center mb-2">
+                      <h3 className="text-lg font-semibold text-[hsl(var(--soft-navy))]">{text.resetPassword}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">{text.resetInstructions}</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="reset-email" className="text-sm font-medium text-[hsl(var(--soft-navy))]">
+                        {text.email}
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          id="reset-email"
+                          type="email"
+                          placeholder="email@example.com"
+                          className={`pl-10 ${authInputClass}`}
+                          value={resetEmail}
+                          onChange={(e) => setResetEmail(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <Button type="submit" disabled={isLoading} className={submitButtonClass}>
+                      {isLoading ? '...' : text.resetPassword}
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPassword(false)}
+                      className="w-full text-center text-sm text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors"
+                    >
+                      {text.backToLogin}
+                    </button>
+                  </form>
+                ) : (
+                  <>
                 <div className="space-y-3">
                   <button type="button" onClick={handleGoogleSignIn} disabled={isLoading} className={oauthButtonClass}>
                     <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -511,6 +546,8 @@ const ClientAuth = () => {
                     </form>
                   </TabsContent>
                 </Tabs>
+                  </>
+                )}
               </div>
             </div>
           </div>
