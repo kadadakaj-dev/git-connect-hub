@@ -254,6 +254,10 @@ const ClientAuth = () => {
       welcomeSub: 'Manage your bookings and favorite services',
       guest: 'Guest',
       guestState: 'Not signed in',
+      forgotPassword: 'Forgot password?',
+      resetPassword: 'Reset Password',
+      backToLogin: 'Back to login',
+      resetInstructions: 'Enter your email and we\'ll send you a reset link.',
     },
   };
 
