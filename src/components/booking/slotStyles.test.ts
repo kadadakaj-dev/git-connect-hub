@@ -19,7 +19,7 @@ describe('getSlotUnavailableClass', () => {
                 bookedCount: 1,
                 totalCapacity: 1,
             }),
-        ).toContain('border-red-500/45');
+        ).toContain('border-red-500/60');
     });
 
     it('keeps non-booked unavailable slots muted', () => {
