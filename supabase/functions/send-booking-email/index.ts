@@ -329,6 +329,186 @@ function generateAdminNotificationText(data: EmailRequest): string {
   ].filter(Boolean).join("\n");
 }
 
+function generateReminderHtml(data: EmailRequest, baseUrl: string): string {
+  const t = translations[data.language];
+  const formattedDate = formatDate(data.date, data.language);
+  const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`;
+
+  const labels = data.language === 'sk' ? {
+    reminder: '🔔 PRIPOMIENKA',
+    subtitle: 'Váš termín je už zajtra!',
+    penaltyTitle: '⚠️ STORNO POPLATOK: 10 €',
+    penaltyLine1: 'Zrušenie menej ako 12 hodín pred termínom je možné <strong>len telefonicky</strong>.',
+    penaltyLine2: 'Bude Vám účtovaný storno poplatok <strong>10&nbsp;€</strong>.',
+    phoneLabel: 'Volajte:',
+    onlineCancel: 'Online zrušenie je možné najneskôr 12 hodín pred termínom:',
+  } : {
+    reminder: '🔔 REMINDER',
+    subtitle: 'Your appointment is tomorrow!',
+    penaltyTitle: '⚠️ CANCELLATION FEE: €10',
+    penaltyLine1: 'Cancellation less than 12 hours before the appointment is only possible <strong>by phone</strong>.',
+    penaltyLine2: 'A cancellation fee of <strong>€10</strong> will be charged.',
+    phoneLabel: 'Call:',
+    onlineCancel: 'Online cancellation is possible up to 12 hours before the appointment:',
+  };
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${data.language === 'sk' ? 'Pripomienka termínu' : 'Appointment Reminder'}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff; padding: 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); padding: 36px 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1.5px;">${labels.reminder}</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px; font-weight: 400;">${labels.subtitle}</p>
+            </td>
+          </tr>
+          <!-- Greeting -->
+          <tr>
+            <td style="padding: 30px 30px 10px 30px;">
+              <h2 style="color: #1a2b42; margin: 0; font-size: 20px; font-weight: 600;">${t.greeting}, ${escapeHtml(data.clientName)}!</h2>
+            </td>
+          </tr>
+          <!-- Booking Details -->
+          <tr>
+            <td style="padding: 10px 30px 20px 30px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f4f8; border-radius: 12px;">
+                <tr><td style="padding: 24px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                        <span style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.service}</span><br>
+                        <span style="color: #1a2b42; font-size: 16px; font-weight: 600;">${data.serviceName}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                        <span style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.dateTime}</span><br>
+                        <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${formattedDate}</span><br>
+                        <span style="color: #dc2626; font-size: 18px; font-weight: 700;">${data.time}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 0;">
+                        <span style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.location}</span><br>
+                        <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${t.address}</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td></tr>
+              </table>
+            </td>
+          </tr>
+          <!-- BIG RED PENALTY BANNER -->
+          <tr>
+            <td style="padding: 0 30px 20px 30px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #dc2626; border-radius: 12px; overflow: hidden;">
+                <tr>
+                  <td style="padding: 28px 30px; text-align: center;">
+                    <p style="color: #ffffff; margin: 0 0 12px 0; font-size: 24px; font-weight: 800; letter-spacing: 0.5px;">${labels.penaltyTitle}</p>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0 0 8px 0; font-size: 15px; line-height: 1.6;">${labels.penaltyLine1}</p>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0 0 16px 0; font-size: 15px; line-height: 1.6;">${labels.penaltyLine2}</p>
+                    <p style="color: rgba(255,255,255,0.7); margin: 0 0 4px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">${labels.phoneLabel}</p>
+                    <p style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: 1px;">+421 905 307 198</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Online cancel -->
+          <tr>
+            <td style="padding: 0 30px 10px 30px;">
+              <p style="color: #4b5e78; font-size: 14px; margin: 0 0 14px 0; text-align: center;">${labels.onlineCancel}</p>
+              <div style="text-align: center;">
+                <a href="${cancelUrl}" style="display: inline-block; background-color: #ef4444; color: #ffffff; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;">${t.cancelButton}</a>
+              </div>
+            </td>
+          </tr>
+          <!-- Looking forward -->
+          <tr>
+            <td style="padding: 20px 30px;">
+              <p style="color: #1a2b42; font-size: 18px; font-weight: 600; margin: 0; text-align: center;">${t.footer}</p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f0f4f8; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
+              <p style="color: #6b7c94; margin: 0; font-size: 14px;">${t.contact}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+}
+
+function generateReminderText(data: EmailRequest, baseUrl: string): string {
+  const t = translations[data.language];
+  const formattedDate = formatDate(data.date, data.language);
+  const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`;
+
+  const penaltyBlock = data.language === 'sk'
+    ? [
+      '',
+      '════════════════════════════════════════',
+      '⚠️  STORNO POPLATOK: 10 €',
+      '════════════════════════════════════════',
+      '',
+      '• Zrušenie menej ako 12 hodín pred termínom',
+      '  je možné LEN TELEFONICKY.',
+      '• Bude Vám účtovaný storno poplatok 10 €.',
+      '',
+      'Volajte: +421 905 307 198',
+      '',
+      '════════════════════════════════════════',
+    ]
+    : [
+      '',
+      '════════════════════════════════════════',
+      '⚠️  CANCELLATION FEE: €10',
+      '════════════════════════════════════════',
+      '',
+      '• Cancellation less than 12 hours before',
+      '  the appointment is only possible BY PHONE.',
+      '• A cancellation fee of €10 will be charged.',
+      '',
+      'Call: +421 905 307 198',
+      '',
+      '════════════════════════════════════════',
+    ];
+
+  return [
+    `🔔 ${data.language === 'sk' ? 'PRIPOMIENKA' : 'REMINDER'} - ${t.clinicName}`,
+    '========================================',
+    `${t.greeting}, ${data.clientName}!`,
+    data.language === 'sk' ? 'Váš termín je už zajtra!' : 'Your appointment is tomorrow!',
+    '',
+    `${t.service}: ${data.serviceName}`,
+    `${t.dateTime}: ${formattedDate} ${data.time}`,
+    `${t.location}: ${t.address}`,
+    ...penaltyBlock,
+    '',
+    data.language === 'sk' ? 'Online zrušenie (najneskôr 12h pred termínom):' : 'Online cancellation (up to 12h before):',
+    cancelUrl,
+    '',
+    t.footer,
+    '',
+    t.contact,
+  ].join('\n');
+}
+
 function generateCancellationAdminHtml(data: EmailRequest): string {
   const formattedDate = formatDate(data.date, "sk");
   const admin = data.adminData!;
@@ -496,8 +676,14 @@ serve(async (req) => {
       subject = `Nova rezervacia: ${data.adminData?.clientName} - ${data.serviceName}`;
       html = generateAdminNotificationHtml(data);
       textContent = generateAdminNotificationText(data);
+    } else if (isReminder) {
+      subject = data.language === 'sk'
+        ? '⚠️ PRIPOMIENKA: Váš termín zajtra - FYZIO&FIT'
+        : '⚠️ REMINDER: Your appointment tomorrow - FYZIO&FIT';
+      html = generateReminderHtml(data, baseUrl);
+      textContent = generateReminderText(data, baseUrl);
     } else {
-      subject = isReminder ? t.reminderSubject : t.subject;
+      subject = t.subject;
       html = generateEmailHtml(data, baseUrl);
       textContent = generateEmailText(data, baseUrl);
     }
