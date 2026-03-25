@@ -60,15 +60,13 @@ const BookingWizard = () => {
   const handleTimeSelect = (time: string) => {
     updateBookingData('time', time);
     setTimeout(() => {
-      detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // After scroll settles, ensure submit button is also visible
-      setTimeout(() => {
-        if (!submitRef.current) return;
-        const rect = submitRef.current.getBoundingClientRect();
-        if (rect.bottom > window.innerHeight) {
-          submitRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }, 600);
+      // Scroll to submit button with 'end' so it lands at the bottom of the viewport,
+      // keeping client details visible above it on mobile
+      if (submitRef.current) {
+        submitRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      } else {
+        detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }, 200);
   };
 
