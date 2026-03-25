@@ -676,8 +676,14 @@ serve(async (req) => {
       subject = `Nova rezervacia: ${data.adminData?.clientName} - ${data.serviceName}`;
       html = generateAdminNotificationHtml(data);
       textContent = generateAdminNotificationText(data);
+    } else if (isReminder) {
+      subject = data.language === 'sk'
+        ? '⚠️ PRIPOMIENKA: Váš termín zajtra - FYZIO&FIT'
+        : '⚠️ REMINDER: Your appointment tomorrow - FYZIO&FIT';
+      html = generateReminderHtml(data, baseUrl);
+      textContent = generateReminderText(data, baseUrl);
     } else {
-      subject = isReminder ? t.reminderSubject : t.subject;
+      subject = t.subject;
       html = generateEmailHtml(data, baseUrl);
       textContent = generateEmailText(data, baseUrl);
     }
