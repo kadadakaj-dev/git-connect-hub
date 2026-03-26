@@ -101,6 +101,7 @@ const CalendarView = () => {
 
     if (employeesRes.data) setEmployees(employeesRes.data as unknown as Employee[]);
     if (blockedRes.data) setBlockedDates(blockedRes.data);
+    if (servicesRes.data) setServices(servicesRes.data as ServiceOption[]);
 
     if (bookingsRes.data) {
       const empMap = new Map((employeesRes.data || []).map((e: any) => [e.id, e.full_name]));
