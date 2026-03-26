@@ -15,6 +15,7 @@ import EventModal, { EventFormData, ServiceOption } from './calendar/EventModal'
 import BookingDetailsDialog, { AdminBookingDetails } from './BookingDetailsDialog';
 import { Tables } from '@/integrations/supabase/types';
 import { ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
+import { useTouchDrag } from '@/hooks/useTouchDrag';
 
 type BookingWithService = Tables<'bookings'> & {
   service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category' | 'price'> | null;
