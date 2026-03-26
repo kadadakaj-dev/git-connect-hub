@@ -317,6 +317,7 @@ const CalendarView = () => {
             client_email: formData.clientEmail,
             client_phone: formData.clientPhone || null,
             employee_id: formData.therapistId || null,
+            service_id: formData.serviceId || null,
             notes: formData.notes || null,
             booking_duration: formData.duration,
             status: 'confirmed' as const,
