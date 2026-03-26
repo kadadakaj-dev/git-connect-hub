@@ -2,24 +2,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const ALLOWED_ORIGINS = [
-  'https://booking-fyzioafit.lovable.app',
-  'https://id-preview--fd3f243b-3bec-4856-9798-dbbe3c83ea8d.lovable.app',
-  'https://fd3f243b-3bec-4856-9798-dbbe3c83ea8d.lovableproject.com',
-]
-
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://booking-fyzioafit.lovable.app',
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-}
-
-function getCorsHeaders(req: Request) {
-  const origin = req.headers.get('origin') || ''
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-  }
 }
 
 interface BookingWithService {
@@ -38,7 +23,7 @@ interface BookingWithService {
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: getCorsHeaders(req) });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
