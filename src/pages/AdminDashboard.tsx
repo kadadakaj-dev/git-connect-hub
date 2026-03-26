@@ -116,14 +116,14 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-2 sm:space-y-6">
-          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start gap-0 rounded-[14px] sm:rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/60 p-0.5 sm:p-1 shadow-[0_4px_12px_rgba(126,195,255,0.06)]">
+          <TabsList className="w-full grid grid-cols-6 gap-0 rounded-[14px] sm:rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/60 p-0.5 sm:p-1 shadow-[0_4px_12px_rgba(126,195,255,0.06)]">
             {tabs.map(({ value, icon: Icon, label, shortLabel }) => (
               <TabsTrigger
                 key={value}
                 value={value}
-                className="flex flex-col sm:flex-row gap-0.5 sm:gap-2 rounded-[12px] sm:rounded-[14px] px-2 sm:px-3.5 py-1.5 sm:py-2 text-[10px] sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)] min-w-0"
+                className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 rounded-[12px] sm:rounded-[14px] px-1 sm:px-3.5 py-2 sm:py-2 text-[10px] sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)] min-w-0"
               >
-                <Icon className="w-4 h-4 shrink-0 mx-auto sm:mx-0" />
+                <Icon className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
                 <span className="sm:hidden text-[9px] leading-tight">{shortLabel}</span>
                 <span className="hidden sm:inline">{label}</span>
               </TabsTrigger>
