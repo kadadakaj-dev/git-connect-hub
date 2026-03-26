@@ -19,6 +19,15 @@ import {
 import { Employee } from './types';
 import type { Language } from '@/i18n/translations';
 
+export interface ServiceOption {
+  id: string;
+  name_sk: string;
+  name_en: string;
+  duration: number;
+  price: number;
+  category: string;
+}
+
 export interface EventFormData {
   id: string;
   date: string;
@@ -32,6 +41,7 @@ export interface EventFormData {
   recurringWeeks: number;
   clientEmail?: string;
   clientPhone?: string;
+  serviceId?: string;
 }
 
 interface EventModalProps {
