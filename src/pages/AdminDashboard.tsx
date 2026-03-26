@@ -31,7 +31,6 @@ const AdminDashboard = () => {
         return;
       }
 
-      // Check admin role
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
@@ -74,21 +73,29 @@ const AdminDashboard = () => {
     );
   }
 
+  const tabs = [
+    { value: 'overview', icon: BarChart3, label: language === 'sk' ? 'Prehľad' : 'Overview', shortLabel: language === 'sk' ? 'Prehl.' : 'Stats' },
+    { value: 'calendar', icon: CalendarDays, label: language === 'sk' ? 'Kalendár' : 'Calendar', shortLabel: language === 'sk' ? 'Kal.' : 'Cal.' },
+    { value: 'bookings', icon: Calendar, label: language === 'sk' ? 'Rezervácie' : 'Bookings', shortLabel: language === 'sk' ? 'Rez.' : 'Book.' },
+    { value: 'services', icon: Package, label: language === 'sk' ? 'Služby' : 'Services', shortLabel: language === 'sk' ? 'Služ.' : 'Svc.' },
+    { value: 'employees', icon: Users, label: language === 'sk' ? 'Zamestnanci' : 'Employees', shortLabel: language === 'sk' ? 'Zam.' : 'Emp.' },
+    { value: 'hours', icon: Clock, label: language === 'sk' ? 'Hodiny' : 'Hours', shortLabel: language === 'sk' ? 'Hod.' : 'Hrs.' },
+  ];
+
   return (
     <div className="min-h-app-screen relative">
       <GlassBackground />
-      {/* Header */}
       <header className="border-b border-[var(--glass-border-subtle)] backdrop-blur-2xl bg-[var(--glass-white-md)] sticky top-0 z-50 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
         <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
           <div className="min-w-0">
             <h1 className="text-base sm:text-xl font-heading font-semibold text-foreground">
               {language === 'sk' ? 'Admin Panel' : 'Admin Panel'}
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground truncate">{user?.email}</p>
+            <p className="text-[10px] sm:text-sm text-muted-foreground truncate">{user?.email}</p>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <LanguageSwitcher />
-            <Button variant="outline" size="sm" onClick={handleLogout}>
+            <Button variant="outline" size="sm" onClick={handleLogout} className="h-8 sm:h-9">
               <LogOut className="w-4 h-4 sm:mr-2" />
               <span className="hidden sm:inline">{language === 'sk' ? 'Odhlásiť' : 'Logout'}</span>
             </Button>
@@ -96,7 +103,6 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-2 sm:px-4 py-2 sm:py-8 relative z-10">
         <div className="mb-2 sm:mb-8 hidden sm:block">
           <h2 className="text-lg sm:text-2xl font-bold text-foreground mb-1 sm:mb-2">
@@ -110,56 +116,26 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-2 sm:space-y-6">
-          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start gap-0.5 sm:gap-1 rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/60 p-1 shadow-[0_4px_12px_rgba(126,195,255,0.06)]">
-            <TabsTrigger value="overview" className="gap-1.5 sm:gap-2 rounded-[14px] px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)]">
-              <BarChart3 className="w-4 h-4 shrink-0" />
-              <span className="hidden sm:inline">{language === 'sk' ? 'Prehľad' : 'Overview'}</span>
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="gap-1.5 sm:gap-2 rounded-[14px] px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)]">
-              <CalendarDays className="w-4 h-4 shrink-0" />
-              <span className="hidden sm:inline">{language === 'sk' ? 'Kalendár' : 'Calendar'}</span>
-            </TabsTrigger>
-            <TabsTrigger value="bookings" className="gap-1.5 sm:gap-2 rounded-[14px] px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)]">
-              <Calendar className="w-4 h-4 shrink-0" />
-              <span className="hidden sm:inline">{language === 'sk' ? 'Rezervácie' : 'Bookings'}</span>
-            </TabsTrigger>
-            <TabsTrigger value="services" className="gap-1.5 sm:gap-2 rounded-[14px] px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)]">
-              <Package className="w-4 h-4 shrink-0" />
-              <span className="hidden sm:inline">{language === 'sk' ? 'Služby' : 'Services'}</span>
-            </TabsTrigger>
-            <TabsTrigger value="employees" className="gap-1.5 sm:gap-2 rounded-[14px] px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)]">
-              <Users className="w-4 h-4 shrink-0" />
-              <span className="hidden sm:inline">{language === 'sk' ? 'Zamestnanci' : 'Employees'}</span>
-            </TabsTrigger>
-            <TabsTrigger value="hours" className="gap-1.5 sm:gap-2 rounded-[14px] px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)]">
-              <Clock className="w-4 h-4 shrink-0" />
-              <span className="hidden sm:inline">{language === 'sk' ? 'Hodiny' : 'Hours'}</span>
-            </TabsTrigger>
+          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start gap-0 rounded-[14px] sm:rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/60 p-0.5 sm:p-1 shadow-[0_4px_12px_rgba(126,195,255,0.06)]">
+            {tabs.map(({ value, icon: Icon, label, shortLabel }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                className="flex flex-col sm:flex-row gap-0.5 sm:gap-2 rounded-[12px] sm:rounded-[14px] px-2 sm:px-3.5 py-1.5 sm:py-2 text-[10px] sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)] min-w-0"
+              >
+                <Icon className="w-4 h-4 shrink-0 mx-auto sm:mx-0" />
+                <span className="sm:hidden text-[9px] leading-tight">{shortLabel}</span>
+                <span className="hidden sm:inline">{label}</span>
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          <TabsContent value="overview">
-            <OverviewStats />
-          </TabsContent>
-
-          <TabsContent value="calendar">
-            <CalendarView />
-          </TabsContent>
-
-          <TabsContent value="bookings">
-            <BookingManagement />
-          </TabsContent>
-
-          <TabsContent value="services">
-            <ServiceManagement />
-          </TabsContent>
-
-          <TabsContent value="employees">
-            <EmployeeManagement />
-          </TabsContent>
-
-          <TabsContent value="hours">
-            <OpeningHoursManagement />
-          </TabsContent>
+          <TabsContent value="overview"><OverviewStats /></TabsContent>
+          <TabsContent value="calendar"><CalendarView /></TabsContent>
+          <TabsContent value="bookings"><BookingManagement /></TabsContent>
+          <TabsContent value="services"><ServiceManagement /></TabsContent>
+          <TabsContent value="employees"><EmployeeManagement /></TabsContent>
+          <TabsContent value="hours"><OpeningHoursManagement /></TabsContent>
         </Tabs>
       </main>
     </div>
