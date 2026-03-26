@@ -623,7 +623,7 @@ function generateCancellationAdminText(data: EmailRequest): string {
 serve(async (req) => {
   // CORS Preflight request
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: getCorsHeaders(req) });
   }
 
   try {
