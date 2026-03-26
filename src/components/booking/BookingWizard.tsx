@@ -38,6 +38,7 @@ const BookingWizard = () => {
   const dateTimeRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef<HTMLDivElement>(null);
+  const lastTimeSelectRef = useRef<number>(0);
 
   const updateBookingData = <K extends keyof BookingData>(field: K, value: BookingData[K]) => {
     setBookingData((prev) => ({ ...prev, [field]: value }));
@@ -58,16 +59,18 @@ const BookingWizard = () => {
   };
 
   const handleTimeSelect = (time: string) => {
+    const now = Date.now();
+    if (now - lastTimeSelectRef.current < 400) return; // ignore ghost taps
+    lastTimeSelectRef.current = now;
+
     updateBookingData('time', time);
     setTimeout(() => {
-      // Scroll to submit button with 'end' so it lands at the bottom of the viewport,
-      // keeping client details visible above it on mobile
       if (submitRef.current) {
         submitRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
       } else {
         detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 200);
+    }, 300);
   };
 
   const handleSubmit = async () => {
