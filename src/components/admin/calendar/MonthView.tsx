@@ -66,7 +66,7 @@ const MonthView = ({
           return (
             <div
               key={i}
-              className={`border-r border-b border-[var(--glass-border-subtle)] p-2 flex flex-col gap-1 min-h-[108px] cursor-pointer transition-colors
+              className={`border-r border-b border-[var(--glass-border-subtle)] p-1 sm:p-2 flex flex-col gap-0.5 sm:gap-1 min-h-[72px] sm:min-h-[108px] cursor-pointer transition-colors
                 ${!isCurrentMonth ? 'bg-white/12 opacity-55' : 'bg-white/30 hover:bg-white/58'}
                 ${isBlocked ? 'month-blocked-pattern' : ''}
               `}
