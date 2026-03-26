@@ -32,6 +32,7 @@ const CalendarView = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [blockedDates, setBlockedDates] = useState<{ date: string; reason: string | null }[]>([]);
+  const [services, setServices] = useState<ServiceOption[]>([]);
   const [zoom, setZoom] = useState(1);
 
   // Modal state
