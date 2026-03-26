@@ -11,7 +11,7 @@ import CalendarHeader from './calendar/CalendarHeader';
 import MonthView from './calendar/MonthView';
 import TimeGridView from './calendar/TimeGridView';
 import ListView from './calendar/ListView';
-import EventModal, { EventFormData } from './calendar/EventModal';
+import EventModal, { EventFormData, ServiceOption } from './calendar/EventModal';
 import BookingDetailsDialog, { AdminBookingDetails } from './BookingDetailsDialog';
 import { Tables } from '@/integrations/supabase/types';
 import { ZoomIn, ZoomOut, Search } from 'lucide-react';
