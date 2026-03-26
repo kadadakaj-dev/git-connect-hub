@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { addDays, addWeeks, subWeeks, format } from 'date-fns';
 import { CalendarEvent, Employee, ViewMode, SLOT_HEIGHT, timeToMinutes } from './calendar/types';
-import { formatDateForInput, getWeekStart, hasOverlap } from './calendar/utils';
+import { formatDateForInput, getWeekStart, hasOverlap, getCurrentTimePosition } from './calendar/utils';
 import CalendarHeader from './calendar/CalendarHeader';
 import MonthView from './calendar/MonthView';
 import TimeGridView from './calendar/TimeGridView';
@@ -14,7 +14,7 @@ import ListView from './calendar/ListView';
 import EventModal, { EventFormData, ServiceOption } from './calendar/EventModal';
 import BookingDetailsDialog, { AdminBookingDetails } from './BookingDetailsDialog';
 import { Tables } from '@/integrations/supabase/types';
-import { ZoomIn, ZoomOut, Search } from 'lucide-react';
+import { ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
 
 type BookingWithService = Tables<'bookings'> & {
   service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category' | 'price'> | null;
@@ -34,6 +34,7 @@ const CalendarView = () => {
   const [blockedDates, setBlockedDates] = useState<{ date: string; reason: string | null }[]>([]);
   const [services, setServices] = useState<ServiceOption[]>([]);
   const [zoom, setZoom] = useState(1);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -56,7 +57,6 @@ const CalendarView = () => {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
 
-    // Determine date range based on view
     let rangeStart: Date;
     let rangeEnd: Date;
     if (viewMode === 'month') {
@@ -134,11 +134,25 @@ const CalendarView = () => {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Resize logic
+  // Auto-scroll to current time when view loads
+  useEffect(() => {
+    if (isLoading || (viewMode !== 'day' && viewMode !== 'week')) return;
+    const timer = setTimeout(() => {
+      const pos = getCurrentTimePosition(zoom);
+      if (pos !== null && scrollContainerRef.current) {
+        const offset = Math.max(0, pos - 120);
+        scrollContainerRef.current.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [isLoading, viewMode, dateKey, zoom]);
+
+  // Resize logic — mouse + touch
   useEffect(() => {
     if (!resizingState) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      const deltaY = e.clientY - resizingState.startY;
+
+    const handleMove = (clientY: number) => {
+      const deltaY = clientY - resizingState.startY;
       const deltaMins = Math.round((deltaY / (SLOT_HEIGHT * 2)) * 60 / 15) * 15;
       const newDuration = Math.max(15, resizingState.originalDuration + deltaMins);
       if (newDuration === resizingState.currentDuration) return;
@@ -153,18 +167,30 @@ const CalendarView = () => {
       setEvents(prev => prev.map(ev => ev.id === resizingState.id ? { ...ev, duration: newDuration } : ev));
     };
 
-    const handleMouseUp = async () => {
+    const handleEnd = async () => {
       if (resizingState && resizingState.currentDuration !== resizingState.originalDuration) {
-        // Persist the duration change
+        await supabase
+          .from('bookings')
+          .update({ booking_duration: resizingState.currentDuration })
+          .eq('id', resizingState.id);
       }
       setResizingState(null);
     };
 
+    const handleMouseMove = (e: MouseEvent) => handleMove(e.clientY);
+    const handleTouchMove = (e: TouchEvent) => { e.preventDefault(); handleMove(e.touches[0].clientY); };
+    const handleMouseUp = () => handleEnd();
+    const handleTouchEnd = () => handleEnd();
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
   }, [resizingState, events, preventOverlap]);
 
@@ -185,14 +211,12 @@ const CalendarView = () => {
   };
   const goToToday = () => { setNavDirection(1); setDateKey(k => k + 1); setCurrentDate(new Date()); };
 
-  // Active days calculation
   const getActiveDays = (): Date[] => {
     if (viewMode === 'day') return [currentDate];
     const weekStart = getWeekStart(currentDate);
     return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   };
 
-  // Day click handler — switch to day view
   const handleDayClick = (date: Date) => {
     setNavDirection(1);
     setDateKey(k => k + 1);
@@ -219,7 +243,6 @@ const CalendarView = () => {
   };
 
   const openEditModal = (event: CalendarEvent) => {
-    // For bookings, open the detail dialog; for blocks, open the edit modal
     if (event.type === 'booking') {
       const empName = event.employeeName || (event.therapistId
         ? employees.find(e => e.id === event.therapistId)?.full_name
@@ -290,13 +313,11 @@ const CalendarView = () => {
         toast.error(language === 'sk' ? 'Nepodarilo sa aktualizovať' : 'Failed to update');
         return;
       }
-
       toast.success(language === 'sk' ? 'Aktualizované' : 'Updated');
     } else {
       if (formData.type === 'block') {
         toast.success(language === 'sk' ? 'Čas zablokovaný' : 'Time blocked');
       } else {
-        // Admin creates a real booking
         if (!formData.clientEmail?.trim()) {
           toast.error(language === 'sk' ? 'Zadajte email klienta.' : 'Enter client email.');
           return;
@@ -357,7 +378,7 @@ const CalendarView = () => {
     fetchData();
   };
 
-  // Drag & Drop handlers
+  // Drag & Drop handlers (desktop HTML5 + touch fallback via long-press tap)
   const handleDragStart = (e: React.DragEvent, event: CalendarEvent) => {
     e.dataTransfer.setData('eventId', event.id);
     const rect = e.currentTarget.getBoundingClientRect();
@@ -441,10 +462,10 @@ const CalendarView = () => {
 
   // Zoom handlers
   const zoomIn = () => setZoom(prev => Math.min(1.8, +(prev + 0.1).toFixed(1)));
-  const zoomOut = () => setZoom(prev => Math.max(1, +(prev - 0.1).toFixed(1)));
+  const zoomOut = () => setZoom(prev => Math.max(0.8, +(prev - 0.1).toFixed(1)));
   const resetZoom = () => setZoom(1);
 
-  // Touch swipe for navigation
+  // Touch swipe for navigation — only trigger on clearly horizontal swipes
   const touchRef = useRef({ startX: 0, startY: 0 });
   const handleTouchStart = (e: React.TouchEvent) => {
     touchRef.current = { startX: e.touches[0].clientX, startY: e.touches[0].clientY };
@@ -452,9 +473,19 @@ const CalendarView = () => {
   const handleTouchEnd = (e: React.TouchEvent) => {
     const dx = e.changedTouches[0].clientX - touchRef.current.startX;
     const dy = Math.abs(e.changedTouches[0].clientY - touchRef.current.startY);
-    if (Math.abs(dx) > 50 && dy < Math.abs(dx)) {
+    // Only trigger on clearly horizontal swipes (dx > 80, dy must be < 40% of dx)
+    if (Math.abs(dx) > 80 && dy < Math.abs(dx) * 0.4) {
       dx > 0 ? handlePrev() : handleNext();
     }
+  };
+
+  // Pull to refresh
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const handlePullRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchData();
+    setIsRefreshing(false);
+    toast.success(language === 'sk' ? 'Aktualizované' : 'Refreshed');
   };
 
   return (
@@ -479,9 +510,14 @@ const CalendarView = () => {
           onPreventOverlapChange={setPreventOverlap}
           onCreateEvent={() => openCreateModal()}
           onCreateBlock={() => openCreateModal(currentDate, '12:00', true)}
+          onRefresh={handlePullRefresh}
+          isRefreshing={isRefreshing}
         />
 
-        <div className={`flex-1 overflow-auto ${(viewMode === 'day' || viewMode === 'week') ? 'pb-24' : ''}`}>
+        <div
+          ref={scrollContainerRef}
+          className={`flex-1 overflow-auto ${(viewMode === 'day' || viewMode === 'week') ? 'pb-16' : ''}`}
+        >
           <div className="flex flex-col min-h-full">
             <AnimatePresence mode="wait" custom={navDirection}>
               {isLoading ? (
@@ -568,19 +604,20 @@ const CalendarView = () => {
           </div>
         </div>
 
+        {/* Zoom controls — mobile-optimized with bigger touch targets */}
         {(viewMode === 'day' || viewMode === 'week') && (
-          <div className="absolute bottom-4 right-4 z-40 flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-lg border border-[var(--glass-border-subtle)] shadow-glass-float px-2 py-1.5">
+          <div className="absolute bottom-3 right-3 z-40 flex items-center gap-1 rounded-full bg-white/92 backdrop-blur-lg border border-[var(--glass-border-subtle)] shadow-glass-float px-1.5 py-1">
             <button
               onClick={zoomOut}
-              disabled={zoom <= 1}
-              className="p-1.5 rounded-full hover:bg-primary/10 disabled:opacity-30 transition-colors"
+              disabled={zoom <= 0.8}
+              className="p-2 rounded-full hover:bg-primary/10 disabled:opacity-30 transition-colors touch-manipulation"
               title={language === 'sk' ? 'Oddialiť' : 'Zoom out'}
             >
               <ZoomOut className="h-4 w-4 text-[hsl(var(--soft-navy))]" />
             </button>
             <button
               onClick={resetZoom}
-              className="px-2 py-0.5 rounded-full hover:bg-primary/10 transition-colors text-xs font-semibold text-[hsl(var(--soft-navy))] tabular-nums min-w-[42px] text-center"
+              className="px-2 py-1 rounded-full hover:bg-primary/10 transition-colors text-[11px] font-semibold text-[hsl(var(--soft-navy))] tabular-nums min-w-[38px] text-center touch-manipulation"
               title={language === 'sk' ? 'Resetovať zoom' : 'Reset zoom'}
             >
               {Math.round(zoom * 100)}%
@@ -588,7 +625,7 @@ const CalendarView = () => {
             <button
               onClick={zoomIn}
               disabled={zoom >= 1.8}
-              className="p-1.5 rounded-full hover:bg-primary/10 disabled:opacity-30 transition-colors"
+              className="p-2 rounded-full hover:bg-primary/10 disabled:opacity-30 transition-colors touch-manipulation"
               title={language === 'sk' ? 'Priblížiť' : 'Zoom in'}
             >
               <ZoomIn className="h-4 w-4 text-[hsl(var(--soft-navy))]" />
