@@ -436,9 +436,26 @@ const CalendarView = () => {
   const zoomOut = () => setZoom(prev => Math.max(1, +(prev - 0.1).toFixed(1)));
   const resetZoom = () => setZoom(1);
 
+  // Touch swipe for navigation
+  const touchRef = useRef({ startX: 0, startY: 0 });
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchRef.current = { startX: e.touches[0].clientX, startY: e.touches[0].clientY };
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchRef.current.startX;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchRef.current.startY);
+    if (Math.abs(dx) > 50 && dy < Math.abs(dx)) {
+      dx > 0 ? handlePrev() : handleNext();
+    }
+  };
+
   return (
     <Card className="overflow-hidden rounded-[30px] border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.62)_0%,rgba(234,246,255,0.34)_100%)] shadow-glass-float">
-      <div className="flex flex-col h-[calc(100svh-160px)] sm:h-[calc(100svh-280px)] min-h-[400px] relative">
+      <div
+        className="flex flex-col h-[calc(100svh-160px)] sm:h-[calc(100svh-280px)] min-h-[400px] relative"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <CalendarHeader
           language={language}
           currentDate={currentDate}

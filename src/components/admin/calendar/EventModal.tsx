@@ -143,6 +143,29 @@ const EventModal = ({
             </div>
           </div>
 
+          {formData.type === 'booking' && mode === 'create' && (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.email} *</label>
+                <Input
+                  type="email"
+                  value={formData.clientEmail || ''}
+                  onChange={(e) => onChange({ clientEmail: e.target.value })}
+                  placeholder={t.emailPlaceholder}
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.phone}</label>
+                <Input
+                  type="tel"
+                  value={formData.clientPhone || ''}
+                  onChange={(e) => onChange({ clientPhone: e.target.value })}
+                  placeholder={t.phonePlaceholder}
+                />
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="col-span-2 sm:col-span-1">
               <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.date}</label>
