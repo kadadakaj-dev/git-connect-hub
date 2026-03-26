@@ -36,6 +36,7 @@ const CalendarView = () => {
   const [services, setServices] = useState<ServiceOption[]>([]);
   const [zoom, setZoom] = useState(1);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const dayColumnsRef = useRef<HTMLDivElement>(null);
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
