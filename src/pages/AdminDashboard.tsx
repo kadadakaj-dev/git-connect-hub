@@ -109,7 +109,7 @@ const AdminDashboard = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-3 sm:space-y-6">
+        <Tabs defaultValue="overview" className="space-y-2 sm:space-y-6">
           <TabsList className="w-full overflow-x-auto flex-nowrap justify-start gap-0.5 sm:gap-1 rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/60 p-1 shadow-[0_4px_12px_rgba(126,195,255,0.06)]">
             <TabsTrigger value="overview" className="gap-1.5 sm:gap-2 rounded-[14px] px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium data-[state=active]:bg-white/88 data-[state=active]:shadow-[0_8px_20px_rgba(126,195,255,0.12)]">
               <BarChart3 className="w-4 h-4 shrink-0" />

@@ -72,7 +72,7 @@ const CalendarHeader = ({
   };
 
   return (
-    <header className="flex flex-col items-center justify-between gap-3 border-b border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.62)_0%,rgba(234,246,255,0.36)_100%)] px-4 py-3 backdrop-blur-xl md:flex-row md:px-5 md:py-3.5 flex-shrink-0">
+    <header className="flex flex-col items-center justify-between gap-2 sm:gap-3 border-b border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.62)_0%,rgba(234,246,255,0.36)_100%)] px-2 sm:px-4 py-2 sm:py-3 backdrop-blur-xl md:flex-row md:px-5 md:py-3.5 flex-shrink-0">
       {/* Actions & Filter */}
       <div className="flex items-center justify-between w-full md:w-auto gap-2.5">
         <div className="flex gap-1.5">

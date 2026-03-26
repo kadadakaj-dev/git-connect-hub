@@ -406,7 +406,7 @@ const CalendarView = () => {
 
   return (
     <Card className="overflow-hidden rounded-[30px] border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.62)_0%,rgba(234,246,255,0.34)_100%)] shadow-glass-float">
-      <div className="flex flex-col h-[calc(100vh-280px)] min-h-[500px] relative">
+      <div className="flex flex-col h-[calc(100svh-160px)] sm:h-[calc(100svh-280px)] min-h-[400px] relative">
         <CalendarHeader
           language={language}
           currentDate={currentDate}

@@ -161,7 +161,7 @@ const TimeGridView = ({
                       key={event.id}
                       draggable
                       onDragStart={(e) => onDragStart(e, event)}
-                      className={`absolute rounded-xl p-1.5 md:p-2.5 shadow-[0_10px_22px_rgba(126,195,255,0.12)] cursor-grab active:cursor-grabbing hover:shadow-[0_16px_28px_rgba(126,195,255,0.16)] transition-all overflow-hidden flex flex-col z-10 ${colorClasses}`}
+                      className={`absolute rounded-lg sm:rounded-xl p-1 sm:p-1.5 md:p-2.5 shadow-[0_10px_22px_rgba(126,195,255,0.12)] cursor-grab active:cursor-grabbing hover:shadow-[0_16px_28px_rgba(126,195,255,0.16)] transition-all overflow-hidden flex flex-col z-10 min-h-[20px] ${colorClasses}`}
                       style={event.style}
                       onClick={(e) => { e.stopPropagation(); onEditEvent(event); }}
                     >

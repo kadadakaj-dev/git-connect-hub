@@ -77,10 +77,10 @@ const MonthView = ({
               {/* Day number — clickable to switch to day view */}
               <div className="flex justify-end">
                 <span
-                  className={`text-base font-semibold leading-none cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-1 rounded-full transition-all
+                  className={`text-xs sm:text-base font-semibold leading-none cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-1 rounded-full transition-all
                     ${today
-                      ? 'flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
-                      : 'flex h-8 w-8 items-center justify-center text-[hsl(var(--soft-navy))] hover:bg-primary/10'
+                      ? 'flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
+                      : 'flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center text-[hsl(var(--soft-navy))] hover:bg-primary/10'
                     }`}
                   onClick={(e) => {
                     e.stopPropagation();
