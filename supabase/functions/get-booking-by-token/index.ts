@@ -5,6 +5,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 const ALLOWED_ORIGINS = [
   'https://booking-fyzioafit.lovable.app',
   'https://id-preview--fd3f243b-3bec-4856-9798-dbbe3c83ea8d.lovable.app',
+  'https://fd3f243b-3bec-4856-9798-dbbe3c83ea8d.lovableproject.com',
 ]
 
 const corsHeaders = {
