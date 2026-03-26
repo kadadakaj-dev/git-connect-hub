@@ -92,9 +92,22 @@ const EventModal = ({
     phone: language === 'sk' ? 'Telefón klienta' : 'Client phone',
     emailPlaceholder: language === 'sk' ? 'email@priklad.sk' : 'email@example.com',
     phonePlaceholder: language === 'sk' ? '+421...' : '+421...',
+    service: language === 'sk' ? 'Služba' : 'Service',
+    noService: language === 'sk' ? '— Bez služby —' : '— No service —',
     delete: language === 'sk' ? 'Zmazať' : 'Delete',
     cancel: language === 'sk' ? 'Zrušiť' : 'Cancel',
     save: language === 'sk' ? 'Uložiť' : 'Save',
+  };
+
+  const handleServiceChange = (serviceId: string) => {
+    if (!serviceId) {
+      onChange({ serviceId: '' });
+      return;
+    }
+    const svc = services.find(s => s.id === serviceId);
+    if (svc) {
+      onChange({ serviceId, duration: svc.duration });
+    }
   };
 
   return (
