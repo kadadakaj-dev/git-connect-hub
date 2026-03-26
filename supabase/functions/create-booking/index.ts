@@ -135,7 +135,7 @@ async function checkRateLimit(
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: getCorsHeaders(req) })
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {

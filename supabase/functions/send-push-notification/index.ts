@@ -134,7 +134,7 @@ function base64UrlEncode(data: Uint8Array | ArrayBuffer): string {
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: getCorsHeaders(req) });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
