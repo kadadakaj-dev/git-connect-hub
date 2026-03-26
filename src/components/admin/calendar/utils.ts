@@ -93,7 +93,9 @@ export const getDayEventsWithPositions = (
     const maxCols = columns.length;
     cluster.events.forEach(event => {
       const top = ((event.startMins / 60) - 6) * (SLOT_HEIGHT * 2);
-      const height = (Number(event.duration) / 60) * (SLOT_HEIGHT * 2);
+      const rawHeight = (Number(event.duration) / 60) * (SLOT_HEIGHT * 2);
+      const MIN_EVENT_HEIGHT = SLOT_HEIGHT * 1.5; // 60px minimum so text is always readable
+      const height = Math.max(rawHeight, MIN_EVENT_HEIGHT);
       const widthPercent = 100 / maxCols;
       const leftPercent = event.colIdx * widthPercent;
       positionedEvents.push({
