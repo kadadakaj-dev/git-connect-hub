@@ -30,6 +30,8 @@ export interface EventFormData {
   therapistId: string;
   isRecurring: boolean;
   recurringWeeks: number;
+  clientEmail?: string;
+  clientPhone?: string;
 }
 
 interface EventModalProps {
