@@ -22,23 +22,43 @@ class ErrorBoundary extends Component<Props, State> {
         console.error("ErrorBoundary caught:", error, errorInfo);
     }
 
+    private getLanguage(): "sk" | "en" {
+        try {
+            const stored = localStorage.getItem("fyzio-language");
+            if (stored === "en") return "en";
+        } catch {
+            // localStorage unavailable
+        }
+        return "sk";
+    }
+
     render() {
         if (this.state.hasError) {
+            const lang = this.getLanguage();
+            const t = {
+                title: lang === "sk" ? "Niečo sa pokazilo" : "Something went wrong",
+                description:
+                    lang === "sk"
+                        ? "Nastala neočakávaná chyba. Skúste obnoviť stránku."
+                        : "An unexpected error occurred. Please try refreshing the page.",
+                button: lang === "sk" ? "Obnoviť stránku" : "Refresh page",
+            };
+
             return (
                 <div className="min-h-screen flex items-center justify-center bg-background px-4">
                     <div className="text-center max-w-md space-y-4">
                         <h1 className="text-2xl font-semibold text-foreground">
-                            Niečo sa pokazilo
+                            {t.title}
                         </h1>
                         <p className="text-muted-foreground">
-                            Nastala neočakávaná chyba. Skúste obnoviť stránku.
+                            {t.description}
                         </p>
                         <button
                             type="button"
                             onClick={() => window.location.reload()}
                             className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
                         >
-                            Obnoviť stránku
+                            {t.button}
                         </button>
                     </div>
                 </div>
