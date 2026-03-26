@@ -92,17 +92,17 @@ const OpeningHoursManagement = () => {
 
   return (
     <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60">
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Clock className="w-5 h-5" />
             {language === 'sk' ? 'Otváracie hodiny' : 'Opening Hours'}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs">
             {language === 'sk' ? 'Nastavte pracovné hodiny pre každý deň v týždni' : 'Set working hours for each day of the week'}
           </CardDescription>
         </div>
-        <Button onClick={() => saveMutation.mutate(configs)} disabled={saveMutation.isPending}>
+        <Button onClick={() => saveMutation.mutate(configs)} disabled={saveMutation.isPending} size="sm">
           {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           {language === 'sk' ? 'Uložiť' : 'Save'}
         </Button>
@@ -112,7 +112,7 @@ const OpeningHoursManagement = () => {
           {configs.map((config, index) => (
             <div
               key={config.day_of_week}
-              className={`flex items-center gap-4 p-4 rounded-[16px] border transition-colors ${
+              className={`flex items-center gap-2 sm:gap-4 p-3 rounded-[16px] border transition-colors ${
                 config.is_active ? 'bg-white/60 border-[var(--glass-border-subtle)]' : 'bg-muted/20 border-[var(--glass-border-subtle)]/50'
               }`}
             >
@@ -120,24 +120,24 @@ const OpeningHoursManagement = () => {
                 checked={config.is_active}
                 onCheckedChange={(v) => updateDay(index, { is_active: v })}
               />
-              <span className={`w-28 font-medium text-sm ${config.is_active ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <span className={`w-20 sm:w-24 font-medium text-xs sm:text-sm ${config.is_active ? 'text-foreground' : 'text-muted-foreground'}`}>
                 {dayNames[language][config.day_of_week]}
               </span>
               {config.is_active ? (
-                <div className="flex items-center gap-2">
-                  <Label className="text-xs text-muted-foreground">{language === 'sk' ? 'Od' : 'From'}</Label>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <Label className="text-xs text-muted-foreground hidden sm:inline">{language === 'sk' ? 'Od' : 'From'}</Label>
                   <Input
                     type="time"
                     value={config.start_time}
                     onChange={(e) => updateDay(index, { start_time: e.target.value })}
-                    className="w-32"
+                    className="w-24 sm:w-28"
                   />
-                  <Label className="text-xs text-muted-foreground">{language === 'sk' ? 'Do' : 'To'}</Label>
+                  <Label className="text-xs text-muted-foreground hidden sm:inline">{language === 'sk' ? 'Do' : 'To'}</Label>
                   <Input
                     type="time"
                     value={config.end_time}
                     onChange={(e) => updateDay(index, { end_time: e.target.value })}
-                    className="w-32"
+                    className="w-24 sm:w-28"
                   />
                 </div>
               ) : (
