@@ -49,6 +49,7 @@ interface EventModalProps {
   isOpen: boolean;
   mode: 'create' | 'edit';
   formData: EventFormData;
+  employees: Employee[];
   services?: ServiceOption[];
   onClose: () => void;
   onChange: (data: Partial<EventFormData>) => void;
@@ -62,6 +63,7 @@ const EventModal = ({
   mode,
   formData,
   employees,
+  services = [],
   onClose,
   onChange,
   onSave,
