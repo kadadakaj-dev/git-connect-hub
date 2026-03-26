@@ -160,6 +160,7 @@ const CalendarHeader = ({
               variant="ghost"
               size="icon"
               onClick={onNext}
+              aria-label={language === 'sk' ? 'Nasledujúce obdobie' : 'Next period'}
               className="h-8 w-8 sm:h-9 sm:w-9 rounded-none border-l border-[var(--glass-border-subtle)] hover:bg-white/70"
             >
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
