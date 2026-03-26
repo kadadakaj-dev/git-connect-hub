@@ -38,6 +38,7 @@ const BookingWizard = () => {
   const dateTimeRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef<HTMLDivElement>(null);
+  const lastTimeSelectRef = useRef<number>(0);
 
   const updateBookingData = <K extends keyof BookingData>(field: K, value: BookingData[K]) => {
     setBookingData((prev) => ({ ...prev, [field]: value }));
