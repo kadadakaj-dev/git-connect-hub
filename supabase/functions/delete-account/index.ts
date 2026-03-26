@@ -6,6 +6,11 @@ const ALLOWED_ORIGINS = [
   'https://id-preview--fd3f243b-3bec-4856-9798-dbbe3c83ea8d.lovable.app',
 ]
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': 'https://booking-fyzioafit.lovable.app',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+}
+
 function getCorsHeaders(req: Request) {
   const origin = req.headers.get('origin') || ''
   const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]
