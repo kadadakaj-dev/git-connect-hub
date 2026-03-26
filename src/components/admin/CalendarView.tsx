@@ -603,6 +603,7 @@ const CalendarView = () => {
         mode={modalMode}
         formData={formData}
         employees={employees}
+        services={services}
         onClose={() => setModalOpen(false)}
         onChange={handleFormChange}
         onSave={handleSave}
