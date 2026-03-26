@@ -19,6 +19,15 @@ import {
 import { Employee } from './types';
 import type { Language } from '@/i18n/translations';
 
+export interface ServiceOption {
+  id: string;
+  name_sk: string;
+  name_en: string;
+  duration: number;
+  price: number;
+  category: string;
+}
+
 export interface EventFormData {
   id: string;
   date: string;
@@ -32,6 +41,7 @@ export interface EventFormData {
   recurringWeeks: number;
   clientEmail?: string;
   clientPhone?: string;
+  serviceId?: string;
 }
 
 interface EventModalProps {
@@ -40,6 +50,7 @@ interface EventModalProps {
   mode: 'create' | 'edit';
   formData: EventFormData;
   employees: Employee[];
+  services?: ServiceOption[];
   onClose: () => void;
   onChange: (data: Partial<EventFormData>) => void;
   onSave: () => void;
@@ -52,6 +63,7 @@ const EventModal = ({
   mode,
   formData,
   employees,
+  services = [],
   onClose,
   onChange,
   onSave,
@@ -80,9 +92,22 @@ const EventModal = ({
     phone: language === 'sk' ? 'Telefón klienta' : 'Client phone',
     emailPlaceholder: language === 'sk' ? 'email@priklad.sk' : 'email@example.com',
     phonePlaceholder: language === 'sk' ? '+421...' : '+421...',
+    service: language === 'sk' ? 'Služba' : 'Service',
+    noService: language === 'sk' ? '— Bez služby —' : '— No service —',
     delete: language === 'sk' ? 'Zmazať' : 'Delete',
     cancel: language === 'sk' ? 'Zrušiť' : 'Cancel',
     save: language === 'sk' ? 'Uložiť' : 'Save',
+  };
+
+  const handleServiceChange = (serviceId: string) => {
+    if (!serviceId) {
+      onChange({ serviceId: '' });
+      return;
+    }
+    const svc = services.find(s => s.id === serviceId);
+    if (svc) {
+      onChange({ serviceId, duration: svc.duration });
+    }
   };
 
   return (
@@ -163,6 +188,24 @@ const EventModal = ({
                   placeholder={t.phonePlaceholder}
                 />
               </div>
+            </div>
+          )}
+
+          {formData.type === 'booking' && mode === 'create' && services.length > 0 && (
+            <div>
+              <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.service}</label>
+              <select
+                value={formData.serviceId || ''}
+                onChange={(e) => handleServiceChange(e.target.value)}
+                className="w-full rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2.5 text-sm font-medium text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
+              >
+                <option value="">{t.noService}</option>
+                {services.map(svc => (
+                  <option key={svc.id} value={svc.id}>
+                    {language === 'sk' ? svc.name_sk : svc.name_en} — {svc.duration} min / {svc.price}€
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 

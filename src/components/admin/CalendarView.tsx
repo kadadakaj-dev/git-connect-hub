@@ -11,7 +11,7 @@ import CalendarHeader from './calendar/CalendarHeader';
 import MonthView from './calendar/MonthView';
 import TimeGridView from './calendar/TimeGridView';
 import ListView from './calendar/ListView';
-import EventModal, { EventFormData } from './calendar/EventModal';
+import EventModal, { EventFormData, ServiceOption } from './calendar/EventModal';
 import BookingDetailsDialog, { AdminBookingDetails } from './BookingDetailsDialog';
 import { Tables } from '@/integrations/supabase/types';
 import { ZoomIn, ZoomOut, Search } from 'lucide-react';
@@ -32,6 +32,7 @@ const CalendarView = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [blockedDates, setBlockedDates] = useState<{ date: string; reason: string | null }[]>([]);
+  const [services, setServices] = useState<ServiceOption[]>([]);
   const [zoom, setZoom] = useState(1);
 
   // Modal state
@@ -69,7 +70,7 @@ const CalendarView = () => {
       rangeEnd = currentDate;
     }
 
-    const [bookingsRes, employeesRes, blockedRes] = await Promise.all([
+    const [bookingsRes, employeesRes, blockedRes, servicesRes] = await Promise.all([
       supabase
         .from('bookings')
         .select(`
@@ -91,10 +92,16 @@ const CalendarView = () => {
         .select('date, reason')
         .gte('date', format(rangeStart, 'yyyy-MM-dd'))
         .lte('date', format(rangeEnd, 'yyyy-MM-dd')),
+      supabase
+        .from('services')
+        .select('id, name_sk, name_en, duration, price, category')
+        .eq('is_active', true)
+        .order('sort_order'),
     ]);
 
     if (employeesRes.data) setEmployees(employeesRes.data as unknown as Employee[]);
     if (blockedRes.data) setBlockedDates(blockedRes.data);
+    if (servicesRes.data) setServices(servicesRes.data as ServiceOption[]);
 
     if (bookingsRes.data) {
       const empMap = new Map((employeesRes.data || []).map((e: any) => [e.id, e.full_name]));
@@ -310,6 +317,7 @@ const CalendarView = () => {
             client_email: formData.clientEmail,
             client_phone: formData.clientPhone || null,
             employee_id: formData.therapistId || null,
+            service_id: formData.serviceId || null,
             notes: formData.notes || null,
             booking_duration: formData.duration,
             status: 'confirmed' as const,
@@ -595,6 +603,7 @@ const CalendarView = () => {
         mode={modalMode}
         formData={formData}
         employees={employees}
+        services={services}
         onClose={() => setModalOpen(false)}
         onChange={handleFormChange}
         onSave={handleSave}
