@@ -92,17 +92,17 @@ const OpeningHoursManagement = () => {
 
   return (
     <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60">
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Clock className="w-5 h-5" />
             {language === 'sk' ? 'Otváracie hodiny' : 'Opening Hours'}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs">
             {language === 'sk' ? 'Nastavte pracovné hodiny pre každý deň v týždni' : 'Set working hours for each day of the week'}
           </CardDescription>
         </div>
-        <Button onClick={() => saveMutation.mutate(configs)} disabled={saveMutation.isPending}>
+        <Button onClick={() => saveMutation.mutate(configs)} disabled={saveMutation.isPending} size="sm">
           {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           {language === 'sk' ? 'Uložiť' : 'Save'}
         </Button>
