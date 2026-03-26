@@ -53,7 +53,7 @@ const MonthView = ({
       </div>
 
       {/* Day grid */}
-      <div className="flex-1 grid grid-cols-7 grid-rows-6 overflow-y-auto bg-[rgba(255,255,255,0.18)]">
+      <div className="flex-1 grid grid-cols-7 auto-rows-fr overflow-y-auto bg-[rgba(255,255,255,0.18)]">
         {monthDays.map((date, i) => {
           const dateStr = formatDateForInput(date);
           let dayEvents = events.filter(e => e.date === dateStr);
@@ -66,7 +66,7 @@ const MonthView = ({
           return (
             <div
               key={i}
-              className={`border-r border-b border-[var(--glass-border-subtle)] p-2 flex flex-col gap-1 min-h-[108px] cursor-pointer transition-colors
+              className={`border-r border-b border-[var(--glass-border-subtle)] p-1 sm:p-2 flex flex-col gap-0.5 sm:gap-1 min-h-[72px] sm:min-h-[108px] cursor-pointer transition-colors
                 ${!isCurrentMonth ? 'bg-white/12 opacity-55' : 'bg-white/30 hover:bg-white/58'}
                 ${isBlocked ? 'month-blocked-pattern' : ''}
               `}
@@ -77,10 +77,10 @@ const MonthView = ({
               {/* Day number — clickable to switch to day view */}
               <div className="flex justify-end">
                 <span
-                  className={`text-base font-semibold leading-none cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-1 rounded-full transition-all
+                  className={`text-xs sm:text-base font-semibold leading-none cursor-pointer hover:ring-2 hover:ring-primary/30 hover:ring-offset-1 rounded-full transition-all
                     ${today
-                      ? 'flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
-                      : 'flex h-8 w-8 items-center justify-center text-[hsl(var(--soft-navy))] hover:bg-primary/10'
+                      ? 'flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white shadow-[0_12px_24px_rgba(79,149,213,0.24)]'
+                      : 'flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center text-[hsl(var(--soft-navy))] hover:bg-primary/10'
                     }`}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -104,10 +104,10 @@ const MonthView = ({
                     draggable
                     onDragStart={(e) => { e.stopPropagation(); onDragStart(e, ev); }}
                     onClick={(e) => { e.stopPropagation(); onEditEvent(ev); }}
-                    className={`text-[10px] md:text-xs px-2 py-1.5 rounded-xl cursor-grab active:cursor-grabbing shadow-[0_10px_18px_rgba(126,195,255,0.08)] hover:shadow-[0_14px_22px_rgba(126,195,255,0.12)] transition-shadow ${getEventColorByCategory(ev.type, ev.status)}`}
+                    className={`text-[9px] sm:text-[10px] md:text-xs px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-lg sm:rounded-xl cursor-grab active:cursor-grabbing shadow-[0_10px_18px_rgba(126,195,255,0.08)] hover:shadow-[0_14px_22px_rgba(126,195,255,0.12)] transition-shadow ${getEventColorByCategory(ev.type, ev.status)}`}
                   >
-                    <div className="font-bold truncate leading-tight">{formatTime(ev.startTime)}–{getEndTime(ev.startTime, ev.duration)}</div>
-                    <div className="font-normal truncate leading-tight opacity-80">{ev.serviceName || ev.title}</div>
+                    <div className="font-bold truncate leading-tight">{formatTime(ev.startTime)}</div>
+                    <div className="font-normal truncate leading-tight opacity-80 hidden sm:block">{ev.serviceName || ev.title}</div>
                     {ev.title && ev.serviceName && (
                       <div className="font-normal truncate leading-tight opacity-60 hidden md:block">{ev.title}</div>
                     )}
