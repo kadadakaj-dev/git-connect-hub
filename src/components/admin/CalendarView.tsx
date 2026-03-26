@@ -289,11 +289,43 @@ const CalendarView = () => {
       if (formData.type === 'block') {
         toast.success(language === 'sk' ? 'Čas zablokovaný' : 'Time blocked');
       } else {
-        toast.info(language === 'sk'
-          ? 'Nové rezervácie vytvárajte cez rezervačný systém'
-          : 'Create new bookings through the booking system');
-        setModalOpen(false);
-        return;
+        // Admin creates a real booking
+        if (!formData.clientEmail?.trim()) {
+          toast.error(language === 'sk' ? 'Zadajte email klienta.' : 'Enter client email.');
+          return;
+        }
+
+        const bookingsToInsert = [];
+        const weeksCount = formData.isRecurring ? formData.recurringWeeks : 1;
+
+        for (let w = 0; w < weeksCount; w++) {
+          const bookingDate = w === 0
+            ? formData.date
+            : format(addDays(new Date(formData.date), w * 7), 'yyyy-MM-dd');
+
+          bookingsToInsert.push({
+            date: bookingDate,
+            time_slot: formData.startTime,
+            client_name: formData.title,
+            client_email: formData.clientEmail,
+            client_phone: formData.clientPhone || null,
+            employee_id: formData.therapistId || null,
+            notes: formData.notes || null,
+            booking_duration: formData.duration,
+            status: 'confirmed' as const,
+          });
+        }
+
+        const { error } = await supabase.from('bookings').insert(bookingsToInsert);
+        if (error) {
+          toast.error(language === 'sk' ? 'Nepodarilo sa vytvoriť rezerváciu' : 'Failed to create booking');
+          return;
+        }
+        toast.success(
+          weeksCount > 1
+            ? (language === 'sk' ? `Vytvorených ${weeksCount} rezervácií` : `${weeksCount} bookings created`)
+            : (language === 'sk' ? 'Rezervácia vytvorená' : 'Booking created')
+        );
       }
     }
 
