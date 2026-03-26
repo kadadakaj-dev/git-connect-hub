@@ -104,10 +104,10 @@ const MonthView = ({
                     draggable
                     onDragStart={(e) => { e.stopPropagation(); onDragStart(e, ev); }}
                     onClick={(e) => { e.stopPropagation(); onEditEvent(ev); }}
-                    className={`text-[10px] md:text-xs px-2 py-1.5 rounded-xl cursor-grab active:cursor-grabbing shadow-[0_10px_18px_rgba(126,195,255,0.08)] hover:shadow-[0_14px_22px_rgba(126,195,255,0.12)] transition-shadow ${getEventColorByCategory(ev.type, ev.status)}`}
+                    className={`text-[9px] sm:text-[10px] md:text-xs px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-lg sm:rounded-xl cursor-grab active:cursor-grabbing shadow-[0_10px_18px_rgba(126,195,255,0.08)] hover:shadow-[0_14px_22px_rgba(126,195,255,0.12)] transition-shadow ${getEventColorByCategory(ev.type, ev.status)}`}
                   >
-                    <div className="font-bold truncate leading-tight">{formatTime(ev.startTime)}–{getEndTime(ev.startTime, ev.duration)}</div>
-                    <div className="font-normal truncate leading-tight opacity-80">{ev.serviceName || ev.title}</div>
+                    <div className="font-bold truncate leading-tight">{formatTime(ev.startTime)}</div>
+                    <div className="font-normal truncate leading-tight opacity-80 hidden sm:block">{ev.serviceName || ev.title}</div>
                     {ev.title && ev.serviceName && (
                       <div className="font-normal truncate leading-tight opacity-60 hidden md:block">{ev.title}</div>
                     )}
