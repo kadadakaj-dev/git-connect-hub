@@ -55,6 +55,52 @@ const CalendarView = () => {
     id: string; startY: number; originalDuration: number; currentDuration: number;
   } | null>(null);
 
+  // Touch drag & drop handler
+  const handleTouchDrop = useCallback(async (eventId: string, dropDate: Date, newTimeStr: string) => {
+    const eventToMove = events.find(ev => ev.id === eventId);
+    if (!eventToMove) return;
+
+    const newDateStr = formatDateForInput(dropDate);
+    if (eventToMove.date === newDateStr && eventToMove.startTime === newTimeStr) return;
+
+    const tempEvent = { ...eventToMove, date: newDateStr, startTime: newTimeStr };
+    if (preventOverlap && hasOverlap(tempEvent, events.filter(e => e.id !== eventId))) {
+      toast.error(language === 'sk' ? 'Tento termín je už plne obsadený' : 'This time slot is fully booked');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('bookings')
+      .update({ date: newDateStr, time_slot: newTimeStr })
+      .eq('id', eventId);
+
+    if (error) {
+      toast.error(language === 'sk' ? 'Nepodarilo sa presunúť' : 'Failed to move');
+      return;
+    }
+
+    setEvents(prev => prev.map(ev =>
+      ev.id === eventId ? { ...ev, date: newDateStr, startTime: newTimeStr } : ev
+    ));
+    toast.success(language === 'sk' ? 'Rezervácia presunutá' : 'Booking moved');
+  }, [events, preventOverlap, language]);
+
+  const activeDaysForDrag = getActiveDaysMemo();
+
+  function getActiveDaysMemo(): Date[] {
+    if (viewMode === 'day') return [currentDate];
+    const weekStart = getWeekStart(currentDate);
+    return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  }
+
+  const touchDrag = useTouchDrag({
+    zoom,
+    onDrop: handleTouchDrop,
+    gridRef: dayColumnsRef,
+    activeDays: activeDaysForDrag,
+    gutterWidth: 56,
+  });
+
   // Fetch data
   const fetchData = useCallback(async () => {
     setIsLoading(true);
