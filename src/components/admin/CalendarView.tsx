@@ -645,6 +645,11 @@ const CalendarView = () => {
                       setResizingState({ id, startY, originalDuration, currentDuration: originalDuration })
                     }
                     onDayClick={handleDayClick}
+                    touchDragState={touchDrag.dragState}
+                    onTouchDragStart={touchDrag.handleTouchStart}
+                    onTouchDragMove={touchDrag.handleTouchMove}
+                    onTouchDragEnd={touchDrag.handleTouchEnd}
+                    dayColumnsRef={dayColumnsRef}
                   />
                 </motion.div>
               )}
