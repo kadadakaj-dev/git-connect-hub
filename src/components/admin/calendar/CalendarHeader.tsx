@@ -116,6 +116,7 @@ const CalendarHeader = ({
             <button
               onClick={onRefresh}
               disabled={isRefreshing}
+              aria-label={language === 'sk' ? 'Obnoviť kalendár' : 'Refresh calendar'}
               className="p-1.5 sm:p-2 rounded-full hover:bg-primary/10 transition-colors touch-manipulation disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
