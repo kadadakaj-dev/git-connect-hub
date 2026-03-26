@@ -400,8 +400,8 @@ const CalendarView = () => {
   };
 
   // Zoom handlers
-  const zoomIn = () => setZoom(prev => Math.min(1.6, +(prev + 0.1).toFixed(1)));
-  const zoomOut = () => setZoom(prev => Math.max(0.6, +(prev - 0.1).toFixed(1)));
+  const zoomIn = () => setZoom(prev => Math.min(1.8, +(prev + 0.1).toFixed(1)));
+  const zoomOut = () => setZoom(prev => Math.max(1, +(prev - 0.1).toFixed(1)));
   const resetZoom = () => setZoom(1);
 
   return (
@@ -424,17 +424,8 @@ const CalendarView = () => {
           onCreateBlock={() => openCreateModal(currentDate, '12:00', true)}
         />
 
-        {/* Calendar content with zoom */}
-        <div className="flex-1 overflow-auto">
-          <div
-            style={{
-              transform: `scale(${zoom})`,
-              transformOrigin: 'top left',
-              width: `${100 / zoom}%`,
-              transition: 'transform 0.2s ease-out',
-            }}
-            className="flex flex-col min-h-full"
-          >
+        <div className={`flex-1 overflow-auto ${(viewMode === 'day' || viewMode === 'week') ? 'pb-24' : ''}`}>
+          <div className="flex flex-col min-h-full">
             <AnimatePresence mode="wait" custom={navDirection}>
               {isLoading ? (
                 <motion.div
@@ -504,6 +495,7 @@ const CalendarView = () => {
                     selectedTherapist={selectedTherapist}
                     viewMode={viewMode as 'day' | 'week'}
                     blockedDates={blockedDates}
+                    zoom={zoom}
                     onCreateEvent={(date, time) => openCreateModal(date, time)}
                     onEditEvent={openEditModal}
                     onDragStart={handleDragStart}
@@ -519,12 +511,11 @@ const CalendarView = () => {
           </div>
         </div>
 
-        {/* Zoom control bar — bottom floating */}
         {(viewMode === 'day' || viewMode === 'week') && (
           <div className="absolute bottom-4 right-4 z-40 flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-lg border border-[var(--glass-border-subtle)] shadow-glass-float px-2 py-1.5">
             <button
               onClick={zoomOut}
-              disabled={zoom <= 0.6}
+              disabled={zoom <= 1}
               className="p-1.5 rounded-full hover:bg-primary/10 disabled:opacity-30 transition-colors"
               title={language === 'sk' ? 'Oddialiť' : 'Zoom out'}
             >
@@ -539,7 +530,7 @@ const CalendarView = () => {
             </button>
             <button
               onClick={zoomIn}
-              disabled={zoom >= 1.6}
+              disabled={zoom >= 1.8}
               className="p-1.5 rounded-full hover:bg-primary/10 disabled:opacity-30 transition-colors"
               title={language === 'sk' ? 'Priblížiť' : 'Zoom in'}
             >
