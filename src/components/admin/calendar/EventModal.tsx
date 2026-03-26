@@ -191,6 +191,24 @@ const EventModal = ({
             </div>
           )}
 
+          {formData.type === 'booking' && mode === 'create' && services.length > 0 && (
+            <div>
+              <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.service}</label>
+              <select
+                value={formData.serviceId || ''}
+                onChange={(e) => handleServiceChange(e.target.value)}
+                className="w-full rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2.5 text-sm font-medium text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
+              >
+                <option value="">{t.noService}</option>
+                {services.map(svc => (
+                  <option key={svc.id} value={svc.id}>
+                    {language === 'sk' ? svc.name_sk : svc.name_en} — {svc.duration} min / {svc.price}€
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="col-span-2 sm:col-span-1">
               <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.date}</label>
