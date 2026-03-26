@@ -116,6 +116,7 @@ const CalendarHeader = ({
             <button
               onClick={onRefresh}
               disabled={isRefreshing}
+              aria-label={language === 'sk' ? 'Obnoviť kalendár' : 'Refresh calendar'}
               className="p-1.5 sm:p-2 rounded-full hover:bg-primary/10 transition-colors touch-manipulation disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -147,6 +148,7 @@ const CalendarHeader = ({
               variant="ghost"
               size="icon"
               onClick={onPrev}
+              aria-label={language === 'sk' ? 'Predchádzajúce obdobie' : 'Previous period'}
               className="h-8 w-8 sm:h-9 sm:w-9 rounded-none border-r border-[var(--glass-border-subtle)] hover:bg-white/70"
             >
               <ChevronLeft className="w-4 h-4 text-muted-foreground" />
@@ -158,6 +160,7 @@ const CalendarHeader = ({
               variant="ghost"
               size="icon"
               onClick={onNext}
+              aria-label={language === 'sk' ? 'Nasledujúce obdobie' : 'Next period'}
               className="h-8 w-8 sm:h-9 sm:w-9 rounded-none border-l border-[var(--glass-border-subtle)] hover:bg-white/70"
             >
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -190,6 +193,8 @@ const CalendarHeader = ({
                 <button
                   key={mode}
                   onClick={() => onViewModeChange(mode)}
+                  aria-label={full}
+                  aria-pressed={viewMode === mode}
                   className={`relative z-10 rounded-[10px] sm:rounded-[12px] px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-[11px] tracking-wide transition-colors duration-200 touch-manipulation ${
                     viewMode === mode
                       ? 'font-semibold text-[hsl(var(--navy))]'
