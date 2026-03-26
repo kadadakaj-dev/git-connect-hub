@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { CalendarEvent, SLOT_HEIGHT, TIME_SLOTS } from './types';
 import {
   formatDateForInput,
@@ -11,8 +11,9 @@ import {
   WEEKDAYS_SK,
   WEEKDAYS_EN,
 } from './utils';
-import { Phone, Mail, AlertTriangle } from 'lucide-react';
+import { Phone, Mail, AlertTriangle, GripVertical } from 'lucide-react';
 import type { Language } from '@/i18n/translations';
+import type { TouchDragState } from '@/hooks/useTouchDrag';
 
 interface TimeGridViewProps {
   language: Language;
@@ -28,6 +29,12 @@ interface TimeGridViewProps {
   onDropOnGrid: (e: React.DragEvent, date: Date) => void;
   onResizeStart: (id: string, startY: number, originalDuration: number) => void;
   onDayClick?: (date: Date) => void;
+  // Touch drag
+  touchDragState?: TouchDragState;
+  onTouchDragStart?: (e: React.TouchEvent, event: CalendarEvent) => void;
+  onTouchDragMove?: (e: React.TouchEvent) => void;
+  onTouchDragEnd?: (e: React.TouchEvent) => void;
+  dayColumnsRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const TimeGridView = ({
@@ -44,14 +51,20 @@ const TimeGridView = ({
   onDropOnGrid,
   onResizeStart,
   onDayClick,
+  touchDragState,
+  onTouchDragStart,
+  onTouchDragMove,
+  onTouchDragEnd,
+  dayColumnsRef,
 }: TimeGridViewProps) => {
   const [, setTick] = useState(0);
   const weekdays = language === 'sk' ? WEEKDAYS_SK : WEEKDAYS_EN;
   const slotHeight = SLOT_HEIGHT * zoom;
   const isWeek = viewMode === 'week';
-  // On mobile, don't force minWidth — let columns be natural width
   const weekMinWidth = isWeek ? Math.max(560, Math.round(560 * zoom)) : undefined;
   const todayLinePosition = getCurrentTimePosition(zoom);
+  const localColumnsRef = useRef<HTMLDivElement>(null);
+  const columnsRef = dayColumnsRef || localColumnsRef;
 
   useEffect(() => {
     const timer = setInterval(() => setTick(t => t + 1), 60000);
@@ -59,6 +72,9 @@ const TimeGridView = ({
   }, []);
 
   const getDayIndex = (date: Date) => date.getDay() === 0 ? 6 : date.getDay() - 1;
+
+  const isDragging = touchDragState?.isDragging ?? false;
+  const dragEventId = touchDragState?.event?.id;
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
@@ -93,7 +109,6 @@ const TimeGridView = ({
                 >
                   {date.getDate()}
                 </div>
-                {/* Blocked day indicator in header */}
                 {isBlocked && (
                   <div className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1">
                     <AlertTriangle className="w-3 h-3 text-destructive" />
@@ -126,6 +141,7 @@ const TimeGridView = ({
 
         {/* Day columns */}
         <div
+          ref={columnsRef}
           className="flex flex-1 relative"
           style={isWeek ? { minWidth: `${weekMinWidth}px` } : undefined}
         >
@@ -174,20 +190,38 @@ const TimeGridView = ({
                   const endTime = getEndTime(event.startTime, event.duration);
                   const isSmall = event.duration <= 30;
                   const isMedium = event.duration > 30 && event.duration <= 45;
+                  const isBeingDragged = isDragging && dragEventId === event.id;
 
                   return (
                     <div
                       key={event.id}
                       draggable
                       onDragStart={(e) => onDragStart(e, event)}
-                      className={`absolute rounded-lg sm:rounded-xl p-0.5 sm:p-1.5 md:p-2.5 shadow-[0_10px_22px_rgba(126,195,255,0.12)] cursor-grab active:cursor-grabbing hover:shadow-[0_16px_28px_rgba(126,195,255,0.16)] transition-all overflow-hidden flex flex-col z-10 ${colorClasses}`}
+                      // Touch drag — long press on the entire event card
+                      onTouchStart={(e) => {
+                        onTouchDragStart?.(e, event);
+                      }}
+                      onTouchMove={onTouchDragMove}
+                      onTouchEnd={onTouchDragEnd}
+                      className={`absolute rounded-lg sm:rounded-xl p-0.5 sm:p-1.5 md:p-2.5 shadow-[0_10px_22px_rgba(126,195,255,0.12)] cursor-grab active:cursor-grabbing hover:shadow-[0_16px_28px_rgba(126,195,255,0.16)] transition-all overflow-hidden flex flex-col z-10 ${colorClasses} ${
+                        isBeingDragged ? 'opacity-30 scale-95' : ''
+                      }`}
                       style={{
                         ...event.style,
                         minHeight: isWeek ? '28px' : '40px',
                       }}
-                      onClick={(e) => { e.stopPropagation(); onEditEvent(event); }}
+                      onClick={(e) => {
+                        if (isDragging) return;
+                        e.stopPropagation();
+                        onEditEvent(event);
+                      }}
                     >
-                      {/* Time range — always shown */}
+                      {/* Drag grip indicator — visible on touch devices */}
+                      <div className="absolute top-0.5 right-0.5 sm:hidden opacity-40">
+                        <GripVertical className="w-3 h-3" />
+                      </div>
+
+                      {/* Time range */}
                       <div className={`font-bold leading-tight whitespace-nowrap ${
                         isWeek ? 'text-[8px] sm:text-[10px] md:text-sm' : 'text-[10px] sm:text-[11px] md:text-sm'
                       }`}>
@@ -274,6 +308,33 @@ const TimeGridView = ({
           })}
         </div>
       </div>
+
+      {/* Touch drag ghost element */}
+      {isDragging && touchDragState?.event && (
+        <div
+          className="fixed z-[9999] pointer-events-none"
+          style={{
+            left: `${touchDragState.ghostX - 60}px`,
+            top: `${touchDragState.ghostY - 20}px`,
+          }}
+        >
+          <div className={`w-[120px] sm:w-[160px] rounded-xl p-2 shadow-[0_20px_40px_rgba(0,0,0,0.25)] border-2 border-primary/40 backdrop-blur-xl ${
+            getEventColorByCategory(touchDragState.event.type, touchDragState.event.status)
+          }`}>
+            <div className="text-[10px] sm:text-xs font-bold truncate">
+              {formatTime(touchDragState.event.startTime)} – {getEndTime(touchDragState.event.startTime, touchDragState.event.duration)}
+            </div>
+            {touchDragState.event.serviceName && (
+              <div className="text-[9px] sm:text-[10px] font-semibold truncate mt-0.5">
+                {touchDragState.event.serviceName}
+              </div>
+            )}
+            <div className="text-[9px] sm:text-[10px] truncate opacity-80 mt-0.5">
+              {touchDragState.event.title}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

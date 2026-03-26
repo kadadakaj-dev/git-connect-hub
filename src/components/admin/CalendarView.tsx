@@ -15,6 +15,7 @@ import EventModal, { EventFormData, ServiceOption } from './calendar/EventModal'
 import BookingDetailsDialog, { AdminBookingDetails } from './BookingDetailsDialog';
 import { Tables } from '@/integrations/supabase/types';
 import { ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
+import { useTouchDrag } from '@/hooks/useTouchDrag';
 
 type BookingWithService = Tables<'bookings'> & {
   service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category' | 'price'> | null;
@@ -35,6 +36,7 @@ const CalendarView = () => {
   const [services, setServices] = useState<ServiceOption[]>([]);
   const [zoom, setZoom] = useState(1);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const dayColumnsRef = useRef<HTMLDivElement>(null);
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -52,6 +54,52 @@ const CalendarView = () => {
   const [resizingState, setResizingState] = useState<{
     id: string; startY: number; originalDuration: number; currentDuration: number;
   } | null>(null);
+
+  // Touch drag & drop handler
+  const handleTouchDrop = useCallback(async (eventId: string, dropDate: Date, newTimeStr: string) => {
+    const eventToMove = events.find(ev => ev.id === eventId);
+    if (!eventToMove) return;
+
+    const newDateStr = formatDateForInput(dropDate);
+    if (eventToMove.date === newDateStr && eventToMove.startTime === newTimeStr) return;
+
+    const tempEvent = { ...eventToMove, date: newDateStr, startTime: newTimeStr };
+    if (preventOverlap && hasOverlap(tempEvent, events.filter(e => e.id !== eventId))) {
+      toast.error(language === 'sk' ? 'Tento termín je už plne obsadený' : 'This time slot is fully booked');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('bookings')
+      .update({ date: newDateStr, time_slot: newTimeStr })
+      .eq('id', eventId);
+
+    if (error) {
+      toast.error(language === 'sk' ? 'Nepodarilo sa presunúť' : 'Failed to move');
+      return;
+    }
+
+    setEvents(prev => prev.map(ev =>
+      ev.id === eventId ? { ...ev, date: newDateStr, startTime: newTimeStr } : ev
+    ));
+    toast.success(language === 'sk' ? 'Rezervácia presunutá' : 'Booking moved');
+  }, [events, preventOverlap, language]);
+
+  const activeDaysForDrag = getActiveDaysMemo();
+
+  function getActiveDaysMemo(): Date[] {
+    if (viewMode === 'day') return [currentDate];
+    const weekStart = getWeekStart(currentDate);
+    return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  }
+
+  const touchDrag = useTouchDrag({
+    zoom,
+    onDrop: handleTouchDrop,
+    gridRef: dayColumnsRef,
+    activeDays: activeDaysForDrag,
+    gutterWidth: 56,
+  });
 
   // Fetch data
   const fetchData = useCallback(async () => {
@@ -597,6 +645,11 @@ const CalendarView = () => {
                       setResizingState({ id, startY, originalDuration, currentDuration: originalDuration })
                     }
                     onDayClick={handleDayClick}
+                    touchDragState={touchDrag.dragState}
+                    onTouchDragStart={touchDrag.handleTouchStart}
+                    onTouchDragMove={touchDrag.handleTouchMove}
+                    onTouchDragEnd={touchDrag.handleTouchEnd}
+                    dayColumnsRef={dayColumnsRef}
                   />
                 </motion.div>
               )}
