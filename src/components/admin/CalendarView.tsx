@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageContext';
@@ -289,11 +289,43 @@ const CalendarView = () => {
       if (formData.type === 'block') {
         toast.success(language === 'sk' ? 'Čas zablokovaný' : 'Time blocked');
       } else {
-        toast.info(language === 'sk'
-          ? 'Nové rezervácie vytvárajte cez rezervačný systém'
-          : 'Create new bookings through the booking system');
-        setModalOpen(false);
-        return;
+        // Admin creates a real booking
+        if (!formData.clientEmail?.trim()) {
+          toast.error(language === 'sk' ? 'Zadajte email klienta.' : 'Enter client email.');
+          return;
+        }
+
+        const bookingsToInsert = [];
+        const weeksCount = formData.isRecurring ? formData.recurringWeeks : 1;
+
+        for (let w = 0; w < weeksCount; w++) {
+          const bookingDate = w === 0
+            ? formData.date
+            : format(addDays(new Date(formData.date), w * 7), 'yyyy-MM-dd');
+
+          bookingsToInsert.push({
+            date: bookingDate,
+            time_slot: formData.startTime,
+            client_name: formData.title,
+            client_email: formData.clientEmail,
+            client_phone: formData.clientPhone || null,
+            employee_id: formData.therapistId || null,
+            notes: formData.notes || null,
+            booking_duration: formData.duration,
+            status: 'confirmed' as const,
+          });
+        }
+
+        const { error } = await supabase.from('bookings').insert(bookingsToInsert);
+        if (error) {
+          toast.error(language === 'sk' ? 'Nepodarilo sa vytvoriť rezerváciu' : 'Failed to create booking');
+          return;
+        }
+        toast.success(
+          weeksCount > 1
+            ? (language === 'sk' ? `Vytvorených ${weeksCount} rezervácií` : `${weeksCount} bookings created`)
+            : (language === 'sk' ? 'Rezervácia vytvorená' : 'Booking created')
+        );
       }
     }
 
@@ -404,9 +436,26 @@ const CalendarView = () => {
   const zoomOut = () => setZoom(prev => Math.max(1, +(prev - 0.1).toFixed(1)));
   const resetZoom = () => setZoom(1);
 
+  // Touch swipe for navigation
+  const touchRef = useRef({ startX: 0, startY: 0 });
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchRef.current = { startX: e.touches[0].clientX, startY: e.touches[0].clientY };
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchRef.current.startX;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchRef.current.startY);
+    if (Math.abs(dx) > 50 && dy < Math.abs(dx)) {
+      dx > 0 ? handlePrev() : handleNext();
+    }
+  };
+
   return (
     <Card className="overflow-hidden rounded-[30px] border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.62)_0%,rgba(234,246,255,0.34)_100%)] shadow-glass-float">
-      <div className="flex flex-col h-[calc(100svh-160px)] sm:h-[calc(100svh-280px)] min-h-[400px] relative">
+      <div
+        className="flex flex-col h-[calc(100svh-160px)] sm:h-[calc(100svh-280px)] min-h-[400px] relative"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <CalendarHeader
           language={language}
           currentDate={currentDate}

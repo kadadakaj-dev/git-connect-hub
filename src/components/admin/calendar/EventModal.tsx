@@ -30,6 +30,8 @@ export interface EventFormData {
   therapistId: string;
   isRecurring: boolean;
   recurringWeeks: number;
+  clientEmail?: string;
+  clientPhone?: string;
 }
 
 interface EventModalProps {
@@ -74,6 +76,10 @@ const EventModal = ({
     note: language === 'sk' ? 'Poznámka' : 'Note',
     notePlaceholder: language === 'sk' ? 'Voliteľné poznámky...' : 'Optional notes...',
     namePlaceholder: language === 'sk' ? 'Meno a Priezvisko...' : 'Name...',
+    email: language === 'sk' ? 'Email klienta' : 'Client email',
+    phone: language === 'sk' ? 'Telefón klienta' : 'Client phone',
+    emailPlaceholder: language === 'sk' ? 'email@priklad.sk' : 'email@example.com',
+    phonePlaceholder: language === 'sk' ? '+421...' : '+421...',
     delete: language === 'sk' ? 'Zmazať' : 'Delete',
     cancel: language === 'sk' ? 'Zrušiť' : 'Cancel',
     save: language === 'sk' ? 'Uložiť' : 'Save',
@@ -136,6 +142,29 @@ const EventModal = ({
               />
             </div>
           </div>
+
+          {formData.type === 'booking' && mode === 'create' && (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.email} *</label>
+                <Input
+                  type="email"
+                  value={formData.clientEmail || ''}
+                  onChange={(e) => onChange({ clientEmail: e.target.value })}
+                  placeholder={t.emailPlaceholder}
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-1.5">{t.phone}</label>
+                <Input
+                  type="tel"
+                  value={formData.clientPhone || ''}
+                  onChange={(e) => onChange({ clientPhone: e.target.value })}
+                  placeholder={t.phonePlaceholder}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="col-span-2 sm:col-span-1">
