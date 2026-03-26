@@ -53,7 +53,7 @@ const MonthView = ({
       </div>
 
       {/* Day grid */}
-      <div className="flex-1 grid grid-cols-7 grid-rows-6 overflow-y-auto bg-[rgba(255,255,255,0.18)]">
+      <div className="flex-1 grid grid-cols-7 auto-rows-fr overflow-y-auto bg-[rgba(255,255,255,0.18)]">
         {monthDays.map((date, i) => {
           const dateStr = formatDateForInput(date);
           let dayEvents = events.filter(e => e.date === dateStr);
