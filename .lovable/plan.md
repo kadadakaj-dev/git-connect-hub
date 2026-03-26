@@ -1,46 +1,18 @@
 
 
-# Bug: Klik na 07:00 vyberie 06:30
+# Oprava: Otváracie hodiny - mobile layout
 
-## Príčina
+## Analýza
 
-Keď používateľ tapne na časový slot na mobile:
-1. `onTimeSelect('07:00')` sa zavolá správne
-2. Po 200ms sa spustí `scrollIntoView` (oprava z predchádzajúceho kroku)
-3. Scroll posunie stránku a na mobile to vyvolá **phantom/ghost tap** na inom slote (06:30)
-4. `onTimeSelect('06:30')` prepíše pôvodnú hodnotu
+Piatok **je** zobrazený v zozname (potvrdené z tvojho vlastného textu). Problém je pravdepodobne vizuálny — na mobile sa nadpis "Otváracie hodiny" + tlačidlo "Uložiť" nezmestia na jeden riadok a vytlačia obsah, čo môže spôsobiť, že niektoré dni nie sú viditeľné bez scrollovania.
 
-Toto je známy mobilný bug — `scrollIntoView` počas dotykovej interakcie generuje falošné kliknutia.
+## Zmeny v `src/components/admin/OpeningHoursManagement.tsx`
 
-## Oprava
+1. **CardTitle** — zmenšiť font z default `text-2xl` na `text-lg` (resp. pridať `text-lg` class)
+2. **CardDescription** — zmenšiť na `text-xs`
+3. **CardHeader** — na mobile zmeniť layout na stĺpcový (`flex-col sm:flex-row`) aby sa nadpis a tlačidlo neprepisovali
+4. **Deň riadky** — zmenšiť `gap-4` na `gap-2` a `p-4` na `p-3` na mobile, zmenšiť šírku názvu dňa z `w-28` na `w-24`
+5. **Time inputs** — zmenšiť `w-32` na `w-28` pre lepšie zmestenie
 
-### `src/components/booking/BookingWizard.tsx`
-
-Pridať **guard** s `useRef` timestampom, ktorý ignoruje `onTimeSelect` volania do 400ms po poslednom výbere:
-
-```typescript
-const lastTimeSelectRef = useRef<number>(0);
-
-const handleTimeSelect = (time: string) => {
-  const now = Date.now();
-  if (now - lastTimeSelectRef.current < 400) return; // ignore ghost taps
-  lastTimeSelectRef.current = now;
-  
-  updateBookingData('time', time);
-  setTimeout(() => {
-    if (submitRef.current) {
-      submitRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    } else {
-      detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, 300); // slightly longer delay
-};
-```
-
-Zmeny:
-- Nový `useRef<number>(0)` na uloženie timestampu posledného výberu
-- Guard na začiatku `handleTimeSelect` — ak < 400ms od posledného výberu, ignoruje sa
-- Scroll delay zvýšený z 200ms na 300ms pre istotu
-
-Jeden súbor, ~5 riadkov zmien.
+Celkovo zmeny v jednom súbore, ~5 riadkov úprav CSS tried.
 
