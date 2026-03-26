@@ -70,7 +70,7 @@ const CalendarView = () => {
       rangeEnd = currentDate;
     }
 
-    const [bookingsRes, employeesRes, blockedRes] = await Promise.all([
+    const [bookingsRes, employeesRes, blockedRes, servicesRes] = await Promise.all([
       supabase
         .from('bookings')
         .select(`
@@ -92,6 +92,11 @@ const CalendarView = () => {
         .select('date, reason')
         .gte('date', format(rangeStart, 'yyyy-MM-dd'))
         .lte('date', format(rangeEnd, 'yyyy-MM-dd')),
+      supabase
+        .from('services')
+        .select('id, name_sk, name_en, duration, price, category')
+        .eq('is_active', true)
+        .order('sort_order'),
     ]);
 
     if (employeesRes.data) setEmployees(employeesRes.data as unknown as Employee[]);
