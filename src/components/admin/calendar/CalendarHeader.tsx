@@ -193,6 +193,8 @@ const CalendarHeader = ({
                 <button
                   key={mode}
                   onClick={() => onViewModeChange(mode)}
+                  aria-label={full}
+                  aria-pressed={viewMode === mode}
                   className={`relative z-10 rounded-[10px] sm:rounded-[12px] px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-[11px] tracking-wide transition-colors duration-200 touch-manipulation ${
                     viewMode === mode
                       ? 'font-semibold text-[hsl(var(--navy))]'
