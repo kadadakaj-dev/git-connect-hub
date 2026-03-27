@@ -1,93 +1,91 @@
 
 
-# Diagnostika: Rezervácie, Emaily, ENV hodnoty
+# Kompletná úprava emailov: 12h → 10h + chýbajúce emaily
 
-## Výsledky testovania
+## Zhrnutie
 
-### 1. Create-booking edge function — FUNGUJE SPRÁVNE
+Zmena storno podmienok z 12 hodín na 10 hodín vo všetkých miestach (emaily, edge functions, UI). Pridanie chýbajúceho emailu klientovi pri zrušení rezervácie. Audit všetkých emailových šablón.
 
-- Edge function je nasadená a odpovedá na requesty
-- Validácia vstupov funguje (testované s neplatnými dátami → 400 + detaily chýb)
-- Používa `service_role` kľúč → obchádza RLS → INSERT do `bookings` tabuľky funguje aj bez verejnej INSERT policy
-- Posledná úspešná rezervácia: dnes 26.3.2026 (larsenevans@proton.me, status: confirmed)
+---
 
-### 2. RLS polícy — OPRAVENÉ
+## Aktuálny stav emailov
 
-**bookings tabuľka** (3 polícy):
-- `Admins can manage all bookings` (ALL) — admin má plný prístup
-- `Users can view their own bookings` (SELECT) — klient vidí svoje
-- `Users can update their own bookings` (UPDATE) — klient môže aktualizovať svoje
-- ~~`Public can create bookings`~~ — ÚSPEŠNE ODSTRÁNENÁ
+| Email | Klient | Admin | Stav |
+|---|---|---|---|
+| Potvrdenie novej rezervácie | ✅ | ✅ | Funguje |
+| Pripomienka (20h pred) | ✅ (email + push) | - | Funguje |
+| Zrušenie rezervácie | ❌ CHÝBA | ✅ | Admin dostane, klient NIE |
+| Zmena statusu (admin zmení) | ❌ CHÝBA | - | Neexistuje |
 
-**user_roles tabuľka** (5 polícy):
-- INSERT: `WITH CHECK (has_role(auth.uid(), 'admin'))` — bežný user NEMÔŽE pridať rolu
-- UPDATE/DELETE: len admin
-- SELECT: admin vidí všetky, user vidí svoje
+---
 
-### 3. Emaily — DVA SAMOSTATNÉ SYSTÉMY
+## Plán zmien
 
-Projekt používa **dva nezávislé emailové systémy**:
+### 1. Zmena 12h → 10h všade
 
-**A) SMTP cez Websupport (booking emaily)**
-- `send-booking-email` edge function → SMTP `smtp.m1.websupport.sk:465`
-- Autorizácia: vyžaduje `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` v headeri
-- Posiela: potvrdenia, pripomienky, admin notifikácie, zrušenia
-- Secret `SMTP_PASSWORD` je nastavený ✅
-- Emaily sa posielajú fire-and-forget z `create-booking` funkcie
+Súbory na úpravu:
+- **`supabase/functions/cancel-booking/index.ts`** — linka 111: `hoursUntilBooking < 12` → `< 10`, linka 113: text "12 hodín" → "10 hodín"
+- **`supabase/functions/send-booking-email/index.ts`** — 6 miest v šablónach (confirmation, reminder): všetky zmienky "12 hodín/12 hours" → "10 hodín/10 hours"
+- **`src/pages/CancelBooking.tsx`** — linky 54, 78: text "12 hodín/12 hours" → "10 hodín/10 hours"
+- **`supabase/functions/send-booking-reminder/index.ts`** — window ostáva 20h (pripomienka sa posiela skôr ako storno deadline, čo je správne)
 
-**B) Lovable Email queue (auth emaily)**
-- `auth-email-hook` + `process-email-queue` (pgmq fronta)
-- pg_cron job `process-email-queue` aktívny (každých 5s) ✅
-- `email_send_state` nakonfigurovaný (batch=10, delay=200ms) ✅
-- Posledný auth email: signup pre test.klient.fyziofit@gmail.com → `sent` ✅
+### 2. Nový email: Potvrdenie zrušenia pre klienta
 
-### 4. ENV hodnoty — STAV
+V `send-booking-email/index.ts`:
+- Pridať nový template typ `"cancellation-client"`
+- Vytvoriť `generateCancellationClientHtml()` — modrý gradient header, text "Vaša rezervácia bola úspešne zrušená", detaily rezervácie, CTA "Vytvoriť novú rezerváciu"
+- Vytvoriť `generateCancellationClientText()` — plain text verzia
 
-**Automaticky dostupné v edge functions (Deno.env):**
-| Premenná | Stav |
-|---|---|
-| `SUPABASE_URL` | ✅ automaticky |
-| `SUPABASE_ANON_KEY` | ✅ automaticky |
-| `SUPABASE_SERVICE_ROLE_KEY` | ✅ automaticky |
+V `cancel-booking/index.ts`:
+- Po úspešnom zrušení pridať fire-and-forget volanie `send-booking-email` s template `"cancellation-client"` na `booking.client_email`
 
-**Manuálne nastavené secrety:**
-| Secret | Stav | Použitie |
-|---|---|---|
-| `SMTP_PASSWORD` | ✅ nastavený | send-booking-email SMTP auth |
-| `VAPID_PRIVATE_KEY` | ✅ nastavený | push notifikácie |
-| `VAPID_PUBLIC_KEY` | ✅ nastavený | push notifikácie |
-| `VAPID_SUBJECT` | ✅ nastavený | push notifikácie |
-| `LOVABLE_API_KEY` | ✅ automaticky | Lovable AI |
+### 3. Vylepšenie existujúcich emailov
 
-**Frontend .env (automaticky):**
-| Premenná | Stav |
-|---|---|
-| `VITE_SUPABASE_URL` | ✅ |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | ✅ |
-| `VITE_SUPABASE_PROJECT_ID` | ✅ |
-| `VITE_VAPID_PUBLIC_KEY` | ✅ |
+- Profesionálnejšie formulácie storno podmienok vo všetkých šablónach
+- SK: "Bezplatné online zrušenie je možné najneskôr 10 hodín pred termínom. Po uplynutí tejto lehoty je zrušenie možné výlučne telefonicky na čísle +421 905 307 198, pričom bude účtovaný storno poplatok vo výške 10 €."
+- EN: "Free online cancellation is available up to 10 hours before your appointment. After this period, cancellation is only possible by phone at +421 905 307 198, subject to a €10 cancellation fee."
 
-**Chýbajúce/voliteľné:**
-| Premenná | Kde | Poznámka |
-|---|---|---|
-| `SITE_URL` | edge functions | Voliteľný — fallback na `https://booking-fyzioafit.lovable.app` v kóde |
+### 4. Deploy
 
-### 5. Čo treba overiť manuálne
+Nasadenie všetkých upravených edge functions: `create-booking` (nie je potrebný), `cancel-booking`, `send-booking-email`, `send-booking-reminder`.
 
-Nasledovné veci nemôžem otestovať automaticky — vyžadujú manuálny test:
+---
 
-1. **Vytvorenie rezervácie cez UI**: Otvor booking wizard, vyber službu, dátum, čas, vyplň údaje a odošli. Over že sa zobrazí potvrdenie.
-2. **Doručenie potvrdzovacieho emailu**: Skontroluj inbox emailu, ktorý si zadal pri rezervácii.
-3. **Admin notifikácia**: Skontroluj inbox `booking@fyzioafit.sk` — mal by prísť email o novej rezervácii.
-4. **SMTP heslo**: Ak emaily neprichádzajú, over platnosť SMTP hesla pre `booking@fyzioafit.sk` na Websupport paneli.
+## Technické detaily
 
-### Záver
+### Nový template `cancellation-client`
 
-Všetko je správne nakonfigurované:
-- Bezpečnostné opravy (RLS) sú aplikované
-- Edge functions sú nasadené a funkčné
-- Všetky potrebné secrety sú nastavené
-- Email infraštruktúra (SMTP + queue) je aktívna
+```
+Header: Modrý gradient (#4a90d9 → #6ba3e0) — rovnaký ako confirmation
+Nadpis: "Vaša rezervácia bola zrušená"
+Telo: Detaily zrušenej rezervácie (služba, dátum, čas, miesto)
+Info box: "Ak si želáte vytvoriť novú rezerváciu, kliknite na tlačidlo nižšie."
+CTA tlačidlo: "Vytvoriť novú rezerváciu" → link na hlavnú stránku
+Footer: Kontakt
+```
 
-Jediné, čo nemôžem overiť programaticky, je skutočné doručenie SMTP emailov — to závisí od platnosti `SMTP_PASSWORD` a stavu Websupport SMTP servera.
+### Zmeny v cancel-booking/index.ts
+
+Po riadku 164 (za admin email) pridať:
+```typescript
+// Send cancellation confirmation to client
+fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+  method: 'POST',
+  headers: { ... },
+  body: JSON.stringify({
+    to: booking.client_email,
+    clientName: booking.client_name,
+    serviceName: service?.name_sk || 'Služba',
+    date: booking.date,
+    time: booking.time_slot,
+    cancellationToken: '',
+    language: 'sk',
+    template: 'cancellation-client',
+  }),
+}).catch(err => console.error('Error sending cancellation client email:', err))
+```
+
+### Emailová šablóna pre zmenu statusu — zatiaľ NEIMPLEMENTOVAŤ
+
+Status zmeny z admin dashboardu (confirmed → cancelled alebo pending → confirmed) by si vyžadovali úpravu admin dashboardu + novú šablónu. Toto je rozšírenie na neskôr.
 
