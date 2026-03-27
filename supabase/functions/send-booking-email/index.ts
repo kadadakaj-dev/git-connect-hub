@@ -189,10 +189,10 @@ function generateEmailText(data: EmailRequest, baseUrl: string): string {
       '',
       'STORNO PODMIENKY:',
       '',
-      '• Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.',
+      '• Bezplatné online zrušenie je možné najneskôr 10 hodín pred termínom.',
       '',
-      '• Menej ako 12 hodín pred termínom je zrušenie možné,',
-      '  len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.',
+      '• Po uplynutí tejto lehoty je zrušenie možné výlučne telefonicky',
+      '  na čísle +421 905 307 198, pričom bude účtovaný storno poplatok 10 €.',
     ]
     : [
       '',
@@ -200,10 +200,10 @@ function generateEmailText(data: EmailRequest, baseUrl: string): string {
       '',
       'CANCELLATION POLICY:',
       '',
-      '• You can cancel online up to 12 hours before your appointment.',
+      '• Free online cancellation is available up to 10 hours before your appointment.',
       '',
-      '• Less than 12 hours before, cancellation is only possible',
-      '  by phone: +421 905 307 198 and a cancellation fee of €10 will be charged.',
+      '• After this period, cancellation is only possible by phone',
+      '  at +421 905 307 198, subject to a €10 cancellation fee.',
     ];
 
   return [
