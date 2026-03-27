@@ -148,10 +148,10 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
                 <tr>
                   <td style="padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 1.7;">
                     <p class="cancel-heading" style="margin: 0 0 14px 0; font-weight: 700; font-size: 15px; color: #dc2626;">${data.language === 'sk' ? 'Storno podmienky' : 'Cancellation policy'}</p>
-                    <p class="text-body" style="margin: 0 0 10px 0; color: #4b5e78;">• ${data.language === 'sk' ? 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.' : 'You can cancel online up to 12 hours before your appointment.'}</p>
+                    <p class="text-body" style="margin: 0 0 10px 0; color: #4b5e78;">• ${data.language === 'sk' ? 'Bezplatné online zrušenie je možné najneskôr 10 hodín pred termínom.' : 'Free online cancellation is available up to 10 hours before your appointment.'}</p>
                     <p class="text-body" style="margin: 0; color: #4b5e78;">• ${data.language === 'sk'
-      ? 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: <strong>+421 905 307 198</strong> ale bude Vám účtovaný storno poplatok 10&nbsp;€.'
-      : 'Less than 12 hours before, cancellation is only possible by phone: <strong>+421 905 307 198</strong> and a cancellation fee of €10 will be charged.'}</p>
+      ? 'Po uplynutí tejto lehoty je zrušenie možné výlučne telefonicky na čísle <strong>+421 905 307 198</strong>, pričom bude účtovaný storno poplatok vo výške <strong>10&nbsp;€</strong>.'
+      : 'After this period, cancellation is only possible by phone at <strong>+421 905 307 198</strong>, subject to a <strong>€10</strong> cancellation fee.'}</p>
                   </td>
                 </tr>
               </table>
