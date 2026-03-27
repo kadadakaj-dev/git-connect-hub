@@ -15,7 +15,7 @@ interface EmailRequest {
   time: string;
   cancellationToken: string;
   language: "sk" | "en";
-  template?: "confirmation" | "reminder" | "admin-notification" | "cancellation-admin";
+  template?: "confirmation" | "reminder" | "admin-notification" | "cancellation-admin" | "cancellation-client";
   adminData?: {
     clientName: string;
     clientEmail: string;
@@ -148,10 +148,10 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
                 <tr>
                   <td style="padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; line-height: 1.7;">
                     <p class="cancel-heading" style="margin: 0 0 14px 0; font-weight: 700; font-size: 15px; color: #dc2626;">${data.language === 'sk' ? 'Storno podmienky' : 'Cancellation policy'}</p>
-                    <p class="text-body" style="margin: 0 0 10px 0; color: #4b5e78;">• ${data.language === 'sk' ? 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.' : 'You can cancel online up to 12 hours before your appointment.'}</p>
+                    <p class="text-body" style="margin: 0 0 10px 0; color: #4b5e78;">• ${data.language === 'sk' ? 'Bezplatné online zrušenie je možné najneskôr 10 hodín pred termínom.' : 'Free online cancellation is available up to 10 hours before your appointment.'}</p>
                     <p class="text-body" style="margin: 0; color: #4b5e78;">• ${data.language === 'sk'
-      ? 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: <strong>+421 905 307 198</strong> ale bude Vám účtovaný storno poplatok 10&nbsp;€.'
-      : 'Less than 12 hours before, cancellation is only possible by phone: <strong>+421 905 307 198</strong> and a cancellation fee of €10 will be charged.'}</p>
+      ? 'Po uplynutí tejto lehoty je zrušenie možné výlučne telefonicky na čísle <strong>+421 905 307 198</strong>, pričom bude účtovaný storno poplatok vo výške <strong>10&nbsp;€</strong>.'
+      : 'After this period, cancellation is only possible by phone at <strong>+421 905 307 198</strong>, subject to a <strong>€10</strong> cancellation fee.'}</p>
                   </td>
                 </tr>
               </table>
@@ -189,10 +189,10 @@ function generateEmailText(data: EmailRequest, baseUrl: string): string {
       '',
       'STORNO PODMIENKY:',
       '',
-      '• Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom.',
+      '• Bezplatné online zrušenie je možné najneskôr 10 hodín pred termínom.',
       '',
-      '• Menej ako 12 hodín pred termínom je zrušenie možné,',
-      '  len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.',
+      '• Po uplynutí tejto lehoty je zrušenie možné výlučne telefonicky',
+      '  na čísle +421 905 307 198, pričom bude účtovaný storno poplatok 10 €.',
     ]
     : [
       '',
@@ -200,10 +200,10 @@ function generateEmailText(data: EmailRequest, baseUrl: string): string {
       '',
       'CANCELLATION POLICY:',
       '',
-      '• You can cancel online up to 12 hours before your appointment.',
+      '• Free online cancellation is available up to 10 hours before your appointment.',
       '',
-      '• Less than 12 hours before, cancellation is only possible',
-      '  by phone: +421 905 307 198 and a cancellation fee of €10 will be charged.',
+      '• After this period, cancellation is only possible by phone',
+      '  at +421 905 307 198, subject to a €10 cancellation fee.',
     ];
 
   return [
@@ -338,18 +338,18 @@ function generateReminderHtml(data: EmailRequest, baseUrl: string): string {
     reminder: '🔔 PRIPOMIENKA',
     subtitle: 'Váš termín je už zajtra!',
     penaltyTitle: '⚠️ STORNO POPLATOK: 10 €',
-    penaltyLine1: 'Zrušenie menej ako 12 hodín pred termínom je možné <strong>len telefonicky</strong>.',
+    penaltyLine1: 'Zrušenie menej ako 10 hodín pred termínom je možné <strong>len telefonicky</strong>.',
     penaltyLine2: 'Bude Vám účtovaný storno poplatok <strong>10&nbsp;€</strong>.',
     phoneLabel: 'Volajte:',
-    onlineCancel: 'Online zrušenie je možné najneskôr 12 hodín pred termínom:',
+    onlineCancel: 'Online zrušenie je možné najneskôr 10 hodín pred termínom:',
   } : {
     reminder: '🔔 REMINDER',
     subtitle: 'Your appointment is tomorrow!',
     penaltyTitle: '⚠️ CANCELLATION FEE: €10',
-    penaltyLine1: 'Cancellation less than 12 hours before the appointment is only possible <strong>by phone</strong>.',
+    penaltyLine1: 'Cancellation less than 10 hours before the appointment is only possible <strong>by phone</strong>.',
     penaltyLine2: 'A cancellation fee of <strong>€10</strong> will be charged.',
     phoneLabel: 'Call:',
-    onlineCancel: 'Online cancellation is possible up to 12 hours before the appointment:',
+    onlineCancel: 'Online cancellation is possible up to 10 hours before the appointment:',
   };
 
   return `
@@ -466,7 +466,7 @@ function generateReminderText(data: EmailRequest, baseUrl: string): string {
       '⚠️  STORNO POPLATOK: 10 €',
       '════════════════════════════════════════',
       '',
-      '• Zrušenie menej ako 12 hodín pred termínom',
+      '• Zrušenie menej ako 10 hodín pred termínom',
       '  je možné LEN TELEFONICKY.',
       '• Bude Vám účtovaný storno poplatok 10 €.',
       '',
@@ -480,7 +480,7 @@ function generateReminderText(data: EmailRequest, baseUrl: string): string {
       '⚠️  CANCELLATION FEE: €10',
       '════════════════════════════════════════',
       '',
-      '• Cancellation less than 12 hours before',
+      '• Cancellation less than 10 hours before',
       '  the appointment is only possible BY PHONE.',
       '• A cancellation fee of €10 will be charged.',
       '',
@@ -500,7 +500,7 @@ function generateReminderText(data: EmailRequest, baseUrl: string): string {
     `${t.location}: ${t.address}`,
     ...penaltyBlock,
     '',
-    data.language === 'sk' ? 'Online zrušenie (najneskôr 12h pred termínom):' : 'Online cancellation (up to 12h before):',
+    data.language === 'sk' ? 'Online zrušenie (najneskôr 10h pred termínom):' : 'Online cancellation (up to 10h before):',
     cancelUrl,
     '',
     t.footer,
@@ -606,6 +606,137 @@ function generateCancellationAdminText(data: EmailRequest): string {
   ].filter(Boolean).join("\n");
 }
 
+function generateCancellationClientHtml(data: EmailRequest, baseUrl: string): string {
+  const formattedDate = formatDate(data.date, data.language);
+  const t = translations[data.language];
+  const labels = data.language === 'sk' ? {
+    title: 'Vaša rezervácia bola zrušená',
+    subtitle: 'Potvrdenie o zrušení rezervácie',
+    infoText: 'Ak si želáte vytvoriť novú rezerváciu, kliknite na tlačidlo nižšie.',
+    ctaButton: 'Vytvoriť novú rezerváciu',
+    cancelledLabel: 'ZRUŠENÁ',
+  } : {
+    title: 'Your booking has been cancelled',
+    subtitle: 'Cancellation confirmation',
+    infoText: 'If you would like to make a new booking, click the button below.',
+    ctaButton: 'Make a new booking',
+    cancelledLabel: 'CANCELLED',
+  };
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${labels.subtitle}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff; padding: 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%); padding: 36px 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1.5px;">${t.clinicName}</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 15px;">${labels.subtitle}</p>
+            </td>
+          </tr>
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h2 style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px; font-weight: 600;">${t.greeting}, ${escapeHtml(data.clientName)}!</h2>
+              <p style="color: #4b5e78; margin: 0 0 30px 0; font-size: 16px; line-height: 1.5;">${labels.title}</p>
+              <!-- Booking Details -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f4f8; border-radius: 12px; margin-bottom: 24px;">
+                <tr><td style="padding: 24px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                        <span style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.service}</span><br>
+                        <span style="color: #1a2b42; font-size: 16px; font-weight: 600;">${data.serviceName}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                        <span style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.dateTime}</span><br>
+                        <span style="color: #1a2b42; font-size: 16px; font-weight: 500; text-decoration: line-through;">${formattedDate}</span><br>
+                        <span style="color: #ef4444; font-size: 16px; font-weight: 700; text-decoration: line-through;">${data.time}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #dde5ef;">
+                        <span style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.location}</span><br>
+                        <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${t.address}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 0;">
+                        <span style="display: inline-block; background-color: #fef2f2; color: #dc2626; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 8px; letter-spacing: 0.5px;">${labels.cancelledLabel}</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td></tr>
+              </table>
+              <!-- Info box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #eff6ff; border-left: 4px solid #4a90d9; border-radius: 0 12px 12px 0; margin-bottom: 28px;">
+                <tr>
+                  <td style="padding: 20px 24px;">
+                    <p style="color: #1a2b42; margin: 0; font-size: 15px; line-height: 1.6;">${labels.infoText}</p>
+                  </td>
+                </tr>
+              </table>
+              <!-- CTA -->
+              <div style="text-align: center;">
+                <a href="${baseUrl}" style="display: inline-block; background: linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%); color: #ffffff; padding: 16px 36px; border-radius: 10px; text-decoration: none; font-size: 16px; font-weight: 600; letter-spacing: 0.3px;">${labels.ctaButton}</a>
+              </div>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f0f4f8; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
+              <p style="color: #6b7c94; margin: 0; font-size: 14px;">${t.contact}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+}
+
+function generateCancellationClientText(data: EmailRequest, baseUrl: string): string {
+  const formattedDate = formatDate(data.date, data.language);
+  const t = translations[data.language];
+  const labels = data.language === 'sk' ? {
+    title: 'Vaša rezervácia bola zrušená',
+    infoText: 'Ak si želáte vytvoriť novú rezerváciu, navštívte:',
+  } : {
+    title: 'Your booking has been cancelled',
+    infoText: 'If you would like to make a new booking, visit:',
+  };
+
+  return [
+    t.clinicName,
+    '========================================',
+    `${t.greeting}, ${data.clientName}!`,
+    labels.title,
+    '',
+    `${t.service}: ${data.serviceName}`,
+    `${t.dateTime}: ${formattedDate} ${data.time} [ZRUŠENÁ/CANCELLED]`,
+    `${t.location}: ${t.address}`,
+    '========================================',
+    '',
+    labels.infoText,
+    baseUrl,
+    '',
+    t.contact,
+  ].join('\n');
+}
+
 serve(async (req) => {
   // CORS Preflight request
   if (req.method === "OPTIONS") {
@@ -661,6 +792,7 @@ serve(async (req) => {
 
     const isAdminNotification = data.template === "admin-notification";
     const isCancellationAdmin = data.template === "cancellation-admin";
+    const isCancellationClient = data.template === "cancellation-client";
     const t = translations[data.language];
     const isReminder = data.template === "reminder";
 
@@ -668,7 +800,13 @@ serve(async (req) => {
     let html: string;
     let textContent: string;
 
-    if (isCancellationAdmin) {
+    if (isCancellationClient) {
+      subject = data.language === 'sk'
+        ? 'Potvrdenie zrušenia rezervácie - FYZIO&FIT'
+        : 'Booking Cancellation Confirmation - FYZIO&FIT';
+      html = generateCancellationClientHtml(data, baseUrl);
+      textContent = generateCancellationClientText(data, baseUrl);
+    } else if (isCancellationAdmin) {
       subject = `Zrusena rezervacia: ${data.adminData?.clientName} - ${data.serviceName}`;
       html = generateCancellationAdminHtml(data);
       textContent = generateCancellationAdminText(data);

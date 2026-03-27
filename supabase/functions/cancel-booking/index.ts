@@ -108,9 +108,9 @@ serve(async (req) => {
       )
     }
 
-    if (hoursUntilBooking < 12) {
+    if (hoursUntilBooking < 10) {
       return new Response(
-        JSON.stringify({ error: 'TOO_LATE_TO_CANCEL', message: 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.' }),
+        JSON.stringify({ error: 'TOO_LATE_TO_CANCEL', message: 'Menej ako 10 hodín pred termínom je zrušenie možné len telefonicky: +421 905 307 198, pričom bude účtovaný storno poplatok 10 €.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -162,6 +162,26 @@ serve(async (req) => {
         },
       }),
     }).catch(err => console.error('Error sending cancellation admin email:', err))
+
+    // Send cancellation confirmation to client (fire-and-forget)
+    fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+      },
+      body: JSON.stringify({
+        to: booking.client_email,
+        clientName: booking.client_name,
+        serviceName: service?.name_sk || 'Služba',
+        serviceNameEn: service?.name_en || 'Service',
+        date: booking.date,
+        time: booking.time_slot,
+        cancellationToken: '',
+        language: 'sk',
+        template: 'cancellation-client',
+      }),
+    }).catch(err => console.error('Error sending cancellation client email:', err))
 
     // Send push notification about cancellation (fire-and-forget)
     if (booking.client_user_id) {
