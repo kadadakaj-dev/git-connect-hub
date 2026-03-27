@@ -75,7 +75,7 @@ const CancelBooking = () => {
       notFound: 'Booking not found',
       pastBooking: 'Cannot cancel past bookings',
       tooLateTitle: 'Online cancellation not available',
-      tooLateText: 'Less than 12 hours before, cancellation is only possible by phone: +421 905 307 198 and a cancellation fee of €10 will be charged.',
+      tooLateText: 'Less than 10 hours before your appointment, cancellation is only possible by phone: +421 905 307 198, subject to a €10 cancellation fee.',
       tooLatePhone: '',
       backToHome: 'Back to Home',
       newBooking: 'New Booking',

@@ -163,6 +163,26 @@ serve(async (req) => {
       }),
     }).catch(err => console.error('Error sending cancellation admin email:', err))
 
+    // Send cancellation confirmation to client (fire-and-forget)
+    fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+      },
+      body: JSON.stringify({
+        to: booking.client_email,
+        clientName: booking.client_name,
+        serviceName: service?.name_sk || 'Služba',
+        serviceNameEn: service?.name_en || 'Service',
+        date: booking.date,
+        time: booking.time_slot,
+        cancellationToken: '',
+        language: 'sk',
+        template: 'cancellation-client',
+      }),
+    }).catch(err => console.error('Error sending cancellation client email:', err))
+
     // Send push notification about cancellation (fire-and-forget)
     if (booking.client_user_id) {
       fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
