@@ -500,7 +500,7 @@ function generateReminderText(data: EmailRequest, baseUrl: string): string {
     `${t.location}: ${t.address}`,
     ...penaltyBlock,
     '',
-    data.language === 'sk' ? 'Online zrušenie (najneskôr 12h pred termínom):' : 'Online cancellation (up to 12h before):',
+    data.language === 'sk' ? 'Online zrušenie (najneskôr 10h pred termínom):' : 'Online cancellation (up to 10h before):',
     cancelUrl,
     '',
     t.footer,
