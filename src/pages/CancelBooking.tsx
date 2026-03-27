@@ -51,7 +51,7 @@ const CancelBooking = () => {
       notFound: 'Rezervácia nebola nájdená',
       pastBooking: 'Nemožno zrušiť minulé rezervácie',
       tooLateTitle: 'Zrušenie online nie je možné',
-      tooLateText: 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.',
+      tooLateText: 'Menej ako 10 hodín pred termínom je zrušenie možné len telefonicky: +421 905 307 198, pričom bude účtovaný storno poplatok 10 €.',
       tooLatePhone: '',
       backToHome: 'Späť na hlavnú stránku',
       newBooking: 'Nová rezervácia',
