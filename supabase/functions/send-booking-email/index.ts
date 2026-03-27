@@ -792,6 +792,7 @@ serve(async (req) => {
 
     const isAdminNotification = data.template === "admin-notification";
     const isCancellationAdmin = data.template === "cancellation-admin";
+    const isCancellationClient = data.template === "cancellation-client";
     const t = translations[data.language];
     const isReminder = data.template === "reminder";
 
