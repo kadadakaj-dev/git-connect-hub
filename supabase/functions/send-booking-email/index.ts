@@ -338,18 +338,18 @@ function generateReminderHtml(data: EmailRequest, baseUrl: string): string {
     reminder: '🔔 PRIPOMIENKA',
     subtitle: 'Váš termín je už zajtra!',
     penaltyTitle: '⚠️ STORNO POPLATOK: 10 €',
-    penaltyLine1: 'Zrušenie menej ako 12 hodín pred termínom je možné <strong>len telefonicky</strong>.',
+    penaltyLine1: 'Zrušenie menej ako 10 hodín pred termínom je možné <strong>len telefonicky</strong>.',
     penaltyLine2: 'Bude Vám účtovaný storno poplatok <strong>10&nbsp;€</strong>.',
     phoneLabel: 'Volajte:',
-    onlineCancel: 'Online zrušenie je možné najneskôr 12 hodín pred termínom:',
+    onlineCancel: 'Online zrušenie je možné najneskôr 10 hodín pred termínom:',
   } : {
     reminder: '🔔 REMINDER',
     subtitle: 'Your appointment is tomorrow!',
     penaltyTitle: '⚠️ CANCELLATION FEE: €10',
-    penaltyLine1: 'Cancellation less than 12 hours before the appointment is only possible <strong>by phone</strong>.',
+    penaltyLine1: 'Cancellation less than 10 hours before the appointment is only possible <strong>by phone</strong>.',
     penaltyLine2: 'A cancellation fee of <strong>€10</strong> will be charged.',
     phoneLabel: 'Call:',
-    onlineCancel: 'Online cancellation is possible up to 12 hours before the appointment:',
+    onlineCancel: 'Online cancellation is possible up to 10 hours before the appointment:',
   };
 
   return `
