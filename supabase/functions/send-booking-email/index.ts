@@ -800,7 +800,13 @@ serve(async (req) => {
     let html: string;
     let textContent: string;
 
-    if (isCancellationAdmin) {
+    if (isCancellationClient) {
+      subject = data.language === 'sk'
+        ? 'Potvrdenie zrušenia rezervácie - FYZIO&FIT'
+        : 'Booking Cancellation Confirmation - FYZIO&FIT';
+      html = generateCancellationClientHtml(data, baseUrl);
+      textContent = generateCancellationClientText(data, baseUrl);
+    } else if (isCancellationAdmin) {
       subject = `Zrusena rezervacia: ${data.adminData?.clientName} - ${data.serviceName}`;
       html = generateCancellationAdminHtml(data);
       textContent = generateCancellationAdminText(data);
