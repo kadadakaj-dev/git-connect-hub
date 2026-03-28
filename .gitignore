@@ -27,3 +27,8 @@ test-results/
 blob-report/
 
 .vercel
+
+# Environment variables — never commit secrets
+.env
+.env.local
+.env.production
