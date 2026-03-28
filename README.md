@@ -1,73 +1,75 @@
-# Welcome to your Lovable project
+# FYZIO&FIT – Rezervačný systém
 
-## Project info
+Online booking systém pre FYZIO&FIT Košice.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+**Live URL:** https://git-connect-hub-ruddy.vercel.app  
+**Vetva pre vývoj:** `localbranchonly` (main sa nedotýkame)
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Lokálne spustenie
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone https://github.com/kadadakaj-dev/git-connect-hub.git
+cd git-connect-hub
+git checkout localbranchonly
+npm install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Skopíruj .env.example do .env a vyplň hodnoty
+cp .env.example .env
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Deploy
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+git add .
+git commit -m "popis zmeny"
+git push origin localbranchonly
+npx vercel deploy --prod
+```
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Environment Variables
 
-## What technologies are used for this project?
+Skopíruj `.env.example` → `.env` a vyplň hodnoty zo [Supabase Dashboard](https://supabase.com/dashboard/project/bqoeopfgivbvyhonkree/settings/api).
 
-This project is built with:
+| Premenná | Popis |
+|----------|-------|
+| `VITE_SUPABASE_URL` | URL Supabase projektu |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Anon/public key |
+| `VITE_SUPABASE_PROJECT_ID` | ID projektu |
+| `VITE_VAPID_PUBLIC_KEY` | VAPID kľúč pre push notifikácie |
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+> ⚠️ `.env` nikdy necommituj — je v `.gitignore`.  
+> Po expozícii kľúča ihneď resetuj v Supabase dashboarde.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## ⚠️ Pending: Rotácia Supabase kľúča
 
-## Can I connect a custom domain to my Lovable project?
+Supabase anon key bol historicky commitnutý v repozitári (`.env`).  
+Súbor bol odstránený z git trackingu, ale kľúč treba invalidovať:
 
-Yes, you can!
+**Kroky:**
+1. Otvor [Supabase Dashboard → Settings → API](https://supabase.com/dashboard/project/bqoeopfgivbvyhonkree/settings/api)
+2. Klikni **"Reset anon key"** (vygeneruje nový JWT)
+3. Skopíruj nový kľúč
+4. Aktualizuj lokálny `.env` → `VITE_SUPABASE_PUBLISHABLE_KEY`
+5. Aktualizuj Vercel → [Environment Variables](https://vercel.com/h4ck3d/git-connect-hub/settings/environment-variables) → `VITE_SUPABASE_PUBLISHABLE_KEY`
+6. Spusti `npx vercel deploy --prod`
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+> Kým toto neurobíš, aplikácia funguje normálne. Po resete prestane fungovať ktokoľvek kto mal starý kľúč.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## Technológie
+
+- **React** + **TypeScript** + **Vite**
+- **Tailwind CSS** + shadcn/ui
+- **Supabase** (databáza, auth, edge functions)
+- **Vercel** (hosting)
+- **Framer Motion** (animácie)
+- **Workbox** (PWA, service worker)
