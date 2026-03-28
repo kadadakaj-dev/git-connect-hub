@@ -15,5 +15,5 @@ export default defineConfig({
       resizeOptions: { background: '#EAF6FF' },
     },
   },
-  images: ['public/pwa-icon.svg'],
+  images: ['public/pwa-512x512.png'],
 });

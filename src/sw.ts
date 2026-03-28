@@ -130,7 +130,7 @@ self.addEventListener('push', (event) => {
   const options: NotificationOptions & { renotify: boolean } = {
     body: data.body || '',
     icon: '/pwa-192x192.png',
-    badge: '/pwa-64x64.png',
+    badge: '/favicon-32x32.png',
     tag: 'fyziofit-notification',
     renotify: true,
     data: { url: data.url || '/' },
