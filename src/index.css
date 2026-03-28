@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent layout shift when scrollbar appears/disappears between wizard steps */
+html {
+  scrollbar-gutter: stable;
+}
+
 @layer base {
   :root {
     --font-sans:
