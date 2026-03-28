@@ -15,7 +15,7 @@ interface EmailRequest {
   time: string;
   cancellationToken: string;
   language: "sk" | "en";
-  template?: "confirmation" | "reminder" | "admin-notification" | "cancellation-admin";
+  template?: "confirmation" | "reminder" | "admin-notification" | "cancellation-admin" | "cancellation-client";
   adminData?: {
     clientName: string;
     clientEmail: string;
@@ -28,9 +28,11 @@ const translations = {
   sk: {
     subject: "Potvrdenie rezervácie - FYZIO&FIT",
     reminderSubject: "Pripomienka: Váš termín zajtra - FYZIO&FIT",
+    cancellationClientSubject: "Zrušenie rezervácie - FYZIO&FIT",
     greeting: "Dobrý deň",
     confirmationTitle: "Vaša rezervácia bola úspešne vytvorená",
     reminderTitle: "Pripomíname vám zajtrajší termín",
+    cancellationClientTitle: "Vaša rezervácia bola zrušená",
     service: "Služba",
     dateTime: "Dátum a čas",
     location: "Miesto",
@@ -44,9 +46,11 @@ const translations = {
   en: {
     subject: "Booking Confirmation - FYZIO&FIT",
     reminderSubject: "Reminder: Your appointment tomorrow - FYZIO&FIT",
+    cancellationClientSubject: "Booking Cancellation - FYZIO&FIT",
     greeting: "Hello",
     confirmationTitle: "Your booking has been successfully created",
     reminderTitle: "Reminder about your appointment tomorrow",
+    cancellationClientTitle: "Your booking has been cancelled",
     service: "Service",
     dateTime: "Date & Time",
     location: "Location",
@@ -606,6 +610,120 @@ function generateCancellationAdminText(data: EmailRequest): string {
   ].filter(Boolean).join("\n");
 }
 
+function generateCancellationClientHtml(data: EmailRequest): string {
+  const t = translations[data.language];
+  const formattedDate = formatDate(data.date, data.language);
+  const bookUrl = "https://booking-fyzioafit.lovable.app";
+
+  const labels = data.language === 'sk' ? {
+    body: 'Vaša rezervácia bola úspešne zrušená. Ak si prajete rezervovať nový termín, navštívte nás na',
+    bookAgain: 'Rezervovať nový termín',
+    questions: 'V prípade otázok nás kontaktujte na',
+  } : {
+    body: 'Your booking has been successfully cancelled. To book a new appointment, visit us at',
+    bookAgain: 'Book a new appointment',
+    questions: 'For any questions, contact us at',
+  };
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>${t.cancellationClientSubject}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff; padding: 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%); padding: 36px 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1.5px;">${t.clinicName}</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px; font-weight: 400;">${t.cancellationClientTitle}</p>
+            </td>
+          </tr>
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h2 style="color: #1a2b42; margin: 0 0 10px 0; font-size: 20px; font-weight: 600;">${t.greeting}, ${escapeHtml(data.clientName)}!</h2>
+              <p style="color: #4b5e78; margin: 0 0 30px 0; font-size: 16px; line-height: 1.5;">${labels.body} <a href="${bookUrl}" style="color: #4a90d9;">${bookUrl}</a>.</p>
+              <!-- Booking Details -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fef2f2; border-radius: 12px; margin-bottom: 30px;">
+                <tr>
+                  <td style="padding: 24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
+                          <span style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.service}</span><br>
+                          <span style="color: #1a2b42; font-size: 16px; font-weight: 600;">${data.serviceName}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
+                          <span style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.dateTime}</span><br>
+                          <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${formattedDate}</span><br>
+                          <span style="color: #b91c1c; font-size: 16px; font-weight: 700;">${data.time}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 12px 0;">
+                          <span style="color: #6b7c94; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">${t.location}</span><br>
+                          <span style="color: #1a2b42; font-size: 16px; font-weight: 500;">${t.address}</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <div style="text-align: center; margin-bottom: 24px;">
+                <a href="${bookUrl}" style="display: inline-block; background-color: #4a90d9; color: #ffffff; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; letter-spacing: 0.3px;">${labels.bookAgain}</a>
+              </div>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f0f4f8; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
+              <p style="color: #6b7c94; margin: 0 0 4px 0; font-size: 14px;">${labels.questions} <a href="mailto:booking@fyzioafit.sk" style="color: #4a90d9;">booking@fyzioafit.sk</a></p>
+              <p style="color: #6b7c94; margin: 0; font-size: 14px;">${t.contact}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+}
+
+function generateCancellationClientText(data: EmailRequest): string {
+  const t = translations[data.language];
+  const formattedDate = formatDate(data.date, data.language);
+
+  return [
+    `${t.clinicName}`,
+    "========================================",
+    `${t.greeting}, ${data.clientName}!`,
+    t.cancellationClientTitle,
+    "",
+    `${t.service}: ${data.serviceName}`,
+    `${t.dateTime}: ${formattedDate} ${data.time}`,
+    `${t.location}: ${t.address}`,
+    "========================================",
+    "",
+    data.language === 'sk'
+      ? "Pre nový termín navštívte: https://booking-fyzioafit.lovable.app"
+      : "To book again, visit: https://booking-fyzioafit.lovable.app",
+    "",
+    t.contact,
+  ].join("\n");
+}
+
 serve(async (req) => {
   // CORS Preflight request
   if (req.method === "OPTIONS") {
@@ -661,6 +779,7 @@ serve(async (req) => {
 
     const isAdminNotification = data.template === "admin-notification";
     const isCancellationAdmin = data.template === "cancellation-admin";
+    const isCancellationClient = data.template === "cancellation-client";
     const t = translations[data.language];
     const isReminder = data.template === "reminder";
 
@@ -672,6 +791,10 @@ serve(async (req) => {
       subject = `Zrusena rezervacia: ${data.adminData?.clientName} - ${data.serviceName}`;
       html = generateCancellationAdminHtml(data);
       textContent = generateCancellationAdminText(data);
+    } else if (isCancellationClient) {
+      subject = t.cancellationClientSubject;
+      html = generateCancellationClientHtml(data);
+      textContent = generateCancellationClientText(data);
     } else if (isAdminNotification) {
       subject = `Nova rezervacia: ${data.adminData?.clientName} - ${data.serviceName}`;
       html = generateAdminNotificationHtml(data);
