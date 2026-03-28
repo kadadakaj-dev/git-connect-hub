@@ -18,6 +18,7 @@ import {
   Clock,
   History,
   Heart,
+  LayoutDashboard,
   Plus,
   Star,
   User as UserIcon,
@@ -40,6 +41,7 @@ const ClientPortal = () => {
   const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
@@ -62,6 +64,17 @@ const ClientPortal = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user?.id]);
 
   const { data: profile, isLoading: profileLoading } = useClientProfile(user?.id);
   const { data: bookings, isLoading: bookingsLoading } = useClientBookings(user?.id);
@@ -224,6 +237,18 @@ const ClientPortal = () => {
 
             <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
               <LanguageSwitcher />
+              {isAdmin && (
+                <Button
+                  variant="glass"
+                  size="sm"
+                  onClick={() => navigate('/admin?tab=calendar')}
+                  className="gap-1.5 h-9 px-3 rounded-xl text-xs font-semibold"
+                  title={language === 'sk' ? 'Admin panel' : 'Admin panel'}
+                >
+                  <LayoutDashboard className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">{language === 'sk' ? 'Admin panel' : 'Admin panel'}</span>
+                </Button>
+              )}
               <SettingsMenu
                 onEditProfile={() => setIsProfileDialogOpen(true)}
                 onSignOut={handleSignOut}

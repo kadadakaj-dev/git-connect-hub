@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,6 +19,8 @@ import GlassBackground from '@/components/GlassBackground';
 const AdminDashboard = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'overview';
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -115,7 +117,7 @@ const AdminDashboard = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-2.5 sm:space-y-6">
+        <Tabs defaultValue={initialTab} className="space-y-2.5 sm:space-y-6">
           <TabsList className="w-full grid grid-cols-6 gap-0 rounded-[14px] sm:rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/60 p-0.5 sm:p-1 shadow-[0_4px_12px_rgba(126,195,255,0.06)]">
             {tabs.map(({ value, icon: Icon, label, shortLabel }) => (
               <TabsTrigger
