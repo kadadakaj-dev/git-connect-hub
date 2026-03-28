@@ -228,10 +228,19 @@ const DateTimeSelection = ({
               onClick={goToPreviousMonth}
               disabled={isSameMonth(currentMonth, today)}
               className="h-9 w-9 rounded-lg"
+              aria-label="Previous month"
+              title="Previous month"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="icon" onClick={goToNextMonth} className="h-9 w-9 rounded-lg">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={goToNextMonth}
+              className="h-9 w-9 rounded-lg"
+              aria-label="Next month"
+              title="Next month"
+            >
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>

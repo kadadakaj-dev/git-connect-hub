@@ -463,6 +463,8 @@ const AvatarEditDialog = ({
                     onClick={handleRemovePhoto}
                     disabled={isUploading}
                     className="text-destructive hover:text-destructive"
+                    aria-label="Remove photo"
+                    title="Remove photo"
                   >
                     {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                   </Button>

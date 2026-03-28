@@ -195,6 +195,8 @@ const SettingsMenu = ({
             variant="ghost"
             size="icon"
             className="h-10 w-10 rounded-2xl border border-[var(--glass-border-subtle)] bg-white/64 text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.12)] hover:bg-white/78 hover:text-[hsl(var(--navy))]"
+            aria-label="Settings menu"
+            title="Settings"
           >
             <Settings className="h-4 w-4" />
           </Button>
