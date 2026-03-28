@@ -33,13 +33,13 @@ export default defineConfig(({ mode }) => ({
       srcDir: 'src',
       filename: 'sw.ts',
       registerType: 'prompt',
-      includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'pwa-icon.svg'],
+      includeAssets: ['favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon-180x180.png'],
       manifest: {
         name: 'FYZIO&FIT – Rezervácie',
         short_name: 'FYZIO&FIT',
         description: 'Online rezervačný systém pre FYZIO&FIT Košice',
-        theme_color: '#24476B',
-        background_color: '#EAF6FF',
+        theme_color: '#BFE2FF',
+        background_color: '#BFE2FF',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
@@ -48,8 +48,8 @@ export default defineConfig(({ mode }) => ({
         categories: ['health', 'lifestyle'],
         icons: [
           {
-            src: '/pwa-64x64.png',
-            sizes: '64x64',
+            src: '/favicon-32x32.png',
+            sizes: '32x32',
             type: 'image/png',
           },
           {
@@ -61,11 +61,6 @@ export default defineConfig(({ mode }) => ({
             src: '/pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-          },
-          {
-            src: '/pwa-icon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
           },
           {
             src: '/maskable-icon-512x512.png',
