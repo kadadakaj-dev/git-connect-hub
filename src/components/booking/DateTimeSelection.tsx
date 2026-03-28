@@ -221,18 +221,18 @@ const DateTimeSelection = ({
           <h4 className="text-sm font-semibold text-foreground capitalize">
             {format(currentMonth, 'LLLL yyyy', { locale })}
           </h4>
-          <div className="flex gap-0.5">
+          <div className="flex gap-1">
             <Button
               variant="outline"
               size="icon"
               onClick={goToPreviousMonth}
               disabled={isSameMonth(currentMonth, today)}
-              className="h-6 w-6 rounded"
+              className="h-9 w-9 rounded-lg"
             >
-              <ChevronLeft className="w-3 h-3" />
+              <ChevronLeft className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="icon" onClick={goToNextMonth} className="h-6 w-6 rounded">
-              <ChevronRight className="w-3 h-3" />
+            <Button variant="outline" size="icon" onClick={goToNextMonth} className="h-9 w-9 rounded-lg">
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
