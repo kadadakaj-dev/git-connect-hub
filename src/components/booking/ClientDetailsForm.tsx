@@ -35,6 +35,7 @@ const inputClasses = (field: string, errors: Record<string, string>) => {
 
 const FormField = ({
   field,
+  label,
   icon: Icon,
   placeholder,
   type,
@@ -47,6 +48,7 @@ const FormField = ({
   onBlur,
 }: {
   field: string;
+  label: string;
   icon: React.ElementType;
   placeholder: string;
   type: string;
@@ -63,7 +65,16 @@ const FormField = ({
   const isFocused = focusedField === field;
 
   return (
-    <div>
+    <div className="space-y-1">
+      <label
+        htmlFor={field}
+        className={cn(
+          "block text-xs font-medium transition-colors duration-200",
+          isFocused ? "text-primary" : hasError ? "text-destructive" : "text-muted-foreground"
+        )}
+      >
+        {label}
+      </label>
       <div className="relative">
         <Icon className={cn(
           "absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 transition-colors duration-200",
@@ -106,32 +117,43 @@ const ClientDetailsForm = ({ bookingData, errors, onUpdate }: ClientDetailsFormP
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   return (
-    <div className="space-y-3">
-      <FormField field="clientName" icon={User} placeholder={t.fullNamePlaceholder} type="text" value={bookingData.clientName} errors={errors} autoComplete="name" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
-      <FormField field="clientEmail" icon={Mail} placeholder={t.emailPlaceholder} type="email" value={bookingData.clientEmail} errors={errors} autoComplete="email" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
-      <FormField field="clientPhone" icon={Phone} placeholder={t.phonePlaceholder} type="tel" value={bookingData.clientPhone} errors={errors} autoComplete="tel" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
+    <div className="space-y-4">
+      <FormField field="clientName" label={language === 'sk' ? 'Celé meno' : 'Full name'} icon={User} placeholder={t.fullNamePlaceholder} type="text" value={bookingData.clientName} errors={errors} autoComplete="name" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
+      <FormField field="clientEmail" label="Email" icon={Mail} placeholder={t.emailPlaceholder} type="email" value={bookingData.clientEmail} errors={errors} autoComplete="email" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
+      <FormField field="clientPhone" label={language === 'sk' ? 'Telefón' : 'Phone'} icon={Phone} placeholder={t.phonePlaceholder} type="tel" value={bookingData.clientPhone} errors={errors} autoComplete="tel" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
 
-      <div className="relative">
-        <FileText className={cn(
-          "absolute left-2.5 top-2.5 w-3.5 h-3.5 transition-colors duration-200",
-          focusedField === 'notes' ? "text-primary" : "text-muted-foreground"
-        )} />
-        <textarea
-          id="notes"
-          value={bookingData.notes}
-          onChange={(e) => onUpdate('notes', e.target.value)}
-          onFocus={() => setFocusedField('notes')}
-          onBlur={() => setFocusedField(null)}
-          placeholder={t.notesPlaceholder}
-          rows={2}
+      <div className="space-y-1">
+        <label
+          htmlFor="notes"
           className={cn(
-            "w-full pl-8 pr-3 py-2.5 rounded-xl border text-foreground text-sm resize-none",
-            "bg-[var(--glass-white)] backdrop-blur-sm",
-            "placeholder:text-muted-foreground/50 transition-all duration-300 ease-liquid",
-            "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 focus:bg-[var(--glass-white-md)]",
-            "border-[var(--glass-border-subtle)] hover:border-[var(--glass-border)]"
+            "block text-xs font-medium transition-colors duration-200",
+            focusedField === 'notes' ? "text-primary" : "text-muted-foreground"
           )}
-        />
+        >
+          {language === 'sk' ? 'Poznámka (nepovinné)' : 'Notes (optional)'}
+        </label>
+        <div className="relative">
+          <FileText className={cn(
+            "absolute left-2.5 top-2.5 w-3.5 h-3.5 transition-colors duration-200",
+            focusedField === 'notes' ? "text-primary" : "text-muted-foreground"
+          )} />
+          <textarea
+            id="notes"
+            value={bookingData.notes}
+            onChange={(e) => onUpdate('notes', e.target.value)}
+            onFocus={() => setFocusedField('notes')}
+            onBlur={() => setFocusedField(null)}
+            placeholder={t.notesPlaceholder}
+            rows={2}
+            className={cn(
+              "w-full pl-8 pr-3 py-2.5 rounded-xl border text-foreground text-sm resize-none",
+              "bg-[var(--glass-white)] backdrop-blur-sm",
+              "placeholder:text-muted-foreground/50 transition-all duration-300 ease-liquid",
+              "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 focus:bg-[var(--glass-white-md)]",
+              "border-[var(--glass-border-subtle)] hover:border-[var(--glass-border)]"
+            )}
+          />
+        </div>
       </div>
 
       <div className="flex items-center gap-2">

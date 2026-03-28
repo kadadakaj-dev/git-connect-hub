@@ -48,7 +48,7 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
         <div className="absolute inset-0 bg-[var(--reflection-top)] pointer-events-none rounded-[inherit] z-[1]" />
         
         {/* Top accent gradient */}
-        <div className="h-[2px] bg-gradient-to-r from-primary via-[#b490f5] to-[#f7a8c4] relative z-[2]" />
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent relative z-[2]" />
 
         {/* Header */}
         <div className="px-6 py-5 border-b border-[var(--glass-border-subtle)] relative z-[2]">

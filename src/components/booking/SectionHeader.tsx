@@ -16,10 +16,10 @@ const SectionHeader = ({
       animate={completed ? { scale: [1, 1.12, 1] } : {}}
       transition={{ duration: 0.35, ease: 'easeOut' }}
       className={cn(
-        "w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold flex-shrink-0 shadow-[0_8px_20px_rgba(126,195,255,0.12)]",
+        "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-[0_8px_20px_rgba(126,195,255,0.18)]",
         completed
           ? "bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white border border-white/50"
-          : "bg-white/72 text-[hsl(var(--navy))] border border-[rgba(64,114,163,0.16)] backdrop-blur-md"
+          : "bg-white/80 text-[hsl(var(--navy))] border border-[rgba(64,114,163,0.2)] backdrop-blur-md"
       )}
     >
       <AnimatePresence mode="popLayout">
@@ -31,7 +31,7 @@ const SectionHeader = ({
             exit={{ scale: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
           >
-            <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+            <Check className="w-4 h-4" strokeWidth={2.5} />
           </motion.span>
         ) : (
           <motion.span

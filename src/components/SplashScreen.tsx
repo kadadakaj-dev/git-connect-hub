@@ -9,8 +9,8 @@ interface SplashScreenProps {
 const LETTERS = 'FYZIO&FIT'.split('');
 const LETTER_STAGGER = 0.08;
 const GLOW_START = LETTERS.length * LETTER_STAGGER;     // ~0.72 s
-const FADE_START = 2.4;                                 // begin exit fade
-const TOTAL_DURATION = 3000;                            // ms – fires onComplete
+const FADE_START = 1.8;                                 // begin exit fade
+const TOTAL_DURATION = 2400;                            // ms – fires onComplete
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   const prefersReduced = useMemo(

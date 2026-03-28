@@ -2,7 +2,7 @@
 
 exports[`Snapshot Tests > should match GlassBackground snapshot 1`] = `"<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-100 md:opacity-100"><div class="glass-blob max-md:!opacity-[0.15]" style="width: 760px; height: 760px; top: -240px; left: -170px; --blob-dur: 24s;"></div><div class="glass-blob max-md:!opacity-[0.12]" style="width: 660px; height: 660px; bottom: -250px; right: -120px; --blob-dur: 18s; animation-delay: -8s;"></div><div class="glass-blob max-md:!opacity-[0.1]" style="width: 430px; height: 430px; top: 36%; left: 54%; --blob-dur: 27s; animation-delay: -13s;"></div><div class="absolute inset-0"></div></div>"`;
 
-exports[`Snapshot Tests > should match GlassCard snapshot 1`] = `"<div class="surface-card p-3 sm:p-4 md:p-5 relative test-class"><div class="relative z-[2]">Test Content</div></div>"`;
+exports[`Snapshot Tests > should match GlassCard snapshot 1`] = `"<div class="surface-card p-4 sm:p-5 md:p-6 relative test-class"><div class="relative z-[2]">Test Content</div></div>"`;
 
 exports[`Snapshot Tests > should match LanguageSwitcher snapshot 1`] = `"<div class="inline-flex items-center rounded-lg sm:rounded-xl glass-card p-1 sm:p-1.5 gap-0.5 sm:gap-1"><button class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 bg-navy text-navy-foreground shadow-sm">SK</button><button class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 text-muted-foreground hover:text-foreground hover:bg-muted/50">EN</button></div>"`;
 

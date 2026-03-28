@@ -32,7 +32,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
   }
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2.5">
       {services.map((service) => {
         const isSelected = selectedService?.id === service.id;
         const isExpress = service.id === EXPRESS_SERVICE_ID;
@@ -54,7 +54,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
               {/* Baby blue gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-r from-sky-400/[0.08] to-blue-400/[0.05] pointer-events-none rounded-[inherit]" />
 
-              <div className="relative z-[2] p-4">
+              <div className="relative z-[2] p-5">
                 {/* Top row: badge + price */}
                 <div className="flex items-start justify-between mb-2.5">
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-sky-400/15 text-sky-600 dark:text-sky-400 border border-sky-400/20">
@@ -96,7 +96,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
             key={service.id}
             onClick={() => onSelect(service)}
             className={cn(
-              "w-full flex items-start gap-3 px-3 py-2.5 rounded-xl text-left",
+              "w-full flex items-start gap-3 px-4 py-3 rounded-xl text-left",
               "transition-all duration-300 ease-liquid",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               "border backdrop-blur-sm",

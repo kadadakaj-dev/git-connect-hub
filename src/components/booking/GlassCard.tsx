@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 
 const GlassCard = ({ children, className }: { children: React.ReactNode; className?: string }) => (
   <div className={cn(
-    "surface-card p-3 sm:p-4 md:p-5 relative",
+    "surface-card p-4 sm:p-5 md:p-6 relative",
     className
   )}>
     <div className="relative z-[2]">{children}</div>

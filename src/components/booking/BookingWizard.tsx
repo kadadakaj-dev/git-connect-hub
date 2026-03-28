@@ -144,7 +144,7 @@ const BookingWizard = () => {
       <div className="min-h-app-screen relative flex flex-col">
         <GlassBackground />
         <BookingHeader />
-        <div className="container max-w-2xl mx-auto px-4 py-3 sm:py-6 flex-1 relative z-10">
+        <div className="container max-w-2xl mx-auto px-4 py-4 sm:py-6 flex-1 relative z-10">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <GlassCard>
               <Confirmation bookingData={bookingData} onNewBooking={handleNewBooking} bookingId={bookingId} />
@@ -161,11 +161,11 @@ const BookingWizard = () => {
       <GlassBackground />
       <BookingHeader />
 
-      <div className="container max-w-2xl mx-auto px-4 py-3 sm:py-5 flex-1 relative z-10">
+      <div className="container max-w-2xl mx-auto px-4 py-4 sm:py-6 flex-1 relative z-10">
         {/* Step 1: Service */}
-        <section className="mb-3 sm:mb-4">
+        <section className="mb-4 sm:mb-6">
           <SectionHeader number={1} title={language === 'sk' ? 'Vyberte službu' : 'Select service'} completed={hasService} />
-          <div className="mt-2">
+          <div className="mt-3">
             <GlassCard>
               <ServiceSelection selectedService={bookingData.service} onSelect={handleServiceSelect} />
             </GlassCard>
@@ -178,13 +178,13 @@ const BookingWizard = () => {
           animate={{ opacity: hasService ? 1 : 0.3 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{ opacity: 0.3 }}
-          className={cn("mb-3 sm:mb-4 scroll-mt-20 sm:scroll-mt-28", !hasService && "pointer-events-none")}
+          className={cn("mb-4 sm:mb-6 scroll-mt-20 sm:scroll-mt-28", !hasService && "pointer-events-none")}
         >
-          <div className="flex items-center gap-6 mb-2">
+          <div className="flex items-center gap-6 mb-3">
             <SectionHeader number={2} title={language === 'sk' ? 'Vyberte dátum' : 'Select date'} completed={!!bookingData.date} />
             <SectionHeader number={3} title={language === 'sk' ? 'Vyberte čas' : 'Select time'} completed={!!bookingData.time} />
           </div>
-          <div className="mt-2">
+          <div className="mt-3">
             <GlassCard>
               <DateTimeSelection
                 selectedDate={bookingData.date}
@@ -203,10 +203,10 @@ const BookingWizard = () => {
           animate={{ opacity: hasDateTime ? 1 : 0.3 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{ opacity: 0.3 }}
-          className={cn("mb-3 sm:mb-4 scroll-mt-20 sm:scroll-mt-24", !hasDateTime && "pointer-events-none")}
+          className={cn("mb-4 sm:mb-6 scroll-mt-20 sm:scroll-mt-24", !hasDateTime && "pointer-events-none")}
         >
           <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
-          <div className="mt-2">
+          <div className="mt-3">
             <GlassCard>
               <ClientDetailsForm bookingData={bookingData} errors={errors} onUpdate={updateBookingData} />
             </GlassCard>

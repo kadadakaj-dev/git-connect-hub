@@ -200,7 +200,7 @@ const DateTimeSelection = ({
             disabled={!slot.available}
             title={!slot.available && slot.bookedCount > 0 ? (language === 'sk' ? 'Obsadené' : 'Booked') : undefined}
             className={cn(
-              "py-2 sm:py-1.5 rounded-lg text-xs font-medium font-data transition-all duration-300 ease-liquid backdrop-blur-sm",
+              "py-2.5 sm:py-2 rounded-lg text-xs font-medium font-data transition-all duration-300 ease-liquid backdrop-blur-sm",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               getSlotUnavailableClass(slot),
               getSlotAvailableClass(slot, isSlotSelected, isInSelectedRange, isHovered),
@@ -217,8 +217,8 @@ const DateTimeSelection = ({
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
       {/* Calendar */}
       <div>
-        <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-          <h4 className="text-xs font-semibold text-foreground capitalize">
+        <div className="flex items-center justify-between mb-2 sm:mb-2.5">
+          <h4 className="text-sm font-semibold text-foreground capitalize">
             {format(currentMonth, 'LLLL yyyy', { locale })}
           </h4>
           <div className="flex gap-0.5">
@@ -271,7 +271,7 @@ const DateTimeSelection = ({
                 onClick={() => !isDisabled && onDateSelect(day)}
                 disabled={isDisabled}
                 className={cn(
-                  "h-9 sm:aspect-square sm:h-auto rounded text-xs font-medium transition-all duration-150 relative flex items-center justify-center",
+                  "h-10 sm:aspect-square sm:h-auto rounded-lg text-xs font-medium transition-all duration-150 relative flex items-center justify-center",
                   "focus:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                   isSelected && "bg-primary text-primary-foreground font-bold",
                   !isSelected && !isDisabled && "hover:bg-accent text-foreground",
