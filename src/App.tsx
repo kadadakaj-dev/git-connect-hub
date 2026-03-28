@@ -40,6 +40,24 @@ const App = () => {
   const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem('fyzio_splash_shown');
   });
+  const [deferredComponents, setDeferredComponents] = useState({
+    pwUpdatePrompt: false,
+    pushOptIn: false,
+  });
+
+  // Defer non-critical component initialization to idle time
+  useState(() => {
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(() => {
+        setDeferredComponents(prev => ({ ...prev, pwUpdatePrompt: true, pushOptIn: true }));
+      }, { timeout: 3000 });
+    } else {
+      // Fallback for browsers that don't support requestIdleCallback
+      setTimeout(() => {
+        setDeferredComponents(prev => ({ ...prev, pwUpdatePrompt: true, pushOptIn: true }));
+      }, 2000);
+    }
+  }, []);
 
   const handleSplashComplete = useCallback(() => {
     setShowSplash(false);
@@ -75,8 +93,8 @@ const App = () => {
                       </Routes>
                     </Suspense>
                     <CookieBanner />
-                    <PWAUpdatePrompt />
-                    <PushOptIn />
+                    {deferredComponents.pwUpdatePrompt && <PWAUpdatePrompt />}
+                    {deferredComponents.pushOptIn && <PushOptIn />}
                   </BrowserRouter>
                 </div>
               </TooltipProvider>
