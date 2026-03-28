@@ -119,11 +119,10 @@ const AdminLogin = () => {
               return (
                 <li
                   key={i}
-                  className={`relative rounded-2xl transition-all duration-200 ${
-                    item.active
-                      ? 'bg-primary/10 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)]'
-                      : 'hover:bg-black/5 hover:shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]'
-                  }`}
+                  className={`relative rounded-2xl transition-all duration-200 ${item.active
+                    ? 'bg-primary/10 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)]'
+                    : 'hover:bg-black/5 hover:shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]'
+                    }`}
                 >
                   {item.active && (
                     <span className="absolute -left-6 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-sm" />
@@ -171,9 +170,13 @@ const AdminLogin = () => {
           >
             {/* Header */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 backdrop-blur-xl border border-primary/20 mb-4 lg:mx-0 mx-auto">
-                <Shield className="w-8 h-8 text-primary" />
-              </div>
+              <img
+                src="/maskable-icon-512x512.png"
+                alt="App Icon"
+                width={412}
+                height={512}
+                className="mb-4 lg:mx-0 mx-auto rounded-2xl"
+              />
               <h1 className="text-3xl lg:text-4xl font-heading font-semibold text-foreground tracking-tight mb-2">
                 {text.title}
               </h1>

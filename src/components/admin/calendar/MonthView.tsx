@@ -35,13 +35,36 @@ const MonthView = ({
   onDropOnDay,
   onDayClick,
 }: MonthViewProps) => {
-  const weekdays = language === 'sk' ? FULL_WEEKDAYS_SK : FULL_WEEKDAYS_EN;
-  const monthDays = getMonthDays(currentDate);
+  // Only show Monday to Friday
+  const weekdays = (language === 'sk' ? FULL_WEEKDAYS_SK : FULL_WEEKDAYS_EN).slice(0, 5);
+  // Generate 55 consecutive workdays (Mon-Fri), starting from the first visible workday of the current month
+  function getFirstWorkday(date: Date) {
+    const d = new Date(date.getFullYear(), date.getMonth(), 1);
+    while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1); // skip Sun/Sat
+    return d;
+  }
+  function getNextWorkday(date: Date) {
+    const d = new Date(date);
+    d.setDate(d.getDate() + 1);
+    while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
+    return d;
+  }
+  function getStaticWorkdays(startDate: Date, count: number) {
+    const days = [];
+    let d = new Date(startDate);
+    for (let i = 0; i < count; i++) {
+      days.push(new Date(d));
+      d = getNextWorkday(d);
+    }
+    return days;
+  }
+  const firstWorkday = getFirstWorkday(currentDate);
+  const workdays = getStaticWorkdays(firstWorkday, 55);
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      {/* Weekday header */}
-      <div className="grid grid-cols-7 border-b border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.48)_0%,rgba(234,246,255,0.24)_100%)]">
+      {/* Weekday header: 5 columns (Mon-Fri) */}
+      <div className="grid grid-cols-5 border-b border-[var(--glass-border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.48)_0%,rgba(234,246,255,0.24)_100%)]">
         {weekdays.map((day, i) => (
           <div key={day} className="border-r border-[var(--glass-border-subtle)] py-2 sm:py-3 text-center text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground">
             <span className="hidden sm:inline">{day}</span>
@@ -50,9 +73,12 @@ const MonthView = ({
         ))}
       </div>
 
-      {/* Day grid */}
-      <div className="flex-1 grid grid-cols-7 auto-rows-fr overflow-y-auto bg-[rgba(255,255,255,0.18)]">
-        {monthDays.map((date, i) => {
+      {/* Static 55 workdays grid: 5 columns (Mon-Fri), 11 rows */}
+      <div
+        className="flex-1 grid grid-cols-5 auto-rows-fr overflow-y-auto bg-[rgba(255,255,255,0.18)]"
+        style={{ maxWidth: 393, margin: '0 auto' }} // iPhone 17 Pro width
+      >
+        {workdays.map((date, i) => {
           const dateStr = formatDateForInput(date);
           let dayEvents = events.filter(e => e.date === dateStr);
           if (selectedTherapist !== 'all') dayEvents = dayEvents.filter(e => e.therapistId === selectedTherapist);
