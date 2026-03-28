@@ -44,7 +44,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
               href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
               className={cn(
                 "block rounded-2xl relative overflow-hidden",
-                "backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass",
+                "backdrop-blur-md bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass",
                 "before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1]",
                 "hover:-translate-y-1 hover:shadow-glass-float",
                 "transition-all duration-300 ease-liquid",
@@ -78,7 +78,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                 {/* CTA button */}
                 <div className={cn(
                   "flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl",
-                  "backdrop-blur-xl bg-[var(--glass-white-md)] border border-sky-400/20",
+                  "backdrop-blur-md bg-[var(--glass-white-md)] border border-sky-400/20",
                   "group-hover:bg-sky-400/10 group-hover:border-sky-400/30",
                   "transition-all duration-300"
                 )}>

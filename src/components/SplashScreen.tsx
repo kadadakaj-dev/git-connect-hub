@@ -34,7 +34,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   if (prefersReduced) {
     return (
       <div
-        className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-b from-[#BFE2FF] to-[#EAF6FF]"
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-b from-[#BFE2FF] to-[#EAF6FF] safe-top safe-bottom"
         role="status"
         aria-label="Loading FYZIO&FIT"
       >
@@ -47,7 +47,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-b from-[#BFE2FF] to-[#EAF6FF]"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-b from-[#BFE2FF] to-[#EAF6FF] safe-top safe-bottom"
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
       role="status"

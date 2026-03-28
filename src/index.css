@@ -7,6 +7,14 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* iOS safe area insets — Dynamic Island + home indicator */
+@layer utilities {
+  .safe-top    { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .pt-safe     { padding-top: max(0.75rem, env(safe-area-inset-top)); }
+  .pb-safe     { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+}
+
 @layer base {
   :root {
     --font-sans:

@@ -210,7 +210,7 @@ const ClientPortal = () => {
       <div className="min-h-app-screen relative">
         <GlassBackground />
 
-        <header className="sticky top-0 z-50 px-3 pt-3">
+        <header className="sticky top-0 z-50 px-3 pt-safe">
           <div className="surface-toolbar max-w-6xl mx-auto flex flex-col gap-3 border border-[var(--glass-border-subtle)] px-4 py-3 shadow-glass-soft sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-3.5">
             <div className="flex min-w-0 items-center gap-4">
               <button onClick={() => setIsAvatarDialogOpen(true)} className="relative group shrink-0">
@@ -242,7 +242,7 @@ const ClientPortal = () => {
                   variant="glass"
                   size="sm"
                   onClick={() => navigate('/admin?tab=calendar')}
-                  className="gap-1.5 h-9 px-3 rounded-xl text-xs font-semibold"
+                  className="gap-1.5 h-10 px-3 rounded-xl text-xs font-semibold"
                   title={language === 'sk' ? 'Admin panel' : 'Admin panel'}
                 >
                   <LayoutDashboard className="h-3.5 w-3.5" />
