@@ -1,3 +1,4 @@
+import React from 'react';
 import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfToday } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useTimeSlots } from '@/hooks/useTimeSlots';
+import { useBlockedDates } from '@/hooks/useBlockedDates';
 import { useState, useMemo } from 'react';
 import TimeSlotSkeleton from './TimeSlotSkeleton';
 import { TimeSlot } from '@/types/booking';
@@ -115,6 +117,7 @@ const DateTimeSelection = ({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate, serviceDuration);
+  const { data: blockedDays = [] } = useBlockedDates(currentMonth);
 
   const requiredSlots = Math.ceil(serviceDuration / 30);
 
@@ -174,6 +177,11 @@ const DateTimeSelection = ({
 
   const isDateDisabled = (date: Date) => {
     if (date.getDay() === 0) return true; // Sunday
+    
+    // Check if specifically blocked via admin
+    const dateStr = format(date, 'yyyy-MM-dd');
+    if (blockedDays.some(bd => bd.date === dateStr)) return true;
+
     // Disable if the entire day is before the 36h cutoff
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
@@ -221,18 +229,27 @@ const DateTimeSelection = ({
           <h4 className="text-xs font-semibold text-foreground capitalize">
             {format(currentMonth, 'LLLL yyyy', { locale })}
           </h4>
-          <div className="flex gap-0.5">
+          <div className="flex gap-1">
             <Button
               variant="outline"
               size="icon"
               onClick={goToPreviousMonth}
               disabled={isSameMonth(currentMonth, today)}
-              className="h-6 w-6 rounded"
+              className="h-9 w-9 rounded-lg"
+              aria-label="Previous month"
+              title="Previous month"
             >
-              <ChevronLeft className="w-3 h-3" />
+              <ChevronLeft className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="icon" onClick={goToNextMonth} className="h-6 w-6 rounded">
-              <ChevronRight className="w-3 h-3" />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={goToNextMonth}
+              className="h-9 w-9 rounded-lg"
+              aria-label="Next month"
+              title="Next month"
+            >
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>

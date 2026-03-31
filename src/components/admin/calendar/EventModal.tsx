@@ -42,6 +42,7 @@ export interface EventFormData {
   clientEmail?: string;
   clientPhone?: string;
   serviceId?: string;
+  blockScope?: 'day' | 'week' | 'month';
 }
 
 interface EventModalProps {
@@ -97,6 +98,10 @@ const EventModal = ({
     delete: language === 'sk' ? 'Zmazať' : 'Delete',
     cancel: language === 'sk' ? 'Zrušiť' : 'Cancel',
     save: language === 'sk' ? 'Uložiť' : 'Save',
+    blockScope: language === 'sk' ? 'Rozsah blokácie' : 'Block scope',
+    scopeDay: language === 'sk' ? 'Deň' : 'Day',
+    scopeWeek: language === 'sk' ? 'Týždeň' : 'Week',
+    scopeMonth: language === 'sk' ? 'Mesiac' : 'Month',
   };
 
   const handleServiceChange = (serviceId: string) => {
@@ -125,22 +130,24 @@ const EventModal = ({
 
         {/* Scrollable form area */}
         <div className="flex-1 overflow-y-auto overscroll-contain space-y-3 sm:space-y-4 px-0.5 -mx-0.5">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            <div>
-              <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.therapist}</label>
-              <select
-                value={formData.therapistId}
-                onChange={(e) => onChange({ therapistId: e.target.value })}
-                className="w-full rounded-[14px] sm:rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2 sm:p-2.5 text-sm font-medium text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
-              >
-                {!formData.therapistId && (
-                  <option value="" disabled>{language === 'sk' ? 'Vyberte' : 'Select'}</option>
-                )}
-                {employees.map(emp => (
-                  <option key={emp.id} value={emp.id}>{emp.full_name}</option>
-                ))}
-              </select>
-            </div>
+          <div className={`grid ${formData.type === 'block' ? 'grid-cols-1' : 'grid-cols-2'} gap-2 sm:gap-3`}>
+            {formData.type !== 'block' && (
+              <div>
+                <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.therapist}</label>
+                <select
+                  value={formData.therapistId}
+                  onChange={(e) => onChange({ therapistId: e.target.value })}
+                  className="w-full rounded-[14px] sm:rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2 sm:p-2.5 text-sm font-medium text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
+                >
+                  {!formData.therapistId && (
+                    <option value="" disabled>{language === 'sk' ? 'Vyberte' : 'Select'}</option>
+                  )}
+                  {employees.map(emp => (
+                    <option key={emp.id} value={emp.id}>{emp.full_name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div>
               <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.type}</label>
               <select
@@ -212,7 +219,7 @@ const EventModal = ({
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          <div className={`grid ${formData.type === 'block' ? 'grid-cols-1' : 'grid-cols-3'} gap-2 sm:gap-3`}>
             <div>
               <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.date}</label>
               <Input
@@ -222,33 +229,63 @@ const EventModal = ({
                 className="h-9 sm:h-10 text-xs sm:text-sm"
               />
             </div>
-            <div>
-              <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.time}</label>
-              <Input
-                type="time"
-                value={formData.startTime}
-                onChange={(e) => onChange({ startTime: e.target.value })}
-                className="h-9 sm:h-10 text-xs sm:text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.duration}</label>
-              <select
-                value={formData.duration}
-                onChange={(e) => onChange({ duration: Number(e.target.value) })}
-                className="w-full rounded-[14px] sm:rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2 sm:p-2.5 text-xs sm:text-sm text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
-              >
-                <option value="15">15m</option>
-                <option value="30">30m</option>
-                <option value="45">45m</option>
-                <option value="60">60m</option>
-                <option value="90">90m</option>
-                <option value="120">120m</option>
-              </select>
-            </div>
+            {formData.type !== 'block' && (
+              <>
+                <div>
+                  <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.time}</label>
+                  <Input
+                    type="time"
+                    value={formData.startTime}
+                    onChange={(e) => onChange({ startTime: e.target.value })}
+                    className="h-9 sm:h-10 text-xs sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.duration}</label>
+                  <select
+                    value={formData.duration}
+                    onChange={(e) => onChange({ duration: Number(e.target.value) })}
+                    className="w-full rounded-[14px] sm:rounded-[16px] border border-[var(--glass-border-subtle)] bg-white/72 p-2 sm:p-2.5 text-xs sm:text-sm text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.08)] focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="15">15m</option>
+                    <option value="30">30m</option>
+                    <option value="45">45m</option>
+                    <option value="60">60m</option>
+                    <option value="90">90m</option>
+                    <option value="120">120m</option>
+                  </select>
+                </div>
+              </>
+            )}
           </div>
 
-          {mode === 'create' && (
+          {formData.type === 'block' && mode === 'create' && (
+            <div>
+              <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.blockScope}</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['day', 'week', 'month'] as const).map((scope) => {
+                  const label = scope === 'day' ? t.scopeDay : scope === 'week' ? t.scopeWeek : t.scopeMonth;
+                  const active = (formData.blockScope || 'day') === scope;
+                  return (
+                    <button
+                      key={scope}
+                      type="button"
+                      onClick={() => onChange({ blockScope: scope })}
+                      className={`rounded-[14px] sm:rounded-[16px] border py-2 text-xs font-semibold transition-all ${
+                        active
+                          ? 'border-primary/40 bg-primary/10 text-primary shadow-[0_4px_12px_rgba(79,149,213,0.15)]'
+                          : 'border-[var(--glass-border-subtle)] bg-white/70 text-[hsl(var(--soft-navy))] hover:bg-white/82'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {formData.type === 'booking' && mode === 'create' && (
             <div className="flex items-center gap-3 sm:gap-4 bg-white/62 p-2.5 sm:p-3 rounded-[16px] sm:rounded-[18px] border border-[var(--glass-border-subtle)] shadow-[0_10px_24px_rgba(126,195,255,0.08)]">
               <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[hsl(var(--soft-navy))] cursor-pointer">
                 <input
@@ -274,15 +311,17 @@ const EventModal = ({
             </div>
           )}
 
-          <div>
-            <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.note}</label>
-            <Textarea
-              value={formData.notes}
-              onChange={(e) => onChange({ notes: e.target.value })}
-              rows={2}
-              placeholder={t.notePlaceholder}
-            />
-          </div>
+          {formData.type !== 'block' && (
+            <div>
+              <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.note}</label>
+              <Textarea
+                value={formData.notes}
+                onChange={(e) => onChange({ notes: e.target.value })}
+                rows={2}
+                placeholder={t.notePlaceholder}
+              />
+            </div>
+          )}
         </div>
 
         <DialogFooter className="flex items-center justify-between sm:justify-between gap-2 flex-shrink-0 pt-2 sm:pt-3 border-t border-[var(--glass-border-subtle)]">

@@ -107,6 +107,9 @@ const CancelBooking = () => {
         if (data.error === 'Booking is already cancelled') {
           setBooking(data.booking);
           setStatus('already_cancelled');
+        } else if (data.error === 'TOO_LATE_TO_CANCEL' || data.error === 'Cannot cancel booking less than 10 hours before appointment') {
+          setError('TOO_LATE_TO_CANCEL');
+          setStatus('error');
         } else {
           setError(data.error || text.notFound);
           setStatus('error');
@@ -134,7 +137,7 @@ const CancelBooking = () => {
       if (!data.success) {
         if (data.error === 'Booking is already cancelled') {
           setStatus('already_cancelled');
-        } else if (data.error === 'TOO_LATE_TO_CANCEL') {
+        } else if (data.error === 'TOO_LATE_TO_CANCEL' || data.error === 'Cannot cancel booking less than 10 hours before appointment') {
           setBooking(data.booking);
           setError('TOO_LATE_TO_CANCEL');
           setStatus('error');

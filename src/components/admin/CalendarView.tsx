@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { addDays, addWeeks, subWeeks, format } from 'date-fns';
+import { addDays, addWeeks, subWeeks, format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { CalendarEvent, Employee, ViewMode, SLOT_HEIGHT, timeToMinutes } from './calendar/types';
 import { formatDateForInput, getWeekStart, hasOverlap, getCurrentTimePosition } from './calendar/utils';
 import CalendarHeader from './calendar/CalendarHeader';
@@ -20,6 +20,26 @@ import { useTouchDrag } from '@/hooks/useTouchDrag';
 type BookingWithService = Tables<'bookings'> & {
   service: Pick<Tables<'services'>, 'id' | 'name_sk' | 'name_en' | 'duration' | 'category' | 'price'> | null;
 };
+
+function getBlockDates(dateStr: string, scope: 'day' | 'week' | 'month'): string[] {
+  const date = new Date(dateStr);
+  if (scope === 'day') return [dateStr];
+
+  let start: Date, end: Date;
+  if (scope === 'week') {
+    const day = date.getDay(); // 0=Sun
+    const diff = day === 0 ? -6 : 1 - day; // shift to Monday
+    start = addDays(date, diff);
+    end = addDays(start, 6);
+  } else {
+    start = startOfMonth(date);
+    end = endOfMonth(date);
+  }
+
+  return eachDayOfInterval({ start, end })
+    .filter(d => d.getDay() !== 0) // skip Sundays
+    .map(d => format(d, 'yyyy-MM-dd'));
+}
 
 const CalendarView = () => {
   const { language } = useLanguage();
@@ -43,7 +63,7 @@ const CalendarView = () => {
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [formData, setFormData] = useState<EventFormData>({
     id: '', date: '', startTime: '09:00', duration: 60, title: '',
-    type: 'booking', notes: '', therapistId: '', isRecurring: false, recurringWeeks: 4,
+    type: 'booking', notes: '', therapistId: '', isRecurring: false, recurringWeeks: 4, blockScope: 'day',
   });
 
   // Booking detail dialog state
@@ -152,7 +172,7 @@ const CalendarView = () => {
     if (servicesRes.data) setServices(servicesRes.data as ServiceOption[]);
 
     if (bookingsRes.data) {
-      const empMap = new Map((employeesRes.data || []).map((e: any) => [e.id, e.full_name]));
+      const empMap = new Map((employeesRes.data || []).map((e: { id: string; full_name: string }) => [e.id, e.full_name]));
       const mapped: CalendarEvent[] = (bookingsRes.data as BookingWithService[]).map(b => ({
         id: b.id,
         date: b.date,
@@ -364,7 +384,18 @@ const CalendarView = () => {
       toast.success(language === 'sk' ? 'Aktualizované' : 'Updated');
     } else {
       if (formData.type === 'block') {
-        toast.success(language === 'sk' ? 'Čas zablokovaný' : 'Time blocked');
+        const dates = getBlockDates(formData.date, formData.blockScope || 'day');
+        const rows = dates.map(d => ({ date: d, reason: formData.title || null }));
+        const { error } = await supabase.from('blocked_dates').insert(rows);
+        if (error) {
+          toast.error(language === 'sk' ? 'Nepodarilo sa zablokovať' : 'Failed to block');
+          return;
+        }
+        toast.success(
+          dates.length === 1
+            ? (language === 'sk' ? 'Deň zablokovaný' : 'Day blocked')
+            : (language === 'sk' ? `Zablokovaných ${dates.length} dní` : `${dates.length} days blocked`)
+        );
       } else {
         if (!formData.clientEmail?.trim()) {
           toast.error(language === 'sk' ? 'Zadajte email klienta.' : 'Enter client email.');
@@ -423,6 +454,17 @@ const CalendarView = () => {
 
     toast.success(language === 'sk' ? 'Rezervácia zrušená' : 'Booking cancelled');
     setModalOpen(false);
+    fetchData();
+  };
+
+  const handleUnblock = async (date: string) => {
+    if (!window.confirm(language === 'sk' ? 'Naozaj chcete odblokovať tento deň?' : 'Do you really want to unblock this day?')) return;
+    const { error } = await supabase.from('blocked_dates').delete().eq('date', date);
+    if (error) {
+      toast.error(language === 'sk' ? 'Nepodarilo sa odblokovať deň' : 'Failed to unblock day');
+      return;
+    }
+    toast.success(language === 'sk' ? 'Deň bol odblokovaný' : 'Day unblocked');
     fetchData();
   };
 
@@ -523,7 +565,11 @@ const CalendarView = () => {
     const dy = Math.abs(e.changedTouches[0].clientY - touchRef.current.startY);
     // Only trigger on clearly horizontal swipes (dx > 80, dy must be < 40% of dx)
     if (Math.abs(dx) > 80 && dy < Math.abs(dx) * 0.4) {
-      dx > 0 ? handlePrev() : handleNext();
+      if (dx > 0) {
+        handlePrev();
+      } else {
+        handleNext();
+      }
     }
   };
 
@@ -600,6 +646,7 @@ const CalendarView = () => {
                     onDragStart={handleDragStart}
                     onDropOnDay={handleDropOnMonthDay}
                     onDayClick={handleDayClick}
+                    onUnblockDay={handleUnblock}
                   />
                 </motion.div>
               ) : viewMode === 'list' ? (
@@ -650,6 +697,7 @@ const CalendarView = () => {
                     onTouchDragMove={touchDrag.handleTouchMove}
                     onTouchDragEnd={touchDrag.handleTouchEnd}
                     dayColumnsRef={dayColumnsRef}
+                    onUnblockDay={handleUnblock}
                   />
                 </motion.div>
               )}

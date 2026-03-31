@@ -94,23 +94,20 @@ serve(async (req) => {
       )
     }
 
-    // Check if booking is within 12 hours
-    const [hours, minutes] = booking.time_slot.split(':').map(Number)
+    // Check if within 10 hours of appointment (or past)
+    const [slotHours, slotMinutes] = booking.time_slot.split(':').map(Number)
     const bookingDateTime = new Date(booking.date)
-    bookingDateTime.setHours(hours, minutes, 0, 0)
+    bookingDateTime.setHours(slotHours, slotMinutes, 0, 0)
+
     const now = new Date()
     const hoursUntilBooking = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
 
-    if (hoursUntilBooking < 0) {
-      return new Response(
-        JSON.stringify({ error: 'Cannot cancel past bookings' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
     if (hoursUntilBooking < 10) {
       return new Response(
-        JSON.stringify({ error: 'TOO_LATE_TO_CANCEL', message: 'Menej ako 10 hodín pred termínom je zrušenie možné len telefonicky: +421 905 307 198, pričom bude účtovaný storno poplatok 10 €.' }),
+        JSON.stringify({ 
+          error: 'TOO_LATE_TO_CANCEL', 
+          message: 'Menej ako 10 hodín pred termínom je zrušenie možné len telefonicky: +421 905 307 198, pričom bude účtovaný storno poplatok 10 €.' 
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }

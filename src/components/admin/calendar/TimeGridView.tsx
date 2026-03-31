@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { CalendarEvent, SLOT_HEIGHT, TIME_SLOTS } from './types';
 import {
   formatDateForInput,
@@ -35,6 +35,7 @@ interface TimeGridViewProps {
   onTouchDragMove?: (e: React.TouchEvent) => void;
   onTouchDragEnd?: (e: React.TouchEvent) => void;
   dayColumnsRef?: React.RefObject<HTMLDivElement | null>;
+  onUnblockDay?: (date: string) => void;
 }
 
 const TimeGridView = ({
@@ -56,6 +57,7 @@ const TimeGridView = ({
   onTouchDragMove,
   onTouchDragEnd,
   dayColumnsRef,
+  onUnblockDay,
 }: TimeGridViewProps) => {
   const [, setTick] = useState(0);
   const weekdays = language === 'sk' ? WEEKDAYS_SK : WEEKDAYS_EN;
@@ -165,7 +167,14 @@ const TimeGridView = ({
                 onDrop={(e) => onDropOnGrid(e, date)}
               >
                 {isBlocked && (
-                  <div className="absolute inset-x-0 top-0 z-20 truncate border-b border-[rgba(220,38,38,0.16)] bg-[rgba(255,247,247,0.9)] px-1 sm:px-2 py-1 sm:py-1.5 text-[9px] sm:text-[10px] md:text-xs text-destructive font-semibold backdrop-blur-md">
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUnblockDay?.(dateStr);
+                    }}
+                    className="absolute inset-x-0 top-0 z-20 truncate border-b border-[rgba(220,38,38,0.16)] bg-[rgba(255,247,247,0.95)] px-1 sm:px-2 py-1 sm:py-1.5 text-[9px] sm:text-[10px] md:text-xs text-destructive font-semibold backdrop-blur-md cursor-pointer hover:bg-[rgba(255,230,230,0.95)] transition-colors"
+                    title={language === 'sk' ? 'Kliknite pre odblokovanie' : 'Click to unblock'}
+                  >
                     🚫 {blockedInfo.reason || (language === 'sk' ? 'Zablokované' : 'Blocked')}
                   </div>
                 )}

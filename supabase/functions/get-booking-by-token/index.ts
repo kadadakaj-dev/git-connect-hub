@@ -101,14 +101,17 @@ serve(async (req) => {
       )
     }
 
-    // Check if booking date is in the past
-    const bookingDate = new Date(booking.date)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    // Check if within 10 hours of appointment (or past)
+    const [slotHours, slotMinutes] = booking.time_slot.split(':').map(Number)
+    const bookingDateTime = new Date(booking.date)
+    bookingDateTime.setHours(slotHours, slotMinutes, 0, 0)
 
-    if (bookingDate < today) {
+    const now = new Date()
+    const tenHoursBefore = new Date(bookingDateTime.getTime() - 10 * 60 * 60 * 1000)
+
+    if (now >= tenHoursBefore) {
       return new Response(
-        JSON.stringify({ success: false, error: 'Cannot cancel past bookings' }),
+        JSON.stringify({ success: false, error: 'TOO_LATE_TO_CANCEL' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
