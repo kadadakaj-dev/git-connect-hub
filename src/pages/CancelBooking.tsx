@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import PageMeta from '@/components/seo/PageMeta';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle2, XCircle, Loader2, Calendar, Clock, User, AlertTriangle } from 'lucide-react';
@@ -87,16 +87,7 @@ const CancelBooking = () => {
 
   const text = translations[language];
 
-  useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setError(text.invalidToken);
-      return;
-    }
-    verifyBooking();
-  }, [token, text.invalidToken]);
-
-  const verifyBooking = async () => {
+  const verifyBooking = useCallback(async () => {
     try {
       const response = await supabase.functions.invoke('get-booking-by-token', {
         body: { token },
@@ -123,7 +114,16 @@ const CancelBooking = () => {
       setError(text.notFound);
       setStatus('error');
     }
-  };
+  }, [token, text.notFound]);
+
+  useEffect(() => {
+    if (!token) {
+      setStatus('error');
+      setError(text.invalidToken);
+      return;
+    }
+    verifyBooking();
+  }, [token, text.invalidToken, verifyBooking]);
 
   const handleCancel = async () => {
     if (!token) return;

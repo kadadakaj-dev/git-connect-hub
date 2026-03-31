@@ -1,4 +1,5 @@
-// @ts-nocheck — Deno Edge Function, not processed by local TS
+/* eslint-disable */
+// @ts-nocheck - Deno Edge Function, not processed by local TS
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
