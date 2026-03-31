@@ -88,6 +88,36 @@ describe('useCreateBooking', () => {
     expect(result.current.error?.message).toBe('Server error');
   });
 
+  it('should extract a clean message from 429 edge function responses', async () => {
+    mockInvoke.mockResolvedValue({
+      data: null,
+      error: {
+        message: 'Edge Function returned a non-2xx status code',
+        context: new Response(
+          JSON.stringify({ error: 'Too many requests, please try again later' }),
+          {
+            status: 429,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        ),
+      },
+    });
+
+    const { result } = renderHook(() => useCreateBooking(), { wrapper: createWrapper() });
+
+    result.current.mutate({
+      serviceId: 'svc-1',
+      date: new Date('2026-03-15'),
+      timeSlot: '10:00',
+      clientName: 'Test',
+      clientEmail: 'test@test.com',
+      clientPhone: '+421900000000',
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe('Too many requests, please try again later');
+  });
+
   it('should handle business logic error from response', async () => {
     mockInvoke.mockResolvedValue({
       data: { success: false, error: 'Time slot already booked' },

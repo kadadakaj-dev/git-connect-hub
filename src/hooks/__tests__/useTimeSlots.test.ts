@@ -108,4 +108,34 @@ describe('useTimeSlots', () => {
       { time: '09:00', available: false, bookedCount: 1, totalCapacity: 1 },
     ]);
   });
+
+  it('should carry occupied state to the starting slot for multi-slot services', async () => {
+    const date = new Date('2026-12-07T12:00:00');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'blocked_dates') return mockChain({ data: null, error: null });
+      if (table === 'time_slots_config') {
+        return mockChain({
+          data: [{ day_of_week: 1, start_time: '09:00', end_time: '10:00', is_active: true }],
+          error: null,
+        });
+      }
+      if (table === 'bookings') {
+        return mockChain({
+          data: [{ time_slot: '09:30', booking_duration: 30 }],
+          error: null,
+        });
+      }
+      if (table === 'employees_public') return mockChain({ data: [{ id: 'emp-1' }], error: null });
+      return mockChain({ data: [], error: null });
+    });
+
+    const { result } = renderHook(() => useTimeSlots(date, 60), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual([
+      { time: '09:00', available: false, bookedCount: 1, totalCapacity: 1 },
+      { time: '09:30', available: false, bookedCount: 1, totalCapacity: 1 },
+    ]);
+  });
 });

@@ -25,6 +25,46 @@ interface BookingResponse {
   queued?: boolean;
 }
 
+type FunctionInvokeError = {
+  message?: string;
+  context?: Response;
+};
+
+async function extractMessageFromResponse(response: Response): Promise<string | null> {
+  try {
+    const payload: unknown = await response.clone().json();
+    if (payload && typeof payload === 'object') {
+      if ('error' in payload && typeof (payload as Record<string, unknown>).error === 'string') {
+        return (payload as Record<string, unknown>).error as string;
+      }
+      if ('message' in payload && typeof (payload as Record<string, unknown>).message === 'string') {
+        return (payload as Record<string, unknown>).message as string;
+      }
+    }
+  } catch {
+    // Response body not JSON — fall through
+  }
+
+  if (response.status === 429) {
+    return 'Too many requests, please try again later';
+  }
+
+  return null;
+}
+
+async function getFunctionErrorMessage(error: FunctionInvokeError | null | undefined): Promise<string> {
+  if (!error) {
+    return 'Failed to create booking';
+  }
+
+  if (error.context instanceof Response) {
+    const extracted = await extractMessageFromResponse(error.context);
+    if (extracted) return extracted;
+  }
+
+  return error.message || 'Failed to create booking';
+}
+
 export function useCreateBooking() {
   return useMutation({
     mutationFn: async (data: BookingData): Promise<BookingResponse> => {
@@ -50,22 +90,7 @@ export function useCreateBooking() {
             queued: true,
           };
         }
-        // Try to extract the real error message from the response body
-        let errorMessage = response.error.message || 'Failed to create booking';
-        try {
-          const context = (response.error as any).context;
-          if (context && typeof context.json === 'function') {
-            const body = await context.json();
-            if (body?.error) {
-              errorMessage = (Array.isArray(body.details) && body.details.length > 0)
-                ? body.details.join(', ')
-                : body.error;
-            }
-          }
-        } catch {
-          // Ignore body-parsing errors — fall back to the generic message
-        }
-        throw new Error(errorMessage);
+        throw new Error(await getFunctionErrorMessage(response.error));
       }
 
       const result = response.data as BookingResponse;

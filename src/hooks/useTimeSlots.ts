@@ -53,6 +53,8 @@ function generateSlotsFromConfig(
       }
     }
 
+    let maxOccupiedCount = occupiedCount;
+
     // For multi-slot services, check if all consecutive slots are available
     let canBook = occupiedCount < totalCapacity;
     if (canBook && requiredSlots > 1) {
@@ -76,6 +78,7 @@ function generateSlotsFromConfig(
             nextOccupied++;
           }
         }
+        maxOccupiedCount = Math.max(maxOccupiedCount, nextOccupied);
         if (nextOccupied >= totalCapacity) {
           canBook = false;
           break;
@@ -86,7 +89,7 @@ function generateSlotsFromConfig(
     slots.push({
       time: timeString,
       available: canBook,
-      bookedCount: occupiedCount,
+      bookedCount: maxOccupiedCount,
       totalCapacity,
     });
 
@@ -151,12 +154,9 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
           .eq('day_of_week', dayOfWeek)
           .eq('is_active', true),
         supabase
-          .from('bookings')
-          .select('time_slot, booking_duration')
-          .eq('date', dateString)
-          .neq('status', 'cancelled'),
+          .rpc('get_booking_slot_counts', { _date: dateString }),
         supabase
-          .from('employees_public' as any)
+          .from('employees_public')
           .select('id'),
       ]);
 

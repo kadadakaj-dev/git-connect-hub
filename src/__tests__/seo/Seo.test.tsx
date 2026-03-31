@@ -54,10 +54,10 @@ describe('SEO - PageMeta', () => {
 
     it('should construct correct canonical URL', () => {
         // The component constructs URL as BASE_URL + path
-        const BASE_URL = 'https://booking.chiropraxiakosice.eu';
+        const BASE_URL = 'https://booking.fyzioafit.sk';
         const path = '/legal?tab=terms';
         const expectedUrl = `${BASE_URL}${path}`;
-        expect(expectedUrl).toBe('https://booking.chiropraxiakosice.eu/legal?tab=terms');
+        expect(expectedUrl).toBe('https://booking.fyzioafit.sk/legal?tab=terms');
     });
 
     it('should select SK title when language is sk', () => {

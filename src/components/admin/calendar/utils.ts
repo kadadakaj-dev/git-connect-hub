@@ -16,12 +16,12 @@ export const isToday = (date: Date): boolean => {
     date.getFullYear() === today.getFullYear();
 };
 
-export const getCurrentTimePosition = (): number | null => {
+export const getCurrentTimePosition = (zoom = 1): number | null => {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
   if (hours < 6 || hours >= 22) return null;
-  return ((hours - 6) + (minutes / 60)) * (SLOT_HEIGHT * 2);
+  return ((hours - 6) + (minutes / 60)) * (SLOT_HEIGHT * 2 * zoom);
 };
 
 export const getMonthDays = (date: Date): Date[] => {
@@ -57,7 +57,8 @@ export const hasOverlap = (
 export const getDayEventsWithPositions = (
   events: CalendarEvent[],
   dateStr: string,
-  selectedTherapist: string
+  selectedTherapist: string,
+  zoom = 1
 ): PositionedEvent[] => {
   let dayEvents = events.filter(e => e.date === dateStr);
   if (selectedTherapist !== 'all') {
@@ -81,7 +82,10 @@ export const getDayEventsWithPositions = (
     if (!added) clusters.push({ end, events: [{ ...event, startMins: start, endMins: end, colIdx: 0 }] });
   });
 
+  const hourHeight = SLOT_HEIGHT * 2 * zoom;
+  const minEventHeight = Math.max(SLOT_HEIGHT * 1.5, SLOT_HEIGHT * 1.5 * zoom);
   const positionedEvents: PositionedEvent[] = [];
+
   clusters.forEach(cluster => {
     const columns: number[] = [];
     cluster.events.forEach(event => {
@@ -90,12 +94,15 @@ export const getDayEventsWithPositions = (
       columns[colIdx] = event.endMins;
       event.colIdx = colIdx;
     });
+
     const maxCols = columns.length;
     cluster.events.forEach(event => {
-      const top = ((event.startMins / 60) - 6) * (SLOT_HEIGHT * 2);
-      const height = (Number(event.duration) / 60) * (SLOT_HEIGHT * 2);
+      const top = ((event.startMins / 60) - 6) * hourHeight;
+      const rawHeight = (Number(event.duration) / 60) * hourHeight;
+      const height = Math.max(rawHeight, minEventHeight);
       const widthPercent = 100 / maxCols;
       const leftPercent = event.colIdx * widthPercent;
+
       positionedEvents.push({
         ...event,
         style: {
@@ -107,6 +114,7 @@ export const getDayEventsWithPositions = (
       });
     });
   });
+
   return positionedEvents;
 };
 

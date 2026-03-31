@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { format } from 'date-fns';
 import { sk } from 'date-fns/locale';
 import {
   Calendar, Clock, Mail, MessageSquareText, Phone, User,
   UserRoundCheck, Timer, Tag, Banknote, Pencil, Save, X, Trash2,
+  GripHorizontal,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -70,6 +71,12 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
     time_slot: '', status: 'pending', notes: '', employee_id: '', booking_duration: 30,
   });
 
+  // Swipe-to-dismiss state
+  const [swipeY, setSwipeY] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const swipeRef = useRef({ startY: 0, startTime: 0 });
+  const contentRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (booking) {
       setForm({
@@ -84,8 +91,40 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
         booking_duration: booking.booking_duration || booking.services?.duration || 30,
       });
       setIsEditing(false);
+      setSwipeY(0);
     }
   }, [booking]);
+
+  // Reset swipe when dialog opens
+  useEffect(() => {
+    if (open) setSwipeY(0);
+  }, [open]);
+
+  const handleSwipeStart = useCallback((clientY: number) => {
+    // Only allow swipe from top of scrolled content
+    const el = contentRef.current;
+    if (el && el.scrollTop > 5) return;
+    swipeRef.current = { startY: clientY, startTime: Date.now() };
+    setIsSwiping(true);
+  }, []);
+
+  const handleSwipeMove = useCallback((clientY: number) => {
+    if (!isSwiping) return;
+    const dy = clientY - swipeRef.current.startY;
+    if (dy > 0) {
+      setSwipeY(dy);
+    }
+  }, [isSwiping]);
+
+  const handleSwipeEnd = useCallback(() => {
+    if (!isSwiping) return;
+    setIsSwiping(false);
+    const velocity = swipeY / (Date.now() - swipeRef.current.startTime) * 1000;
+    if (swipeY > 120 || velocity > 500) {
+      onOpenChange(false);
+    }
+    setSwipeY(0);
+  }, [isSwiping, swipeY, onOpenChange]);
 
   const handleSave = async () => {
     if (!booking) return;
@@ -146,75 +185,124 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
     : (isSlovak ? 'Bez služby' : 'No service');
   const employeeName = booking?.employees?.full_name || (isSlovak ? 'Nepriradený' : 'Unassigned');
 
-  const inputCls = "rounded-[14px] border-[var(--glass-border-subtle)] bg-white/80 text-sm text-[hsl(var(--soft-navy))] focus:ring-2 focus:ring-primary/20";
+  const inputCls = "rounded-[14px] border-[var(--glass-border-subtle)] bg-white/80 text-sm text-[hsl(var(--soft-navy))] focus:ring-2 focus:ring-primary/20 h-9 sm:h-10";
+
+  const resetForm = () => {
+    if (booking) {
+      setForm({
+        client_name: booking.client_name,
+        client_email: booking.client_email,
+        client_phone: booking.client_phone || '',
+        date: booking.date,
+        time_slot: booking.time_slot,
+        status: booking.status,
+        notes: booking.notes || '',
+        employee_id: booking.employee_id || '',
+        booking_duration: booking.booking_duration || booking.services?.duration || 30,
+      });
+    }
+    setIsEditing(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) setIsEditing(false); onOpenChange(o); }}>
-      <DialogContent className="sm:max-w-lg rounded-[28px] border-[var(--glass-border)] bg-[var(--glass-white-lg)] shadow-glass-float max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] border-[var(--glass-border)] bg-[var(--glass-white-lg)] shadow-glass-float max-h-[92svh] flex flex-col overflow-hidden p-0"
+        style={{
+          transform: swipeY > 0 ? `translateY(${swipeY}px)` : undefined,
+          opacity: swipeY > 0 ? Math.max(0.5, 1 - swipeY / 300) : undefined,
+          transition: isSwiping ? 'none' : 'transform 0.3s ease, opacity 0.3s ease',
+        }}
+      >
         {booking && (
           <>
-            <DialogHeader>
-              <div className="flex items-start justify-between gap-3 pr-8">
-                <div>
-                  <DialogTitle className="text-[hsl(var(--soft-navy))]">
-                    {isEditing
-                      ? (isSlovak ? 'Úprava rezervácie' : 'Edit booking')
-                      : (isSlovak ? 'Detail rezervácie' : 'Booking details')}
-                  </DialogTitle>
-                  <DialogDescription className="mt-1">{serviceName}</DialogDescription>
-                </div>
-                {!isEditing
-                  ? getStatusBadge(booking.status)
-                  : (
-                    <select
-                      value={form.status}
-                      onChange={(e) => setForm(f => ({ ...f, status: e.target.value }))}
-                      className={`text-xs rounded-full px-3 py-1 border ${inputCls}`}
-                    >
-                      <option value="pending">{isSlovak ? 'Čakajúce' : 'Pending'}</option>
-                      <option value="confirmed">{isSlovak ? 'Potvrdené' : 'Confirmed'}</option>
-                      <option value="cancelled">{isSlovak ? 'Zrušené' : 'Cancelled'}</option>
-                    </select>
-                  )}
-              </div>
-            </DialogHeader>
+            {/* Swipe handle — mobile */}
+            <div
+              className="flex-shrink-0 flex items-center justify-center pt-3 pb-1 sm:hidden cursor-grab active:cursor-grabbing touch-manipulation"
+              onTouchStart={(e) => handleSwipeStart(e.touches[0].clientY)}
+              onTouchMove={(e) => handleSwipeMove(e.touches[0].clientY)}
+              onTouchEnd={handleSwipeEnd}
+            >
+              <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+            </div>
 
-            <div className="space-y-4 text-sm">
-              <div className="grid gap-3 sm:grid-cols-2">
+            {/* Header */}
+            <div className="flex-shrink-0 px-4 sm:px-6 pt-2 sm:pt-6 pb-2 sm:pb-3">
+              <DialogHeader>
+                <div className="flex items-start justify-between gap-2 sm:gap-3 pr-8">
+                  <div className="min-w-0">
+                    <DialogTitle className="text-[hsl(var(--soft-navy))] text-base sm:text-lg">
+                      {isEditing
+                        ? (isSlovak ? 'Úprava rezervácie' : 'Edit booking')
+                        : (isSlovak ? 'Detail rezervácie' : 'Booking details')}
+                    </DialogTitle>
+                    <DialogDescription className="mt-0.5 sm:mt-1 text-xs sm:text-sm truncate">{serviceName}</DialogDescription>
+                  </div>
+                  {!isEditing
+                    ? getStatusBadge(booking.status)
+                    : (
+                      <select
+                        value={form.status}
+                        onChange={(e) => setForm(f => ({ ...f, status: e.target.value }))}
+                        className={`text-xs rounded-full px-2 sm:px-3 py-1 border ${inputCls} h-auto`}
+                      >
+                        <option value="pending">{isSlovak ? 'Čakajúce' : 'Pending'}</option>
+                        <option value="confirmed">{isSlovak ? 'Potvrdené' : 'Confirmed'}</option>
+                        <option value="cancelled">{isSlovak ? 'Zrušené' : 'Cancelled'}</option>
+                      </select>
+                    )}
+                </div>
+              </DialogHeader>
+            </div>
+
+            {/* Scrollable content */}
+            <div
+              ref={contentRef}
+              className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4 text-sm"
+              onTouchStart={(e) => {
+                if (contentRef.current && contentRef.current.scrollTop <= 0) {
+                  handleSwipeStart(e.touches[0].clientY);
+                }
+              }}
+              onTouchMove={(e) => handleSwipeMove(e.touches[0].clientY)}
+              onTouchEnd={handleSwipeEnd}
+            >
+              {/* Client + Appointment — stacked on mobile, side-by-side on desktop */}
+              <div className="grid gap-2 sm:gap-3 sm:grid-cols-2">
                 {/* Client */}
-                <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
-                  <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                <div className="rounded-[16px] sm:rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-3 sm:p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
+                  <p className="mb-2 sm:mb-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                     {isSlovak ? 'Klient' : 'Client'}
                   </p>
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     {isEditing ? (
                       <>
                         <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground shrink-0" />
                           <Input value={form.client_name} onChange={e => setForm(f => ({ ...f, client_name: e.target.value }))} className={inputCls} placeholder={isSlovak ? 'Meno' : 'Name'} />
                         </div>
                         <div className="flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground shrink-0" />
                           <Input type="email" value={form.client_email} onChange={e => setForm(f => ({ ...f, client_email: e.target.value }))} className={inputCls} />
                         </div>
                         <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground shrink-0" />
                           <Input value={form.client_phone} onChange={e => setForm(f => ({ ...f, client_phone: e.target.value }))} className={inputCls} placeholder="+421..." />
                         </div>
                       </>
                     ) : (
                       <>
                         <div className="flex items-center gap-2 text-[hsl(var(--soft-navy))]">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">{booking.client_name}</span>
+                          <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
+                          <span className="font-medium text-xs sm:text-sm">{booking.client_name}</span>
                         </div>
                         <div className="flex items-center gap-2 break-all text-muted-foreground">
-                          <Mail className="h-4 w-4 shrink-0" />
-                          <span>{booking.client_email}</span>
+                          <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                          <span className="text-xs sm:text-sm truncate">{booking.client_email}</span>
                         </div>
                         <div className="flex items-center gap-2 text-muted-foreground">
-                          <Phone className="h-4 w-4 shrink-0" />
-                          <span>{booking.client_phone || (isSlovak ? 'Nezadané' : 'Not provided')}</span>
+                          <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                          <span className="text-xs sm:text-sm">{booking.client_phone || (isSlovak ? 'Nezadané' : 'Not provided')}</span>
                         </div>
                       </>
                     )}
@@ -222,73 +310,79 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
                 </div>
 
                 {/* Appointment */}
-                <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
-                  <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                <div className="rounded-[16px] sm:rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-3 sm:p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
+                  <p className="mb-2 sm:mb-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                     {isSlovak ? 'Termín' : 'Appointment'}
                   </p>
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     {isEditing ? (
                       <>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <Input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} className={inputCls} />
+                        {/* Date + Time in one row on mobile */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            <Input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} className={`${inputCls} text-xs`} />
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            <Input type="time" value={form.time_slot} onChange={e => setForm(f => ({ ...f, time_slot: e.target.value }))} className={`${inputCls} text-xs`} />
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <Input type="time" value={form.time_slot} onChange={e => setForm(f => ({ ...f, time_slot: e.target.value }))} className={inputCls} />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Timer className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <select
-                            value={form.booking_duration}
-                            onChange={e => setForm(f => ({ ...f, booking_duration: Number(e.target.value) }))}
-                            className={`w-full p-2 ${inputCls}`}
-                          >
-                            <option value="15">15 min</option>
-                            <option value="30">30 min</option>
-                            <option value="45">45 min</option>
-                            <option value="60">60 min</option>
-                            <option value="90">90 min</option>
-                            <option value="120">120 min</option>
-                          </select>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <UserRoundCheck className="h-4 w-4 text-muted-foreground shrink-0" />
-                          {employees && employees.length > 0 ? (
+                        {/* Duration + Employee in one row */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <Timer className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                             <select
-                              value={form.employee_id}
-                              onChange={e => setForm(f => ({ ...f, employee_id: e.target.value }))}
-                              className={`w-full p-2 ${inputCls}`}
+                              value={form.booking_duration}
+                              onChange={e => setForm(f => ({ ...f, booking_duration: Number(e.target.value) }))}
+                              className={`w-full p-1.5 sm:p-2 text-xs ${inputCls} h-auto`}
                             >
-                              <option value="">{isSlovak ? 'Nepriradený' : 'Unassigned'}</option>
-                              {employees.map(emp => (
-                                <option key={emp.id} value={emp.id}>{emp.full_name}</option>
-                              ))}
+                              <option value="15">15m</option>
+                              <option value="30">30m</option>
+                              <option value="45">45m</option>
+                              <option value="60">60m</option>
+                              <option value="90">90m</option>
+                              <option value="120">120m</option>
                             </select>
-                          ) : (
-                            <Input value={employeeName} disabled className={inputCls} />
-                          )}
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <UserRoundCheck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            {employees && employees.length > 0 ? (
+                              <select
+                                value={form.employee_id}
+                                onChange={e => setForm(f => ({ ...f, employee_id: e.target.value }))}
+                                className={`w-full p-1.5 sm:p-2 text-xs ${inputCls} h-auto`}
+                              >
+                                <option value="">{isSlovak ? 'Žiadny' : 'None'}</option>
+                                {employees.map(emp => (
+                                  <option key={emp.id} value={emp.id}>{emp.full_name}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <Input value={employeeName} disabled className={`${inputCls} text-xs`} />
+                            )}
+                          </div>
                         </div>
                       </>
                     ) : (
                       <>
                         <div className="flex items-center gap-2 text-[hsl(var(--soft-navy))]">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">
+                          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
+                          <span className="font-medium text-xs sm:text-sm">
                             {format(new Date(booking.date), 'd. MMMM yyyy', { locale: isSlovak ? sk : undefined })}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-muted-foreground">
-                          <Clock className="h-4 w-4 shrink-0" />
-                          <span>{booking.time_slot}</span>
+                          <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                          <span className="text-xs sm:text-sm">{booking.time_slot}</span>
                         </div>
                         <div className="flex items-center gap-2 text-muted-foreground">
-                          <Timer className="h-4 w-4 shrink-0" />
-                          <span>{booking.booking_duration || booking.services?.duration || '—'} min</span>
+                          <Timer className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                          <span className="text-xs sm:text-sm">{booking.booking_duration || booking.services?.duration || '—'} min</span>
                         </div>
                         <div className="flex items-center gap-2 text-muted-foreground">
-                          <UserRoundCheck className="h-4 w-4 shrink-0" />
-                          <span>{employeeName}</span>
+                          <UserRoundCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                          <span className="text-xs sm:text-sm">{employeeName}</span>
                         </div>
                       </>
                     )}
@@ -296,22 +390,22 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
                 </div>
               </div>
 
-              {/* Service details — read-only always */}
+              {/* Service details */}
               {!isEditing && booking.services && (booking.services.category || booking.services.price != null) && (
-                <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
-                  <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                <div className="rounded-[16px] sm:rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-3 sm:p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
+                  <p className="mb-1.5 sm:mb-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                     {isSlovak ? 'Služba' : 'Service'}
                   </p>
-                  <div className="flex flex-wrap gap-4 text-sm">
+                  <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm">
                     {booking.services.category && (
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Tag className="h-4 w-4 shrink-0" />
+                      <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground">
+                        <Tag className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                         <span className="capitalize">{booking.services.category}</span>
                       </div>
                     )}
                     {booking.services.price != null && (
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Banknote className="h-4 w-4 shrink-0" />
+                      <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground">
+                        <Banknote className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                         <span>{booking.services.price} €</span>
                       </div>
                     )}
@@ -320,9 +414,9 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
               )}
 
               {/* Notes */}
-              <div className="rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
-                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                  {isSlovak ? 'Poznámka klienta' : 'Client note'}
+              <div className="rounded-[16px] sm:rounded-[20px] border border-[var(--glass-border-subtle)] bg-white/72 p-3 sm:p-4 shadow-[0_12px_24px_rgba(126,195,255,0.08)]">
+                <p className="mb-1.5 sm:mb-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                  {isSlovak ? 'Poznámka' : 'Note'}
                 </p>
                 {isEditing ? (
                   <Textarea
@@ -330,19 +424,21 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
                     onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
                     rows={2}
                     placeholder={isSlovak ? 'Voliteľné poznámky...' : 'Optional notes...'}
-                    className={inputCls}
+                    className={`${inputCls} h-auto`}
                   />
                 ) : (
                   <div className="flex items-start gap-2">
-                    <MessageSquareText className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                    <p className="text-[hsl(var(--soft-navy))]">
+                    <MessageSquareText className="mt-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-muted-foreground" />
+                    <p className="text-[hsl(var(--soft-navy))] text-xs sm:text-sm">
                       {booking.notes?.trim() || (isSlovak ? 'Bez poznámky' : 'No note provided')}
                     </p>
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Footer */}
+            {/* Footer — sticky at bottom */}
+            <div className="flex-shrink-0 border-t border-[var(--glass-border-subtle)] px-4 sm:px-6 py-2.5 sm:py-3 bg-[var(--glass-white-md)]">
               <div className="flex items-center justify-between gap-2">
                 {isEditing ? (
                   <>
@@ -350,60 +446,45 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
                       variant="ghost"
                       size="sm"
                       onClick={handleCancel}
-                      className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="gap-1 sm:gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 text-xs sm:text-sm px-2 sm:px-3"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      {isSlovak ? 'Zrušiť rez.' : 'Cancel booking'}
+                      <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      {isSlovak ? 'Zrušiť' : 'Cancel'}
                     </Button>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5 sm:gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                          setIsEditing(false);
-                          if (booking) {
-                            setForm({
-                              client_name: booking.client_name,
-                              client_email: booking.client_email,
-                              client_phone: booking.client_phone || '',
-                              date: booking.date,
-                              time_slot: booking.time_slot,
-                              status: booking.status,
-                              notes: booking.notes || '',
-                              employee_id: booking.employee_id || '',
-                              booking_duration: booking.booking_duration || booking.services?.duration || 30,
-                            });
-                          }
-                        }}
-                        className="gap-1.5 rounded-[16px] border-[var(--glass-border-subtle)] bg-white/70 text-[hsl(var(--soft-navy))]"
+                        onClick={resetForm}
+                        className="gap-1 sm:gap-1.5 rounded-[14px] sm:rounded-[16px] border-[var(--glass-border-subtle)] bg-white/70 text-[hsl(var(--soft-navy))] text-xs sm:text-sm px-2.5 sm:px-3"
                       >
-                        <X className="h-3.5 w-3.5" />
-                        {isSlovak ? 'Zrušiť' : 'Cancel'}
+                        <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                        {isSlovak ? 'Späť' : 'Back'}
                       </Button>
                       <Button
                         size="sm"
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="gap-1.5 rounded-[16px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_30px_rgba(79,149,213,0.22)] hover:brightness-[1.03]"
+                        className="gap-1 sm:gap-1.5 rounded-[14px] sm:rounded-[16px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_30px_rgba(79,149,213,0.22)] hover:brightness-[1.03] text-xs sm:text-sm px-2.5 sm:px-3"
                       >
-                        <Save className="h-3.5 w-3.5" />
+                        <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         {isSaving ? '...' : (isSlovak ? 'Uložiť' : 'Save')}
                       </Button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                       {isSlovak ? 'Vytvorené' : 'Created'}:{' '}
-                      {booking.created_at && format(new Date(booking.created_at), 'd. MMMM yyyy • HH:mm', { locale: isSlovak ? sk : undefined })}
+                      {booking.created_at && format(new Date(booking.created_at), 'd. MMM yyyy • HH:mm', { locale: isSlovak ? sk : undefined })}
                     </p>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setIsEditing(true)}
-                      className="gap-1.5 rounded-[16px] border-[var(--glass-border-subtle)] bg-white/70 text-[hsl(var(--soft-navy))] hover:bg-white/82 hover:text-[hsl(var(--navy))]"
+                      className="gap-1 sm:gap-1.5 rounded-[14px] sm:rounded-[16px] border-[var(--glass-border-subtle)] bg-white/70 text-[hsl(var(--soft-navy))] hover:bg-white/82 text-xs sm:text-sm px-2.5 sm:px-3"
                     >
-                      <Pencil className="h-3.5 w-3.5" />
+                      <Pencil className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       {isSlovak ? 'Upraviť' : 'Edit'}
                     </Button>
                   </>

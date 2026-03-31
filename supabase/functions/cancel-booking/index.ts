@@ -1,10 +1,11 @@
-// @ts-nocheck — Deno Edge Function, not processed by local TS
+/* eslint-disable */
+// @ts-nocheck - Deno Edge Function, not processed by local TS
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
 interface CancelRequest {
@@ -23,8 +24,16 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
@@ -86,23 +95,20 @@ serve(async (req) => {
       )
     }
 
-    // Check if booking is within 12 hours
-    const [hours, minutes] = booking.time_slot.split(':').map(Number)
+    // Check if within 10 hours of appointment (or past)
+    const [slotHours, slotMinutes] = booking.time_slot.split(':').map(Number)
     const bookingDateTime = new Date(booking.date)
-    bookingDateTime.setHours(hours, minutes, 0, 0)
+    bookingDateTime.setHours(slotHours, slotMinutes, 0, 0)
+
     const now = new Date()
     const hoursUntilBooking = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
 
-    if (hoursUntilBooking < 0) {
+    if (hoursUntilBooking < 10) {
       return new Response(
-        JSON.stringify({ error: 'Cannot cancel past bookings' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    if (hoursUntilBooking < 12) {
-      return new Response(
-        JSON.stringify({ error: 'TOO_LATE_TO_CANCEL', message: 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.' }),
+        JSON.stringify({ 
+          error: 'TOO_LATE_TO_CANCEL', 
+          message: 'Menej ako 10 hodín pred termínom je zrušenie možné len telefonicky: +421 905 307 198, pričom bude účtovaný storno poplatok 10 €.' 
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -154,6 +160,26 @@ serve(async (req) => {
         },
       }),
     }).catch(err => console.error('Error sending cancellation admin email:', err))
+
+    // Send cancellation confirmation to client (fire-and-forget)
+    fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+      },
+      body: JSON.stringify({
+        to: booking.client_email,
+        clientName: booking.client_name,
+        serviceName: service?.name_sk || 'Služba',
+        serviceNameEn: service?.name_en || 'Service',
+        date: booking.date,
+        time: booking.time_slot,
+        cancellationToken: '',
+        language: 'sk',
+        template: 'cancellation-client',
+      }),
+    }).catch(err => console.error('Error sending cancellation client email:', err))
 
     // Send push notification about cancellation (fire-and-forget)
     if (booking.client_user_id) {

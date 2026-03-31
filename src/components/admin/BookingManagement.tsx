@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import BookingDetailsDialog, { type AdminBookingDetails } from '@/components/admin/BookingDetailsDialog';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -67,23 +66,19 @@ const BookingManagement = () => {
 
   const deleteAllMutation = useMutation({
     mutationFn: async () => {
-      // First delete related booking_reminders and therapist_notes
-      const { data: allBookings } = await supabase.from('bookings').select('id');
-      if (allBookings && allBookings.length > 0) {
-        const ids = allBookings.map(b => b.id);
-        await supabase.from('booking_reminders').delete().in('booking_id', ids);
-        await supabase.from('therapist_notes').delete().in('booking_id', ids);
-      }
-      const { error } = await supabase.from('bookings').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      const { error } = await supabase
+        .from('bookings')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000');
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-bookings'] });
-      queryClient.invalidateQueries({ queryKey: ['timeSlots'] });
       toast.success(language === 'sk' ? 'Všetky rezervácie boli vymazané' : 'All bookings deleted');
     },
     onError: () => {
-      toast.error(language === 'sk' ? 'Chyba pri mazaní' : 'Error deleting bookings');
+      toast.error(language === 'sk' ? 'Chyba pri mazaní rezervácií' : 'Error deleting bookings');
     }
   });
 
@@ -144,48 +139,34 @@ const BookingManagement = () => {
 
   return (
     <Card className="rounded-[24px] border-[var(--glass-border-subtle)] bg-white/60">
-      <CardHeader className="p-3 sm:p-6 flex flex-row items-start justify-between">
-        <div>
-          <CardTitle className="text-base sm:text-2xl">
-            {language === 'sk' ? 'Všetky rezervácie' : 'All Bookings'}
-          </CardTitle>
-          <CardDescription>
-            {language === 'sk'
-              ? `Celkom ${bookings?.length || 0} rezervácií`
-              : `Total ${bookings?.length || 0} bookings`}
-          </CardDescription>
-        </div>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive" size="sm" className="shrink-0">
-              <Trash2 className="w-4 h-4 mr-1" />
-              {language === 'sk' ? 'Vymazať všetky' : 'Delete all'}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {language === 'sk' ? 'Vymazať všetky rezervácie?' : 'Delete all bookings?'}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {language === 'sk'
-                  ? 'Táto akcia je nevratná. Všetky rezervácie budú trvalo vymazané z databázy.'
-                  : 'This action cannot be undone. All bookings will be permanently deleted.'}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>{language === 'sk' ? 'Zrušiť' : 'Cancel'}</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deleteAllMutation.mutate()}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                {deleteAllMutation.isPending
-                  ? (language === 'sk' ? 'Mazanie...' : 'Deleting...')
-                  : (language === 'sk' ? 'Áno, vymazať všetky' : 'Yes, delete all')}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+      <CardHeader className="p-3 sm:p-6">
+        <CardTitle className="text-base sm:text-2xl">
+          {language === 'sk' ? 'Všetky rezervácie' : 'All Bookings'}
+        </CardTitle>
+        <CardDescription>
+          {language === 'sk'
+            ? `Celkom ${bookings?.length || 0} rezervácií`
+            : `Total ${bookings?.length || 0} bookings`}
+        </CardDescription>
+        {bookings && bookings.length > 0 && (
+          <Button
+            variant="destructive"
+            size="sm"
+            className="mt-2 w-fit"
+            disabled={deleteAllMutation.isPending}
+            onClick={() => {
+              const msg = language === 'sk'
+                ? 'Naozaj chcete vymazať VŠETKY rezervácie? Táto akcia je nevratná!'
+                : 'Are you sure you want to delete ALL bookings? This action cannot be undone!';
+              if (window.confirm(msg)) {
+                deleteAllMutation.mutate();
+              }
+            }}
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            {language === 'sk' ? 'Vymazať všetky rezervácie' : 'Delete all bookings'}
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="p-3 sm:p-6 pt-0 space-y-3 sm:space-y-4">
         {/* Filters */}

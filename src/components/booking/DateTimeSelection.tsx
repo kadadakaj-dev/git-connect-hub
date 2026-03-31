@@ -1,12 +1,16 @@
-import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isBefore, startOfToday } from 'date-fns';
+import React from 'react';
+import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfToday } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useTimeSlots } from '@/hooks/useTimeSlots';
-import { useState, useMemo, useCallback } from 'react';
+import { useBlockedDates } from '@/hooks/useBlockedDates';
+import { useState, useMemo } from 'react';
 import TimeSlotSkeleton from './TimeSlotSkeleton';
+import { TimeSlot } from '@/types/booking';
+import { getSlotUnavailableClass } from './slotStyles';
 
 interface DateTimeSelectionProps {
   selectedDate: Date | null;
@@ -14,6 +18,92 @@ interface DateTimeSelectionProps {
   onDateSelect: (date: Date) => void;
   onTimeSelect: (time: string) => void;
   serviceDuration?: number;
+}
+
+function getSlotAvailableClass(
+  slot: TimeSlot,
+  isSlotSelected: boolean,
+  isInSelectedRange: boolean,
+  isHovered: boolean,
+): string {
+  if (!slot.available) return '';
+  if (isSlotSelected) return 'bg-primary text-primary-foreground shadow-[0_0_12px_rgba(59,130,246,0.3)]';
+  if (isInSelectedRange) return 'bg-primary/20 text-primary ring-1 ring-primary/30';
+  if (isHovered) return 'bg-primary/15 text-primary -translate-y-0.5';
+  return 'text-foreground bg-[var(--glass-white)] border border-[var(--glass-border-subtle)] hover:bg-[var(--glass-white-md)] hover:border-[var(--glass-border)] hover:-translate-y-0.5';
+}
+
+function TimeSlotsContent({
+  selectedDate,
+  isLoadingSlots,
+  allSlots,
+  morningSlots,
+  afternoonSlots,
+  noSlotsMessage,
+  selectDateMessage,
+  language,
+  requiredSlots,
+  serviceDuration,
+  renderSlotGrid,
+}: Readonly<{
+  selectedDate: Date | null;
+  isLoadingSlots: boolean;
+  allSlots: TimeSlot[];
+  morningSlots: TimeSlot[];
+  afternoonSlots: TimeSlot[];
+  noSlotsMessage: string;
+  selectDateMessage: string;
+  language: string;
+  requiredSlots: number;
+  serviceDuration: number;
+  renderSlotGrid: (slots: TimeSlot[]) => React.ReactNode;
+}>) {
+  if (!selectedDate) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center px-4 min-h-[160px]">
+        <Clock className="w-6 h-6 text-muted-foreground/20 mb-2" />
+        <p className="text-xs text-muted-foreground">{selectDateMessage}</p>
+      </div>
+    );
+  }
+
+  if (isLoadingSlots) return <TimeSlotSkeleton />;
+
+  if (allSlots.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center px-4 min-h-[160px]">
+        <p className="text-xs text-muted-foreground">{noSlotsMessage}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {morningSlots.length > 0 && (
+        <div>
+          <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">
+            {language === 'sk' ? 'Dopoludnia' : 'Morning'}
+          </p>
+          {renderSlotGrid(morningSlots)}
+        </div>
+      )}
+      {afternoonSlots.length > 0 && (
+        <div>
+          <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">
+            {language === 'sk' ? 'Popoludní' : 'Afternoon'}
+          </p>
+          {renderSlotGrid(afternoonSlots)}
+        </div>
+      )}
+      {requiredSlots > 1 && (
+        <p className="text-[10px] text-muted-foreground text-center">
+          {language === 'sk'
+            ? `Služba zaberie ${requiredSlots} po sebe idúcich slotov (${serviceDuration} min)`
+            : `Service occupies ${requiredSlots} consecutive slots (${serviceDuration} min)`}
+        </p>
+      )}
+    </div>
+  );
 }
 
 const DateTimeSelection = ({
@@ -27,6 +117,7 @@ const DateTimeSelection = ({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate, serviceDuration);
+  const { data: blockedDays = [] } = useBlockedDates(currentMonth);
 
   const requiredSlots = Math.ceil(serviceDuration / 30);
 
@@ -86,6 +177,11 @@ const DateTimeSelection = ({
 
   const isDateDisabled = (date: Date) => {
     if (date.getDay() === 0) return true; // Sunday
+    
+    // Check if specifically blocked via admin
+    const dateStr = format(date, 'yyyy-MM-dd');
+    if (blockedDays.some(bd => bd.date === dateStr)) return true;
+
     // Disable if the entire day is before the 36h cutoff
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
@@ -94,9 +190,8 @@ const DateTimeSelection = ({
   };
 
   const allSlots = timeSlots;
-  const availableSlots = allSlots.filter((slot) => slot.available);
-  const morningSlots = allSlots.filter((slot) => parseInt(slot.time.split(':')[0]) < 12);
-  const afternoonSlots = allSlots.filter((slot) => parseInt(slot.time.split(':')[0]) >= 12);
+  const morningSlots = allSlots.filter((slot) => Number.parseInt(slot.time.split(':')[0]) < 12);
+  const afternoonSlots = allSlots.filter((slot) => Number.parseInt(slot.time.split(':')[0]) >= 12);
 
   const renderSlotGrid = (slots: typeof allSlots) => (
     <div className="grid grid-cols-4 gap-1">
@@ -111,19 +206,12 @@ const DateTimeSelection = ({
             onMouseEnter={() => slot.available && setHoveredSlot(slot.time)}
             onMouseLeave={() => setHoveredSlot(null)}
             disabled={!slot.available}
+            title={!slot.available && slot.bookedCount > 0 ? (language === 'sk' ? 'Obsadené' : 'Booked') : undefined}
             className={cn(
               "py-2 sm:py-1.5 rounded-lg text-xs font-medium font-data transition-all duration-300 ease-liquid backdrop-blur-sm",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              !slot.available && "opacity-60 cursor-not-allowed bg-destructive/15 text-destructive line-through border border-destructive/20",
-              isSlotSelected
-                ? "bg-primary text-primary-foreground shadow-[0_0_12px_rgba(59,130,246,0.3)]"
-                : isInSelectedRange
-                  ? "bg-primary/20 text-primary ring-1 ring-primary/30"
-                  : isHovered
-                    ? "bg-primary/15 text-primary -translate-y-0.5"
-                    : slot.available
-                      ? "text-foreground bg-[var(--glass-white)] border border-[var(--glass-border-subtle)] hover:bg-[var(--glass-white-md)] hover:border-[var(--glass-border)] hover:-translate-y-0.5"
-                      : ""
+              getSlotUnavailableClass(slot),
+              getSlotAvailableClass(slot, isSlotSelected, isInSelectedRange, isHovered),
             )}
           >
             {slot.time}
@@ -141,18 +229,27 @@ const DateTimeSelection = ({
           <h4 className="text-xs font-semibold text-foreground capitalize">
             {format(currentMonth, 'LLLL yyyy', { locale })}
           </h4>
-          <div className="flex gap-0.5">
+          <div className="flex gap-1">
             <Button
               variant="outline"
               size="icon"
               onClick={goToPreviousMonth}
               disabled={isSameMonth(currentMonth, today)}
-              className="h-6 w-6 rounded"
+              className="h-9 w-9 rounded-lg"
+              aria-label="Previous month"
+              title="Previous month"
             >
-              <ChevronLeft className="w-3 h-3" />
+              <ChevronLeft className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="icon" onClick={goToNextMonth} className="h-6 w-6 rounded">
-              <ChevronRight className="w-3 h-3" />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={goToNextMonth}
+              className="h-9 w-9 rounded-lg"
+              aria-label="Next month"
+              title="Next month"
+            >
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -174,8 +271,8 @@ const DateTimeSelection = ({
 
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-0">
-          {Array.from({ length: startingDayIndex }).map((_, index) => (
-            <div key={`empty-${index}`} className="h-9 sm:aspect-square sm:h-auto" />
+          {Array.from({ length: startingDayIndex }, (_, i) => `empty-col-${monthStart.getTime()}-${i}`).map((key) => (
+            <div key={key} className="h-9 sm:aspect-square sm:h-auto" />
           ))}
 
           {days.map((day) => {
@@ -209,44 +306,19 @@ const DateTimeSelection = ({
 
       {/* Time Slots */}
       <div>
-        {!selectedDate ? (
-          <div className="flex flex-col items-center justify-center h-full text-center px-4 min-h-[160px]">
-            <Clock className="w-6 h-6 text-muted-foreground/20 mb-2" />
-            <p className="text-xs text-muted-foreground">{t.selectDateToViewSlots}</p>
-          </div>
-        ) : isLoadingSlots ? (
-          <TimeSlotSkeleton />
-        ) : allSlots.length === 0 || availableSlots.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center px-4 min-h-[160px]">
-            <p className="text-xs text-muted-foreground">{t.noSlotsAvailable}</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {morningSlots.length > 0 && (
-              <div>
-                <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">
-                  {language === 'sk' ? 'Dopoludnia' : 'Morning'}
-                </p>
-                {renderSlotGrid(morningSlots)}
-              </div>
-            )}
-            {afternoonSlots.length > 0 && (
-              <div>
-                <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">
-                  {language === 'sk' ? 'Popoludní' : 'Afternoon'}
-                </p>
-                {renderSlotGrid(afternoonSlots)}
-              </div>
-            )}
-            {requiredSlots > 1 && (
-              <p className="text-[10px] text-muted-foreground text-center">
-                {language === 'sk'
-                  ? `Služba zaberie ${requiredSlots} po sebe idúcich slotov (${serviceDuration} min)`
-                  : `Service occupies ${requiredSlots} consecutive slots (${serviceDuration} min)`}
-              </p>
-            )}
-          </div>
-        )}
+        <TimeSlotsContent
+          selectedDate={selectedDate}
+          isLoadingSlots={isLoadingSlots}
+          allSlots={allSlots}
+          morningSlots={morningSlots}
+          afternoonSlots={afternoonSlots}
+          noSlotsMessage={t.noSlotsAvailable}
+          selectDateMessage={t.selectDateToViewSlots}
+          language={language}
+          requiredSlots={requiredSlots}
+          serviceDuration={serviceDuration}
+          renderSlotGrid={renderSlotGrid}
+        />
       </div>
     </div>
   );

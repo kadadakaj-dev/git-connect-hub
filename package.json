@@ -8,6 +8,9 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator"
   },
@@ -49,7 +52,6 @@
     "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.61.1",
     "react-router-dom": "^6.30.1",
-    "recharts": "^3.8.0",
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
@@ -58,6 +60,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@playwright/test": "^1.53.2",
     "@eslint/js": "^9.32.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.16.5",

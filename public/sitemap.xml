@@ -2,31 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://booking.chiropraxiakosice.eu/</loc>
-    <xhtml:link rel="alternate" hreflang="sk" href="https://booking.chiropraxiakosice.eu/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://booking.chiropraxiakosice.eu/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://booking.chiropraxiakosice.eu/" />
+    <loc>https://booking.fyzioafit.sk/</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://booking.fyzioafit.sk/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://booking.fyzioafit.sk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://booking.fyzioafit.sk/" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://booking.chiropraxiakosice.eu/auth</loc>
-    <xhtml:link rel="alternate" hreflang="sk" href="https://booking.chiropraxiakosice.eu/auth" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://booking.chiropraxiakosice.eu/auth" />
+    <loc>https://booking.fyzioafit.sk/auth</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://booking.fyzioafit.sk/auth" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://booking.fyzioafit.sk/auth" />
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://booking.chiropraxiakosice.eu/legal?tab=terms</loc>
-    <xhtml:link rel="alternate" hreflang="sk" href="https://booking.chiropraxiakosice.eu/legal?tab=terms" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://booking.chiropraxiakosice.eu/legal?tab=terms" />
+    <loc>https://booking.fyzioafit.sk/legal?tab=terms</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://booking.fyzioafit.sk/legal?tab=terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://booking.fyzioafit.sk/legal?tab=terms" />
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://booking.chiropraxiakosice.eu/legal?tab=privacy</loc>
-    <xhtml:link rel="alternate" hreflang="sk" href="https://booking.chiropraxiakosice.eu/legal?tab=privacy" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://booking.chiropraxiakosice.eu/legal?tab=privacy" />
+    <loc>https://booking.fyzioafit.sk/legal?tab=privacy</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://booking.fyzioafit.sk/legal?tab=privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://booking.fyzioafit.sk/legal?tab=privacy" />
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>

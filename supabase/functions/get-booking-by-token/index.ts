@@ -1,10 +1,11 @@
-// @ts-nocheck — Deno Edge Function, not processed by local TS
+/* eslint-disable */
+// @ts-nocheck - Deno Edge Function, not processed by local TS
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
 interface TokenRequest {
@@ -101,14 +102,17 @@ serve(async (req) => {
       )
     }
 
-    // Check if booking date is in the past
-    const bookingDate = new Date(booking.date)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    // Check if within 10 hours of appointment (or past)
+    const [slotHours, slotMinutes] = booking.time_slot.split(':').map(Number)
+    const bookingDateTime = new Date(booking.date)
+    bookingDateTime.setHours(slotHours, slotMinutes, 0, 0)
 
-    if (bookingDate < today) {
+    const now = new Date()
+    const tenHoursBefore = new Date(bookingDateTime.getTime() - 10 * 60 * 60 * 1000)
+
+    if (now >= tenHoursBefore) {
       return new Response(
-        JSON.stringify({ success: false, error: 'Cannot cancel past bookings' }),
+        JSON.stringify({ success: false, error: 'TOO_LATE_TO_CANCEL' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }

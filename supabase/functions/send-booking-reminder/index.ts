@@ -3,10 +3,9 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+}
 
 interface BookingWithService {
   id: string;
@@ -30,9 +29,8 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    // Anon key no longer used for auth - only service_role or admin user allowed
 
-    // Auth: accept service_role key (cron), anon key (cron via pg_net), or admin user
+    // Auth: accept service_role key (cron), or admin user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
@@ -44,7 +42,6 @@ const handler = async (req: Request): Promise<Response> => {
     const token = authHeader.replace("Bearer ", "");
     const isServiceRole = token === supabaseServiceKey;
 
-    // Only service_role (cron) or verified admin user allowed
     if (!isServiceRole) {
       const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
       const userClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -75,12 +72,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get tomorrow's date
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split("T")[0];
+    // 20h window: find bookings where booking datetime is within 0-20h from now
+    const now = new Date();
+    const windowEnd = new Date(now.getTime() + 20 * 60 * 60 * 1000);
 
-    // Find bookings for tomorrow
+    // We need today and tomorrow's bookings to cover the 20h window
+    const todayStr = now.toISOString().split("T")[0];
+    const tomorrowStr = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
     const { data: bookings, error: bookingsError } = await supabase
       .from("bookings")
       .select(`
@@ -93,7 +92,7 @@ const handler = async (req: Request): Promise<Response> => {
         cancellation_token,
         service:services(name_sk, name_en)
       `)
-      .eq("date", tomorrowStr)
+      .in("date", [todayStr, tomorrowStr])
       .in("status", ["pending", "confirmed"]);
 
     if (bookingsError) {
@@ -104,6 +103,24 @@ const handler = async (req: Request): Promise<Response> => {
 
     for (const booking of (bookings as unknown as BookingWithService[]) || []) {
       try {
+        // Calculate booking datetime in Europe/Bratislava timezone
+        // booking.date is YYYY-MM-DD, booking.time_slot is HH:MM:SS
+        const timeStr = booking.time_slot.substring(0, 5); // HH:MM
+        const bookingDateTimeStr = `${booking.date}T${timeStr}:00`;
+        
+        // Create date in Bratislava timezone context
+        // We parse as local Bratislava time by using the offset
+        const bratislavaOffset = getBratislavaOffsetMs(new Date(bookingDateTimeStr));
+        const bookingUtc = new Date(new Date(bookingDateTimeStr).getTime() - bratislavaOffset);
+        
+        const diffMs = bookingUtc.getTime() - now.getTime();
+        const diffHours = diffMs / (1000 * 60 * 60);
+
+        // Only send if booking is in the future AND within 20h window
+        if (diffHours <= 0 || diffHours > 20) {
+          continue;
+        }
+
         // Check if email reminder already sent (dedup)
         const { data: existingEmailReminder } = await supabase
           .from("booking_reminders")
@@ -167,8 +184,8 @@ const handler = async (req: Request): Promise<Response> => {
                 body: JSON.stringify({
                   user_id: booking.client_user_id,
                   payload: {
-                    title: "Pripomienka: Zajtra máte termín",
-                    body: `${booking.service?.name_sk || "Služba"} — ${booking.date} o ${booking.time_slot}`,
+                    title: "Pripomienka: Blížiaci sa termín",
+                    body: `${booking.service?.name_sk || "Služba"} — ${booking.date} o ${timeStr}`,
                     url: "/portal",
                   },
                 }),
@@ -180,7 +197,6 @@ const handler = async (req: Request): Promise<Response> => {
                 reminder_type: "push",
               });
             } catch (pushErr) {
-              // Push failure does NOT block the reminder flow
               console.error(`Push notification failed for booking ${booking.id}:`, pushErr);
             }
           }
@@ -206,5 +222,20 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
+
+// Helper: get Bratislava UTC offset in ms for a given date (handles CET/CEST)
+function getBratislavaOffsetMs(date: Date): number {
+  // Use Intl to determine the offset
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Bratislava',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(date);
+  const get = (type: string) => parseInt(parts.find(p => p.type === type)?.value || '0');
+  const bratislavaDate = new Date(get('year'), get('month') - 1, get('day'), get('hour'), get('minute'), get('second'));
+  return bratislavaDate.getTime() - date.getTime();
+}
 
 serve(handler);

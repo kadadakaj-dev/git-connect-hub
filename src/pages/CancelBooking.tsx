@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import PageMeta from '@/components/seo/PageMeta';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle2, XCircle, Loader2, Calendar, Clock, User, AlertTriangle } from 'lucide-react';
@@ -51,7 +51,7 @@ const CancelBooking = () => {
       notFound: 'Rezervácia nebola nájdená',
       pastBooking: 'Nemožno zrušiť minulé rezervácie',
       tooLateTitle: 'Zrušenie online nie je možné',
-      tooLateText: 'Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.',
+      tooLateText: 'Menej ako 10 hodín pred termínom je zrušenie možné len telefonicky: +421 905 307 198, pričom bude účtovaný storno poplatok 10 €.',
       tooLatePhone: '',
       backToHome: 'Späť na hlavnú stránku',
       newBooking: 'Nová rezervácia',
@@ -75,7 +75,7 @@ const CancelBooking = () => {
       notFound: 'Booking not found',
       pastBooking: 'Cannot cancel past bookings',
       tooLateTitle: 'Online cancellation not available',
-      tooLateText: 'Less than 12 hours before, cancellation is only possible by phone: +421 905 307 198 and a cancellation fee of €10 will be charged.',
+      tooLateText: 'Less than 10 hours before your appointment, cancellation is only possible by phone: +421 905 307 198, subject to a €10 cancellation fee.',
       tooLatePhone: '',
       backToHome: 'Back to Home',
       newBooking: 'New Booking',
@@ -87,16 +87,7 @@ const CancelBooking = () => {
 
   const text = translations[language];
 
-  useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setError(text.invalidToken);
-      return;
-    }
-    verifyBooking();
-  }, [token, text.invalidToken]);
-
-  const verifyBooking = async () => {
+  const verifyBooking = useCallback(async () => {
     try {
       const response = await supabase.functions.invoke('get-booking-by-token', {
         body: { token },
@@ -107,6 +98,9 @@ const CancelBooking = () => {
         if (data.error === 'Booking is already cancelled') {
           setBooking(data.booking);
           setStatus('already_cancelled');
+        } else if (data.error === 'TOO_LATE_TO_CANCEL' || data.error === 'Cannot cancel booking less than 10 hours before appointment') {
+          setError('TOO_LATE_TO_CANCEL');
+          setStatus('error');
         } else {
           setError(data.error || text.notFound);
           setStatus('error');
@@ -120,7 +114,16 @@ const CancelBooking = () => {
       setError(text.notFound);
       setStatus('error');
     }
-  };
+  }, [token, text.notFound]);
+
+  useEffect(() => {
+    if (!token) {
+      setStatus('error');
+      setError(text.invalidToken);
+      return;
+    }
+    verifyBooking();
+  }, [token, text.invalidToken, verifyBooking]);
 
   const handleCancel = async () => {
     if (!token) return;
@@ -134,7 +137,7 @@ const CancelBooking = () => {
       if (!data.success) {
         if (data.error === 'Booking is already cancelled') {
           setStatus('already_cancelled');
-        } else if (data.error === 'TOO_LATE_TO_CANCEL') {
+        } else if (data.error === 'TOO_LATE_TO_CANCEL' || data.error === 'Cannot cancel booking less than 10 hours before appointment') {
           setBooking(data.booking);
           setError('TOO_LATE_TO_CANCEL');
           setStatus('error');

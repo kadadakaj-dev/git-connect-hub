@@ -15,6 +15,7 @@ import ClientDetailsForm from './ClientDetailsForm';
 import GlassCard from './GlassCard';
 import SectionHeader from './SectionHeader';
 import SubmitButton from './SubmitButton';
+import { mapBookingErrorMessage } from './bookingErrorMessages';
 
 const initialBookingData: BookingData = {
   service: null,
@@ -31,11 +32,13 @@ const BookingWizard = () => {
   const [bookingData, setBookingData] = useState<BookingData>(initialBookingData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [bookingId, setBookingId] = useState<string | undefined>();
   const createBooking = useCreateBooking();
 
   const dateTimeRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef<HTMLDivElement>(null);
+  const lastTimeSelectRef = useRef<number>(0);
 
   const updateBookingData = <K extends keyof BookingData>(field: K, value: BookingData[K]) => {
     setBookingData((prev) => ({ ...prev, [field]: value }));
@@ -56,18 +59,18 @@ const BookingWizard = () => {
   };
 
   const handleTimeSelect = (time: string) => {
+    const now = Date.now();
+    if (now - lastTimeSelectRef.current < 400) return; // ignore ghost taps
+    lastTimeSelectRef.current = now;
+
     updateBookingData('time', time);
     setTimeout(() => {
-      detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // After scroll settles, ensure submit button is also visible
-      setTimeout(() => {
-        if (!submitRef.current) return;
-        const rect = submitRef.current.getBoundingClientRect();
-        if (rect.bottom > window.innerHeight) {
-          submitRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }, 600);
-    }, 200);
+      if (submitRef.current) {
+        submitRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      } else {
+        detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 300);
   };
 
   const handleSubmit = async () => {
@@ -83,7 +86,7 @@ const BookingWizard = () => {
     if (!bookingData.clientPhone.trim()) {
       newErrors.clientPhone = t.errors.phoneRequired;
     } else if (!/^[+]?[0-9\s\-()]{7,20}$/.test(bookingData.clientPhone.trim())) {
-      newErrors.clientPhone = t.errors.phoneRequired;
+      newErrors.clientPhone = language === 'sk' ? 'Neplatné telefónne číslo' : 'Invalid phone number';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -115,12 +118,13 @@ const BookingWizard = () => {
       } else {
         toast.success(t.bookingSuccess);
       }
+      setBookingId(result.booking?.id);
       setIsConfirmed(true);
       localStorage.setItem('fyzio_booking_completed', 'true');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Booking failed';
-      toast.error(message);
+      toast.error(mapBookingErrorMessage(message, t.bookingErrors));
     }
   };
 
@@ -128,6 +132,7 @@ const BookingWizard = () => {
     setBookingData(initialBookingData);
     setErrors({});
     setIsConfirmed(false);
+    setBookingId(undefined);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -142,7 +147,7 @@ const BookingWizard = () => {
         <div className="container max-w-2xl mx-auto px-4 py-3 sm:py-6 flex-1 relative z-10">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <GlassCard>
-              <Confirmation bookingData={bookingData} onNewBooking={handleNewBooking} />
+              <Confirmation bookingData={bookingData} onNewBooking={handleNewBooking} bookingId={bookingId} />
             </GlassCard>
           </motion.div>
         </div>

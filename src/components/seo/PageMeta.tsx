@@ -10,7 +10,7 @@ interface PageMetaProps {
   noindex?: boolean;
 }
 
-const BASE_URL = 'https://booking.chiropraxiakosice.eu';
+const BASE_URL = 'https://booking.fyzioafit.sk';
 const OG_IMAGE = `${BASE_URL}/og-image.png`;
 
 const PageMeta = ({ titleSk, titleEn, descriptionSk, descriptionEn, path, noindex }: PageMetaProps) => {

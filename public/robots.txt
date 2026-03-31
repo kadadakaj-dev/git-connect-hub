@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://booking.chiropraxiakosice.eu/sitemap.xml
+Sitemap: https://booking.fyzioafit.sk/sitemap.xml

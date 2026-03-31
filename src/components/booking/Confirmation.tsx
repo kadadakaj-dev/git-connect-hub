@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { format } from 'date-fns';
 import { sk, enUS } from 'date-fns/locale';
 import { CheckCircle2, Calendar, Clock, User, Mail, Phone, MapPin, ArrowRight, CalendarPlus } from 'lucide-react';
@@ -9,26 +8,34 @@ import { useLanguage } from '@/i18n/LanguageContext';
 interface ConfirmationProps {
   bookingData: BookingData;
   onNewBooking: () => void;
+  bookingId?: string;
 }
 
-const Confirmation = ({ bookingData, onNewBooking }: ConfirmationProps) => {
+const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProps) => {
   const { t, language } = useLanguage();
   const locale = language === 'sk' ? sk : enUS;
   const { service, date, time, clientName, clientEmail, clientPhone, notes } = bookingData;
 
-  // Stable confirmation code — generated once per mount
-  const [confirmationCode] = useState(() =>
-    Math.random().toString(36).substring(2, 8).toUpperCase()
-  );
+  // Use first 8 chars of booking ID if available, otherwise generate fallback
+  const confirmationCode = bookingId
+    ? bookingId.substring(0, 8).toUpperCase()
+    : Math.random().toString(36).substring(2, 8).toUpperCase();
 
   const handleAddToCalendar = () => {
     if (date && time && service) {
       const title = `FYZIO&FIT - ${service.name}`;
       const startDate = new Date(date);
       const [hours, minutes] = time.split(':');
-      startDate.setHours(parseInt(hours), parseInt(minutes));
+      startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
       const endDate = new Date(startDate.getTime() + (service.duration || 60) * 60000);
-      const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(language === 'sk' ? 'Rezervácia fyzioterapie' : 'Physiotherapy appointment')}&location=${encodeURIComponent('Krmanová 6, Košice')}`;
+      
+      // Format dates for Google Calendar in local time (YYYYMMDDTHHMMSS without Z = local time)
+      const formatLocalDate = (d: Date) => {
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+      };
+      
+      const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatLocalDate(startDate)}/${formatLocalDate(endDate)}&ctz=Europe/Bratislava&details=${encodeURIComponent(language === 'sk' ? 'Rezervácia fyzioterapie' : 'Physiotherapy appointment')}&location=${encodeURIComponent('Krmanová 6, Košice')}`;
       window.open(googleCalendarUrl, '_blank');
     }
   };

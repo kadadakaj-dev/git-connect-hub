@@ -4,7 +4,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
 interface BookingRequest {
@@ -27,7 +27,7 @@ function isValidDate(str: string): boolean {
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/
   if (!dateRegex.test(str)) return false
   const date = new Date(str)
-  return !isNaN(date.getTime())
+  return !Number.isNaN(date.getTime())
 }
 
 function isValidTimeSlot(str: string): boolean {
@@ -42,12 +42,60 @@ function isValidEmail(str: string): boolean {
 
 function isValidPhone(str: string): boolean {
   // Allow various phone formats: +421..., 0905..., etc.
-  const phoneRegex = /^[\+]?[0-9\s\-\(\)]{7,20}$/
+  const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/
   return phoneRegex.test(str.trim())
 }
 
 function sanitizeString(str: string, maxLength: number): string {
-  return str.replace(/[\r\n]/g, ' ').trim().slice(0, maxLength)
+  return str.replaceAll(/[\r\n]/g, ' ').trim().slice(0, maxLength)
+}
+
+function getClientIP(req: Request): string | null {
+  const forwarded = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+  const realIP = req.headers.get('x-real-ip')?.trim()
+  const cfIP = req.headers.get('cf-connecting-ip')?.trim()
+
+  return forwarded || realIP || cfIP || null
+}
+
+async function sha256(input: string): Promise<string> {
+  const encoded = new TextEncoder().encode(input)
+  const digest = await crypto.subtle.digest('SHA-256', encoded)
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+async function buildRateLimitIdentifier(
+  req: Request,
+  clientUserId: string | null,
+  body: Partial<BookingRequest>
+): Promise<string> {
+  if (clientUserId) {
+    return `user:${clientUserId}`
+  }
+
+  const normalizedEmail = typeof body.client_email === 'string'
+    ? body.client_email.trim().toLowerCase()
+    : ''
+  const normalizedPhone = typeof body.client_phone === 'string'
+    ? body.client_phone.replaceAll(/\D/g, '')
+    : ''
+  const clientIP = getClientIP(req)
+
+  if (normalizedEmail || normalizedPhone) {
+    const fingerprint = await sha256(`${normalizedEmail}|${normalizedPhone}`)
+    return clientIP
+      ? `guest:${clientIP}:${fingerprint.slice(0, 24)}`
+      : `guest:${fingerprint.slice(0, 24)}`
+  }
+
+  if (clientIP) {
+    return `ip:${clientIP}`
+  }
+
+  const userAgent = req.headers.get('user-agent') || 'unknown'
+  return `anonymous:${(await sha256(userAgent)).slice(0, 24)}`
 }
 
 // Rate limiting helper
@@ -115,9 +163,19 @@ serve(async (req) => {
       }
     }
 
-    // Rate limit: 10 bookings per IP per 15 minutes
-    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
-    const rateCheck = await checkRateLimit(supabase, clientIP, 'create-booking', 10, 15)
+    let body: BookingRequest
+    try {
+      body = await req.json()
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Rate limit authenticated users by user id, otherwise by a hashed booking fingerprint with IP fallback.
+    const rateLimitIdentifier = await buildRateLimitIdentifier(req, clientUserId, body)
+    const rateCheck = await checkRateLimit(supabase, rateLimitIdentifier, 'create-booking', 10, 15)
     if (!rateCheck.allowed) {
       return new Response(
         JSON.stringify({ error: 'Too many requests, please try again later' }),
@@ -125,7 +183,6 @@ serve(async (req) => {
       )
     }
 
-    const body: BookingRequest = await req.json()
     console.log('Received booking request:', { ...body, client_email: '***', client_phone: '***' })
 
     // Validate all required fields

@@ -27,28 +27,16 @@ export const InviteEmail = ({
   confirmationUrl,
 }: InviteEmailProps) => (
   <Html lang="sk" dir="ltr">
-    <Head>
-      <style dangerouslySetInnerHTML={{ __html: `
-        :root { color-scheme: light dark; }
-        @media (prefers-color-scheme: dark) {
-          .email-body { background-color: #18181b !important; }
-          .email-card { background-color: #242427 !important; border: 1px solid #3f3f46 !important; }
-          .text-heading { color: #e4e4e7 !important; }
-          .text-body { color: #d4d4d8 !important; }
-          .text-muted { color: #a1a1aa !important; }
-          .footer-section { background-color: #1e1e22 !important; border-color: #3f3f46 !important; }
-        }
-      `}} />
-    </Head>
+    <Head />
     <Preview>Pozvánka do FYZIO&FIT</Preview>
-    <Body className="email-body" style={main}>
-      <Container className="email-card" style={wrapper}>
+    <Body style={main}>
+      <Container style={wrapper}>
         <Section style={header}>
           <Heading style={headerTitle}>FYZIO&FIT</Heading>
         </Section>
         <Section style={content}>
-          <Heading className="text-heading" style={h1}>Boli ste pozvaní</Heading>
-          <Text className="text-body" style={text}>
+          <Heading style={h1}>Boli ste pozvaní</Heading>
+          <Text style={text}>
             Boli ste pozvaní do{' '}
             <Link href={siteUrl} style={link}><strong>FYZIO&FIT</strong></Link>.
             Kliknite na tlačidlo nižšie pre prijatie pozvánky a vytvorenie účtu.
@@ -56,13 +44,13 @@ export const InviteEmail = ({
           <Button style={button} href={confirmationUrl}>
             Prijať pozvánku
           </Button>
-          <Text className="text-muted" style={footerText}>
+          <Text style={footerText}>
             Ak ste túto pozvánku neočakávali, môžete tento e-mail pokojne ignorovať.
           </Text>
         </Section>
-        <Section className="footer-section" style={footer}>
-          <Text className="text-muted" style={footerBrand}>FYZIO&FIT</Text>
-          <Text className="text-muted" style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
+        <Section style={footer}>
+          <Text style={footerBrand}>FYZIO&FIT</Text>
+          <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>
     </Body>
@@ -71,7 +59,7 @@ export const InviteEmail = ({
 
 export default InviteEmail
 
-const main = { backgroundColor: '#f7f9fc', fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }
+const main = { backgroundColor: '#ffffff', fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }
 const wrapper = { backgroundColor: '#ffffff', borderRadius: '16px', overflow: 'hidden' as const, maxWidth: '600px', margin: '20px auto', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)' }
 const header = { background: 'linear-gradient(135deg, #4a90d9 0%, #6ba3e0 100%)', padding: '36px 30px', textAlign: 'center' as const }
 const headerTitle = { color: '#ffffff', margin: '0', fontSize: '28px', fontWeight: '700' as const, letterSpacing: '1.5px' }

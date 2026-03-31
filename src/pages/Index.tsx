@@ -14,7 +14,9 @@ const Index = () => {
         path="/"
       />
       <LocalBusinessJsonLd />
-      <BookingWizard />
+      <main>
+        <BookingWizard />
+      </main>
     </>
   );
 };
