@@ -15,6 +15,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PushOptIn from "@/components/PushOptIn";
 import { useServiceWorkerMessages } from "@/hooks/useServiceWorkerMessages";
 import ClientLayout from "./components/layouts/ClientLayout";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // Lazy load pages for code splitting
 const Index = lazy(() => import("./pages/Index"));
@@ -84,6 +85,7 @@ const App = () => {
                   </BrowserRouter>
                 </div>
               </TooltipProvider>
+              <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
           </ErrorBoundary>
         </LanguageProvider>
