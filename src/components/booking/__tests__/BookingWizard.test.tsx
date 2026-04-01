@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@/test/test-utils';
 import React from 'react';
 import BookingWizard from '../BookingWizard';
 import { Service } from '@/types/booking';
@@ -103,17 +103,17 @@ vi.mock('@/components/Footer', () => ({
 // Need to mock framer-motion so sections aren't pointer-events: none
 vi.mock('framer-motion', () => ({
     motion: {
-        div: React.forwardRef(({ children, className, style, ...rest }: any, ref: any) => (
-            <div ref={ref} className={className} style={style}>{children}</div>
+        div: React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>((props, ref) => (
+            <div ref={ref} {...props} />
         )),
-        section: React.forwardRef(({ children, className, style, ...rest }: any, ref: any) => (
-            <section ref={ref} className={className} style={style}>{children}</section>
+        section: React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>((props, ref) => (
+            <section ref={ref} {...props} />
         )),
-        span: React.forwardRef(({ children, className, style, ...rest }: any, ref: any) => (
-            <span ref={ref} className={className} style={style}>{children}</span>
+        span: React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>((props, ref) => (
+            <span ref={ref} {...props} />
         )),
     },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 describe('BookingWizard', () => {
     beforeEach(() => {

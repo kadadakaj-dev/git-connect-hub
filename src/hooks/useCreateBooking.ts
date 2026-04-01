@@ -10,6 +10,7 @@ interface BookingData {
   clientEmail: string;
   clientPhone: string;
   notes?: string;
+  clientRequestId?: string;
 }
 
 interface BookingResponse {
@@ -77,6 +78,7 @@ export function useCreateBooking() {
           client_email: data.clientEmail,
           client_phone: data.clientPhone,
           notes: data.notes || null,
+          client_request_id: data.clientRequestId,
         },
       });
 

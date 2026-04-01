@@ -1,73 +1,96 @@
-# Welcome to your Lovable project
+# Git Connect Hub
 
-## Project info
+A premium, modern booking platform with a focus on medical and high-end service interfaces, featuring a signature **"Baby Blue Glass"** design system.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Quick Start
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
+### Installation
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+# Install dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### URL
+**Lovable Project**: [Git Connect Hub](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🎨 Design System: "Baby Blue Glass"
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The project follows a clinical, premium visual identity defined by transparency, soft blurs, and a calming blue palette.
 
-## What technologies are used for this project?
+### Core Visual Formula:
+- **Primary Color**: Baby Blue (`#BFE2FF`)
+- **Atmosphere**: Liquid Glass surfaces with multi-layered blurs.
+- **Typography**: Google Sans Flex for brand headings and Inter for functional data/forms.
+- **Layers**: 
+  - `glass-soft`: Low blur for subtle headers.
+  - `glass-card`: Standard functional containers with 24px radius.
+  - `glass-premium`: High-blur hero elements with floating shadows.
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🛠 Tech Stack
 
-## How can I deploy this project?
+- **Framework**: Vite + React
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Database/Auth**: Supabase
+- **UI Components**: shadcn/ui + Framer Motion
+- **Testing**: Vitest (Unit/Integration) & Playwright (E2E)
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## 📅 Features
 
-Yes, you can!
+- **Dynamic Booking Wizard**: Interactive multi-step flow with real-time slot generation.
+- **Client Portal**: Self-service dashboard for managing upcoming and past appointments.
+- **Admin Dashboard**: Comprehensive management of services, employees, opening hours, and blocked dates.
+- **Localization**: Full support for Slovak (SK) and English (EN).
+- **Responsive PWA**: Fully optimized for mobile-first interactions.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🧪 Testing
+
+The project maintains a rigorous test suite to ensure stability.
+
+### Run Unit/Integration Tests (Vitest)
+```sh
+npx vitest run
+```
+
+### Run End-to-End Tests (Playwright)
+```sh
+npm run test:e2e
+```
+
+---
+
+## 🔑 Administrative Access
+
+### Initial Setup
+After creating any user in the Supabase Dashboard, assign them the `admin` role in the `user_roles` table.
+
+### Default Admin Credentials (Development)
+- **Email**: `booking@fyzioafit.sk`
+- **Password**: `oUjuGUYMuzxtCiQy`
+
+---
+
+## 📁 Project Structure
+
+- `src/components/`: Reusable UI components and domain-specific booking widgets.
+- `src/pages/`: Main application routes (Auth, Portal, Admin, Home).
+- `src/hooks/`: Business logic for time slot generation and Supabase integration.
+- `src/integrations/`: Supabase client and specialized Lovable auth wrappers.
+- `docs/`: Supplementary documentation and manual QA test cases.
+
+---
+
+## 📝 Localization
+
+The application uses a custom `LanguageContext` located in `src/i18n/`. All translations are managed in `translations.ts` to ensure consistency across the client and admin interfaces.

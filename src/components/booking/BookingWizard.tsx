@@ -33,6 +33,7 @@ const BookingWizard = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [bookingId, setBookingId] = useState<string | undefined>();
+  const [clientRequestId, setClientRequestId] = useState(() => crypto.randomUUID());
   const createBooking = useCreateBooking();
 
   const dateTimeRef = useRef<HTMLDivElement>(null);
@@ -108,6 +109,7 @@ const BookingWizard = () => {
         clientEmail: bookingData.clientEmail,
         clientPhone: bookingData.clientPhone,
         notes: bookingData.notes || undefined,
+        clientRequestId: clientRequestId,
       });
       if (result.queued) {
         toast.info(
@@ -133,6 +135,7 @@ const BookingWizard = () => {
     setErrors({});
     setIsConfirmed(false);
     setBookingId(undefined);
+    setClientRequestId(crypto.randomUUID());
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

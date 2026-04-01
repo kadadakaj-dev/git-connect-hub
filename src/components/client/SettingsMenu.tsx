@@ -42,6 +42,7 @@ import {
   LogOut,
   Loader2,
   Lock,
+  LayoutDashboard,
 } from 'lucide-react';
 
 interface SettingsMenuProps {
@@ -207,6 +208,19 @@ const SettingsMenu = ({
             {userEmail}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          
+          {userEmail === 'booking@fyzioafit.sk' && (
+            <>
+              <DropdownMenuItem 
+                onClick={() => navigate('/admin')} 
+                className="gap-2 cursor-pointer text-primary font-medium"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                {language === 'sk' ? 'Admin Portál' : 'Admin Portal'}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
 
           <DropdownMenuItem onClick={onEditProfile} className="gap-2 cursor-pointer">
             <UserPen className="h-4 w-4" />

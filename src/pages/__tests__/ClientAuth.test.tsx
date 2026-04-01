@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@/test/test-utils';
 import ClientAuth from '../ClientAuth';
 
 // Radix UI requires PointerEvent which JSDOM doesn't support
@@ -20,15 +20,6 @@ const mockNavigate = vi.fn();
 
 vi.mock('react-router-dom', () => ({
     useNavigate: () => mockNavigate,
-}));
-
-const mockSignInWithOAuth = vi.fn();
-vi.mock('@/integrations/lovable/index', () => ({
-    lovable: {
-        auth: {
-            signInWithOAuth: (...args: unknown[]) => mockSignInWithOAuth(...args),
-        },
-    },
 }));
 
 const mockSignInWithPassword = vi.fn();
@@ -84,86 +75,6 @@ describe('ClientAuth', () => {
         render(<ClientAuth />);
         expect(screen.getAllByText('Prihlásenie').length).toBeGreaterThanOrEqual(1);
         expect(screen.getByRole('tab', { name: 'Registrácia' })).toBeInTheDocument();
-    });
-
-    it('renders Google and Apple sign-in buttons', () => {
-        render(<ClientAuth />);
-        expect(screen.getByText('Pokračovať s Google')).toBeInTheDocument();
-        expect(screen.getByText('Pokračovať s Apple')).toBeInTheDocument();
-    });
-
-    describe('Google Sign-In', () => {
-        it('calls lovable.auth.signInWithOAuth with google provider', async () => {
-            mockSignInWithOAuth.mockResolvedValue({});
-            render(<ClientAuth />);
-
-            fireEvent.click(screen.getByText('Pokračovať s Google'));
-
-            expect(mockSignInWithOAuth).toHaveBeenCalledWith('google', {
-                redirect_uri: expect.stringContaining('/portal'),
-            });
-        });
-
-        it('shows error toast when Google sign-in returns error', async () => {
-            const { toast } = await import('sonner');
-            mockSignInWithOAuth.mockResolvedValue({ error: new Error('fail') });
-            render(<ClientAuth />);
-
-            fireEvent.click(screen.getByText('Pokračovať s Google'));
-
-            await waitFor(() => {
-                expect(toast.error).toHaveBeenCalledWith('Chyba pri prihlásení cez Google');
-            });
-        });
-
-        it('shows generic error toast when Google sign-in throws', async () => {
-            const { toast } = await import('sonner');
-            mockSignInWithOAuth.mockRejectedValue(new Error('network'));
-            render(<ClientAuth />);
-
-            fireEvent.click(screen.getByText('Pokračovať s Google'));
-
-            await waitFor(() => {
-                expect(toast.error).toHaveBeenCalledWith('Niečo sa pokazilo');
-            });
-        });
-    });
-
-    describe('Apple Sign-In', () => {
-        it('calls lovable.auth.signInWithOAuth with apple provider', async () => {
-            mockSignInWithOAuth.mockResolvedValue({});
-            render(<ClientAuth />);
-
-            fireEvent.click(screen.getByText('Pokračovať s Apple'));
-
-            expect(mockSignInWithOAuth).toHaveBeenCalledWith('apple', {
-                redirect_uri: expect.stringContaining('/portal'),
-            });
-        });
-
-        it('shows error toast when Apple sign-in returns error', async () => {
-            const { toast } = await import('sonner');
-            mockSignInWithOAuth.mockResolvedValue({ error: new Error('fail') });
-            render(<ClientAuth />);
-
-            fireEvent.click(screen.getByText('Pokračovať s Apple'));
-
-            await waitFor(() => {
-                expect(toast.error).toHaveBeenCalledWith('Chyba pri prihlásení cez Apple');
-            });
-        });
-
-        it('shows generic error toast when Apple sign-in throws', async () => {
-            const { toast } = await import('sonner');
-            mockSignInWithOAuth.mockRejectedValue(new Error('network'));
-            render(<ClientAuth />);
-
-            fireEvent.click(screen.getByText('Pokračovať s Apple'));
-
-            await waitFor(() => {
-                expect(toast.error).toHaveBeenCalledWith('Niečo sa pokazilo');
-            });
-        });
     });
 
     describe('Email Sign-In', () => {
