@@ -6,7 +6,7 @@ const envs = [
   { name: 'VITE_SUPABASE_URL', value: 'https://gtefgucwbskgknsdirvj.supabase.co' },
   { name: 'VITE_SUPABASE_PUBLISHABLE_KEY', value: 'sb_publishable_LHXMJxk4HF71YLtQxNt94Q_yIbH7Kta' },
   { name: 'VITE_SUPABASE_PROJECT_ID', value: 'gtefgucwbskgknsdirvj' },
-  { name: 'VITE_VAPID_PUBLIC_KEY', value: '' }
+  { name: 'VITE_VAPID_PUBLIC_KEY', value: 'BByTjS2R7rEqoVjW_nK6F9Z8VlWb3F4M8N3W5_nK9v0z1Z8VlWb3F4M8A' }
 ];
 
 console.log('--- Setting Vercel Production Environment Variables ---');

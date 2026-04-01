@@ -29,3 +29,5 @@ blob-report/
 .vercel
 .env*.local
 .env
+
+.vercel
