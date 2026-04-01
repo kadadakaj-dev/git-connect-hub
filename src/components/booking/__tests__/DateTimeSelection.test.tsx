@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@/test/test-utils';
 import React from 'react';
 import DateTimeSelection from '../DateTimeSelection';
 
 // Mock useTimeSlots
 const mockUseTimeSlots = vi.fn();
 vi.mock('@/hooks/useTimeSlots', () => ({
-    useTimeSlots: (...args: any[]) => mockUseTimeSlots(...args),
+    useTimeSlots: (...args: unknown[]) => mockUseTimeSlots(...args),
 }));
 
 vi.mock('@/i18n/LanguageContext', () => ({

@@ -1,5 +1,14 @@
-// @ts-nocheck — Deno Edge Function, not processed by local TS
+// Improved type safety for Deno Edge Runtime
+declare const Deno: {
+  env: {
+    get(key: string): string | undefined;
+  };
+};
+
+type EdgeRequest = Request;
+// @ts-expect-error: Deno module imports
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
+// @ts-expect-error: Deno module imports
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const corsHeaders = {
@@ -15,6 +24,7 @@ interface BookingRequest {
   client_email: string
   client_phone: string
   notes?: string
+  client_request_id?: string
 }
 
 // Validation functions
@@ -132,7 +142,7 @@ async function checkRateLimit(
   return { allowed: true, remaining: maxRequests - currentCount - 1 }
 }
 
-serve(async (req) => {
+serve(async (req: EdgeRequest) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -185,7 +195,7 @@ serve(async (req) => {
 
     console.log('Received booking request:', { ...body, client_email: '***', client_phone: '***' })
 
-    // Validate all required fields
+    // Input validation (Simple sanity checks, core logic is in DB)
     const errors: string[] = []
 
     if (!body.service_id || !isValidUUID(body.service_id)) {
@@ -194,21 +204,6 @@ serve(async (req) => {
 
     if (!body.date || !isValidDate(body.date)) {
       errors.push('Invalid date format (expected YYYY-MM-DD)')
-    } else {
-      // Compare date strings in UTC to avoid timezone ambiguity
-      const todayStr = new Date().toISOString().split('T')[0] // YYYY-MM-DD in UTC
-      if (body.date <= todayStr) {
-        errors.push('Booking date must be in the future')
-      }
-
-      // 36h lead time validation — build an explicit UTC datetime to avoid setHours() locale issues
-      if (body.time_slot && isValidTimeSlot(body.time_slot)) {
-        const bookingDateTime = new Date(`${body.date}T${body.time_slot}:00Z`)
-        const minBookableTime = new Date(Date.now() + 36 * 60 * 60 * 1000)
-        if (bookingDateTime < minBookableTime) {
-          errors.push('Booking must be at least 36 hours in advance. For earlier appointments, call us for an Express booking.')
-        }
-      }
     }
 
     if (!body.time_slot || !isValidTimeSlot(body.time_slot)) {
@@ -235,159 +230,45 @@ serve(async (req) => {
       )
     }
 
-    // Verify service exists and is active
-    const { data: service, error: serviceError } = await supabase
-      .from('services')
-      .select('id, is_active, name_sk, name_en, duration')
-      .eq('id', body.service_id)
-      .maybeSingle()
+    // Call the atomic secure booking RPC
+    const { data: rpcResult, error: rpcError } = await (supabase.rpc as any)('create_secure_booking', {
+      p_service_id: body.service_id,
+      p_date: body.date,
+      p_time_slot: body.time_slot,
+      p_client_name: sanitizeString(body.client_name, 100),
+      p_client_email: sanitizeString(body.client_email.toLowerCase(), 255),
+      p_client_phone: sanitizeString(body.client_phone, 20),
+      p_notes: body.notes ? sanitizeString(body.notes, 1000) : null,
+      p_client_user_id: clientUserId,
+      p_client_request_id: body.client_request_id || null
+    })
 
-    if (serviceError || !service) {
-      console.log('Service not found:', body.service_id)
-      return new Response(
-        JSON.stringify({ error: 'Service not found' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    if (!service.is_active) {
-      return new Response(
-        JSON.stringify({ error: 'Service is not available' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Calculate booking duration (round up to nearest 30 min)
-    const bookingDuration = Math.ceil(service.duration / 30) * 30
-
-    // Check if date is not blocked
-    const { data: blockedDate } = await supabase
-      .from('blocked_dates')
-      .select('id')
-      .eq('date', body.date)
-      .maybeSingle()
-
-    if (blockedDate) {
-      return new Response(
-        JSON.stringify({ error: 'Selected date is not available' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Get active employee count for capacity check
-    const { data: activeEmps } = await supabase
-      .from('employees')
-      .select('id')
-      .eq('is_active', true)
-
-    const totalCapacity = Math.max(activeEmps?.length || 1, 1)
-
-    // Get all bookings for this date to check slot occupancy
-    const { data: dateBookings, error: bookingsError } = await supabase
-      .from('bookings')
-      .select('time_slot, booking_duration')
-      .eq('date', body.date)
-      .neq('status', 'cancelled')
-
-    if (bookingsError) {
-      console.error('Error checking slot capacity:', bookingsError)
-      return new Response(
-        JSON.stringify({ error: 'Failed to check slot availability' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Check all required consecutive slots
-    const [slotH, slotM] = body.time_slot.split(':').map(Number)
-    const slotStartMin = slotH * 60 + slotM
-    const requiredSlots = bookingDuration / 30
-
-    for (let i = 0; i < requiredSlots; i++) {
-      const checkMin = slotStartMin + i * 30
-      let occupiedCount = 0
-      for (const b of (dateBookings || [])) {
-        const [bH, bM] = b.time_slot.split(':').map(Number)
-        const bStart = bH * 60 + bM
-        const bEnd = bStart + (b.booking_duration || 30)
-        if (checkMin >= bStart && checkMin < bEnd) {
-          occupiedCount++
-        }
+    if (rpcError || !rpcResult?.success) {
+      console.error('RPC Error/Failure:', rpcError || rpcResult?.error)
+      const errorMsg = rpcResult?.error || rpcError?.message || 'Failed to create booking'
+      
+      // Handle business logic rejections (lead time, capacity, etc) from DB
+      let status = 500
+      if (errorMsg.includes('Advance') || errorMsg.includes('future') || errorMsg.includes('booked') || errorMsg.includes('available')) {
+        status = 400
       }
-      if (occupiedCount >= totalCapacity) {
-        const checkTimeStr = `${String(Math.floor(checkMin / 60)).padStart(2, '0')}:${String(checkMin % 60).padStart(2, '0')}`
-        console.log('Slot occupied:', checkTimeStr, `${occupiedCount}/${totalCapacity}`)
-        return new Response(
-          JSON.stringify({ error: 'This time slot is fully booked' }),
-          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
-    }
 
-    // Auto-assign an available employee (round-robin by least bookings on that date)
-    let assignedEmployeeId: string | null = null
-    const { data: activeEmployees } = await supabase
-      .from('employees')
-      .select('id')
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true })
-
-    if (activeEmployees && activeEmployees.length > 0) {
-      // Find employee with fewest bookings on this date
-      const { data: dateCounts } = await supabase
-        .from('bookings')
-        .select('employee_id')
-        .eq('date', body.date)
-        .neq('status', 'cancelled')
-        .not('employee_id', 'is', null)
-
-      const countMap: Record<string, number> = {}
-      for (const emp of activeEmployees) {
-        countMap[emp.id] = 0
-      }
-      if (dateCounts) {
-        for (const b of dateCounts) {
-          if (b.employee_id && countMap[b.employee_id] !== undefined) {
-            countMap[b.employee_id]++
-          }
-        }
-      }
-      // Pick employee with least bookings
-      assignedEmployeeId = activeEmployees.reduce((best, emp) =>
-        (countMap[emp.id] ?? 0) < (countMap[best.id] ?? 0) ? emp : best
-      ).id
-      console.log('Auto-assigned employee:', assignedEmployeeId)
-    }
-
-    // Create the booking with sanitized data
-    const bookingData = {
-      service_id: body.service_id,
-      date: body.date,
-      time_slot: body.time_slot,
-      client_name: sanitizeString(body.client_name, 100),
-      client_email: sanitizeString(body.client_email.toLowerCase(), 255),
-      client_phone: sanitizeString(body.client_phone, 20),
-      notes: body.notes ? sanitizeString(body.notes, 1000) : null,
-      status: 'confirmed',
-      employee_id: assignedEmployeeId,
-      booking_duration: bookingDuration,
-      client_user_id: clientUserId,
-    }
-
-    const { data: booking, error: insertError } = await supabase
-      .from('bookings')
-      .insert(bookingData)
-      .select('id, date, time_slot, status, cancellation_token')
-      .single()
-
-    if (insertError) {
-      console.error('Failed to create booking:', insertError)
       return new Response(
-        JSON.stringify({ error: 'Failed to create booking' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: errorMsg }),
+        { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    console.log('Booking created successfully:', booking.id)
+    const { booking, idempotent } = rpcResult
+    if (idempotent) {
+      console.log('Idempotent request detected. Returning existing booking:', booking.id)
+      return new Response(
+        JSON.stringify({ success: true, booking, queued: false }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    console.log('Booking created successfully via RPC:', booking.id)
 
     // Send confirmation email to client (fire-and-forget, non-blocking)
     const emailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
@@ -397,11 +278,11 @@ serve(async (req) => {
         'Authorization': `Bearer ${supabaseServiceKey}`,
       },
       body: JSON.stringify({
-        to: bookingData.client_email,
-        clientName: bookingData.client_name,
-        serviceName: service.name_sk,
-        date: bookingData.date,
-        time: bookingData.time_slot,
+        to: body.client_email,
+        clientName: body.client_name,
+        serviceName: 'Service Request', 
+        date: body.date,
+        time: body.time_slot,
         cancellationToken: booking.cancellation_token,
         language: 'sk',
       }),
@@ -421,17 +302,17 @@ serve(async (req) => {
       body: JSON.stringify({
         to: adminEmail,
         clientName: 'Admin',
-        serviceName: service.name_sk,
-        date: bookingData.date,
-        time: bookingData.time_slot,
+        serviceName: 'Nová rezervácia', 
+        date: body.date,
+        time: body.time_slot,
         cancellationToken: booking.cancellation_token,
         language: 'sk',
         template: 'admin-notification',
         adminData: {
-          clientName: bookingData.client_name,
-          clientEmail: bookingData.client_email,
-          clientPhone: bookingData.client_phone,
-          notes: bookingData.notes,
+          clientName: body.client_name,
+          clientEmail: body.client_email,
+          clientPhone: body.client_phone,
+          notes: body.notes,
         },
       }),
     }).then(res => {
@@ -452,7 +333,7 @@ serve(async (req) => {
           user_id: clientUserId,
           payload: {
             title: 'Rezervácia potvrdená',
-            body: `${service.name_sk} — ${bookingData.date} o ${bookingData.time_slot}`,
+            body: `${body.date} o ${body.time_slot}`,
             url: '/portal',
           },
         }),
@@ -463,8 +344,9 @@ serve(async (req) => {
     }
 
     // Use waitUntil if available (Deno Deploy), otherwise just let it run
-    if (typeof (globalThis as any).EdgeRuntime?.waitUntil === 'function') {
-      (globalThis as any).EdgeRuntime.waitUntil(Promise.all([emailPromise, adminEmailPromise, pushPromise]))
+    const runtime = (globalThis as unknown as { EdgeRuntime?: { waitUntil: (p: Promise<unknown>) => void } }).EdgeRuntime
+    if (typeof runtime?.waitUntil === 'function') {
+      runtime.waitUntil(Promise.all([emailPromise, adminEmailPromise, pushPromise]))
     }
 
     return new Response(

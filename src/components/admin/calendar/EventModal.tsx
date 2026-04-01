@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -127,6 +128,11 @@ const EventModal = ({
             }
             {mode === 'create' ? t.newItem : t.editItem}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {language === 'sk' 
+              ? 'Formulár na správu kalendárových udalostí a blokácií' 
+              : 'Form for managing calendar events and blocks'}
+          </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable form area */}

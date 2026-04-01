@@ -5,10 +5,12 @@ import React from 'react';
 
 // Mock supabase with a flexible mock
 const mockFrom = vi.fn();
+const mockRpc = vi.fn();
 
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
-    from: (...args: any[]) => mockFrom(...args),
+    from: (...args: unknown[]) => mockFrom(...args),
+    rpc: (...args: unknown[]) => mockRpc(...args),
   },
 }));
 
@@ -22,16 +24,17 @@ function createWrapper() {
 
 import { useTimeSlots } from '../useTimeSlots';
 
-function mockChain(result: any) {
-  const chain: any = {};
-  const handler = {
-    get(_: any, prop: string) {
+function mockChain(result: { data: unknown; error: unknown }) {
+  const chain: Record<string, unknown> = {};
+  const handler: ProxyHandler<Record<string, unknown>> = {
+    get(_: unknown, prop: string) {
       if (prop === 'then') return undefined;
-      if (['data', 'error'].includes(prop)) return result[prop];
-      return (..._args: any[]) => new Proxy(result, handler);
+      const r = result as Record<string, unknown>;
+      if (['data', 'error'].includes(prop)) return r[prop];
+      return () => new Proxy(chain, handler);
     },
   };
-  return new Proxy(result, handler);
+  return new Proxy(chain, handler);
 }
 
 describe('useTimeSlots', () => {
@@ -45,13 +48,13 @@ describe('useTimeSlots', () => {
   });
 
   it('should return empty array for blocked dates', async () => {
-    const date = new Date('2026-03-16T12:00:00');
+    const date = new Date('2026-12-07T12:00:00');
 
+    mockRpc.mockImplementation(() => mockChain({ data: [], error: null }));
     mockFrom.mockImplementation((table: string) => {
       if (table === 'blocked_dates') return mockChain({ data: { id: 'b1' }, error: null });
       if (table === 'time_slots_config') return mockChain({ data: [], error: null });
-      if (table === 'bookings') return mockChain({ data: [], error: null });
-      if (table === 'employees') return mockChain({ data: [], error: null });
+      if (table === 'employees_public') return mockChain({ data: [], error: null });
       return mockChain({ data: [], error: null });
     });
 
@@ -63,6 +66,7 @@ describe('useTimeSlots', () => {
   it('should generate time slots from config', async () => {
     const date = new Date('2026-12-07T12:00:00'); // Monday (far future, past 36h lead time)
 
+    mockRpc.mockImplementation(() => mockChain({ data: [], error: null }));
     mockFrom.mockImplementation((table: string) => {
       if (table === 'blocked_dates') return mockChain({ data: null, error: null });
       if (table === 'time_slots_config') {
@@ -71,8 +75,7 @@ describe('useTimeSlots', () => {
           error: null,
         });
       }
-      if (table === 'bookings') return mockChain({ data: [], error: null });
-      if (table === 'employees') return mockChain({ data: [{ id: 'emp-1' }], error: null });
+      if (table === 'employees_public') return mockChain({ data: [{ id: 'emp-1' }], error: null });
       return mockChain({ data: [], error: null });
     });
 
@@ -86,8 +89,9 @@ describe('useTimeSlots', () => {
   });
 
   it('should mark slots as unavailable when fully booked', async () => {
-    const date = new Date('2026-03-16T12:00:00');
+    const date = new Date('2026-12-07T12:00:00');
 
+    mockRpc.mockImplementation(() => mockChain({ data: [{ time_slot: '09:00' }], error: null }));
     mockFrom.mockImplementation((table: string) => {
       if (table === 'blocked_dates') return mockChain({ data: null, error: null });
       if (table === 'time_slots_config') {
@@ -96,8 +100,7 @@ describe('useTimeSlots', () => {
           error: null,
         });
       }
-      if (table === 'bookings') return mockChain({ data: [{ time_slot: '09:00' }], error: null });
-      if (table === 'employees') return mockChain({ data: [{ id: 'emp-1' }], error: null });
+      if (table === 'employees_public') return mockChain({ data: [{ id: 'emp-1' }], error: null });
       return mockChain({ data: [], error: null });
     });
 
@@ -112,17 +115,15 @@ describe('useTimeSlots', () => {
   it('should carry occupied state to the starting slot for multi-slot services', async () => {
     const date = new Date('2026-12-07T12:00:00');
 
+    mockRpc.mockImplementation(() => mockChain({
+      data: [{ time_slot: '09:30', booking_duration: 30 }],
+      error: null,
+    }));
     mockFrom.mockImplementation((table: string) => {
       if (table === 'blocked_dates') return mockChain({ data: null, error: null });
       if (table === 'time_slots_config') {
         return mockChain({
           data: [{ day_of_week: 1, start_time: '09:00', end_time: '10:00', is_active: true }],
-          error: null,
-        });
-      }
-      if (table === 'bookings') {
-        return mockChain({
-          data: [{ time_slot: '09:30', booking_duration: 30 }],
           error: null,
         });
       }

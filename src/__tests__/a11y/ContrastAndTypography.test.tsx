@@ -219,7 +219,7 @@ describe('Reduced Motion & Accessibility Fallbacks', () => {
     });
 
     it('fallback background should be near-opaque (≥ 0.9) for readability', () => {
-        const match = cssContent.match(/@supports not.*\{[^}]*background:\s*rgba\(255,\s*255,\s*255,\s*([\d.]+)\)/s);
+        const match = cssContent.match(/@supports not.*?\{[^}]*background:\s*rgba\(255,\s*255,\s*255,\s*([\d.]+)\)/s);
         expect(match).toBeTruthy();
         expect(parseFloat(match![1])).toBeGreaterThanOrEqual(0.9);
     });

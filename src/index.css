@@ -361,21 +361,6 @@
     @apply animate-fade-in-up;
   }
 
-  .animate-glow-pulse {
-    /* no glow */
-  }
-
-  .animate-bounce-subtle {
-    /* disabled */
-  }
-
-  .animate-float-slow {
-    /* disabled */
-  }
-
-  .animate-pulse-soft {
-    /* disabled */
-  }
 
   /* ── Dynamic viewport height ── */
   .min-h-app-screen {
@@ -452,4 +437,87 @@
     background: rgba(255, 255, 255, 0.92) !important;
     border-color: rgba(15, 23, 42, 0.18) !important;
   }
+}
+/* 🌊 PREMIUM HOME PAGE POLISH (Baby Blue Glass Theme) */
+.client-theme-polish {
+  --bg-page-gradient: 
+    radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.4) 0%, transparent 40%),
+    radial-gradient(circle at 100% 0%, rgba(191, 226, 255, 0.5) 0%, transparent 40%),
+    linear-gradient(180deg, #f0f8ff 0%, #d8eeff 100%);
+
+  --glass-surface: rgba(255, 255, 255, 0.32);
+  --glass-border-bright: rgba(255, 255, 255, 0.65);
+  --glass-inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  --blue-glow: 0 10px 25px -5px rgba(11, 143, 232, 0.4);
+  --blue-outline: 0 0 0 2px #0b8fe8;
+  
+  background: var(--bg-page-gradient) !important;
+  background-attachment: fixed !important;
+  color: hsl(var(--foreground));
+}
+
+.client-theme-polish .glass-card,
+.client-theme-polish .glass {
+  background: var(--glass-surface) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--glass-border-bright) !important;
+  box-shadow: var(--shadow-glass-soft), var(--glass-inner-glow) !important;
+}
+
+.client-theme-polish .glass-card:hover {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: var(--shadow-glass-float) !important;
+  transform: translateY(-4px) !important;
+}
+
+/* Selected Service Card Outline */
+.client-theme-polish .service-card.selected,
+.client-theme-polish .service-card.active,
+.client-theme-polish [data-state="checked"] {
+  box-shadow: var(--blue-glow), var(--blue-outline), var(--glass-inner-glow) !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+  transform: scale(1.02) !important;
+}
+
+/* Express Slots - Warm Tint */
+.client-theme-polish .express-slot,
+.client-theme-polish [data-express="true"] {
+  background: linear-gradient(135deg, rgba(255, 251, 235, 0.6) 0%, rgba(255, 243, 210, 0.4) 100%) !important;
+  border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+/* CTA & Submit Button - Glossy Blue */
+.client-theme-polish button.primary,
+.client-theme-polish .btn-primary,
+.client-theme-polish button[type="submit"],
+.client-theme-polish .submit-button {
+  background: linear-gradient(180deg, #38bdf8 0%, #06b6d4 100%) !important;
+  border-radius: 16px !important;
+  font-weight: 600 !important;
+  box-shadow: 
+    0 8px 20px -4px rgba(6, 182, 212, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  color: white !important;
+}
+
+.client-theme-polish button.primary::after,
+.client-theme-polish .btn-primary::after,
+.client-theme-polish button[type="submit"]::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.client-theme-polish button.primary:hover,
+.client-theme-polish .btn-primary:hover,
+.client-theme-polish button[type="submit"]:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
 }

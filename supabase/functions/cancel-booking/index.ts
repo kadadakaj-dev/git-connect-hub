@@ -1,6 +1,15 @@
-/* eslint-disable */
-// @ts-nocheck - Deno Edge Function, not processed by local TS
+// Improved type safety for Deno Edge Runtime
+declare const Deno: {
+  env: {
+    get(key: string): string | undefined;
+  };
+};
+
+type EdgeRequest = Request;
+
+// @ts-expect-error: Deno module imports
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
+// @ts-expect-error: Deno module imports
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const corsHeaders = {
@@ -17,7 +26,7 @@ function isValidUUID(str: string): boolean {
   return uuidRegex.test(str)
 }
 
-serve(async (req) => {
+serve(async (req: EdgeRequest) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -65,45 +74,35 @@ serve(async (req) => {
       )
     }
 
-    // Find booking by cancellation token
-    const { data: booking, error: fetchError } = await supabase
-      .from('bookings')
-      .select('id, status, date, time_slot, client_name, client_email, client_phone, client_user_id, service_id')
-      .eq('cancellation_token', body.token)
-      .maybeSingle()
+    // Call the atomic secure cancellation RPC
+    const { data: results, error: rpcError } = await supabase.rpc('cancel_secure_booking', {
+      p_cancellation_token: body.token
+    })
 
-    if (fetchError) {
-      console.error('Error fetching booking:', fetchError)
+    if (rpcError) {
+      console.error('RPC Error:', rpcError)
+      if (rpcError.message?.includes('INVALID_CANCELLATION_TOKEN')) {
+        return new Response(
+          JSON.stringify({ error: 'Booking not found' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
       return new Response(
-        JSON.stringify({ error: 'Failed to find booking' }),
+        JSON.stringify({ error: 'Failed to cancel booking', details: rpcError.message }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
+    const booking = results?.[0]
     if (!booking) {
       return new Response(
-        JSON.stringify({ error: 'Booking not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Unexpected empty response from database' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Check if already cancelled
-    if (booking.status === 'cancelled') {
-      return new Response(
-        JSON.stringify({ error: 'Booking is already cancelled', booking }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Check if within 10 hours of appointment (or past)
-    const [slotHours, slotMinutes] = booking.time_slot.split(':').map(Number)
-    const bookingDateTime = new Date(booking.date)
-    bookingDateTime.setHours(slotHours, slotMinutes, 0, 0)
-
-    const now = new Date()
-    const hoursUntilBooking = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
-
-    if (hoursUntilBooking < 10) {
+    // Handle business logic rejections (persisted in logs)
+    if (booking.error_code === 'TOO_LATE_TO_CANCEL') {
       return new Response(
         JSON.stringify({ 
           error: 'TOO_LATE_TO_CANCEL', 
@@ -113,31 +112,18 @@ serve(async (req) => {
       )
     }
 
-    // Get service info for response
-    const { data: service } = await supabase
-      .from('services')
-      .select('name_sk, name_en')
-      .eq('id', booking.service_id)
-      .single()
-
-    // Update booking status to cancelled
-    const { error: updateError } = await supabase
-      .from('bookings')
-      .update({ status: 'cancelled', updated_at: new Date().toISOString() })
-      .eq('id', booking.id)
-
-    if (updateError) {
-      console.error('Error cancelling booking:', updateError)
+    if (booking.was_already_cancelled) {
+      console.log('Booking was already cancelled. Skipping notifications:', booking.booking_id)
       return new Response(
-        JSON.stringify({ error: 'Failed to cancel booking' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ success: true, booking, already_processed: true }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    console.log('Booking cancelled successfully:', booking.id)
+    console.log('Booking cancelled successfully via RPC:', booking.booking_id)
 
     // Send cancellation admin email notification (fire-and-forget)
-    fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+    const adminEmailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -146,23 +132,21 @@ serve(async (req) => {
       body: JSON.stringify({
         to: 'booking@fyzioafit.sk',
         clientName: booking.client_name,
-        serviceName: service?.name_sk || 'Služba',
-        date: booking.date,
-        time: booking.time_slot,
-        cancellationToken: '',
         language: 'sk',
         template: 'cancellation-admin',
         adminData: {
           clientName: booking.client_name,
           clientEmail: booking.client_email,
           clientPhone: booking.client_phone || '',
-          notes: null,
+          notes: booking.notes,
         },
       }),
+    }).then(res => {
+      if (!res.ok) console.error('Failed to send cancellation admin email')
     }).catch(err => console.error('Error sending cancellation admin email:', err))
 
     // Send cancellation confirmation to client (fire-and-forget)
-    fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+    const clientEmailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -171,19 +155,22 @@ serve(async (req) => {
       body: JSON.stringify({
         to: booking.client_email,
         clientName: booking.client_name,
-        serviceName: service?.name_sk || 'Služba',
-        serviceNameEn: service?.name_en || 'Service',
+        serviceName: booking.service_name_sk || 'Služba',
+        serviceNameEn: booking.service_name_en || 'Service',
         date: booking.date,
         time: booking.time_slot,
         cancellationToken: '',
         language: 'sk',
         template: 'cancellation-client',
       }),
+    }).then(res => {
+      if (!res.ok) console.error('Failed to send cancellation client email')
     }).catch(err => console.error('Error sending cancellation client email:', err))
 
     // Send push notification about cancellation (fire-and-forget)
+    let pushPromise = Promise.resolve()
     if (booking.client_user_id) {
-      fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+      pushPromise = fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -193,11 +180,19 @@ serve(async (req) => {
           user_id: booking.client_user_id,
           payload: {
             title: 'Rezervácia zrušená',
-            body: `${service?.name_sk || 'Služba'} — ${booking.date} o ${booking.time_slot}`,
+            body: `${booking.service_name_sk || 'Služba'} — ${booking.date} o ${booking.time_slot}`,
             url: '/portal',
           },
         }),
+      }).then(res => {
+        if (!res.ok) console.error('Failed to send cancellation push')
       }).catch(err => console.error('Error sending cancellation push:', err))
+    }
+
+    // Use waitUntil if available (Deno Deploy), otherwise just let it run
+    const runtime = (globalThis as unknown as { EdgeRuntime?: { waitUntil: (p: Promise<unknown>) => void } }).EdgeRuntime
+    if (typeof runtime?.waitUntil === 'function') {
+      runtime.waitUntil(Promise.all([adminEmailPromise, clientEmailPromise, pushPromise]))
     }
 
     return new Response(
@@ -206,8 +201,8 @@ serve(async (req) => {
         booking: {
           ...booking,
           status: 'cancelled',
-          service_name_sk: service?.name_sk,
-          service_name_en: service?.name_en
+          service_name_sk: booking.service_name_sk,
+          service_name_en: booking.service_name_en
         }
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

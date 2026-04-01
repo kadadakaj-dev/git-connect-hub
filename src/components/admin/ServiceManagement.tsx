@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -171,7 +172,7 @@ const ServiceManagement = () => {
     setIsDialogOpen(false);
   };
 
-  const handleEdit = (service: any) => {
+  const handleEdit = (service: ServiceFormData) => {
     setEditingService({
       id: service.id,
       name_sk: service.name_sk,
@@ -242,6 +243,11 @@ const ServiceManagement = () => {
                   ? (language === 'sk' ? 'Upraviť službu' : 'Edit Service')
                   : (language === 'sk' ? 'Nová služba' : 'New Service')}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                {language === 'sk' 
+                  ? 'Formulár na pridanie alebo úpravu služieb' 
+                  : 'Form to add or edit services'}
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">

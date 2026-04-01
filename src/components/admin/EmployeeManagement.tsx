@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -93,7 +93,7 @@ const EmployeeManagement = () => {
 
   const reset = () => { setForm(defaultForm); setEditing(false); setOpen(false); };
 
-  const handleEdit = (e: any) => {
+  const handleEdit = (e: EmployeeForm) => {
     setForm({
       id: e.id, full_name: e.full_name, email: e.email || '', phone: e.phone || '',
       position: e.position, bio_sk: e.bio_sk || '', bio_en: e.bio_en || '',
@@ -138,6 +138,11 @@ const EmployeeManagement = () => {
                   ? (language === 'sk' ? 'Upraviť zamestnanca' : 'Edit Employee')
                   : (language === 'sk' ? 'Nový zamestnanec' : 'New Employee')}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                {language === 'sk' 
+                  ? 'Formulár na správu údajov o zamestnancoch' 
+                  : 'Form for managing employee details'}
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
               <div className="space-y-2">

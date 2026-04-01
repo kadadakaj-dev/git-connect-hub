@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@/test/test-utils';
 import React from 'react';
 import CancelBooking from '../../../pages/CancelBooking';
 
@@ -16,7 +16,7 @@ const mockInvoke = vi.fn();
 vi.mock('@/integrations/supabase/client', () => ({
     supabase: {
         functions: {
-            invoke: (...args: any[]) => mockInvoke(...args),
+            invoke: (...args: unknown[]) => mockInvoke(...args),
         },
     },
 }));
@@ -40,7 +40,7 @@ vi.mock('@/components/GlassBackground', () => ({
 }));
 
 vi.mock('@/components/booking/GlassCard', () => ({
-    default: ({ children, className }: any) => <div className={className}>{children}</div>,
+    default: ({ children, className }: { children: React.ReactNode; className?: string }) => <div className={className}>{children}</div>,
 }));
 
 vi.mock('@/components/LanguageSwitcher', () => ({
@@ -200,7 +200,7 @@ describe('CancelBooking', () => {
         await waitFor(() => {
             expect(screen.getByText('Zrušenie online nie je možné')).toBeInTheDocument();
         });
-        expect(screen.getByText(/12 hodín/)).toBeInTheDocument();
+        expect(screen.getByText(/10 hodín/)).toBeInTheDocument();
         expect(screen.getByText(/\+421 905 307 198/)).toBeInTheDocument();
     });
 
