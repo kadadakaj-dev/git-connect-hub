@@ -256,22 +256,17 @@ const TimeGridView = ({
                         </div>
                       )}
 
-                      {/* Contact details — only on larger events in day view */}
-                      {!isSmall && !isMedium && !isWeek && (
-                        <div className="mt-auto flex flex-col gap-0.5 text-[9px] md:text-[10px] opacity-60 overflow-hidden">
+                      {/* Contact details — only on large events in day view */}
+                      {!isSmall && !isMedium && !isWeek && event.duration >= 60 && (
+                        <div className="mt-auto flex flex-col gap-0.5 text-[9px] md:text-[10px] opacity-50 overflow-hidden">
                           {event.clientPhone && (
                             <span className="flex items-center gap-1 truncate">
                               <Phone className="h-2.5 w-2.5 flex-shrink-0" /> {event.clientPhone}
                             </span>
                           )}
                           {event.clientEmail && (
-                            <span className="flex items-center gap-1 truncate">
+                            <span className="flex items-center gap-1 truncate hidden md:flex">
                               <Mail className="h-2.5 w-2.5 flex-shrink-0" /> {event.clientEmail}
-                            </span>
-                          )}
-                          {event.employeeName && (
-                            <span className="truncate">
-                              {event.employeeName.replace(/\s*\(\d+\)$/, '')}
                             </span>
                           )}
                         </div>
