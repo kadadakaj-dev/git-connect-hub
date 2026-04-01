@@ -45,8 +45,16 @@
     <meta name="twitter:description" content="Zarezervujte si termín fyzioterapie v Košiciach rýchlo a online.">
     <meta name="twitter:image" content="/og-image.png">
 
-    <!-- Plausible Analytics -->
-    <script defer data-domain="booking.fyzioafit.sk" src="https://plausible.io/js/script.js"></script>
+    <!-- Plausible Analytics - Only load on production to avoid localhost warnings -->
+    <script>
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        const script = document.createElement('script');
+        script.defer = true;
+        script.setAttribute('data-domain', 'booking.fyzioafit.sk');
+        script.src = 'https://plausible.io/js/script.js';
+        document.head.appendChild(script);
+      }
+    </script>
 </head>
 
   <body>

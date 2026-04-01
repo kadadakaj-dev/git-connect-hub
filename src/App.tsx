@@ -79,8 +79,8 @@ const App = () => {
                       </Routes>
                     </Suspense>
                     <CookieBanner />
-                    <PWAUpdatePrompt />
-                    <PushOptIn />
+                    {!import.meta.env.DEV && <PWAUpdatePrompt />}
+                    {!import.meta.env.DEV && <PushOptIn />}
                   </BrowserRouter>
                 </div>
               </TooltipProvider>

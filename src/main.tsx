@@ -17,10 +17,11 @@ if ("serviceWorker" in navigator) {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const isSecure = window.location.protocol === 'https:' || isLocalhost;
     
-    // Skip if we detect VS Code/IDE context which often breaks SW registration
+    // Skip if we detect IDE context or we're in Vite's development server
+    const isDev = import.meta.env.DEV;
     const isIDE = navigator.userAgent.includes('Code') || navigator.userAgent.includes('Vantage');
-
-    if (isSecure && !isIDE) {
+    
+    if (isSecure && !isIDE && !isDev) {
       navigator.serviceWorker
         .register("/sw.js")
         .then((registration) => {

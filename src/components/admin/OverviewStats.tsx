@@ -8,7 +8,7 @@ import BookingDetailsDialog, { type AdminBookingDetails } from '@/components/adm
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday, isWithinInterval, subDays, startOfDay } from 'date-fns';
 import { sk } from 'date-fns/locale';
 import { Calendar, BarChart3, Package, TrendingUp, Clock, CheckCircle, XCircle, DollarSign } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   BarChart, 
   Bar, 
@@ -28,6 +28,23 @@ const OverviewStats = () => {
   const { language } = useLanguage();
   const today = useMemo(() => new Date(), []);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    setIsMounted(true);
+    
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   const { data: bookings, isLoading: bookingsLoading } = useQuery({
     queryKey: ['admin-bookings-stats'],
@@ -169,7 +186,7 @@ const OverviewStats = () => {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div ref={containerRef} className="space-y-4 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/60 backdrop-blur-md shadow-sm transition-all hover:shadow-md hover:translate-y-[-2px]">
@@ -253,7 +270,8 @@ const OverviewStats = () => {
             <CardDescription>{language === 'sk' ? 'Počet rezervácií za posledný týždeň' : 'Daily bookings volume for the last week'}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px] w-full pt-4">
+            <div className="h-[250px] w-full pt-4 min-h-[250px]">
+              {isMounted && containerWidth > 0 && (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.last7Days}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
@@ -286,6 +304,7 @@ const OverviewStats = () => {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -299,7 +318,8 @@ const OverviewStats = () => {
             <CardDescription>{language === 'sk' ? 'Najžiadanejšie procedúry' : 'Most requested treatments'}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px] w-full">
+            <div className="h-[250px] w-full min-h-[250px]">
+              {isMounted && containerWidth > 0 && (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -320,6 +340,7 @@ const OverviewStats = () => {
                   />
                 </PieChart>
               </ResponsiveContainer>
+              )}
               <div className="space-y-2 mt-2">
                 {stats.serviceData.map((s, i) => (
                   <div key={s.name} className="flex items-center justify-between text-xs">
