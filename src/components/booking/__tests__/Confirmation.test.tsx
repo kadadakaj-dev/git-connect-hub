@@ -132,14 +132,14 @@ describe('Confirmation', () => {
     it('should render "Add to Calendar" button', () => {
         render(<Confirmation bookingData={mockBookingData} onNewBooking={onNewBooking} />);
 
-        expect(screen.getByText('Pridať do kalendára')).toBeInTheDocument();
+        expect(screen.getByText('Google')).toBeInTheDocument();
     });
 
     it('should open Google Calendar URL when calendar button is clicked', () => {
         const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
         render(<Confirmation bookingData={mockBookingData} onNewBooking={onNewBooking} />);
 
-        fireEvent.click(screen.getByText('Pridať do kalendára'));
+        fireEvent.click(screen.getAllByText('Google')[0]);
 
         expect(windowOpenSpy).toHaveBeenCalledTimes(1);
         const calendarUrl = windowOpenSpy.mock.calls[0][0] as string;

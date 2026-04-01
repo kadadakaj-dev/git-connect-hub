@@ -4,11 +4,9 @@ const path = require('path');
 
 const envs = [
   { name: 'VITE_SUPABASE_URL', value: 'https://gtefgucwbskgknsdirvj.supabase.co' },
-  { name: 'VITE_SUPABASE_ANON_KEY', value: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0ZWZndWN3YnNrZ2tuc2RpcnZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNDA1MjgsImV4cCI6MjA4OTcxNjUyOH0.0U0_nqaraTmezjEONg16wyal_q5CFmJaRho7xqDkiuc' },
-  { name: 'SUPABASE_SERVICE_ROLE_KEY', value: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0ZWZndWN3YnNrZ2tuc2RpcnZqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDE0MDUyOCwiZXhwIjoyMDg5NzE2NTI4fQ.01PjGhuJvLOIixjuGUCpsVzhX-4MWjcESC_nnkeZJJg' },
+  { name: 'VITE_SUPABASE_PUBLISHABLE_KEY', value: 'sb_publishable_LHXMJxk4HF71YLtQxNt94Q_yIbH7Kta' },
   { name: 'VITE_SUPABASE_PROJECT_ID', value: 'gtefgucwbskgknsdirvj' },
-  { name: 'NEXT_PUBLIC_SUPABASE_URL', value: 'https://gtefgucwbskgknsdirvj.supabase.co' },
-  { name: 'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY', value: 'sb_publishable_LHXMJxk4HF71YLtQxNt94Q_yIbH7Kta' }
+  { name: 'VITE_VAPID_PUBLIC_KEY', value: '' }
 ];
 
 console.log('--- Setting Vercel Production Environment Variables ---');

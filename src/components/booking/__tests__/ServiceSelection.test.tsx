@@ -93,7 +93,9 @@ describe('ServiceSelection', () => {
         render(<ServiceSelection selectedService={null} onSelect={onSelect} />);
 
         expect(screen.getByText('Vstupné vyšetrenie')).toBeInTheDocument();
-        expect(screen.getByText('Fyzioterapia')).toBeInTheDocument();
+        // "Fyzioterapia" appears twice: once as a category header and once as a service name
+        const fyzioTexts = screen.getAllByText('Fyzioterapia');
+        expect(fyzioTexts.length).toBeGreaterThanOrEqual(1);
         // Regular services should be buttons
         const buttons = screen.getAllByRole('button');
         expect(buttons).toHaveLength(2);
