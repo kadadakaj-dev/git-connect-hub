@@ -29,7 +29,7 @@ interface ServiceSelectionProps {
   onSelect: (service: Service) => void;
 }
 
-const EXPRESS_SERVICE_ID = '3caf6d26-cc3b-4126-8cef-dea395f3fa83';
+const EXPRESS_SERVICE_ID = 'b15733f3-274d-497b-8074-dca4d0daf6a3';
 const EXPRESS_PHONE = '+421 905 307 198';
 
 const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) => {
@@ -83,53 +83,66 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                     href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
                     className={cn(
                       "block rounded-2xl relative overflow-hidden",
-                      "backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass",
+                      "backdrop-blur-xl bg-[var(--glass-white)] border border-[#E3D2BA]/40 shadow-glass",
                       "before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1]",
                       "hover:-translate-y-1 hover:shadow-glass-float",
                       "transition-all duration-300 ease-liquid",
                       "group cursor-pointer"
                     )}
                   >
-                    {/* Baby blue gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-sky-400/[0.08] to-blue-400/[0.05] pointer-events-none rounded-[inherit]" />
+                    {/* Champagne gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#F7E7CE]/40 to-[#E3D2BA]/20 pointer-events-none rounded-[inherit]" />
 
-                    <div className="relative z-[2] p-4">
+                    <div className="relative z-[2] p-5">
                       {/* Top row: badge + price */}
-                      <div className="flex items-start justify-between mb-2.5">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-sky-400/15 text-sky-600 dark:text-sky-400 border border-sky-400/20">
+                      <div className="flex items-start justify-between mb-4">
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-bold uppercase tracking-wider bg-[#E3D2BA]/30 text-[#8B7355] border border-[#E3D2BA]/40">
                           ⚡ {t.expressLabel}
                         </span>
                         <div className="text-right">
-                          <span className="text-xl font-bold font-data text-sky-600 dark:text-sky-400 leading-none">
-                            +15 €
+                          <span className="text-2xl font-black font-data text-[#8B7355] leading-none">
+                            15 €
                           </span>
-                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                          <p className="text-[10px] text-[#8B7355]/70 font-semibold uppercase tracking-wider mt-1">
                             {t.expressSurcharge}
                           </p>
                         </div>
                       </div>
 
-                      {/* Description */}
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {t.expressDesc}
-                      </p>
+                      {/* Description and Note */}
+                      <div className="space-y-1 mb-5">
+                        <p className="text-base font-semibold text-[#8B7355]">
+                          {service.description}
+                        </p>
+                        <p className="text-sm font-bold text-[#8B7355]/80 italic">
+                          {language === 'sk' ? 'Len telefonicky' : 'By phone only'}
+                        </p>
+                      </div>
 
-                      {/* CTA button */}
+                      {/* Refined CTA area */}
                       <div className={cn(
-                        "flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl",
-                        "backdrop-blur-xl bg-[var(--glass-white-md)] border border-sky-400/20",
-                        "group-hover:bg-sky-400/10 group-hover:border-sky-400/30",
+                        "flex flex-col items-center justify-center gap-1.5 px-4 py-4 rounded-xl",
+                        "backdrop-blur-xl bg-white/60 border border-[#E3D2BA]/80 shadow-sm",
+                        "group-hover:bg-[#F7E7CE]/50 group-hover:border-[#D9C4A3]",
                         "transition-all duration-300"
                       )}>
-                        <Phone className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-                        <span className="text-sm font-semibold text-foreground">{t.expressCta}</span>
-                        <span className="text-sm font-bold font-data text-sky-600 dark:text-sky-400">{EXPRESS_PHONE}</span>
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <Phone className="w-4 h-4 text-[#A68B5B]" />
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-[#A68B5B]">
+                            {language === 'sk' ? 'Rezervovať telefonicky' : 'Book by phone'}
+                          </span>
+                        </div>
+                        <span className="text-xl font-bold font-data text-[#8B7355] tracking-tight">
+                          {EXPRESS_PHONE}
+                        </span>
                       </div>
                     </div>
                   </a>
                 );
               }
 
+              const isChampagne = service.name.toLowerCase().includes('expresný');
+              
               return (
                 <button
                   key={service.id}
@@ -141,7 +154,9 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                     "border backdrop-blur-sm",
                     isSelected
                       ? "border-primary bg-primary/8 shadow-[0_0_16px_rgba(59,130,246,0.12)] -translate-y-0.5"
-                      : "border-[var(--glass-border-subtle)] bg-[var(--glass-white)] hover:border-[var(--glass-border)] hover:bg-[var(--glass-white-md)] hover:-translate-y-0.5 hover:shadow-glass"
+                      : isChampagne
+                        ? "border-[#E3D2BA] bg-gradient-to-br from-[#F7E7CE]/40 to-[#E3D2BA]/20 hover:border-[#D4C3A3] hover:-translate-y-0.5 shadow-sm"
+                        : "border-[var(--glass-border-subtle)] bg-[var(--glass-white)] hover:border-[var(--glass-border)] hover:bg-[var(--glass-white-md)] hover:-translate-y-0.5 hover:shadow-glass"
                   )}
                 >
                   {/* Radio indicator */}
