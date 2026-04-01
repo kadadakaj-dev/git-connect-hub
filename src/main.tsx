@@ -10,16 +10,28 @@ createRoot(document.getElementById("root")!).render(
 );
 
 // Register Service Worker for PWA & Push Notifications
+// Safe registration to avoid InvalidStateError in IDE webviews or non-standard environments
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js") // Vite will handle the build and mapping for this
-      .then((registration) => {
-        console.log("SW registered: ", registration);
-      })
-      .catch((registrationError) => {
-        console.log("SW registration failed: ", registrationError);
-      });
+    // Only register if we're in a standard secure context or localhost
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isSecure = window.location.protocol === 'https:' || isLocalhost;
+    
+    // Skip if we detect VS Code/IDE context which often breaks SW registration
+    const isIDE = navigator.userAgent.includes('Code') || navigator.userAgent.includes('Vantage');
+
+    if (isSecure && !isIDE) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((registration) => {
+          console.log("SW registered: ", registration);
+        })
+        .catch((err) => {
+          console.warn("SW registration skipped or failed:", err.message);
+        });
+    } else {
+      console.log("SW registration skipped: unstable environment.");
+    }
   });
 }
 

@@ -31,3 +31,5 @@ blob-report/
 .env
 
 .vercel
+
+scripts/

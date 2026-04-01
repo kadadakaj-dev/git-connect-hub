@@ -178,7 +178,7 @@ const DateTimeSelection = ({
   const minBookableTime = new Date(Date.now() + 36 * 60 * 60 * 1000);
 
   const isDateDisabled = (date: Date) => {
-    if (date.getDay() === 0) return true; // Sunday
+    if (date.getDay() === 0 || date.getDay() === 6) return true; // Sunday or Saturday
     
     // Check if specifically blocked via admin
     const dateStr = format(date, 'yyyy-MM-dd');

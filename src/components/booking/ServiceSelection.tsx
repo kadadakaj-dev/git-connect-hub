@@ -83,66 +83,54 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                     href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
                     className={cn(
                       "block rounded-2xl relative overflow-hidden",
-                      "backdrop-blur-xl bg-[var(--glass-white)] border border-[#E3D2BA]/40 shadow-glass",
-                      "before:absolute before:inset-0 before:bg-[var(--reflection-top)] before:pointer-events-none before:rounded-[inherit] before:z-[1]",
-                      "hover:-translate-y-1 hover:shadow-glass-float",
-                      "transition-all duration-300 ease-liquid",
-                      "group cursor-pointer"
+                      "hover:-translate-y-1 hover:shadow-glass-float transition-all duration-300 ease-liquid",
+                      "group cursor-pointer border-2 border-primary/30"
                     )}
                   >
-                    {/* Champagne gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#F7E7CE]/40 to-[#E3D2BA]/20 pointer-events-none rounded-[inherit]" />
-
-                    <div className="relative z-[2] p-5">
-                      {/* Top row: badge + price */}
-                      <div className="flex items-start justify-between mb-4">
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-bold uppercase tracking-wider bg-[#E3D2BA]/30 text-[#8B7355] border border-[#E3D2BA]/40">
-                          ⚡ {t.expressLabel}
-                        </span>
-                        <div className="text-right">
-                          <span className="text-2xl font-black font-data text-[#8B7355] leading-none">
-                            15 €
+                    <div className="relative z-[1] h-full rounded-[14px] overflow-hidden bg-[var(--glass-white)] backdrop-blur-xl p-3.5">
+                      <div className="absolute inset-0 bg-[var(--reflection-top)] pointer-events-none" />
+                      
+                      <div className="relative z-[2] flex flex-col h-full justify-between gap-3">
+                        <div className="flex items-center justify-between">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                            ⚡ {t.expressLabel}
                           </span>
-                          <p className="text-[10px] text-[#8B7355]/70 font-semibold uppercase tracking-wider mt-1">
-                            {t.expressSurcharge}
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-xl font-black font-data text-[hsl(var(--deep-navy))]">15 €</span>
+                            <span className="text-[9px] text-muted-foreground font-bold uppercase">{t.expressSurcharge}</span>
+                          </div>
+                        </div>
+
+                        <div className="text-center">
+                          <p className="text-sm font-semibold text-[hsl(var(--soft-navy))]">
+                            {service.description} (30min)
+                          </p>
+                          <p className="text-[11px] font-bold text-primary/80 italic">
+                            {language === 'sk' ? 'Len telefonicky' : 'By phone only'}
                           </p>
                         </div>
-                      </div>
 
-                      {/* Description and Note */}
-                      <div className="space-y-1 mb-5">
-                        <p className="text-base font-semibold text-[#8B7355]">
-                          {service.description}
-                        </p>
-                        <p className="text-sm font-bold text-[#8B7355]/80 italic">
-                          {language === 'sk' ? 'Len telefonicky' : 'By phone only'}
-                        </p>
-                      </div>
-
-                      {/* Refined CTA area */}
-                      <div className={cn(
-                        "flex flex-col items-center justify-center gap-1.5 px-4 py-4 rounded-xl",
-                        "backdrop-blur-xl bg-white/60 border border-[#E3D2BA]/80 shadow-sm",
-                        "group-hover:bg-[#F7E7CE]/50 group-hover:border-[#D9C4A3]",
-                        "transition-all duration-300"
-                      )}>
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <Phone className="w-4 h-4 text-[#A68B5B]" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-[#A68B5B]">
-                            {language === 'sk' ? 'Rezervovať telefonicky' : 'Book by phone'}
+                        <div className={cn(
+                          "flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl",
+                          "backdrop-blur-xl bg-primary/5 border border-primary/10 shadow-sm",
+                          "group-hover:bg-primary/10 transition-all duration-300"
+                        )}>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <Phone className="w-3.5 h-3.5 text-primary" />
+                            <span className="text-[9px] font-bold uppercase tracking-tight text-primary">
+                              {language === 'sk' ? 'Rezervovať' : 'Book'}
+                            </span>
+                          </div>
+                          <span className="text-lg font-bold font-data text-[hsl(var(--deep-navy))]">
+                            {EXPRESS_PHONE}
                           </span>
                         </div>
-                        <span className="text-xl font-bold font-data text-[#8B7355] tracking-tight">
-                          {EXPRESS_PHONE}
-                        </span>
                       </div>
                     </div>
                   </a>
                 );
               }
 
-              const isChampagne = service.name.toLowerCase().includes('expresný');
-              
               return (
                 <button
                   key={service.id}
@@ -154,9 +142,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                     "border backdrop-blur-sm",
                     isSelected
                       ? "border-primary bg-primary/8 shadow-[0_0_16px_rgba(59,130,246,0.12)] -translate-y-0.5"
-                      : isChampagne
-                        ? "border-[#E3D2BA] bg-gradient-to-br from-[#F7E7CE]/40 to-[#E3D2BA]/20 hover:border-[#D4C3A3] hover:-translate-y-0.5 shadow-sm"
-                        : "border-[var(--glass-border-subtle)] bg-[var(--glass-white)] hover:border-[var(--glass-border)] hover:bg-[var(--glass-white-md)] hover:-translate-y-0.5 hover:shadow-glass"
+                      : "border-[var(--glass-border-subtle)] bg-[var(--glass-white)] hover:border-[var(--glass-border)] hover:bg-[var(--glass-white-md)] hover:-translate-y-0.5 hover:shadow-glass"
                   )}
                 >
                   {/* Radio indicator */}
