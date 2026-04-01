@@ -66,7 +66,7 @@
     --sidebar-border: 206 38% 84%;
     --sidebar-ring: 206 74% 62%;
 
-    /* ── Liquid Glass Tokens ── */
+    /* ── Liquid Glass Tokens (Enhanced) ── */
     --glass-white: rgba(255, 255, 255, 0.56);
     --glass-white-md: rgba(255, 255, 255, 0.72);
     --glass-white-lg: rgba(255, 255, 255, 0.86);
@@ -77,24 +77,31 @@
     --glass-border-bright: rgba(64, 114, 163, 0.24);
     --glass-glow: rgba(126, 195, 255, 0.2);
 
-    --blur-sm: blur(8px);
-    --blur-md: blur(20px);
-    --blur-lg: blur(34px);
-    --blur-xl: blur(58px);
+    --blur-sm: blur(12px);
+    --blur-md: blur(24px);
+    --blur-lg: blur(40px);
+    --blur-xl: blur(80px);
 
-    --shadow-glass: 0 18px 50px rgba(113, 153, 197, 0.15), 0 3px 14px rgba(36, 71, 107, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    --shadow-glass-float: 0 28px 80px rgba(96, 145, 192, 0.2), 0 8px 24px rgba(36, 71, 107, 0.08);
-    --shadow-glass-soft: 0 10px 30px rgba(126, 195, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    --shadow-glass: 
+      0 12px 40px rgba(0, 111, 184, 0.10),
+      inset 0 1px 1px rgba(255, 255, 255, 0.60);
+    --shadow-glass-float: 
+      0 20px 50px -12px rgba(0, 111, 184, 0.30),
+      0 0 30px -5px rgba(137, 207, 240, 0.50);
+    --shadow-glass-soft: 
+      0 10px 30px rgba(126, 195, 255, 0.12), 
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
     --reflection-top: linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.16) 42%, rgba(255, 255, 255, 0) 72%);
     --reflection-inner: inset 0 1px 1px rgba(255, 255, 255, 0.96), inset 0 -1px 1px rgba(36, 71, 107, 0.04);
     --surface-frost: linear-gradient(180deg, rgba(255, 255, 255, 0.74) 0%, rgba(234, 246, 255, 0.58) 100%);
     --surface-frost-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(216, 238, 255, 0.68) 100%);
 
-    --ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-liquid: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-glass: cubic-bezier(0.22, 0.68, 0, 1.2);
     --dur-fast: 180ms;
-    --dur-mid: 360ms;
+    --dur-mid: 500ms;
+    --dur-slow: 30s;
   }
 
   .dark {

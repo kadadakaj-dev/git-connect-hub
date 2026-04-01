@@ -25,6 +25,7 @@ interface BookingRequest {
   client_phone: string
   notes?: string
   client_request_id?: string
+  employee_id?: string
 }
 
 // Validation functions
@@ -230,8 +231,29 @@ serve(async (req: EdgeRequest) => {
       )
     }
 
+    interface Booking {
+      id: string;
+      client_name: string;
+      client_email: string;
+      service_title_sk: string;
+      service_title_en: string;
+      date: string;
+      time_slot: string;
+      staff_id: string;
+      cancellation_token?: string;
+      [key: string]: unknown;
+    }
+
+    interface SecureBookingResponse {
+      success: boolean;
+      error?: string;
+      message?: string;
+      booking?: Booking;
+      idempotent?: boolean;
+    }
+
     // Call the atomic secure booking RPC
-    const { data: rpcResult, error: rpcError } = await (supabase.rpc as any)('create_secure_booking', {
+    const { data: rpcResult, error: rpcError } = await (supabase.rpc as (name: string, args: Record<string, unknown>) => Promise<{ data: SecureBookingResponse; error: { message: string } | null }>)('create_secure_booking', {
       p_service_id: body.service_id,
       p_date: body.date,
       p_time_slot: body.time_slot,
@@ -240,7 +262,8 @@ serve(async (req: EdgeRequest) => {
       p_client_phone: sanitizeString(body.client_phone, 20),
       p_notes: body.notes ? sanitizeString(body.notes, 1000) : null,
       p_client_user_id: clientUserId,
-      p_client_request_id: body.client_request_id || null
+      p_client_request_id: body.client_request_id || null,
+      p_employee_id: body.employee_id || null
     })
 
     if (rpcError || !rpcResult?.success) {
@@ -260,7 +283,7 @@ serve(async (req: EdgeRequest) => {
     }
 
     const { booking, idempotent } = rpcResult
-    if (idempotent) {
+    if (idempotent && booking) {
       console.log('Idempotent request detected. Returning existing booking:', booking.id)
       return new Response(
         JSON.stringify({ success: true, booking, queued: false }),
@@ -268,7 +291,23 @@ serve(async (req: EdgeRequest) => {
       )
     }
 
+    if (!booking) {
+      return new Response(
+        JSON.stringify({ error: 'Booking data missing' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     console.log('Booking created successfully via RPC:', booking.id)
+
+    // Fetch service info for the email
+    const { data: serviceData } = await supabase
+      .from('services')
+      .select('name_sk')
+      .eq('id', body.service_id)
+      .single()
+
+    const serviceName = serviceData?.name_sk || 'Fyzioterapia'
 
     // Send confirmation email to client (fire-and-forget, non-blocking)
     const emailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
@@ -280,7 +319,7 @@ serve(async (req: EdgeRequest) => {
       body: JSON.stringify({
         to: body.client_email,
         clientName: body.client_name,
-        serviceName: 'Service Request', 
+        serviceName: serviceName, 
         date: body.date,
         time: body.time_slot,
         cancellationToken: booking.cancellation_token,

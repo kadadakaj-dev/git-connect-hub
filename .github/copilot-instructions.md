@@ -4,7 +4,7 @@
 
 This is a **FYZIO&FIT** appointment booking web application for a physiotherapy and chiropractic clinic. It is a bilingual (Slovak/English) Progressive Web App (PWA) that allows clients to book, manage, and cancel appointments online. It also includes an admin dashboard for managing bookings, services, time slots, and blocked dates.
 
-The project was scaffolded with [Lovable](https://lovable.dev) and uses **Vite + React + TypeScript + shadcn-ui + Tailwind CSS** on the frontend, backed by **Supabase** (PostgreSQL, Auth, Edge Functions, Storage).
+The project uses **Vite + React + TypeScript + shadcn-ui + Tailwind CSS** on the frontend, backed by **Supabase** (PostgreSQL, Auth, Edge Functions, Storage).
 
 ---
 

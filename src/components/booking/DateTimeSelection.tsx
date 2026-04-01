@@ -18,6 +18,7 @@ interface DateTimeSelectionProps {
   onDateSelect: (date: Date) => void;
   onTimeSelect: (time: string) => void;
   serviceDuration?: number;
+  therapistId?: string;
 }
 
 function getSlotAvailableClass(
@@ -112,11 +113,12 @@ const DateTimeSelection = ({
   onDateSelect,
   onTimeSelect,
   serviceDuration = 30,
+  therapistId,
 }: DateTimeSelectionProps) => {
   const { t, language } = useLanguage();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
-  const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate, serviceDuration);
+  const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate, serviceDuration, therapistId);
   const { data: blockedDays = [] } = useBlockedDates(currentMonth);
 
   const requiredSlots = Math.ceil(serviceDuration / 30);

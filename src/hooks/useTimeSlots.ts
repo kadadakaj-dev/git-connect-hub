@@ -121,11 +121,11 @@ function getAllSlotTimes(configs: TimeSlotConfig[]): string[] {
   return Array.from(times).sort();
 }
 
-export function useTimeSlots(selectedDate: Date | null, serviceDuration: number = 30) {
+export function useTimeSlots(selectedDate: Date | null, serviceDuration: number = 30, therapistId?: string) {
   const requiredSlots = Math.ceil(serviceDuration / 30);
 
   return useQuery({
-    queryKey: ['timeSlots', selectedDate?.toISOString(), serviceDuration],
+    queryKey: ['timeSlots', selectedDate?.toISOString(), serviceDuration, therapistId],
     queryFn: async (): Promise<TimeSlot[]> => {
       if (!selectedDate) return [];
 
@@ -154,10 +154,17 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
           .eq('day_of_week', dayOfWeek)
           .eq('is_active', true),
         supabase
-          .rpc('get_booking_slot_counts', { _date: dateString }),
+          .rpc('get_booking_slot_counts', { _date: dateString, _employee_id: therapistId }),
         supabase
           .from('employees_public')
-          .select('id'),
+          .select('id')
+          .eq('is_active', true)
+          .then(res => {
+            if (therapistId) {
+              return { data: res.data?.filter(e => e.id === therapistId) || [], error: res.error };
+            }
+            return res;
+          }),
       ]);
 
       if (configRes.error) throw configRes.error;
@@ -168,7 +175,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
       if (!configData || configData.length === 0) return [];
 
       const totalCapacity = Math.max(employeesRes.data?.length || 1, 1);
-      const bookings: BookingRecord[] = (bookingsRes.data || []).map((b: any) => ({
+      const bookings: BookingRecord[] = (bookingsRes.data || []).map((b) => ({
         time_slot: b.time_slot,
         booking_duration: b.booking_duration || 30,
       }));

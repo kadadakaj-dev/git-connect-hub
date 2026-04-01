@@ -22,6 +22,7 @@ import {
   Star,
   User as UserIcon,
   FileText,
+  ShieldCheck,
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ProfileEditDialog from '@/components/client/ProfileEditDialog';
@@ -42,6 +43,24 @@ const ClientPortal = () => {
   const [loading, setLoading] = useState(true);
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async (userId: string) => {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .maybeSingle();
+      
+      if (data) setIsAdmin(true);
+    };
+
+    if (user?.id) {
+      checkAdmin(user.id);
+    }
+  }, [user]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -103,7 +122,7 @@ const ClientPortal = () => {
         completed: 'Dokončené',
         cancelled: 'Zrušené',
       },
-      therapistNotes: 'Poznámky terapeuta',
+      therapistNotes: 'Poznámky od Personál FYZIO&FIT',
       favoritesHint: 'Vaše obľúbené služby pre rýchlu rezerváciu',
       addToFavorites: 'Pridať medzi obľúbené',
     },
@@ -125,7 +144,7 @@ const ClientPortal = () => {
         completed: 'Completed',
         cancelled: 'Cancelled',
       },
-      therapistNotes: 'Therapist Notes',
+      therapistNotes: 'Notes from Staff of FYZIO&FIT',
       favoritesHint: 'Your favorite services for quick booking',
       addToFavorites: 'Add to favorites',
     },
@@ -223,6 +242,17 @@ const ClientPortal = () => {
             </div>
 
             <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
+              {isAdmin && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="hidden h-9 items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 text-[13px] font-medium text-primary hover:bg-primary/10 sm:flex"
+                  onClick={() => navigate('/admin')}
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  {language === 'sk' ? 'Admin Panel' : 'Admin Panel'}
+                </Button>
+              )}
               <LanguageSwitcher />
               <SettingsMenu
                 onEditProfile={() => setIsProfileDialogOpen(true)}

@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import BookingWizard from '@/components/booking/BookingWizard';
 import LocalBusinessJsonLd from '@/components/seo/LocalBusinessJsonLd';
 import PageMeta from '@/components/seo/PageMeta';
+import ReviewsSection from '@/components/home/ReviewsSection';
 
 const Index = () => {
   return (
@@ -16,6 +17,7 @@ const Index = () => {
       <LocalBusinessJsonLd />
       <main>
         <BookingWizard />
+        <ReviewsSection />
       </main>
     </>
   );

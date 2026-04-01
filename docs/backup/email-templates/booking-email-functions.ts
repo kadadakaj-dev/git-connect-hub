@@ -1,6 +1,5 @@
-// @ts-expect-error: Deno-specific URL import
+// @ts-nocheck — Deno Edge Function, not processed by local TS
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-// @ts-expect-error: Deno-specific URL import
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const corsHeaders = {
@@ -41,7 +40,6 @@ const translations = {
     footer: "Tešíme sa na vašu návštevu!",
     clinicName: "FYZIO&FIT",
     contact: "Kontakt: booking@fyzioafit.sk",
-    addToCalendar: "Pridať do kalendára",
   },
   en: {
     subject: "Booking Confirmation - FYZIO&FIT",
@@ -58,7 +56,6 @@ const translations = {
     footer: "We look forward to seeing you!",
     clinicName: "FYZIO&FIT",
     contact: "Contact: booking@fyzioafit.sk",
-    addToCalendar: "Add to Calendar",
   },
 };
 
@@ -78,26 +75,9 @@ function formatDate(dateStr: string, language: "sk" | "en"): string {
     year: "numeric",
     month: "long",
     day: "numeric",
-    timeZone: "Europe/Bratislava",
+    timeZone: "Europe/Bratislava", // DÔLEŽITÉ: Supabase beží v UTC, toto zaručí správny SK dátum
   };
   return date.toLocaleDateString(language === "sk" ? "sk-SK" : "en-US", options);
-}
-
-function generateGoogleCalendarUrl(data: EmailRequest): string {
-  const [h, m] = data.time.split(':').map(Number);
-  const startDate = new Date(data.date);
-  startDate.setHours(h, m, 0, 0);
-  
-  // Predpokldáme 30 minút ak nie je špecifikované inak (väčšina služieb)
-  const endDate = new Date(startDate.getTime() + 30 * 60000);
-  
-  const formatG = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-  
-  const title = `FYZIO & FIT: ${data.serviceName}`;
-  const details = `Vaša rezervácia pre ${data.clientName}.\nMiesto: Krmanová 6, Košice`;
-  const location = "Krmanová 6, 040 01 Košice, Slovensko";
-  
-  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatG(startDate)}/${formatG(endDate)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
 }
 
 function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
@@ -163,9 +143,6 @@ function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
               </table>
               <!-- Looking forward -->
               <p class="text-heading" style="color: #1a2b42; font-size: 18px; font-weight: 600; margin: 0 0 28px 0; text-align: center;">${t.footer}</p>
-              <div style="text-align: center; margin-bottom: 30px;">
-                <a href="${generateGoogleCalendarUrl(data)}" style="display: inline-block; background-color: #4a90d9; color: #ffffff; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; margin-bottom: 12px; min-width: 180px;">📅 ${t.addToCalendar}</a>
-              </div>
               <!-- Cancel Section - Alert style with left border -->
               <table width="100%" cellpadding="0" cellspacing="0" class="cancel-section" style="background-color: #fef2f2; border-left: 4px solid #ef4444; border-radius: 0 12px 12px 0; margin-bottom: 24px;">
                 <tr>
@@ -760,7 +737,7 @@ function generateCancellationClientText(data: EmailRequest, baseUrl: string): st
   ].join('\n');
 }
 
-serve(async (req: Request) => {
+serve(async (req) => {
   // CORS Preflight request
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -768,7 +745,6 @@ serve(async (req: Request) => {
 
   try {
     // 1. Bezpečnejšia kontrola prostredia bez "!"
-// @ts-expect-error: Deno global
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseServiceKey) {
       console.error("Server configuration error: SUPABASE_SERVICE_ROLE_KEY is missing");
@@ -793,15 +769,13 @@ serve(async (req: Request) => {
     console.log("Sending booking email to:", data.to, "template:", data.template || "confirmation");
 
     // 4. Overenie hesla pre SMTP
-// @ts-expect-error: Deno global
     const smtpPassword = Deno.env.get("SMTP_PASSWORD");
     if (!smtpPassword) {
       console.error("Server configuration error: SMTP_PASSWORD is missing");
       throw new Error("SMTP_PASSWORD not configured");
     }
 
-// @ts-expect-error: Deno global
-    const baseUrl = Deno.env.get("SITE_URL") || "https://booking.fyzioafit.sk";
+    const baseUrl = Deno.env.get("SITE_URL") || "https://booking-fyzioafit.lovable.app";
 
     // 5. Inicializácia klienta a odoslanie
     const client = new SMTPClient({

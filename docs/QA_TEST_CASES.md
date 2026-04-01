@@ -1,6 +1,6 @@
 # QA Test Cases — FYZIO&FIT Booking System
 
-> **Project**: FYZIO&FIT physiotherapy booking (Lovable.dev + Supabase)
+> **Project**: FYZIO&FIT physiotherapy booking (Vite + React + Supabase)
 > **Scope**: Only what is explicitly visible, configured, or present in the codebase.
 > **Out of scope**: Internal DB schema, direct SQL testing, infrastructure, server-side unit tests, admin module deep testing.
 > **Language**: Default Slovak (sk), secondary English (en). Tests written for SK unless stated.

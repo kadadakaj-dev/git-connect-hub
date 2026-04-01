@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/(api|functions)/:path*",
+      "destination": "/(api|functions)/:path*"
+    },
+    {
+      "source": "/(assets|og-image.png|favicon.ico)/:path*",
+      "destination": "/(assets|og-image.png|favicon.ico)/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-// @ts-nocheck — Deno Edge Function, not processed by local TS
+// @ts-expect-error: Deno-specific URL import
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -6,7 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
-Deno.serve(async (req) => {
+// @ts-expect-error: Deno global
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -20,10 +21,13 @@ Deno.serve(async (req) => {
       });
     }
 
+// @ts-expect-error: Deno global
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+// @ts-expect-error: Deno global
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
     // Verify user with their token
+// @ts-expect-error: Deno global
     const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -57,7 +61,7 @@ Deno.serve(async (req) => {
       .eq("client_user_id", user.id);
 
     if (bookings && bookings.length > 0) {
-      const bookingIds = bookings.map((b) => b.id);
+      const bookingIds = bookings.map((b: { id: string }) => b.id);
       await adminClient.from("therapist_notes").delete().in("booking_id", bookingIds);
       await adminClient.from("booking_reminders").delete().in("booking_id", bookingIds);
     }
@@ -72,7 +76,7 @@ Deno.serve(async (req) => {
     if (profile) {
       const { data: files } = await adminClient.storage.from("avatars").list(user.id);
       if (files && files.length > 0) {
-        const filePaths = files.map((f) => `${user.id}/${f.name}`);
+        const filePaths = files.map((f: { name: string }) => `${user.id}/${f.name}`);
         await adminClient.storage.from("avatars").remove(filePaths);
       }
     }

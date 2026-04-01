@@ -33,7 +33,8 @@ CREATE OR REPLACE FUNCTION public.create_secure_booking(
     p_client_phone TEXT,
     p_notes TEXT DEFAULT NULL,
     p_client_user_id UUID DEFAULT NULL,
-    p_client_request_id UUID DEFAULT NULL
+    p_client_request_id UUID DEFAULT NULL,
+    p_employee_id UUID DEFAULT NULL
 ) 
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -107,9 +108,20 @@ BEGIN
     END IF;
 
     -- 5. Capacity & Slot Check
-    -- Get total active employee count
-    SELECT count(*) INTO v_total_capacity FROM public.employees WHERE is_active = true;
-    IF v_total_capacity = 0 THEN v_total_capacity := 1; END IF;
+    IF p_employee_id IS NOT NULL THEN
+        -- If specific employee requested, capacity for that person is 1
+        v_total_capacity := 1;
+        v_assigned_employee_id := p_employee_id;
+        
+        -- Validate employee exists and is active
+        IF NOT EXISTS (SELECT 1 FROM public.employees WHERE id = p_employee_id AND is_active = true) THEN
+            RETURN jsonb_build_object('success', false, 'error', 'Selected therapist is not available');
+        END IF;
+    ELSE
+        -- Get total active employee count for shared pool
+        SELECT count(*) INTO v_total_capacity FROM public.employees WHERE is_active = true;
+        IF v_total_capacity = 0 THEN v_total_capacity := 1; END IF;
+    END IF;
 
     -- Calculate slots (30min intervals)
     v_slot_min := (split_part(p_time_slot, ':', 1)::int * 60) + split_part(p_time_slot, ':', 2)::int;
@@ -123,6 +135,7 @@ BEGIN
         FROM public.bookings
         WHERE date = p_date
           AND status != 'cancelled'
+          AND (p_employee_id IS NULL OR employee_id = p_employee_id)
           AND (
             (split_part(time_slot, ':', 1)::int * 60 + split_part(time_slot, ':', 2)::int) <= v_check_min
             AND (split_part(time_slot, ':', 1)::int * 60 + split_part(time_slot, ':', 2)::int + COALESCE(booking_duration, 30)) > v_check_min
@@ -133,19 +146,21 @@ BEGIN
         END IF;
     END LOOP;
 
-    -- 6. Atomic Employee Assignment (Round-robin logic)
-    -- Pick employee with fewest confirmed bookings on that date
-    SELECT e.id INTO v_assigned_employee_id
-    FROM public.employees e
-    LEFT JOIN (
-        SELECT employee_id, count(*) as booking_count
-        FROM public.bookings
-        WHERE date = p_date AND status != 'cancelled'
-        GROUP BY employee_id
-    ) b ON e.id = b.employee_id
-    WHERE e.is_active = true
-    ORDER BY COALESCE(b.booking_count, 0) ASC, e.sort_order ASC
-    LIMIT 1;
+    -- 6. Atomic Employee Assignment (Skip if provided)
+    IF v_assigned_employee_id IS NULL THEN
+        -- Pick employee with fewest confirmed bookings on that date (Round-robin)
+        SELECT e.id INTO v_assigned_employee_id
+        FROM public.employees e
+        LEFT JOIN (
+            SELECT employee_id, count(*) as booking_count
+            FROM public.bookings
+            WHERE date = p_date AND status != 'cancelled'
+            GROUP BY employee_id
+        ) b ON e.id = b.employee_id
+        WHERE e.is_active = true
+        ORDER BY COALESCE(b.booking_count, 0) ASC, e.sort_order ASC
+        LIMIT 1;
+    END IF;
 
     -- 7. Insert Booking
     INSERT INTO public.bookings (

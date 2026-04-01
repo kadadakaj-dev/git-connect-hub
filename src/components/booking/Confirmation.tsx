@@ -29,7 +29,7 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
       startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
       const endDate = new Date(startDate.getTime() + (service.duration || 60) * 60000);
       
-      // Format dates for Google Calendar in local time (YYYYMMDDTHHMMSS without Z = local time)
+      // Format dates for Google Calendar in local time
       const formatLocalDate = (d: Date) => {
         const pad = (n: number) => String(n).padStart(2, '0');
         return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
@@ -37,6 +37,43 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
       
       const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatLocalDate(startDate)}/${formatLocalDate(endDate)}&ctz=Europe/Bratislava&details=${encodeURIComponent(language === 'sk' ? 'Rezervácia fyzioterapie' : 'Physiotherapy appointment')}&location=${encodeURIComponent('Krmanová 6, Košice')}`;
       window.open(googleCalendarUrl, '_blank');
+    }
+  };
+
+  const handleDownloadICS = () => {
+    if (date && time && service) {
+      const title = `FYZIO&FIT - ${service.name}`;
+      const startDate = new Date(date);
+      const [hours, minutes] = time.split(':');
+      startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      const endDate = new Date(startDate.getTime() + (service.duration || 60) * 60000);
+
+      const formatICSDate = (d: Date) => {
+        return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      };
+
+      const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PROID:-//FYZIO&FIT//Booking System//SK',
+        'BEGIN:VEVENT',
+        `DTSTART:${formatICSDate(startDate)}`,
+        `DTEND:${formatICSDate(endDate)}`,
+        `SUMMARY:${title}`,
+        `DESCRIPTION:${language === 'sk' ? 'Rezervácia fyzioterapie' : 'Physiotherapy appointment'}`,
+        'LOCATION:Krmanová 6, Košice',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\n');
+
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'fyzio-fit-appointment.ics');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 
@@ -93,6 +130,14 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
             </div>
           </div>
 
+          {/* Provider Branding */}
+          <div className="flex items-center gap-2 py-2 px-3 rounded-lg bg-primary/5 border border-primary/10">
+            <User className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[13px] font-medium text-foreground">
+              {language === 'sk' ? 'Personál FYZIO&FIT' : 'Staff of FYZIO&FIT'}
+            </span>
+          </div>
+
           {/* Location */}
           <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="w-3.5 h-3.5" />
@@ -132,15 +177,21 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
       </div>
 
       {/* Actions */}
-      <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-        <Button variant="default" size="lg" onClick={onNewBooking} className="w-full sm:w-auto gap-2 rounded-xl">
+      <div className="mt-6 flex flex-col gap-3">
+        <Button variant="default" size="lg" onClick={onNewBooking} className="w-full gap-2 rounded-xl">
           <span>{t.bookAnotherAppointment}</span>
           <ArrowRight className="w-4 h-4" />
         </Button>
-        <Button variant="glass" size="lg" onClick={handleAddToCalendar} className="w-full sm:w-auto gap-2 rounded-xl">
-          <CalendarPlus className="w-4 h-4" />
-          <span>{language === 'sk' ? 'Pridať do kalendára' : 'Add to Calendar'}</span>
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="glass" size="lg" onClick={handleAddToCalendar} className="flex-1 gap-2 rounded-xl text-xs sm:text-sm">
+            <CalendarPlus className="w-4 h-4" />
+            <span>Google</span>
+          </Button>
+          <Button variant="glass" size="lg" onClick={handleDownloadICS} className="flex-1 gap-2 rounded-xl text-xs sm:text-sm">
+            <Calendar className="w-4 h-4 text-primary" />
+            <span>Apple / Outlook</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -114,11 +114,20 @@ export default {
         xl: "calc(var(--radius) + 4px)",
         "2xl": "calc(var(--radius) + 8px)",
       },
+      blur: {
+        xs: "2px",
+        sm: "12px",
+        md: "24px",
+        lg: "40px",
+        xl: "80px",
+        "2xl": "120px",
+      },
       boxShadow: {
         'soft': '0 1px 2px rgba(0,0,0,0.04)',
         'elevated': '0 2px 8px rgba(0,0,0,0.06)',
         'glass': 'var(--shadow-glass)',
         'glass-float': 'var(--shadow-glass-float)',
+        'aurora': '0 12px 24px -6px rgba(137,207,240,0.50)',
       },
       keyframes: {
         "accordion-down": {
@@ -148,12 +157,12 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in-up": "fade-in-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards",
-        "scale-in": "scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards",
+        "fade-in-up": "fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "scale-in": "scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         "float": "float 4s ease-in-out infinite",
       },
       transitionTimingFunction: {
-        'liquid': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'liquid': 'cubic-bezier(0.16, 1, 0.3, 1)',
         'glass': 'cubic-bezier(0.22, 0.68, 0, 1.2)',
       },
       spacing: {

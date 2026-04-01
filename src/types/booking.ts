@@ -23,6 +23,7 @@ export interface BookingData {
   clientEmail: string;
   clientPhone: string;
   notes: string;
+  employeeId?: string;
 }
 
 export interface BookingStep {

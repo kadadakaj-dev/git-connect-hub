@@ -18,7 +18,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Loader2, UserCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, UserCircle, Camera } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface EmployeeForm {
   id?: string;
@@ -30,11 +31,13 @@ interface EmployeeForm {
   bio_en: string;
   is_active: boolean;
   sort_order: number;
+  avatar_url?: string | null;
 }
 
 const defaultForm: EmployeeForm = {
   full_name: '', email: '', phone: '', position: 'therapist',
   bio_sk: '', bio_en: '', is_active: true, sort_order: 0,
+  avatar_url: null,
 };
 
 const EmployeeManagement = () => {
@@ -52,7 +55,7 @@ const EmployeeManagement = () => {
         .select('*')
         .order('sort_order', { ascending: true });
       if (error) throw error;
-      return data;
+      return data as (EmployeeForm & { created_at: string; updated_at: string })[];
     },
   });
 
@@ -62,6 +65,7 @@ const EmployeeManagement = () => {
         full_name: d.full_name, email: d.email || null, phone: d.phone || null,
         position: d.position, bio_sk: d.bio_sk || null, bio_en: d.bio_en || null,
         is_active: d.is_active, sort_order: d.sort_order,
+        avatar_url: d.avatar_url,
       };
       if (d.id) {
         const { error } = await supabase.from('employees').update(payload).eq('id', d.id);
@@ -98,6 +102,7 @@ const EmployeeManagement = () => {
       id: e.id, full_name: e.full_name, email: e.email || '', phone: e.phone || '',
       position: e.position, bio_sk: e.bio_sk || '', bio_en: e.bio_en || '',
       is_active: e.is_active, sort_order: e.sort_order,
+      avatar_url: e.avatar_url,
     });
     setEditing(true);
     setOpen(true);
@@ -144,6 +149,54 @@ const EmployeeManagement = () => {
                   : 'Form for managing employee details'}
               </DialogDescription>
             </DialogHeader>
+
+            <div className="flex flex-col items-center gap-4 my-4">
+              <div className="relative group">
+                <Avatar className="w-24 h-24 border-2 border-primary/20 shadow-lg">
+                  <AvatarImage src={form.avatar_url || ''} />
+                  <AvatarFallback className="bg-primary/5">
+                    <UserCircle className="w-12 h-12 text-primary/40" />
+                  </AvatarFallback>
+                </Avatar>
+                <label className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                  <Camera className="w-6 h-6 text-white" />
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      const loadingToast = toast.loading(language === 'sk' ? 'Nahrávam...' : 'Uploading...');
+                      try {
+                        const fileExt = file.name.split('.').pop();
+                        const filePath = `employee-${Math.random()}.${fileExt}`;
+                        
+                        const { error: uploadError } = await supabase.storage
+                          .from('avatars')
+                          .upload(filePath, file);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: { publicUrl } } = supabase.storage
+                          .from('avatars')
+                          .getPublicUrl(filePath);
+
+                        setForm(prev => ({ ...prev, avatar_url: publicUrl }));
+                        toast.success(language === 'sk' ? 'Fotka nahraná' : 'Photo uploaded', { id: loadingToast });
+                      } catch (err) {
+                        toast.error(language === 'sk' ? 'Chyba pri nahrávaní' : 'Upload failed', { id: loadingToast });
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                {language === 'sk' ? 'Fotka zamestnanca' : 'Employee Photo'}
+              </p>
+            </div>
+
             <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
               <div className="space-y-2">
                 <Label>{language === 'sk' ? 'Meno' : 'Full Name'} *</Label>
@@ -218,8 +271,13 @@ const EmployeeManagement = () => {
             {employees?.map((emp) => (
               <TableRow key={emp.id} className="even:bg-muted/20">
                 <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <UserCircle className="w-5 h-5 text-muted-foreground" />
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-8 h-8 border border-primary/10">
+                      <AvatarImage src={emp.avatar_url || ''} />
+                      <AvatarFallback className="bg-primary/5">
+                        <UserCircle className="w-4 h-4 text-primary/40" />
+                      </AvatarFallback>
+                    </Avatar>
                     {emp.full_name}
                   </div>
                 </TableCell>

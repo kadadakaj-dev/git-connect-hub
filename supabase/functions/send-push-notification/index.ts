@@ -1,5 +1,6 @@
-// @ts-nocheck — Deno Edge Function, not processed by local TS
+// @ts-expect-error: Deno-specific URL import
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+// @ts-expect-error: Deno-specific URL import
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -99,13 +100,13 @@ function derToRaw(der: Uint8Array): Uint8Array {
   const raw = new Uint8Array(64);
   let offset = 2;
   offset++;
-  let rLen = der[offset++];
+  const rLen = der[offset++];
   const rOffset = rLen === 33 ? offset + 1 : offset;
   const rSize = rLen === 33 ? 32 : rLen;
   raw.set(der.slice(rOffset, rOffset + rSize), 32 - rSize);
   offset += rLen;
   offset++;
-  let sLen = der[offset++];
+  const sLen = der[offset++];
   const sOffset = sLen === 33 ? offset + 1 : offset;
   const sSize = sLen === 33 ? 32 : sLen;
   raw.set(der.slice(sOffset, sOffset + sSize), 64 - sSize);
@@ -138,11 +139,17 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+// @ts-expect-error: Deno global
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+// @ts-expect-error: Deno global
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+// @ts-expect-error: Deno global
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+// @ts-expect-error: Deno global
     const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY");
+// @ts-expect-error: Deno global
     const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY");
+// @ts-expect-error: Deno global
     const vapidSubject = Deno.env.get("VAPID_SUBJECT") || "mailto:booking@fyzioafit.sk";
 
     if (!vapidPublicKey || !vapidPrivateKey) {

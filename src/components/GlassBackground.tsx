@@ -1,45 +1,49 @@
 const GlassBackground = () => (
-  <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-100 md:opacity-100">
+  <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-100 select-none">
+    {/* Primary Aurora Blob */}
     <div
-      className="glass-blob max-md:!opacity-[0.15]"
+      className="glass-blob !opacity-[0.34] max-md:!opacity-[0.22]"
       style={{
-        width: 760,
-        height: 760,
-        background: 'radial-gradient(circle, rgba(191, 226, 255, 0.96) 0%, rgba(126, 195, 255, 0.48) 48%, rgba(126, 195, 255, 0) 78%)',
-        top: -240,
-        left: -170,
-        ['--blob-dur' as string]: '24s',
+        width: 900,
+        height: 900,
+        background: 'radial-gradient(circle at center, rgba(162, 219, 255, 0.82) 0%, rgba(126, 195, 255, 0.36) 45%, rgba(126, 195, 255, 0) 75%)',
+        top: -300,
+        left: -200,
+        ['--blob-dur' as string]: '30s',
       }}
     />
+    {/* Secondary Soft Mist Blob */}
     <div
-      className="glass-blob max-md:!opacity-[0.12]"
+      className="glass-blob !opacity-[0.28] max-md:!opacity-[0.18]"
       style={{
-        width: 660,
-        height: 660,
-        background: 'radial-gradient(circle, rgba(234, 246, 255, 0.96) 0%, rgba(216, 238, 255, 0.76) 46%, rgba(216, 238, 255, 0) 78%)',
-        bottom: -250,
-        right: -120,
-        ['--blob-dur' as string]: '18s',
-        animationDelay: '-8s',
+        width: 800,
+        height: 800,
+        background: 'radial-gradient(circle at center, rgba(234, 246, 255, 0.88) 0%, rgba(216, 238, 255, 0.44) 48%, rgba(216, 238, 255, 0) 78%)',
+        bottom: -300,
+        right: -150,
+        ['--blob-dur' as string]: '22s',
+        animationDelay: '-5s',
       }}
     />
+    {/* Tertiary Deep Accent Blob */}
     <div
-      className="glass-blob max-md:!opacity-[0.1]"
+      className="glass-blob !opacity-[0.14] max-md:!opacity-[0.08]"
       style={{
-        width: 430,
-        height: 430,
-        background: 'radial-gradient(circle, rgba(36, 71, 107, 0.14) 0%, rgba(126, 195, 255, 0.18) 42%, rgba(126, 195, 255, 0) 74%)',
-        top: '36%',
-        left: '54%',
-        ['--blob-dur' as string]: '27s',
-        animationDelay: '-13s',
+        width: 600,
+        height: 600,
+        background: 'radial-gradient(circle at center, rgba(36, 71, 107, 0.12) 0%, rgba(137, 207, 240, 0.22) 50%, rgba(137, 207, 240, 0) 80%)',
+        top: '28%',
+        left: '48%',
+        ['--blob-dur' as string]: '35s',
+        animationDelay: '-12s',
       }}
     />
+    {/* Surface Frosting Overlay */}
     <div
-      className="absolute inset-0"
+      className="absolute inset-0 backdrop-blur-[1px]"
       style={{
         background:
-          'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.08) 34%, rgba(255,255,255,0) 100%)',
+          'linear-gradient(180deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.12) 34%, rgba(255,255,255,0) 100%)',
       }}
     />
   </div>

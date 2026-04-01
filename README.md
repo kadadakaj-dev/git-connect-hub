@@ -1,6 +1,23 @@
-# Git Connect Hub
-
 A premium, modern booking platform with a focus on medical and high-end service interfaces, featuring a signature **"Baby Blue Glass"** design system.
+
+---
+
+> [!CAUTION]
+> **CRITICALLY IMPORTANT - DATA INTEGRITY**:
+> DO NOT CHANGE any existing business data, including:
+> - **Service Time/Duration**
+> - **Service Functions/Logic**
+> - **Service Categories**
+> - **Service Prices**
+>
+> All existing settings must remain exactly as they are currently written in the database and configuration files. Only UI/UX and stability improvements are allowed.
+
+---
+
+## ⚠️ CRITICAL: Data Integrity
+Any modifications to the service schema or business logic must be validated against the existing database constraints. Ensure that `ServiceManagement.tsx` correctly utilizes the required UI components and utilities.
+
+---
 
 ## 🚀 Quick Start
 
@@ -14,7 +31,7 @@ npm run dev
 ```
 
 ### URL
-**Lovable Project**: [Git Connect Hub](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID)
+**FYZIO&FIT Internal Booking System**
 
 ---
 
@@ -86,7 +103,7 @@ After creating any user in the Supabase Dashboard, assign them the `admin` role 
 - `src/components/`: Reusable UI components and domain-specific booking widgets.
 - `src/pages/`: Main application routes (Auth, Portal, Admin, Home).
 - `src/hooks/`: Business logic for time slot generation and Supabase integration.
-- `src/integrations/`: Supabase client and specialized Lovable auth wrappers.
+- `src/integrations/`: Supabase client and specialized auth configurations.
 - `docs/`: Supplementary documentation and manual QA test cases.
 
 ---
