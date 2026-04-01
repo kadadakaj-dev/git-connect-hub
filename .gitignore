@@ -33,3 +33,12 @@ blob-report/
 .vercel
 
 scripts/
+
+# Servisné skripty a dáta
+*.mjs
+booking_events_log.json
+booking_events_full_log.json
+services_all.json
+services_all_with_service_key.json
+services_current.json
+old_db_full_backup.sql
