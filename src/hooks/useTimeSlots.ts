@@ -161,6 +161,14 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
           .eq('is_active', true)
           .then(res => {
             if (therapistId) {
+              const mainPersonId = 'ce777223-62f0-47ec-9b37-30a26d999610';
+              if (therapistId === mainPersonId) {
+                // Return all slots for capacity calculation
+                return { 
+                  data: res.data?.filter(e => e.id === mainPersonId || e.id === '5c1c02af-cbbc-47a8-b7c7-1387aa53a7bc' || e.id === '06acd843-2d63-4273-b352-14efae698b17') || [], 
+                  error: res.error 
+                };
+              }
               return { data: res.data?.filter(e => e.id === therapistId) || [], error: res.error };
             }
             return res;

@@ -131,9 +131,11 @@ const CalendarHeader = ({
               className="cursor-pointer bg-transparent text-[11px] sm:text-xs font-medium text-[hsl(var(--soft-navy))] focus:outline-none max-w-[80px] sm:max-w-none"
             >
               <option value="all">{t.allEmployees}</option>
-              {employees.map(emp => (
-                <option key={emp.id} value={emp.id}>{emp.full_name}</option>
-              ))}
+              {employees
+                .filter(emp => !emp.full_name.includes('(2)') && !emp.full_name.includes('(3)'))
+                .map(emp => (
+                  <option key={emp.id} value={emp.id}>{emp.full_name}</option>
+                ))}
             </select>
           </div>
         </div>

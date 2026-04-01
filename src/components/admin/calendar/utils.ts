@@ -62,7 +62,13 @@ export const getDayEventsWithPositions = (
 ): PositionedEvent[] => {
   let dayEvents = events.filter(e => e.date === dateStr);
   if (selectedTherapist !== 'all') {
-    dayEvents = dayEvents.filter(e => e.therapistId === selectedTherapist);
+    const mainPersonId = 'ce777223-62f0-47ec-9b37-30a26d999610';
+    if (selectedTherapist === mainPersonId) {
+      // Include all team slots
+      dayEvents = dayEvents.filter(e => e.employeeName?.startsWith('Personál FYZIOA&FIT') || e.therapistId === mainPersonId);
+    } else {
+      dayEvents = dayEvents.filter(e => e.therapistId === selectedTherapist);
+    }
   }
   dayEvents.sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime));
 

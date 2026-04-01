@@ -63,7 +63,7 @@ const TimeGridView = ({
   const weekdays = language === 'sk' ? WEEKDAYS_SK : WEEKDAYS_EN;
   const slotHeight = SLOT_HEIGHT * zoom;
   const isWeek = viewMode === 'week';
-  const weekMinWidth = isWeek ? Math.max(560, Math.round(560 * zoom)) : undefined;
+  const weekMinWidth = undefined; // 5 workday columns fit naturally on mobile
   const todayLinePosition = getCurrentTimePosition(zoom);
   const localColumnsRef = useRef<HTMLDivElement>(null);
   const columnsRef = dayColumnsRef || localColumnsRef;
@@ -270,7 +270,9 @@ const TimeGridView = ({
                             </span>
                           )}
                           {event.employeeName && (
-                            <span className="truncate">{event.employeeName}</span>
+                            <span className="truncate">
+                              {event.employeeName.replace(/\s*\(\d+\)$/, '')}
+                            </span>
                           )}
                         </div>
                       )}

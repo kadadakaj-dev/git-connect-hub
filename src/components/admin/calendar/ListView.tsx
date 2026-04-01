@@ -85,8 +85,8 @@ const ListView = ({ language, events, selectedTherapist, onEditEvent }: ListView
                     className={`flex cursor-pointer items-start gap-3 rounded-2xl p-3 md:p-4 shadow-[0_8px_20px_rgba(126,195,255,0.1)] transition-all hover:shadow-[0_12px_28px_rgba(126,195,255,0.16)] ${getEventColorByCategory(ev.type, ev.status, ev.serviceId ? undefined : undefined)}`}
                   >
                     {/* Time block */}
-                    <div className="flex-shrink-0 text-center min-w-[70px] md:min-w-[80px]">
-                      <div className="text-base md:text-lg font-bold leading-tight">{formatTime(ev.startTime)}</div>
+                    <div className="flex-shrink-0 text-center min-w-[60px] md:min-w-[72px]">
+                      <div className="text-sm md:text-base font-bold leading-tight">{formatTime(ev.startTime)}</div>
                       <div className="text-xs opacity-60">{endTime}</div>
                       <div className="mt-1 flex items-center justify-center gap-1 text-[10px] opacity-50">
                         <Clock className="h-3 w-3" />
@@ -97,14 +97,14 @@ const ListView = ({ language, events, selectedTherapist, onEditEvent }: ListView
                     {/* Details */}
                     <div className="flex-1 min-w-0">
                       {ev.serviceName && (
-                        <div className="text-sm md:text-base font-semibold truncate">{ev.serviceName}</div>
+                        <div className="text-xs md:text-sm font-semibold truncate">{ev.serviceName}</div>
                       )}
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <User className="h-3.5 w-3.5 opacity-60 flex-shrink-0" />
-                        <span className="text-sm font-medium truncate">{ev.title}</span>
+                        <User className="h-3 w-3 opacity-60 flex-shrink-0" />
+                        <span className="text-xs md:text-sm font-medium truncate">{ev.title}</span>
                       </div>
                       {(ev.clientPhone || ev.clientEmail) && (
-                        <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs opacity-70">
+                        <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-[11px] opacity-70">
                           {ev.clientPhone && (
                             <span className="flex items-center gap-1">
                               <Phone className="h-3 w-3" /> {ev.clientPhone}

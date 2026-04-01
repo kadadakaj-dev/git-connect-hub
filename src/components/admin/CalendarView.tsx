@@ -110,7 +110,8 @@ const CalendarView = () => {
   function getActiveDaysMemo(): Date[] {
     if (viewMode === 'day') return [currentDate];
     const weekStart = getWeekStart(currentDate);
-    return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+    return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
+      .filter(d => d.getDay() !== 0 && d.getDay() !== 6);
   }
 
   const touchDrag = useTouchDrag({
@@ -282,7 +283,9 @@ const CalendarView = () => {
   const getActiveDays = (): Date[] => {
     if (viewMode === 'day') return [currentDate];
     const weekStart = getWeekStart(currentDate);
-    return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+    // Show only workdays (Mon-Fri) — Saturday is disabled, Sunday too
+    return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
+      .filter(d => d.getDay() !== 0 && d.getDay() !== 6);
   };
 
   const handleDayClick = (date: Date) => {
@@ -410,13 +413,35 @@ const CalendarView = () => {
             ? formData.date
             : format(addDays(new Date(formData.date), w * 7), 'yyyy-MM-dd');
 
+          let targetEmpId = formData.therapistId;
+          const mainPersonId = 'ce777223-62f0-47ec-9b37-30a26d999610';
+          const teamIds = [mainPersonId, '5c1c02af-cbbc-47a8-b7c7-1387aa53a7bc', '06acd843-2d63-4273-b352-14efae698b17'];
+
+          if (targetEmpId === mainPersonId) {
+            // Find first slot that doesn't have an overlap at this specific time for THIS new booking
+            // (Simple version: just check existing events in state)
+            for (const slotId of teamIds) {
+              const hasConflict = events.some(ev => 
+                ev.date === bookingDate && 
+                ev.therapistId === slotId &&
+                ev.status !== 'cancelled' &&
+                timeToMinutes(ev.startTime) < (timeToMinutes(formData.startTime) + formData.duration) &&
+                (timeToMinutes(ev.startTime) + ev.duration) > timeToMinutes(formData.startTime)
+              );
+              if (!hasConflict) {
+                targetEmpId = slotId;
+                break;
+              }
+            }
+          }
+
           bookingsToInsert.push({
             date: bookingDate,
             time_slot: formData.startTime,
             client_name: formData.title,
             client_email: formData.clientEmail,
             client_phone: formData.clientPhone || null,
-            employee_id: formData.therapistId || null,
+            employee_id: targetEmpId || null,
             service_id: formData.serviceId || null,
             notes: formData.notes || null,
             booking_duration: formData.duration,
