@@ -6,14 +6,10 @@ export default defineConfig({
   },
   preset: {
     ...minimal2023Preset,
-    maskable: {
-      sizes: [512],
-      resizeOptions: { background: '#EAF6FF' },
-    },
     apple: {
-      sizes: [180],
+      ...minimal2023Preset.apple,
       resizeOptions: { background: '#EAF6FF' },
     },
   },
-  images: ['public/pwa-icon.svg'],
+  images: ['public/maskable-icon-512x512.png'],
 });
