@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Anyone can view active employees" ON public.employees;

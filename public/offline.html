@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#24476B" />
+  <title>FYZIO&FIT – Offline</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI","Helvetica Neue",Arial,system-ui,sans-serif;background:radial-gradient(circle at top left,rgba(255,255,255,.92) 0%,rgba(255,255,255,0) 34%),linear-gradient(180deg,#BFE2FF 0%,#EAF6FF 100%);color:#1e3552}
+    .container{text-align:center;padding:2rem;max-width:420px}
+    .logo{font-size:2rem;font-weight:600;letter-spacing:.2em;color:#24476B;margin-bottom:1.5rem}
+    .icon{font-size:3rem;margin-bottom:1rem}
+    h1{font-size:1.25rem;font-weight:600;color:#24476B;margin-bottom:.75rem}
+    p{font-size:.95rem;color:#4a6d8c;line-height:1.6;margin-bottom:1.5rem}
+    .btn{display:inline-block;padding:.75rem 1.5rem;background:#24476B;color:#fff;border:none;border-radius:12px;font-size:.95rem;font-weight:500;cursor:pointer;text-decoration:none;transition:opacity .2s}
+    .btn:hover{opacity:.9}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    <div class="logo">FYZIO&amp;FIT</div>
+    <h1>Ste offline</h1>
+    <p>Nemáte pripojenie k internetu. Skontrolujte Wi-Fi alebo mobilné dáta a skúste to znova.</p>
+    <button class="btn" onclick="window.location.reload()">Skúsiť znova</button>
+  </div>
+</body>
+</html>

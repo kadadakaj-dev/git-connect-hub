@@ -1,0 +1,4 @@
+test/
+*.bat
+jest.config.cjs
+.env.example

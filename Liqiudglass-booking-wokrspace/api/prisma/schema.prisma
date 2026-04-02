@@ -1,0 +1,204 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id           String           @id @default(cuid())
+  name         String
+  slug         String           @unique
+  timezone     String
+  createdAt    DateTime         @default(now())
+  integrations Integration[]
+  bookings     UnifiedBooking[]
+
+  
+}
+
+model Integration {
+  id          String   @id @default(cuid())
+  tenantId    String
+  providerKey String
+  baseUrl     String
+  settings    Json
+  secretsEnc  String
+  isEnabled   Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  bookings    UnifiedBooking[]
+
+  @@index([tenantId, isEnabled, deletedAt])
+  
+}
+
+model UnifiedBooking {
+  id                    String      @id @default(cuid())
+  tenantId              String
+  integrationId         String
+  providerId            String
+  externalReservationId String
+  status                String
+  startAt               DateTime
+  endAt                 DateTime
+  customerName          String
+  customerEmail         String?
+  customerPhone         String?
+  notes                 String?
+  idempotencyKey        String?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  cancelledAt           DateTime?
+  tenant                Tenant      @relation(fields: [tenantId], references: [id])
+  integration           Integration @relation(fields: [integrationId], references: [id])
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, startAt])
+  
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  passwordHash String?
+  salt         String?
+  twoFaSecret  String?
+  biometricId  String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sessions     Session[]
+  refreshTokens RefreshToken[]
+  oauthAccounts OauthAccount[]
+
+  
+}
+
+model Session {
+  token     String   @id
+  userId    String
+  expiresAt DateTime
+  ipAddress String
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  
+}
+
+model RefreshToken {
+  token      String   @id
+  userId     String
+  expiresAt  DateTime
+  isRevoked  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  
+}
+
+model OauthAccount {
+  id                String   @id @default(cuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  
+}
+
+model TokenBlacklist {
+  token     String   @id
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  tenantId  String?
+  action    String
+  meta      Json
+  createdAt DateTime @default(now())
+}
+
+model Profile {
+  id        String   @id @db.Uuid
+  email     String   @unique
+  fullName  String?  @map("full_name")
+  role      AppRole  @default(user)
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+enum AppRole {
+  user
+  admin
+}
+
+model Service {
+  id          BigInt    @id @default(autoincrement())
+  title       String
+  description String?
+  price       Decimal   @db.Decimal(10, 2)
+  durationMin Int       @map("duration_min")
+  isActive    Boolean   @default(true) @map("is_active")
+  gender      String    @default("unisex")
+  category    String    @default("Všeobecné")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  bookings    Booking[]
+
+  @@map("services")
+}
+
+model Booking {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String?       @map("user_id") @db.Uuid
+  serviceId     BigInt        @map("service_id")
+  startTime     DateTime      @map("start_time")
+  endTime       DateTime      @map("end_time")
+  status        BookingStatus @default(pending)
+  notes         String?
+  customerName  String?       @map("customer_name")
+  customerEmail String?       @map("customer_email")
+  customerPhone String?       @map("customer_phone")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  service       Service       @relation(fields: [serviceId], references: [id])
+
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+}
+
+model BusinessSettings {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shopName         String   @map("shop_name")
+  openingHoursJson Json     @default("{}") @map("opening_hours_json")
+  currency         String   @default("EUR")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("business_settings")
+}
