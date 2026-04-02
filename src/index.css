@@ -1,8 +1,8 @@
+@import "./styles/liquid-glass.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import "./styles/liquid-glass.css";
 
 @layer base {
   :root {
