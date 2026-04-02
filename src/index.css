@@ -447,9 +447,10 @@
     border-color: rgba(15, 23, 42, 0.18) !important;
   }
 }
-/* 🌊 PREMIUM HOME PAGE POLISH (Aqua Liquid Glass Theme) */
+/* 🌊 PREMIUM HOME PAGE POLISH (Aqua Liquid Glass Theme synced with Splash Screen) */
 .client-theme-polish {
-  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  background: radial-gradient(circle at top left, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 34%), 
+              linear-gradient(180deg, #BFE2FF 0%, #EAF6FF 100%) !important;
   background-attachment: fixed !important;
   color: var(--lg-color-text-ink);
   position: relative;

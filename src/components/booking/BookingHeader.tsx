@@ -9,7 +9,7 @@ const BookingHeader = () => {
   return (
     <header className="sticky top-0 z-50 px-3 pt-3">
       <div className="surface-toolbar container max-w-2xl mx-auto px-4 h-14 flex items-center justify-between border border-[var(--glass-border-subtle)] shadow-glass-soft shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-        <a href="/" className="text-sm font-semibold text-[hsl(var(--soft-navy))] tracking-[0.18em] hover:text-[hsl(var(--navy))] transition-colors duration-200">
+        <a href="/" className="text-lg font-bold text-[hsl(var(--soft-navy))] tracking-[0.18em] hover:text-[hsl(var(--navy))] transition-colors duration-200 uppercase">
           FYZIO&FIT
         </a>
         <div className="flex items-center gap-2 sm:gap-3">
