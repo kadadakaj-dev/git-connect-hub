@@ -449,11 +449,10 @@
 }
 /* 🌊 PREMIUM HOME PAGE POLISH (Aqua Liquid Glass Theme) */
 .client-theme-polish {
-  background: var(--lg-color-brand-glow) !important;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
   background-attachment: fixed !important;
   color: var(--lg-color-text-ink);
   position: relative;
-  overflow-x: hidden;
 }
 
 .client-theme-polish .glass-card,
