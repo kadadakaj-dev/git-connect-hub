@@ -79,7 +79,7 @@ const MonthView = ({
       {/* Static 55 workdays grid: 5 columns (Mon-Fri), 11 rows */}
       <div
         className="flex-1 grid grid-cols-5 auto-rows-fr overflow-y-auto bg-[rgba(255,255,255,0.18)]"
-        style={{ maxWidth: 393, margin: '0 auto' }} // iPhone 17 Pro width
+        style={{ margin: '0 auto' }}
       >
         {workdays.map((date, i) => {
           const dateStr = formatDateForInput(date);
@@ -138,18 +138,20 @@ const MonthView = ({
                     draggable
                     onDragStart={(e) => { e.stopPropagation(); onDragStart(e, ev); }}
                     onClick={(e) => { e.stopPropagation(); onEditEvent(ev); }}
-                    className={`text-[9px] sm:text-[10px] md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 sm:py-1 md:py-1.5 rounded-md sm:rounded-lg md:rounded-xl cursor-grab active:cursor-grabbing shadow-[0_10px_18px_rgba(126,195,255,0.08)] hover:shadow-[0_14px_22px_rgba(126,195,255,0.12)] transition-shadow ${getEventColorByCategory(ev.type, ev.status)}`}
+                    className={`text-[9px] sm:text-[10px] md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 sm:py-1 md:py-1.5 rounded-md sm:rounded-lg md:rounded-xl cursor-grab active:cursor-grabbing shadow-[0_10px_18px_rgba(126,195,255,0.08)] hover:shadow-[0_14px_22px_rgba(126,195,255,0.12)] transition-shadow leading-none flex items-center gap-1 ${getEventColorByCategory(ev.type, ev.status)}`}
                   >
-                    <div className="font-bold truncate leading-tight">{formatTime(ev.startTime)}</div>
-                    <div className="font-normal truncate leading-tight opacity-80 hidden sm:block">{ev.serviceName || ev.title}</div>
+                    <div className="font-bold truncate text-[#05060f]">{formatTime(ev.startTime)}</div>
+                    <div className="font-medium truncate text-[#05060f]/90 hidden sm:block">{ev.serviceName || ev.title}</div>
                     {ev.title && ev.serviceName && (
-                      <div className="font-normal truncate leading-tight opacity-60 hidden md:block">{ev.title}</div>
+                      <div className="font-normal truncate text-[#05060f]/70 hidden md:block">{ev.title}</div>
                     )}
                   </div>
                 ))}
                 {dayEvents.length > 3 && (
-                  <div className="text-[8px] sm:text-[9px] text-muted-foreground text-center font-medium">
-                    +{dayEvents.length - 3}
+                  <div className="flex justify-center mt-0.5">
+                    <div className="inline-flex items-center justify-center bg-[rgba(79,149,213,0.12)] border border-[rgba(79,149,213,0.24)] text-[rgba(36,71,107,0.85)] text-[8px] sm:text-[9px] font-bold h-4 w-4 sm:h-5 sm:w-5 rounded-full backdrop-blur-md shadow-sm">
+                      +{dayEvents.length - 3}
+                    </div>
                   </div>
                 )}
               </div>

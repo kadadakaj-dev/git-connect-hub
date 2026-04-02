@@ -63,7 +63,13 @@ const TimeGridView = ({
   const weekdays = language === 'sk' ? WEEKDAYS_SK : WEEKDAYS_EN;
   const slotHeight = SLOT_HEIGHT * zoom;
   const isWeek = viewMode === 'week';
-  const weekMinWidth = undefined; // 5 workday columns fit naturally on mobile
+  
+  // Calculate dynamic min width based on columns to prevent "spaghetti" narrow slots
+  const therapistCount = selectedTherapist === 'all' ? 3 : 1;
+  const totalColumns = activeDays.length * therapistCount;
+  const minColWidth = isWeek ? 130 : 280; // Weekly view can be bit narrower per col
+  const gridMinWidth = totalColumns * minColWidth;
+  
   const todayLinePosition = getCurrentTimePosition(zoom);
   const localColumnsRef = useRef<HTMLDivElement>(null);
   const columnsRef = dayColumnsRef || localColumnsRef;
@@ -85,7 +91,7 @@ const TimeGridView = ({
         <div className="w-10 sm:w-14 md:w-[72px] flex-shrink-0 border-r border-[var(--glass-border-subtle)]" />
         <div
           className="flex flex-1"
-          style={isWeek ? { minWidth: `${weekMinWidth}px` } : undefined}
+          style={{ minWidth: `${gridMinWidth}px` }}
         >
           {activeDays.map((date, i) => {
             const today = isToday(date);
@@ -145,7 +151,7 @@ const TimeGridView = ({
         <div
           ref={columnsRef}
           className="flex flex-1 relative"
-          style={isWeek ? { minWidth: `${weekMinWidth}px` } : undefined}
+          style={{ minWidth: `${gridMinWidth}px` }}
         >
           {activeDays.map((date, dayIndex) => {
             const dateStr = formatDateForInput(date);
@@ -231,7 +237,7 @@ const TimeGridView = ({
                       </div>
 
                       {/* Time range */}
-                      <div className={`font-bold leading-tight whitespace-nowrap ${
+                      <div className={`font-bold leading-tight whitespace-nowrap text-[#05060f] group-hover:text-black ${
                         isWeek ? 'text-[8px] sm:text-[10px] md:text-sm' : 'text-[10px] sm:text-[11px] md:text-sm'
                       }`}>
                         {formatTime(event.startTime)}{!isWeek || !isSmall ? ` – ${endTime}` : ''}
@@ -240,7 +246,7 @@ const TimeGridView = ({
 
                       {/* Service name */}
                       {!isSmall && event.serviceName && (
-                        <div className={`font-semibold truncate leading-tight mt-0.5 ${
+                        <div className={`font-semibold truncate leading-tight mt-0.5 text-[#05060f] ${
                           isWeek ? 'text-[8px] sm:text-[9px] md:text-xs' : 'text-[9px] sm:text-[10px] md:text-xs'
                         }`}>
                           {event.serviceName}
@@ -249,7 +255,7 @@ const TimeGridView = ({
 
                       {/* Client name */}
                       {!isSmall && (
-                        <div className={`font-normal truncate leading-tight mt-0.5 opacity-80 ${
+                        <div className={`font-normal truncate leading-tight mt-0.5 text-[#05060f]/90 ${
                           isWeek ? 'text-[8px] sm:text-[9px] md:text-xs hidden sm:block' : 'text-[9px] sm:text-[10px] md:text-xs'
                         }`}>
                           {event.title}

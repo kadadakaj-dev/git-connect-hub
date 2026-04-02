@@ -156,13 +156,13 @@ export const getEventColorByCategory = (type: string, status?: string, category?
     return 'bg-white/76 border border-[rgba(87,107,129,0.12)] border-l-4 border-l-[rgba(87,107,129,0.55)] text-[hsl(var(--soft-navy))] backdrop-blur-md';
   }
   if (status === 'pending') {
-    return 'bg-[rgba(255,248,235,0.92)] border border-[rgba(245,158,11,0.12)] border-l-4 border-l-[rgba(245,158,11,0.75)] text-[hsl(35,88%,32%)] backdrop-blur-md';
+    return 'bg-[rgba(255,248,235,0.94)] border border-[rgba(245,158,11,0.18)] border-l-4 border-l-[rgba(245,158,11,0.85)] text-[hsl(35,88%,24%)] backdrop-blur-md font-medium';
   }
   if (category === 'chiropractic') {
-    return 'bg-[rgba(232,250,240,0.92)] border border-[rgba(34,197,94,0.12)] border-l-4 border-l-[rgba(34,197,94,0.65)] text-[hsl(152,60%,24%)] backdrop-blur-md';
+    return 'bg-[rgba(232,250,240,0.94)] border border-[rgba(34,197,94,0.18)] border-l-4 border-l-[rgba(34,197,94,0.75)] text-[hsl(152,60%,18%)] backdrop-blur-md font-medium';
   }
   // Default: physiotherapy / blue
-  return 'bg-[rgba(234,246,255,0.92)] border border-[rgba(79,149,213,0.12)] border-l-4 border-l-[rgba(79,149,213,0.65)] text-[hsl(var(--soft-navy))] backdrop-blur-md';
+  return 'bg-[rgba(234,246,255,0.94)] border border-[rgba(79,149,213,0.18)] border-l-4 border-l-[rgba(79,149,213,0.75)] text-[#05060f] backdrop-blur-md font-medium';
 };
 
 export const WEEKDAYS_SK = ['po', 'ut', 'st', 'št', 'pi', 'so', 'ne'];
