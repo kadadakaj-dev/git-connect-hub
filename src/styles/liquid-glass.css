@@ -1,0 +1,217 @@
+/* Liquid Glass Aqua — production token map */
+:root {
+  /* ===== Foundation colors ===== */
+  --lg-color-brand-blue: #006fb8;
+  --lg-color-brand-blue-light: #00a7ed;
+  --lg-color-brand-blue-dark: #2a4897;
+  --lg-color-brand-sky: #89CFF0;
+  --lg-color-brand-glow: #E0F7FA;
+
+  --lg-color-text-ink: #0a0b1e;
+  --lg-color-text-slate: #334155;
+  --lg-color-text-cream: #fdfaf1;
+
+  --lg-color-white: #ffffff;
+  --lg-color-scrollbar-bg: #050510;
+  --lg-color-error: #ef4444;
+  --lg-color-success: #22c55e;
+
+  /* ===== Glass fills ===== */
+  --lg-glass-fill-subtle: rgba(255,255,255,0.08);
+  --lg-glass-fill-low: rgba(255,255,255,0.20);
+  --lg-glass-fill-card: rgba(255,255,255,0.30);
+  --lg-glass-fill-interactive: rgba(255,255,255,0.40);
+  --lg-glass-fill-hover: rgba(255,255,255,0.60);
+
+  /* ===== Glass strokes ===== */
+  --lg-glass-stroke-default: rgba(255,255,255,0.50);
+  --lg-glass-stroke-strong: rgba(255,255,255,0.60);
+  --lg-glass-stroke-hover: rgba(0,111,184,0.50);
+
+  /* ===== Blur scale ===== */
+  --lg-blur-input: 12px;
+  --lg-blur-card: 16px;
+  --lg-blur-overlay: 20px;
+  --lg-blur-hero: 40px;
+  --lg-blur-blob: 80px;
+
+  /* ===== Radius ===== */
+  --lg-radius-input: 0.75rem;
+  --lg-radius-button: 0.75rem;
+  --lg-radius-card: 1.5rem;
+  --lg-radius-card-lg: 2rem;
+  --lg-radius-full: 9999px;
+
+  /* ===== Shadows ===== */
+  --lg-shadow-highlight-inset: inset 0 1px 1px rgba(255,255,255,0.60);
+  --lg-shadow-card-resting: 0 12px 40px rgba(0,111,184,0.10);
+  --lg-shadow-card-interactive: 0 12px 40px rgba(0,111,184,0.15);
+  --lg-shadow-card-hover: 0 20px 50px -12px rgba(0,111,184,0.30),
+                          0 0 30px -5px rgba(137,207,240,0.50);
+  --lg-shadow-button-aurora: 0 12px 24px -6px rgba(137,207,240,0.50);
+  --lg-shadow-focus-ring: 0 0 0 4px rgba(137,207,240,0.15);
+  --lg-shadow-glow-sm: 0 0 60px -15px rgba(0,111,184,0.30);
+  --lg-shadow-glow-lg: 0 0 80px -10px rgba(0,111,184,0.50);
+
+  /* ===== Motion ===== */
+  --lg-duration-default: 500ms;
+  --lg-duration-sheen: 4s;
+  --lg-duration-blob-slow: 25s;
+  --lg-duration-blob-base: 30s;
+  --lg-duration-blob-long: 35s;
+  --lg-easing-spring: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ===== Effect tokens ===== */
+  --lg-effect-blob-opacity: 0.5;
+  --lg-effect-blob-blend: plus-lighter;
+  --lg-gradient-aurora-button: linear-gradient(135deg, #00a7ed 0%, #006fb8 100%);
+  --lg-gradient-aurora-sheen: linear-gradient(to right, transparent, rgba(255,255,255,0.20), transparent);
+  --lg-gradient-service-selected: linear-gradient(135deg, #89CFF0 0%, #aadaf2 100%);
+
+  /* ===== Component aliases ===== */
+  --lg-glass-card-bg: var(--lg-glass-fill-card);
+  --lg-glass-card-border: var(--lg-glass-stroke-default);
+  --lg-glass-card-radius: var(--lg-radius-card);
+  --lg-glass-card-blur: var(--lg-blur-card);
+  --lg-glass-card-shadow: var(--lg-shadow-card-resting);
+
+  --lg-glass-card-interactive-bg: var(--lg-glass-fill-interactive);
+  --lg-glass-card-interactive-border: var(--lg-glass-stroke-strong);
+  --lg-glass-card-interactive-hover-border: var(--lg-glass-stroke-hover);
+  --lg-glass-card-interactive-radius: var(--lg-radius-card);
+  --lg-glass-card-interactive-blur: var(--lg-blur-card);
+  --lg-glass-card-interactive-shadow: var(--lg-shadow-card-interactive);
+  --lg-glass-card-interactive-hover-shadow: var(--lg-shadow-card-hover);
+
+  --lg-glass-button-bg: var(--lg-glass-fill-interactive);
+  --lg-glass-button-border: var(--lg-glass-stroke-strong);
+  --lg-glass-button-hover-bg: var(--lg-glass-fill-hover);
+  --lg-glass-button-radius: var(--lg-radius-card);
+  --lg-glass-button-blur: var(--lg-blur-card);
+  --lg-glass-button-text: var(--lg-color-text-ink);
+
+  --lg-aurora-button-bg: var(--lg-gradient-aurora-button);
+  --lg-aurora-button-text: var(--lg-color-text-cream);
+  --lg-aurora-button-radius: var(--lg-radius-button);
+  --lg-aurora-button-shadow: var(--lg-shadow-button-aurora);
+
+  --lg-glass-input-bg: var(--lg-glass-fill-interactive);
+  --lg-glass-input-focus-bg: var(--lg-glass-fill-subtle);
+  --lg-glass-input-border: var(--lg-glass-stroke-strong);
+  --lg-glass-input-focus-border: var(--lg-color-white);
+  --lg-glass-input-placeholder: rgba(148,163,184,0.40);
+  --lg-glass-input-radius: var(--lg-radius-input);
+  --lg-glass-input-blur: var(--lg-blur-input);
+  --lg-glass-input-focus-ring: var(--lg-shadow-focus-ring);
+}
+
+/* ===== Reference classes ===== */
+.lg-glass-card {
+  background: var(--lg-glass-card-bg);
+  border: 1px solid var(--lg-glass-card-border);
+  border-radius: var(--lg-glass-card-radius);
+  backdrop-filter: blur(var(--lg-glass-card-blur));
+  -webkit-backdrop-filter: blur(var(--lg-glass-card-blur));
+  box-shadow: var(--lg-glass-card-shadow), var(--lg-shadow-highlight-inset);
+}
+
+.lg-glass-card--interactive {
+  background: var(--lg-glass-card-interactive-bg);
+  border: 1px solid var(--lg-glass-card-interactive-border);
+  border-radius: var(--lg-glass-card-interactive-radius);
+  backdrop-filter: blur(var(--lg-glass-card-interactive-blur));
+  -webkit-backdrop-filter: blur(var(--lg-glass-card-interactive-blur));
+  box-shadow: var(--lg-glass-card-interactive-shadow), var(--lg-shadow-highlight-inset);
+  transition: all var(--lg-duration-default) var(--lg-easing-spring);
+  transform-style: preserve-3d;
+}
+
+.lg-glass-card--interactive:hover {
+  border-color: var(--lg-glass-card-interactive-hover-border);
+  box-shadow: var(--lg-glass-card-interactive-hover-shadow);
+  transform: translateY(-4px) scale(1.005);
+}
+
+.lg-btn-glass {
+  background: var(--lg-glass-button-bg);
+  border: 1px solid var(--lg-glass-button-border);
+  border-radius: var(--lg-glass-button-radius);
+  backdrop-filter: blur(var(--lg-glass-button-blur));
+  -webkit-backdrop-filter: blur(var(--lg-glass-button-blur));
+  box-shadow: var(--lg-shadow-card-resting), var(--lg-shadow-highlight-inset);
+  color: var(--lg-glass-button-text);
+  transition: all var(--lg-duration-default) var(--lg-easing-spring);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.lg-btn-glass:hover {
+  background: var(--lg-glass-button-hover-bg);
+  border-color: var(--lg-color-white);
+  transform: translateY(-2px);
+}
+
+.lg-btn-aurora {
+  position: relative;
+  overflow: hidden;
+  background: var(--lg-aurora-button-bg);
+  color: var(--lg-aurora-button-text);
+  border-radius: var(--lg-aurora-button-radius);
+  box-shadow: var(--lg-aurora-button-shadow);
+  transform: translateY(-2px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all var(--lg-duration-default) var(--lg-easing-spring);
+}
+
+.lg-btn-aurora:hover {
+  filter: brightness(1.1);
+  transform: translateY(-4px);
+  box-shadow: var(--lg-shadow-card-hover);
+}
+
+.lg-btn-aurora::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--lg-gradient-aurora-sheen);
+  animation: lg-sheen var(--lg-duration-sheen) linear infinite;
+  pointer-events: none;
+}
+
+.lg-input-glass {
+  background: var(--lg-glass-input-bg);
+  border: 1px solid var(--lg-glass-input-border);
+  border-radius: var(--lg-glass-input-radius);
+  backdrop-filter: blur(var(--lg-glass-input-blur));
+  -webkit-backdrop-filter: blur(var(--lg-glass-input-blur));
+  color: var(--lg-color-text-ink);
+  transition: all var(--lg-duration-default) var(--lg-easing-spring);
+  padding: 0.75rem 1rem;
+  width: 100%;
+}
+
+.lg-input-glass::placeholder {
+  color: var(--lg-glass-input-placeholder);
+}
+
+.lg-input-glass:focus {
+  outline: none;
+  background: var(--lg-glass-input-focus-bg);
+  border-color: var(--lg-glass-input-focus-border);
+  box-shadow: var(--lg-glass-input-focus-ring);
+}
+
+@keyframes lg-sheen {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}

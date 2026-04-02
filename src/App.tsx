@@ -27,6 +27,7 @@ const CancelBooking = lazy(() => import("./pages/CancelBooking"));
 const Legal = lazy(() => import("./pages/Legal"));
 const ClientAuth = lazy(() => import("./pages/ClientAuth"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
+const DesignShowcase = lazy(() => import("./pages/DesignShowcase"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -75,6 +76,7 @@ const App = () => {
                         <Route element={<AdminLogin />} path="/admin/login" />
                         <Route element={<AdminResetPassword />} path="/admin/reset-password" />
                         <Route element={<AdminDashboard />} path="/admin" />
+                        <Route element={<DesignShowcase />} path="/design-showcase" />
 
                         <Route element={<NotFound />} path="*" />
                       </Routes>
