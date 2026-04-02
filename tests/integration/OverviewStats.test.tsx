@@ -63,8 +63,8 @@ describe('OverviewStats', () => {
     await waitFor(() => expect(screen.getByText('Dnes')).toBeInTheDocument());
     
     expect(screen.getByText('Týždeň')).toBeInTheDocument();
-    expect(screen.getByText('Mesiac')).toBeInTheDocument();
-    expect(screen.getByText(/Odhad tržieb/i)).toBeInTheDocument();
+    expect(screen.getByText('Čakajúce')).toBeInTheDocument();
+    expect(screen.getByText(/Tržby/i)).toBeInTheDocument();
   });
 
   it('displays the recent bookings table', async () => {
