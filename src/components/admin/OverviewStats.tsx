@@ -196,78 +196,78 @@ const OverviewStats = () => {
     <div ref={containerRef} className="space-y-6 sm:space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card className="rounded-[32px] border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all hover:shadow-xl hover:translate-y-[-4px] overflow-hidden group">
+        <Card className="lg-glass-card overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <CardHeader className="flex flex-row items-center justify-between p-5 pb-2">
-            <CardTitle className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">
+            <CardTitle className="text-[10px] sm:text-xs font-bold text-lg-color-brand-blue uppercase tracking-[0.2em]">
               {language === 'sk' ? 'Dnes' : "Today"}
             </CardTitle>
-            <div className="p-2.5 rounded-2xl bg-blue-500/10 text-blue-600 shadow-inner">
+            <div className="p-2.5 rounded-2xl bg-lg-color-brand-blue/10 text-lg-color-brand-blue shadow-inner">
               <Calendar className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent className="p-5 pt-0 relative">
-            <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">{stats.todayCount}</p>
-            <p className="text-[10px] sm:text-xs text-slate-500 mt-2 font-semibold bg-slate-100 px-2 py-1 rounded-full w-fit">
+            <p className="text-3xl sm:text-4xl font-extrabold text-lg-color-text-ink tracking-tight">{stats.todayCount}</p>
+            <p className="text-[10px] sm:text-xs text-lg-color-text-slate mt-2 font-semibold bg-lg-color-brand-glow px-2 py-1 rounded-full w-fit">
               {format(today, 'd. MMMM', { locale: language === 'sk' ? sk : undefined })}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="rounded-[32px] border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all hover:shadow-xl hover:translate-y-[-4px] overflow-hidden group">
+        <Card className="lg-glass-card overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <CardHeader className="flex flex-row items-center justify-between p-5 pb-2">
-            <CardTitle className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">
+            <CardTitle className="text-[10px] sm:text-xs font-bold text-lg-color-brand-blue uppercase tracking-[0.2em]">
               {language === 'sk' ? 'Týždeň' : 'Week'}
             </CardTitle>
-            <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
+            <div className="p-2.5 rounded-2xl bg-lg-color-success/10 text-lg-color-success shadow-inner">
               <BarChart3 className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent className="p-5 pt-0 relative">
-            <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">{stats.weekCount}</p>
-            <div className="flex items-center text-[10px] sm:text-xs text-emerald-600 mt-2 font-bold bg-emerald-50 px-2 py-1 rounded-full w-fit">
+            <p className="text-3xl sm:text-4xl font-extrabold text-lg-color-text-ink tracking-tight">{stats.weekCount}</p>
+            <div className="flex items-center text-[10px] sm:text-xs text-lg-color-success mt-2 font-bold bg-lg-color-success/5 px-2 py-1 rounded-full w-fit">
               <TrendingUp className="w-3 h-3 mr-1" />
               {language === 'sk' ? 'Aktívne' : 'Active'}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="rounded-[32px] border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all hover:shadow-xl hover:translate-y-[-4px] overflow-hidden group">
+        <Card className="lg-glass-card overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <CardHeader className="flex flex-row items-center justify-between p-5 pb-2">
-            <CardTitle className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">
+            <CardTitle className="text-[10px] sm:text-xs font-bold text-lg-color-brand-blue uppercase tracking-[0.2em]">
               {language === 'sk' ? 'Čakajúce' : 'Pending'}
             </CardTitle>
-            <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-600 shadow-inner">
+            <div className="p-2.5 rounded-2xl bg-lg-color-brand-blue-dark/10 text-lg-color-brand-blue-dark shadow-inner">
               <Clock className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent className="p-5 pt-0 relative">
-            <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">{stats.pendingCount}</p>
-            <p className="text-[10px] sm:text-xs text-slate-500 mt-2 font-semibold italic">
+            <p className="text-3xl sm:text-4xl font-extrabold text-lg-color-text-ink tracking-tight">{stats.pendingCount}</p>
+            <p className="text-[10px] sm:text-xs text-lg-color-text-slate mt-2 font-semibold italic">
               {language === 'sk' ? 'Vyžadujú akciu' : 'Requires action'}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="rounded-[32px] border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all hover:shadow-xl hover:translate-y-[-4px] overflow-hidden group">
+        <Card className="lg-glass-card overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <CardHeader className="flex flex-row items-center justify-between p-5 pb-2">
-            <CardTitle className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">
+            <CardTitle className="text-[10px] sm:text-xs font-bold text-lg-color-brand-blue uppercase tracking-[0.2em]">
               {language === 'sk' ? 'Tržby' : 'Revenue'}
             </CardTitle>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-600 shadow-inner">
+            <div className="p-2.5 rounded-2xl bg-lg-color-brand-blue-light/10 text-lg-color-brand-blue-dark shadow-inner">
               <DollarSign className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent className="p-5 pt-0 relative">
-            <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">{stats.monthlyConfirmedRevenue} €</p>
+            <p className="text-3xl sm:text-4xl font-extrabold text-lg-color-text-ink tracking-tight">{stats.monthlyConfirmedRevenue} €</p>
             <div className="flex flex-col gap-0.5 mt-2">
-              <span className="text-[10px] text-amber-600 font-bold uppercase tracking-wider">
+              <span className="text-[10px] text-lg-color-brand-blue font-bold uppercase tracking-wider">
                 {language === 'sk' ? 'Potvrdené' : 'Confirmed'}
               </span>
-              <span className="text-[9px] text-slate-400 font-medium">
+              <span className="text-[9px] text-lg-color-text-slate font-medium">
                 + {stats.monthlyPotentialRevenue} € {language === 'sk' ? 'čakajúce' : 'potential'}
               </span>
             </div>
@@ -277,13 +277,13 @@ const OverviewStats = () => {
 
       {/* Analytics Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
-        <Card className="lg:col-span-2 rounded-[28px] border-[var(--glass-border-subtle)] bg-white/60 backdrop-blur-md">
+        <Card className="lg:col-span-2 lg-glass-card shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-blue-500" />
+            <CardTitle className="text-lg flex items-center gap-2 text-lg-color-brand-blue-dark">
+              <BarChart3 className="w-5 h-5 text-lg-color-brand-blue" />
               {language === 'sk' ? 'Trend rezervácií (7 dní)' : 'Booking Trend (7 days)'}
             </CardTitle>
-            <CardDescription>{language === 'sk' ? 'Počet rezervácií za posledný týždeň' : 'Daily bookings volume for the last week'}</CardDescription>
+            <CardDescription className="text-lg-color-text-slate opacity-80">{language === 'sk' ? 'Počet rezervácií za posledný týždeň' : 'Daily bookings volume for the last week'}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[250px] w-full pt-4 min-h-[250px]">
@@ -325,13 +325,13 @@ const OverviewStats = () => {
           </CardContent>
         </Card>
 
-        <Card className="rounded-[28px] border-[var(--glass-border-subtle)] bg-white/60 backdrop-blur-md">
+        <Card className="lg-glass-card shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Package className="w-5 h-5 text-indigo-500" />
+            <CardTitle className="text-lg flex items-center gap-2 text-lg-color-brand-blue-dark">
+              <Package className="w-5 h-5 text-lg-color-brand-blue-dark" />
               {language === 'sk' ? 'Top služby' : 'Top Services'}
             </CardTitle>
-            <CardDescription>{language === 'sk' ? 'Najžiadanejšie procedúry' : 'Most requested treatments'}</CardDescription>
+            <CardDescription className="text-lg-color-text-slate opacity-80">{language === 'sk' ? 'Najžiadanejšie procedúry' : 'Most requested treatments'}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[250px] w-full min-h-[250px]">
@@ -374,14 +374,14 @@ const OverviewStats = () => {
       </div>
 
       {/* Recent Bookings Table */}
-      <Card className="rounded-[32px] border-[var(--glass-border-subtle)] bg-white/60 backdrop-blur-xl shadow-lg">
+      <Card className="lg-glass-card shadow-sm">
         <CardHeader className="p-5 sm:p-8 pb-2">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg sm:text-2xl font-bold text-[#1a2b42]">
+              <CardTitle className="text-lg sm:text-2xl font-bold text-lg-color-text-ink">
                 {language === 'sk' ? 'Posledné rezervácie' : 'Recent Activity'}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-lg-color-text-slate opacity-80">
                 {language === 'sk' ? 'Prehľad posledných pohybov v systéme' : 'Overview of the latest booking updates'}
               </CardDescription>
             </div>
@@ -400,7 +400,7 @@ const OverviewStats = () => {
                     key={booking.id}
                     type="button"
                     onClick={() => setSelectedBooking(booking)}
-                    className="w-full rounded-[24px] border border-[var(--glass-border-subtle)] bg-white/80 p-4 text-left shadow-sm transition-all active:scale-[0.98]"
+                    className="w-full lg-glass-card--interactive p-4 text-left"
                   >
                     <div className="mb-2 flex items-start justify-between gap-3">
                       <div>

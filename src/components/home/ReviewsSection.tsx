@@ -54,7 +54,7 @@ const ReviewsSection = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="glass-card p-6 md:p-8 rounded-[32px] border-[#E8EAED]/50 flex flex-col md:flex-row items-center justify-between gap-8"
+            className="lg-glass-card p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8"
           >
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-2xl shadow-sm border border-[#E8EAED] flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -108,7 +108,7 @@ const ReviewsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="glass-card p-8 rounded-[32px] group relative overflow-hidden flex flex-col h-full hover:shadow-xl transition-all border-[#E8EAED]/50"
+              className="lg-glass-card--interactive p-8 flex flex-col h-full"
             >
               {/* User Identity */}
               <div className="flex items-center gap-4 mb-6">
