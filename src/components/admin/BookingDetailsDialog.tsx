@@ -177,6 +177,11 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
     if (!window.confirm(confirmMsg)) return;
 
     setIsSaving(true);
+    // First, delete related data that might cause 409 Conflict
+    await supabase.from('booking_reminders').delete().eq('booking_id', booking.id);
+    await supabase.from('therapist_notes').delete().eq('booking_id', booking.id);
+
+    // Now delete the booking itself
     const { error } = await supabase
       .from('bookings')
       .delete()

@@ -66,6 +66,11 @@ const BookingManagement = () => {
   
   const deleteBookingMutation = useMutation({
     mutationFn: async (id: string) => {
+      // First, delete related data that might cause 409 Conflict
+      await supabase.from('booking_reminders').delete().eq('booking_id', id);
+      await supabase.from('therapist_notes').delete().eq('booking_id', id);
+
+      // Now delete the booking itself
       const { error } = await supabase
         .from('bookings')
         .delete()
@@ -98,7 +103,10 @@ const BookingManagement = () => {
         throw new Error(language === 'sk' ? 'Nesprávne admin heslo' : 'Incorrect admin password');
       }
 
-      // 2. Perform the deletion 
+      // 2. Perform the deletion (cleaned up related data first)
+      await supabase.from('booking_reminders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      await supabase.from('therapist_notes').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
       const { error: deleteError } = await supabase
         .from('bookings')
         .delete()

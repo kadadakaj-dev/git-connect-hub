@@ -276,8 +276,8 @@ const OverviewStats = () => {
       </div>
 
       {/* Analytics Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
-        <Card className="lg:col-span-2 lg-glass-card shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 overflow-hidden">
+        <Card className="lg:col-span-2 lg-glass-card shadow-sm min-w-0">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2 text-lg-color-brand-blue-dark">
               <BarChart3 className="w-5 h-5 text-lg-color-brand-blue" />
@@ -286,7 +286,7 @@ const OverviewStats = () => {
             <CardDescription className="text-lg-color-text-slate opacity-80">{language === 'sk' ? 'Počet rezervácií za posledný týždeň' : 'Daily bookings volume for the last week'}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px] w-full pt-4 min-h-[250px]">
+            <div className="h-[250px] w-full pt-4 min-h-[250px] relative overflow-hidden">
               {isMounted && containerWidth > 0 && (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.last7Days}>
@@ -325,7 +325,7 @@ const OverviewStats = () => {
           </CardContent>
         </Card>
 
-        <Card className="lg-glass-card shadow-sm">
+        <Card className="lg-glass-card shadow-sm min-w-0">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2 text-lg-color-brand-blue-dark">
               <Package className="w-5 h-5 text-lg-color-brand-blue-dark" />
@@ -334,7 +334,7 @@ const OverviewStats = () => {
             <CardDescription className="text-lg-color-text-slate opacity-80">{language === 'sk' ? 'Najžiadanejšie procedúry' : 'Most requested treatments'}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px] w-full min-h-[250px]">
+            <div className="h-[250px] w-full min-h-[250px] relative overflow-hidden">
               {isMounted && containerWidth > 0 && (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
