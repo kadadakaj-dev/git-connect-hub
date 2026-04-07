@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState, useCallback, Component, ReactNode } from "react";
+import { Suspense, lazy, useState, useCallback, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import CookieBanner from "@/components/CookieBanner";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -40,9 +40,19 @@ const queryClient = new QueryClient({
 
 const App = () => {
   useServiceWorkerMessages();
+  const [isHydrated, setIsHydrated] = useState(false);
   const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem('fyzio_splash_shown');
   });
+
+  useEffect(() => {
+    setIsHydrated(true);
+    // Clear query cache on mount ONLY during E2E tests to ensure fresh state
+    // @ts-expect-error - playwright is injected by our fixtures
+    if (window.playwright) {
+      queryClient.clear();
+    }
+  }, []);
 
   const handleSplashComplete = useCallback(() => {
     setShowSplash(false);
@@ -57,8 +67,9 @@ const App = () => {
           <ErrorBoundary>
             <QueryClientProvider client={queryClient}>
               <TooltipProvider>
-                {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-                <div style={showSplash ? { opacity: 0, pointerEvents: 'none', position: 'absolute', width: '100%', height: '100%' } : { opacity: 1, transition: 'opacity 0.3s ease' }}>
+                <div 
+                  data-hydrated={isHydrated}
+                  style={showSplash ? { opacity: 0, pointerEvents: 'none', position: 'absolute', width: '100%', height: '100%' } : { opacity: 1 }}>
                   <Toaster />
                   <Sonner position="top-center" />
                   <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>

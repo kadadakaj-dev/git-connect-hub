@@ -108,11 +108,19 @@ const ClientDetailsForm = ({ bookingData, errors, onUpdate }: ClientDetailsFormP
 
   return (
     <div className="space-y-3">
-      <FormField field="clientName" icon={User} placeholder={t.fullNamePlaceholder} type="text" value={bookingData.clientName} errors={errors} autoComplete="name" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
-      <FormField field="clientEmail" icon={Mail} placeholder={t.emailPlaceholder} type="email" value={bookingData.clientEmail} errors={errors} autoComplete="email" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
-      <FormField field="clientPhone" icon={Phone} placeholder={t.phonePlaceholder} type="tel" value={bookingData.clientPhone} errors={errors} autoComplete="tel" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
+      <div className="space-y-3">
+        <label htmlFor="clientName" className="sr-only">{t.fullNamePlaceholder}</label>
+        <FormField field="clientName" icon={User} placeholder={t.fullNamePlaceholder} type="text" value={bookingData.clientName} errors={errors} autoComplete="name" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
+        
+        <label htmlFor="clientEmail" className="sr-only">{t.emailPlaceholder}</label>
+        <FormField field="clientEmail" icon={Mail} placeholder={t.emailPlaceholder} type="email" value={bookingData.clientEmail} errors={errors} autoComplete="email" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
+        
+        <label htmlFor="clientPhone" className="sr-only">{t.phonePlaceholder}</label>
+        <FormField field="clientPhone" icon={Phone} placeholder={t.phonePlaceholder} type="tel" value={bookingData.clientPhone} errors={errors} autoComplete="tel" focusedField={focusedField} onUpdate={onUpdate} onFocus={setFocusedField} onBlur={() => setFocusedField(null)} />
+      </div>
 
       <div className="relative">
+        <label htmlFor="notes" className="sr-only">{t.notesPlaceholder}</label>
         <FileText className={cn(
           "absolute left-2.5 top-2.5 w-3.5 h-3.5 transition-colors duration-200",
           focusedField === 'notes' ? "text-primary" : "text-muted-foreground"

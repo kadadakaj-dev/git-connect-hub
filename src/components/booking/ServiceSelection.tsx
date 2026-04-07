@@ -136,6 +136,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                   key={service.id}
                   data-testid={`service-${service.id}`}
                   onClick={() => onSelect(service)}
+                  aria-pressed={isSelected}
                   className={cn(
                     "w-full flex items-start gap-3 px-3 py-2.5 rounded-xl text-left",
                     "transition-all duration-300 ease-liquid",

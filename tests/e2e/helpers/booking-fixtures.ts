@@ -71,17 +71,62 @@ export async function performBookingFlow(
  * Mock necessary Supabase calls to ensure the booking wizard works consistently.
  */
 export async function mockBookingResources(page: Page) {
-    // Skip splash screen and cookie banner AND mock stable Date
-    await page.addInitScript(() => {
-        window.sessionStorage.setItem('fyzio_splash_shown', 'true');
-        window.localStorage.setItem('cookie-consent', 'accepted');
-        
-        // Hard mock Date.now to a stable Monday (April 6, 2026)
-        const fixedTime = new Date('2026-04-06T10:00:00Z').getTime();
-        window.Date.now = () => fixedTime;
+    // 1. Disable Service Worker to prevent caching/intercepting issues in E2E
+    await page.context().addInitScript(() => {
+        // @ts-expect-error - overriding global serviceWorker
+        delete window.navigator.serviceWorker;
+        // @ts-expect-error - overriding global serviceWorker
+        window.navigator.serviceWorker = {
+            register: () => new Promise(() => {}),
+            getRegistration: () => Promise.resolve(undefined),
+            getRegistrations: () => Promise.resolve([]),
+            addEventListener: () => {},
+            removeEventListener: () => {},
+        };
     });
 
-    // Mock services
+    // 2. Exhaustive Date Mocking (Construction, now, and Intl)
+    const fixedTime = new Date('2026-04-06T10:00:00Z').getTime(); // Monday morning
+    await page.addInitScript((time: number) => {
+        const mockDate = new Date(time);
+        const OriginalDate = window.Date;
+        
+        // @ts-expect-error - overriding global Date
+        window.Date = class extends OriginalDate {
+            constructor(...args: (string | number | Date)[]) {
+                if (args.length > 0) {
+                    // @ts-expect-error - Date constructor spread
+                    super(...args);
+                } else {
+                    super(mockDate.getTime());
+                }
+            }
+            static now() { return mockDate.getTime(); }
+        };
+
+        // Also mock Intl.DateTimeFormat to use the fixed date's "now" implicitly
+        const OriginalDateTimeFormat = window.Intl.DateTimeFormat;
+        // @ts-expect-error - overriding global Intl
+        window.Intl.DateTimeFormat = class extends OriginalDateTimeFormat {
+            constructor(locales?: string | string[], options?: Intl.DateTimeFormatOptions) {
+                super(locales, options);
+            }
+            format(date?: Date | number) {
+                return super.format(date || mockDate);
+            }
+            formatToParts(date?: Date | number) {
+                return super.formatToParts(date || mockDate);
+            }
+        };
+
+        // Bypass splash screen
+        window.sessionStorage.setItem('fyzio_splash_shown', 'true');
+        window.localStorage.setItem('cookie-consent', 'accepted');
+        // @ts-expect-error - signaling the test environment
+        window.playwright = true;
+    }, fixedTime);
+
+    // 4. Setup common API mocks
     await page.route('**/rest/v1/services*', async route => {
         await route.fulfill({ 
             json: [{ 
@@ -99,7 +144,6 @@ export async function mockBookingResources(page: Page) {
         });
     });
 
-    // Mock time slots config
     await page.route('**/rest/v1/time_slots_config*', async route => {
         const configs = [];
         for (let i = 0; i <= 6; i++) {
@@ -108,20 +152,26 @@ export async function mockBookingResources(page: Page) {
         await route.fulfill({ json: configs });
     });
 
-    // Mock active employees
     await page.route('**/rest/v1/employees_public*', async route => {
         await route.fulfill({ 
             json: [{ id: 'mock-emp', is_active: true, full_name: 'Mock Employee' }] 
         });
     });
 
-    // Mock blocked dates
     await page.route('**/rest/v1/blocked_dates*', async route => {
         await route.fulfill({ json: [] });
     });
 
-    // Mock slot availability
     await page.route('**/rest/v1/rpc/get_booking_slot_counts*', async route => {
         await route.fulfill({ json: [] });
+    });
+
+    await page.route('**/functions/v1/create-booking', async route => {
+        await route.fulfill({ 
+            json: { 
+                success: true, 
+                booking: { id: 'mock-booking-id', date: '2026-04-08', time_slot: '10:00', status: 'confirmed' } 
+            } 
+        });
     });
 }

@@ -14,7 +14,7 @@ export async function loginAsAdmin(page: Page) {
         window.localStorage.setItem('cookie-consent', 'accepted');
     });
 
-    await page.goto('/admin-login');
+    await page.goto('/admin/login');
     
     // Fill login form
     await page.locator('#email').fill(email);

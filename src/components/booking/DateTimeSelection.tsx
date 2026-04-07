@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useTimeSlots } from '@/hooks/useTimeSlots';
+import { validateBookingLeadTime } from '@/lib/booking-rules';
 import { useBlockedDates } from '@/hooks/useBlockedDates';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -187,7 +188,7 @@ const DateTimeSelection = ({
   // Minimum 36h lead time — earliest bookable moment
   const minBookableTime = new Date(Date.now() + 36 * 60 * 60 * 1000);
 
-  const isDateDisabled = (date: Date) => {
+  const isDateDisabled = React.useCallback((date: Date) => {
     // Check if the day of week is active in time_slots_config
     if (activeConfigs.length > 0 && !activeConfigs.includes(date.getDay())) return true;
     
@@ -195,12 +196,14 @@ const DateTimeSelection = ({
     const dateStr = format(date, 'yyyy-MM-dd');
     if (blockedDays.some(bd => bd.date === dateStr)) return true;
 
-    // Disable if the entire day is before the 36h cutoff
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-    if (endOfDay < minBookableTime) return true;
+    // Use a representative time (last slot of the day) to check if the day is bookable at all
+    // If the last slot is before the 36h cutoff, the whole day is disabled
+    const lastPossibleSlot = "20:00"; 
+    const leadTimeCheck = validateBookingLeadTime(date, lastPossibleSlot);
+    if (!leadTimeCheck.allowed) return true;
+    
     return false;
-  };
+  }, [activeConfigs, blockedDays]);
 
   const allSlots = timeSlots;
   const morningSlots = allSlots.filter((slot) => Number.parseInt(slot.time.split(':')[0]) < 12);
@@ -300,6 +303,7 @@ const DateTimeSelection = ({
               <button
                 key={day.toISOString()}
                 data-testid={`calendar-day-${format(day, 'yyyy-MM-dd')}`}
+                aria-label={format(day, 'PPPP', { locale })}
                 onClick={() => !isDisabled && onDateSelect(day)}
                 disabled={isDisabled}
                 className={cn(

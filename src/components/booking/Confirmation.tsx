@@ -78,7 +78,7 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
   };
 
   return (
-    <div className="animate-fade-in-up max-w-lg mx-auto">
+    <div className="animate-fade-in-up max-w-lg mx-auto" data-testid="confirmation-details">
       {/* Receipt Card */}
       <div className="rounded-2xl overflow-hidden backdrop-blur-xl bg-[var(--glass-white)] border border-[var(--glass-border)] shadow-glass relative">
         {/* Reflection */}
