@@ -71,6 +71,7 @@ const FormField = ({
         )} />
         <input
           id={field}
+          data-testid={`input-${field}`}
           type={type}
           value={value}
           onChange={(e) => onUpdate(field, e.target.value)}
@@ -118,6 +119,7 @@ const ClientDetailsForm = ({ bookingData, errors, onUpdate }: ClientDetailsFormP
         )} />
         <textarea
           id="notes"
+          data-testid="input-notes"
           value={bookingData.notes}
           onChange={(e) => onUpdate('notes', e.target.value)}
           onFocus={() => setFocusedField('notes')}

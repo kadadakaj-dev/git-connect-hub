@@ -27,6 +27,7 @@ const SubmitButton = ({ enabled, isPending, onSubmit }: SubmitButtonProps) => {
       <Button
         variant="default"
         size="lg"
+        data-testid="submit-booking"
         onClick={onSubmit}
         disabled={!enabled || isPending}
         className={cn(

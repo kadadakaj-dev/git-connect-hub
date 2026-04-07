@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
+import { validateBookingLeadTime } from '@/lib/booking-rules';
 
 interface BookingData {
   serviceId: string;
@@ -70,6 +71,11 @@ async function getFunctionErrorMessage(error: FunctionInvokeError | null | undef
 export function useCreateBooking() {
   return useMutation({
     mutationFn: async (data: BookingData): Promise<BookingResponse> => {
+      const validation = validateBookingLeadTime(data.date, data.timeSlot);
+      if (!validation.allowed) {
+        throw new Error(validation.error || 'Advance booking required (min 36h)');
+      }
+
       const response = await supabase.functions.invoke('create-booking', {
         body: {
           service_id: data.serviceId,

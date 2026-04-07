@@ -277,6 +277,7 @@ const EventModal = ({
                     <button
                       key={scope}
                       type="button"
+                      data-testid={`block-scope-${scope}`}
                       onClick={() => onChange({ blockScope: scope })}
                       className={`rounded-[14px] sm:rounded-[16px] border py-2 text-xs font-semibold transition-all ${
                         active
@@ -351,6 +352,7 @@ const EventModal = ({
             </Button>
             <Button
               size="sm"
+              data-testid="save-event-button"
               onClick={onSave}
               className="rounded-[14px] sm:rounded-[16px] border border-white/20 bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] shadow-[0_16px_30px_rgba(79,149,213,0.22)] hover:brightness-[1.03] text-xs sm:text-sm"
             >

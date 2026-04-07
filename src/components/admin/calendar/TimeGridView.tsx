@@ -189,6 +189,7 @@ const TimeGridView = ({
                 {TIME_SLOTS.map((time, slotIndex) => (
                   <div
                     key={slotIndex}
+                    data-testid={`admin-calendar-slot-${dateStr}-${time}`}
                     onClick={() => onCreateEvent(date, time)}
                     style={{ height: `${slotHeight}px` }}
                     className={`w-full border-b cursor-pointer hover:bg-[rgba(126,195,255,0.08)] transition-colors ${

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TimeSlot } from '@/types/booking';
 import { format } from 'date-fns';
+import { getBratislavaNow } from '@/lib/booking-rules';
 
 interface TimeSlotConfig {
   day_of_week: number;
@@ -129,7 +130,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
     queryFn: async (): Promise<TimeSlot[]> => {
       if (!selectedDate) return [];
 
-      const now = new Date();
+      const now = getBratislavaNow();
       const minBookableTime = new Date(now.getTime() + 36 * 60 * 60 * 1000);
 
       const dayOfWeek = selectedDate.getDay();

@@ -1,0 +1,39 @@
+◇ injected env (2) from .env // tip: ⌘ suppress logs { quiet: true }
+
+Running 1 test using 1 worker
+
+◇ injected env (0) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+  ✘  1 [chromium] › tests\e2e\booking-email-payload.spec.ts:9:5 › Booking Email Payload Verification › should send the correct booking details in the RPC call (1.2s)
+
+
+  1) [chromium] › tests\e2e\booking-email-payload.spec.ts:9:5 › Booking Email Payload Verification › should send the correct booking details in the RPC call 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.grid-cols-7')
+    Expected: visible
+    Error: strict mode violation: locator('.grid-cols-7') resolved to 2 elements:
+        1) <div class="grid grid-cols-7 gap-0">…</div> aka getByText('PoUtStŠtPiSoNe')
+        2) <div class="grid grid-cols-7 gap-0">…</div> aka getByText('123456789101112131415161718192021222324252627282930')
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('.grid-cols-7')[22m
+
+
+       at helpers\booking-fixtures.ts:18
+
+      16 |
+      17 |     // Wait for step transition - look for the calendar grid container
+    > 18 |     await expect(page.locator('.grid-cols-7')).toBeVisible({ timeout: 10000 });
+         |                                                ^
+      19 |
+      20 |     // Step 2: Select Date
+      21 |     const activeDays = page.locator('[data-testid^="calendar-day-"]:not([disabled])');
+        at performBookingFlow (C:\Users\42195\.gemini\antigravity\scratch\git-connect-hub\tests\e2e\helpers\booking-fixtures.ts:18:48)
+        at C:\Users\42195\.gemini\antigravity\scratch\git-connect-hub\tests\e2e\booking-email-payload.spec.ts:23:24
+
+    Error Context: test-results\booking-email-payload-Book-5257c-ing-details-in-the-RPC-call-chromium\error-context.md
+
+  1 failed
+    [chromium] › tests\e2e\booking-email-payload.spec.ts:9:5 › Booking Email Payload Verification › should send the correct booking details in the RPC call 

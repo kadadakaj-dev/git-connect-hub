@@ -215,6 +215,7 @@ const DateTimeSelection = ({
         return (
           <button
             key={slot.time}
+            data-testid={`time-slot-${slot.time}`}
             onClick={() => slot.available && onTimeSelect(slot.time)}
             onMouseEnter={() => slot.available && setHoveredSlot(slot.time)}
             onMouseLeave={() => setHoveredSlot(null)}
@@ -298,6 +299,7 @@ const DateTimeSelection = ({
             return (
               <button
                 key={day.toISOString()}
+                data-testid={`calendar-day-${format(day, 'yyyy-MM-dd')}`}
                 onClick={() => !isDisabled && onDateSelect(day)}
                 disabled={isDisabled}
                 className={cn(

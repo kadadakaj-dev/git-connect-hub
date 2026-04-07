@@ -8,6 +8,13 @@ test.describe('Booking wizard smoke flow', () => {
             window.localStorage.setItem('cookie-consent', 'accepted');
         });
         
+        // Mock services
+        await page.route('**/rest/v1/services*', async route => {
+            await route.fulfill({ 
+                json: [{ id: 'mock-service', name: 'Mock Service', price: 30, duration: 30, category: 'physiotherapy', is_active: true }] 
+            });
+        });
+
         // Mock time slots config to always return a schedule 09:00 - 17:00 for any day
         await page.route('**/rest/v1/time_slots_config*', async route => {
             await route.fulfill({ 
@@ -34,14 +41,14 @@ test.describe('Booking wizard smoke flow', () => {
         // Step 1: Select Service
         await expect(page.getByText(/Vyberte službu/i).or(page.getByText(/Select service/i))).toBeVisible();
         
-        // Find a service button (they contain prices like "xx €")
-        const serviceButton = page.locator('button').filter({ hasText: '€' }).first();
+        // Use stable data-testid
+        const serviceButton = page.locator('[data-testid^="service-"]').first();
         await expect(serviceButton).toBeVisible();
         await serviceButton.click();
 
         // Step 2: Select Date (Calendar should be visible)
         // Try clicking days until we find one with time slots
-        const activeDays = page.locator('.grid-cols-7 button:not([disabled])');
+        const activeDays = page.locator('[data-testid^="calendar-day-"]:not([disabled])');
         await expect(activeDays.first()).toBeVisible();
         const numDays = await activeDays.count();
         let foundTime = false;
@@ -49,7 +56,7 @@ test.describe('Booking wizard smoke flow', () => {
         for (let i = 0; i < Math.min(numDays, 15); i++) {
             await activeDays.nth(i).click();
             try {
-                const timeSlot = page.locator('button:has-text(":"):not([disabled])').first();
+                const timeSlot = page.locator('[data-testid^="time-slot-"]:not([disabled])').first();
                 await expect(timeSlot).toBeVisible({ timeout: 1500 });
                 await timeSlot.click();
                 await page.waitForTimeout(500); // Wait for React state & Framer Motion to settle
@@ -62,17 +69,16 @@ test.describe('Booking wizard smoke flow', () => {
         expect(foundTime, 'Could not find any day with available time slots').toBeTruthy();
 
         // Step 4: Client Details
-        const nameInput = page.locator('#clientName');
+        const nameInput = page.locator('[data-testid="input-clientName"]');
         await expect(nameInput).toBeVisible({ timeout: 10000 });
         
         // Fill details
-        await nameInput.click({ force: true });
         await nameInput.fill('Playwright Test User');
-        await page.locator('#clientEmail').fill('playwright@example.com');
-        await page.locator('#clientPhone').fill('+421900111222');
+        await page.locator('[data-testid="input-clientEmail"]').fill('playwright@example.com');
+        await page.locator('[data-testid="input-clientPhone"]').fill('+421900111222');
 
         // Check if Submit button is enabled
-        const submitButton = page.locator('button:has-text("Rezervovať"), button:has-text("Potvrdiť")').first();
+        const submitButton = page.locator('[data-testid="submit-booking"]');
         await expect(submitButton).toBeEnabled();
     });
 
@@ -80,11 +86,12 @@ test.describe('Booking wizard smoke flow', () => {
         await page.goto('/');
 
         // Navigate to the last step (service -> date -> time)
-        const serviceButton = page.locator('button').filter({ hasText: '€' }).first();
+        const serviceButton = page.locator('[data-testid^="service-"]').first();
         await expect(serviceButton).toBeVisible();
         await serviceButton.click();
+
         // Try clicking days until we find one with time slots
-        const activeDays = page.locator('.grid-cols-7 button:not([disabled])');
+        const activeDays = page.locator('[data-testid^="calendar-day-"]:not([disabled])');
         await expect(activeDays.first()).toBeVisible();
         const numDays = await activeDays.count();
         let foundTime = false;
@@ -92,7 +99,7 @@ test.describe('Booking wizard smoke flow', () => {
         for (let i = 0; i < Math.min(numDays, 15); i++) {
             await activeDays.nth(i).click();
             try {
-                const timeSlot = page.locator('button:has-text(":"):not([disabled])').first();
+                const timeSlot = page.locator('[data-testid^="time-slot-"]:not([disabled])').first();
                 await expect(timeSlot).toBeVisible({ timeout: 1500 });
                 await timeSlot.click();
                 foundTime = true;
@@ -104,7 +111,7 @@ test.describe('Booking wizard smoke flow', () => {
         expect(foundTime, 'Could not find any day with available time slots').toBeTruthy();
 
         // Click submit without filling anything
-        const submitButton = page.locator('button:has-text("Rezervovať"), button:has-text("Potvrdiť")').first();
+        const submitButton = page.locator('[data-testid="submit-booking"]');
         await expect(submitButton).toBeVisible();
         await submitButton.click();
 

@@ -24,6 +24,11 @@ function createWrapper() {
 // Import after mocks
 import { useCreateBooking } from '../useCreateBooking';
 
+vi.mock('@/lib/booking-rules', () => ({
+  validateBookingLeadTime: vi.fn(() => ({ allowed: true, error: undefined })),
+  getBratislavaNow: vi.fn(),
+}));
+
 describe('useCreateBooking', () => {
   beforeEach(() => {
     vi.clearAllMocks();

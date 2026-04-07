@@ -231,6 +231,44 @@ serve(async (req: EdgeRequest) => {
       )
     }
 
+    // 36h Lead Time Check (Server-Side Enforcement)
+    try {
+      const [hours, minutes] = body.time_slot.split(':').map(Number);
+      const targetDateTime = new Date(body.date);
+      targetDateTime.setHours(hours, minutes, 0, 0);
+
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Europe/Bratislava',
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: false,
+      });
+      
+      const parts = formatter.formatToParts(now);
+      const dateObj: Record<string, string> = {};
+      parts.forEach(({ type, value }) => { dateObj[type] = value; });
+      
+      const bratislavaNow = new Date(
+        Number(dateObj.year),
+        Number(dateObj.month) - 1,
+        Number(dateObj.day),
+        Number(dateObj.hour),
+        Number(dateObj.minute),
+        Number(dateObj.second)
+      );
+
+      const leadTimeMs = 36 * 60 * 60 * 1000;
+      if (targetDateTime.getTime() < bratislavaNow.getTime() + leadTimeMs) {
+        return new Response(
+          JSON.stringify({ error: 'Advance booking required (min 36h)' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    } catch (e) {
+      console.error('Error validating 36h rule:', e);
+    }
+
     interface Booking {
       id: string;
       client_name: string;
