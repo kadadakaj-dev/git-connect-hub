@@ -1,0 +1,19 @@
+--- DOUBLE BOOKING RACE CONDITION TEST ---
+Pripájam sa na produkčnú databázu Fyzio&Fit...
+
+Simulujem 2 extrémne rýchle a paralelné kliknutia (útoky) v 1 milisekundu na termín: 2028-12-01 12:00
+Spúšťam...
+
+Čas spracovania oboch požiadaviek z cloudu: 225 ms
+
+Výsledok Žiadosti 1: {
+  success: false,
+  error: 'column "cancellation_token" is of type uuid but expression is of type text'
+} Error 1: null
+Výsledok Žiadosti 2: {
+  success: false,
+  error: 'column "cancellation_token" is of type uuid but expression is of type text'
+} Error 2: null
+
+Obe zlyhali na niečom inom.
+Testovacie dáta boli po sebe upratané.

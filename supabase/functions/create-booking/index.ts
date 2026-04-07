@@ -261,9 +261,9 @@ serve(async (req: EdgeRequest) => {
       p_client_email: sanitizeString(body.client_email.toLowerCase(), 255),
       p_client_phone: sanitizeString(body.client_phone, 20),
       p_notes: body.notes ? sanitizeString(body.notes, 1000) : null,
-      p_client_user_id: clientUserId,
-      p_client_request_id: body.client_request_id || null,
-      p_employee_id: body.employee_id || null
+      p_client_user_id: (clientUserId && isValidUUID(clientUserId)) ? clientUserId : null,
+      p_client_request_id: (body.client_request_id && isValidUUID(body.client_request_id)) ? body.client_request_id : null,
+      p_employee_id: (body.employee_id && isValidUUID(body.employee_id)) ? body.employee_id : null
     })
 
     if (rpcError || !rpcResult?.success) {
