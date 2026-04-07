@@ -7,7 +7,7 @@ export interface Employee {
   position: string;
   bio_sk: string | null;
   bio_en: string | null;
-  avatar_url: string | null;
+  avatar_url?: string | null;
   sort_order: number;
   is_active: boolean;
 }
