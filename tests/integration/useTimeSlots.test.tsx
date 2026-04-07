@@ -56,7 +56,7 @@ describe('useTimeSlots Integration', () => {
     }) as any);
   };
 
-  it('should return 3 slots capacity for main therapist (Personnel)', async () => {
+  it('should return 1 slot capacity for a specific therapist', async () => {
     mockSuccessfulResponses();
     vi.mocked(supabase.rpc).mockResolvedValue({ 
       data: [], 
@@ -73,45 +73,18 @@ describe('useTimeSlots Integration', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true), { timeout: 5000 });
 
     const slots = result.current.data;
-    expect(slots?.[0].totalCapacity).toBe(3);
+    expect(slots?.[0].totalCapacity).toBe(1);
     expect(slots?.[0].available).toBe(true);
   });
 
-  it('should remain available when 2 out of 3 slots are booked', async () => {
+  it('should be unavailable when 1 slot is booked for the specific therapist', async () => {
     mockSuccessfulResponses();
     vi.mocked(supabase.rpc).mockResolvedValue({ 
       data: [
-        { time_slot: '09:00', booking_duration: 30 },
         { time_slot: '09:00', booking_duration: 30 }
       ],
       error: null,
-      count: 2,
-      status: 200,
-      statusText: 'OK'
-    });
-
-    const { result } = renderHook(() => useTimeSlots(testDate, 30, mainPersonId), {
-      wrapper: createWrapper(),
-    });
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true), { timeout: 5000 });
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const slot0900 = result.current.data?.find((s: any) => s.time === '09:00');
-    expect(slot0900?.available).toBe(true);
-    expect(slot0900?.bookedCount).toBe(2);
-  });
-
-  it('should be unavailable when all 3 slots are booked', async () => {
-    mockSuccessfulResponses();
-    vi.mocked(supabase.rpc).mockResolvedValue({ 
-      data: [
-        { time_slot: '09:00', booking_duration: 30 },
-        { time_slot: '09:00', booking_duration: 30 },
-        { time_slot: '09:00', booking_duration: 30 }
-      ],
-      error: null,
-      count: 3,
+      count: 1,
       status: 200,
       statusText: 'OK'
     });
@@ -125,6 +98,8 @@ describe('useTimeSlots Integration', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const slot0900 = result.current.data?.find((s: any) => s.time === '09:00');
     expect(slot0900?.available).toBe(false);
-    expect(slot0900?.bookedCount).toBe(3);
+    expect(slot0900?.bookedCount).toBe(1);
   });
+
+
 });

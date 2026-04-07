@@ -181,7 +181,7 @@ const CalendarView = () => {
         startTime: b.time_slot,
         duration: b.booking_duration || b.service?.duration || 60,
         title: b.client_name,
-        type: 'booking' as const,
+        type: (b.client_name === 'Blokovaný čas' || b.client_name === 'Blocked time') ? 'block' as const : 'booking' as const,
         notes: b.notes,
         therapistId: b.employee_id,
         status: b.status,
@@ -388,18 +388,36 @@ const CalendarView = () => {
       toast.success(language === 'sk' ? 'Aktualizované' : 'Updated');
     } else {
       if (formData.type === 'block') {
-        const dates = getBlockDates(formData.date, formData.blockScope || 'day');
-        const rows = dates.map(d => ({ date: d, reason: formData.title || null }));
-        const { error } = await supabase.from('blocked_dates').insert(rows);
-        if (error) {
-          toast.error(language === 'sk' ? 'Nepodarilo sa zablokovať' : 'Failed to block');
-          return;
+        if (formData.blockScope === 'time_slot') {
+          const { error } = await supabase.from('bookings').insert({
+            date: formData.date,
+            time_slot: formData.startTime,
+            client_name: formData.title,
+            client_email: 'block@system.local',
+            employee_id: formData.therapistId || null,
+            booking_duration: formData.duration,
+            status: 'confirmed',
+            notes: formData.notes || null,
+          });
+          if (error) {
+            toast.error(language === 'sk' ? 'Nepodarilo sa vytvoriť blokáciu času' : 'Failed to create time block');
+            return;
+          }
+          toast.success(language === 'sk' ? 'Čas bol zablokovaný' : 'Time slot blocked');
+        } else {
+          const dates = getBlockDates(formData.date, formData.blockScope || 'day');
+          const rows = dates.map(d => ({ date: d, reason: formData.title || null }));
+          const { error } = await supabase.from('blocked_dates').insert(rows);
+          if (error) {
+            toast.error(language === 'sk' ? 'Nepodarilo sa zablokovať' : 'Failed to block');
+            return;
+          }
+          toast.success(
+            dates.length === 1
+              ? (language === 'sk' ? 'Deň zablokovaný' : 'Day blocked')
+              : (language === 'sk' ? `Zablokovaných ${dates.length} dní` : `${dates.length} days blocked`)
+          );
         }
-        toast.success(
-          dates.length === 1
-            ? (language === 'sk' ? 'Deň zablokovaný' : 'Day blocked')
-            : (language === 'sk' ? `Zablokovaných ${dates.length} dní` : `${dates.length} days blocked`)
-        );
       } else {
         if (!formData.clientEmail?.trim()) {
           toast.error(language === 'sk' ? 'Zadajte email klienta.' : 'Enter client email.');

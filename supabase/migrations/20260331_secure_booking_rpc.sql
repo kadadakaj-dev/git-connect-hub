@@ -58,6 +58,10 @@ DECLARE
     v_now_bratislava TIMESTAMP WITH TIME ZONE;
     v_booking_start_bratislava TIMESTAMP WITH TIME ZONE;
 BEGIN
+    -- 0. DB Level Double Booking Protection
+    -- Serialize transactions per employee and date to prevent concurrent overlapping bookings
+    PERFORM pg_advisory_xact_lock(hashtext('booking_lock_' || p_date::text || '_' || COALESCE(p_employee_id::text, 'shared_pool')));
+
     -- 1. Idempotency Check
     IF p_client_request_id IS NOT NULL THEN
         SELECT jsonb_build_object('id', id, 'date', date, 'time_slot', time_slot, 'status', status, 'cancellation_token', cancellation_token)

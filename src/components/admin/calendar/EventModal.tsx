@@ -44,7 +44,7 @@ export interface EventFormData {
   clientEmail?: string;
   clientPhone?: string;
   serviceId?: string;
-  blockScope?: 'day' | 'week' | 'month';
+  blockScope?: 'day' | 'week' | 'month' | 'time_slot';
 }
 
 interface EventModalProps {
@@ -101,9 +101,9 @@ const EventModal = ({
     cancel: language === 'sk' ? 'Zrušiť' : 'Cancel',
     save: language === 'sk' ? 'Uložiť' : 'Save',
     blockScope: language === 'sk' ? 'Rozsah blokácie' : 'Block scope',
-    scopeDay: language === 'sk' ? 'Deň' : 'Day',
+    scopeDay: language === 'sk' ? 'Celý deň' : 'Full day',
     scopeWeek: language === 'sk' ? 'Týždeň' : 'Week',
-    scopeMonth: language === 'sk' ? 'Mesiac' : 'Month',
+    scopeTime: language === 'sk' ? 'Konkrétny čas' : 'Specific time',
   };
 
   const handleServiceChange = (serviceId: string) => {
@@ -226,7 +226,7 @@ const EventModal = ({
             </div>
           )}
 
-          <div className={`grid ${formData.type === 'block' ? 'grid-cols-1' : 'grid-cols-3'} gap-2 sm:gap-3`}>
+          <div className={`grid ${formData.type === 'block' && formData.blockScope !== 'time_slot' ? 'grid-cols-1' : 'grid-cols-3'} gap-2 sm:gap-3`}>
             <div>
               <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.date}</label>
               <Input
@@ -236,7 +236,7 @@ const EventModal = ({
                 className="h-9 sm:h-10 text-xs sm:text-sm"
               />
             </div>
-            {formData.type !== 'block' && (
+            {(formData.type !== 'block' || formData.blockScope === 'time_slot') && (
               <>
                 <div>
                   <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.time}</label>
@@ -270,8 +270,8 @@ const EventModal = ({
             <div>
               <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-1.5">{t.blockScope}</label>
               <div className="grid grid-cols-3 gap-2">
-                {(['day', 'week', 'month'] as const).map((scope) => {
-                  const label = scope === 'day' ? t.scopeDay : scope === 'week' ? t.scopeWeek : t.scopeMonth;
+                {(['time_slot', 'day', 'week'] as const).map((scope) => {
+                  const label = scope === 'day' ? t.scopeDay : scope === 'week' ? t.scopeWeek : t.scopeTime;
                   const active = (formData.blockScope || 'day') === scope;
                   return (
                     <button

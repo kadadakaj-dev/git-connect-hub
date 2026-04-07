@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useTimeSlots } from '@/hooks/useTimeSlots';
 import { useBlockedDates } from '@/hooks/useBlockedDates';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useState, useMemo } from 'react';
 import TimeSlotSkeleton from './TimeSlotSkeleton';
 import { TimeSlot } from '@/types/booking';
@@ -121,6 +123,14 @@ const DateTimeSelection = ({
   const { data: timeSlots = [], isLoading: isLoadingSlots } = useTimeSlots(selectedDate, serviceDuration, therapistId);
   const { data: blockedDays = [] } = useBlockedDates(currentMonth);
 
+  const { data: activeConfigs = [] } = useQuery({
+    queryKey: ['active-time-configs'],
+    queryFn: async () => {
+      const { data } = await supabase.from('time_slots_config').select('day_of_week').eq('is_active', true);
+      return (data || []).map(d => d.day_of_week);
+    }
+  });
+
   const requiredSlots = Math.ceil(serviceDuration / 30);
 
   // Compute which slot times are highlighted on hover (consecutive slots the service would occupy)
@@ -178,7 +188,8 @@ const DateTimeSelection = ({
   const minBookableTime = new Date(Date.now() + 36 * 60 * 60 * 1000);
 
   const isDateDisabled = (date: Date) => {
-    if (date.getDay() === 0 || date.getDay() === 6) return true; // Sunday or Saturday
+    // Check if the day of week is active in time_slots_config
+    if (activeConfigs.length > 0 && !activeConfigs.includes(date.getDay())) return true;
     
     // Check if specifically blocked via admin
     const dateStr = format(date, 'yyyy-MM-dd');

@@ -9,6 +9,15 @@ vi.mock('@/hooks/useTimeSlots', () => ({
     useTimeSlots: (...args: unknown[]) => mockUseTimeSlots(...args),
 }));
 
+vi.mock('@/integrations/supabase/client', () => ({
+    supabase: {
+        from: vi.fn(() => ({
+            select: vi.fn().mockReturnThis(),
+            eq: vi.fn().mockResolvedValue({ data: [{ day_of_week: 1 }, { day_of_week: 2 }, { day_of_week: 3 }, { day_of_week: 4 }, { day_of_week: 5 }] })
+        }))
+    }
+}));
+
 vi.mock('@/i18n/LanguageContext', () => ({
     useLanguage: () => ({
         language: 'sk',
