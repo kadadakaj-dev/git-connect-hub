@@ -161,7 +161,24 @@ const ClientAuth = () => {
   };
 
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast.error(language === 'sk' ? 'Prihlásenie cez Google zlyhalo' : 'Google sign-in failed');
+      }
+      if (result.redirected) return;
+    } catch {
+      toast.error(language === 'sk' ? 'Niečo sa pokazilo' : 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
     e.preventDefault();
     if (!resetEmail.trim()) {
       toast.error(language === 'sk' ? 'Zadajte email' : 'Enter your email');
