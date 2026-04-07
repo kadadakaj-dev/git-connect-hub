@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Snapshot Tests > should match GlassBackground snapshot 1`] = `"<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-100 select-none"><div class="glass-blob !opacity-[0.34] max-md:!opacity-[0.22]" style="width: 900px; height: 900px; top: -300px; left: -200px; --blob-dur: 30s;"></div><div class="glass-blob !opacity-[0.28] max-md:!opacity-[0.18]" style="width: 800px; height: 800px; bottom: -300px; right: -150px; --blob-dur: 22s; animation-delay: -5s;"></div><div class="glass-blob !opacity-[0.14] max-md:!opacity-[0.08]" style="width: 600px; height: 600px; top: 28%; left: 48%; --blob-dur: 35s; animation-delay: -12s;"></div><div class="absolute inset-0 backdrop-blur-[1px]"></div></div>"`;
+exports[`Snapshot Tests > should match GlassBackground snapshot 1`] = `"<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none select-none bg-slate-50/50"><div class="absolute inset-0"></div></div>"`;
 
-exports[`Snapshot Tests > should match GlassCard snapshot 1`] = `"<div class="surface-card p-3 sm:p-4 md:p-5 relative test-class"><div class="relative z-[2]">Test Content</div></div>"`;
+exports[`Snapshot Tests > should match GlassCard snapshot 1`] = `"<div class="lg-glass-card p-4 sm:p-5 md:p-6 relative test-class"><div class="relative z-[2]">Test Content</div></div>"`;
 
 exports[`Snapshot Tests > should match LanguageSwitcher snapshot 1`] = `"<div class="inline-flex items-center rounded-lg sm:rounded-xl glass-card p-1 sm:p-1.5 gap-0.5 sm:gap-1"><button class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 bg-navy text-navy-foreground shadow-sm">SK</button><button class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 text-muted-foreground hover:text-foreground hover:bg-muted/50">EN</button></div>"`;
 

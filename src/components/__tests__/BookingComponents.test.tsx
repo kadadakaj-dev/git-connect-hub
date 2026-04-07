@@ -18,9 +18,9 @@ describe('GlassCard', () => {
         expect(container.firstChild).toHaveClass('my-class');
     });
 
-    it('should have surface-card base class', () => {
+    it('should have lg-glass-card base class', () => {
         const { container } = render(<GlassCard>Content</GlassCard>);
-        expect(container.firstChild).toHaveClass('surface-card');
+        expect(container.firstChild).toHaveClass('lg-glass-card');
     });
 
     it('should wrap children in relative z-[2] container', () => {
@@ -103,10 +103,10 @@ describe('SplashScreen', () => {
 });
 
 describe('GlassBackground', () => {
-    it('should render background blobs', () => {
+    it('should render clean background without distracting blobs', () => {
         const { container } = render(<GlassBackground />);
         const blobs = container.querySelectorAll('.glass-blob');
-        expect(blobs.length).toBe(3);
+        expect(blobs.length).toBe(0);
     });
 
     it('should be fixed positioned and non-interactive', () => {
