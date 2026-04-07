@@ -178,7 +178,7 @@ const ClientAuth = () => {
     }
   };
 
-
+  const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!resetEmail.trim()) {
       toast.error(language === 'sk' ? 'Zadajte email' : 'Enter your email');
