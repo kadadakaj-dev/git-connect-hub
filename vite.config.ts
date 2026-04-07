@@ -76,6 +76,9 @@ export default defineConfig(({ mode }) => ({
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,ico,svg,png,woff2}'],
       },
+      workbox: {
+        navigateFallbackDenylist: [/^\/~oauth/],
+      },
     }),
     asyncCssPlugin(),
   ].filter(Boolean),
