@@ -3,13 +3,14 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useServices } from '@/hooks/useServices';
 import ServiceSkeleton from './ServiceSkeleton';
-import { 
-  Phone, 
-  Activity, 
-  Bone, 
-  Hand, 
-  ClipboardCheck, 
-  Dumbbell, 
+import { motion } from 'framer-motion';
+import {
+  Phone,
+  Activity,
+  Bone,
+  Hand,
+  ClipboardCheck,
+  Dumbbell,
   MessageSquare,
   Stethoscope
 } from 'lucide-react';
@@ -65,7 +66,12 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      initial="hidden"
+      animate="visible"
+      variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
+    >
       {Object.entries(groupedServices).map(([category, items]) => (
         <div key={category} className="space-y-2">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 px-1">
@@ -76,10 +82,16 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
               const isSelected = selectedService?.id === service.id;
               const isExpress = service.id === EXPRESS_SERVICE_ID;
 
+              const itemVariants = {
+                hidden: { opacity: 0, y: 8 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] } },
+              };
+
               if (isExpress) {
                 return (
-                  <a
+                  <motion.a
                     key={service.id}
+                    variants={itemVariants}
                     href={`tel:${EXPRESS_PHONE.replace(/\s/g, '')}`}
                     className={cn(
                       "block rounded-2xl relative overflow-hidden",
@@ -127,68 +139,99 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </motion.a>
                 );
               }
 
-              return (
-                <button
-                  key={service.id}
-                  data-testid={`service-${service.id}`}
-                  onClick={() => onSelect(service)}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "w-full flex items-start gap-3 px-3 py-2.5 rounded-xl text-left",
-                    "transition-all duration-300 ease-liquid",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    "border backdrop-blur-sm",
-                    isSelected
-                      ? "border-primary bg-primary/8 shadow-[0_0_16px_rgba(59,130,246,0.12)] -translate-y-0.5"
-                      : "border-[var(--glass-border-subtle)] bg-[var(--glass-white)] hover:border-[var(--glass-border)] hover:bg-[var(--glass-white-md)] hover:-translate-y-0.5 hover:shadow-glass"
-                  )}
-                >
-                  {/* Radio indicator */}
-                  <div className="mt-1 flex-shrink-0">
-                    <div className={cn(
-                      "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-300 ease-liquid",
-                      isSelected
-                        ? "border-primary shadow-[0_0_8px_rgba(59,130,246,0.3)]"
-                        : "border-muted-foreground/30"
-                    )}>
-                      {isSelected && (
-                        <div className="w-2 h-2 rounded-full bg-primary animate-scale-in" />
-                      )}
-                    </div>
-                  </div>
+              const isTargetForNotice = service.name === 'Celotelová chiro masáž';
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      {(() => {
-                        const IconComponent = ICON_MAP[service.icon as keyof typeof ICON_MAP] || Activity;
-                        return <IconComponent className={cn("w-3.5 h-3.5", isSelected ? "text-primary" : "text-muted-foreground/70")} />;
-                      })()}
-                      <p className="text-sm font-medium text-foreground leading-snug">
-                        {service.name}
+              return (
+                <motion.div key={service.id} variants={itemVariants} className="space-y-4">
+                  <button
+                    data-testid={`service-${service.id}`}
+                    onClick={() => onSelect(service)}
+                    aria-pressed={isSelected}
+                    className={cn(
+                      "w-full flex items-start gap-3 px-3 py-2.5 rounded-xl text-left",
+                      "transition-all duration-300 ease-liquid",
+                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "border backdrop-blur-sm",
+                      isSelected
+                        ? "border-primary bg-primary/8 shadow-[0_0_16px_rgba(59,130,246,0.12)] -translate-y-0.5"
+                        : "border-[var(--glass-border-subtle)] bg-[var(--glass-white)] hover:border-[var(--glass-border)] hover:bg-[var(--glass-white-md)] hover:-translate-y-0.5 hover:shadow-glass"
+                    )}
+                  >
+                    {/* Radio indicator */}
+                    <div className="mt-1 flex-shrink-0">
+                      <div className={cn(
+                        "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-300 ease-liquid",
+                        isSelected
+                          ? "border-primary shadow-[0_0_8px_rgba(59,130,246,0.3)]"
+                          : "border-muted-foreground/30"
+                      )}>
+                        {isSelected && (
+                          <div className="w-2 h-2 rounded-full bg-primary animate-scale-in" />
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        {(() => {
+                          const IconComponent = ICON_MAP[service.icon as keyof typeof ICON_MAP] || Activity;
+                          return <IconComponent className={cn("w-3.5 h-3.5", isSelected ? "text-primary" : "text-muted-foreground/70")} />;
+                        })()}
+                        <p className="text-sm font-medium text-foreground leading-snug">
+                          {service.name}
+                        </p>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
+                        {service.description} ({service.duration}{t.min})
                       </p>
                     </div>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
-                      {service.description} ({service.duration}{t.min})
-                    </p>
-                  </div>
 
-                  <span className={cn(
-                    "text-sm font-bold font-data whitespace-nowrap mt-0.5 transition-colors duration-200",
-                    isSelected ? "text-primary" : "text-foreground"
-                  )}>
-                    {service.price} €
-                  </span>
-                </button>
+                    <span className={cn(
+                      "text-sm font-bold font-data whitespace-nowrap mt-0.5 transition-colors duration-200",
+                      isSelected ? "text-primary" : "text-foreground"
+                    )}>
+                      {service.price} €
+                    </span>
+                  </button>
+
+                  {isTargetForNotice && (
+                    <a 
+                      href="tel:+421905307198"
+                      className={cn(
+                        "block w-full rounded-[24px] p-5 relative overflow-hidden",
+                        "bg-[linear-gradient(135deg,rgba(79,149,213,0.15)_0%,rgba(79,149,213,0.05)_100%)]",
+                        "border-2 border-primary/20 backdrop-blur-xl shadow-sm",
+                        "hover:border-primary/40 hover:-translate-y-1 hover:shadow-glass-float transition-all duration-300 group"
+                      )}
+                    >
+                      <div className="absolute inset-0 bg-[var(--reflection-top)] pointer-events-none" />
+                      
+                      <div className="relative z-10 flex items-start sm:items-center gap-4">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-white/40 flex items-center justify-center border border-primary/10 group-hover:bg-white/60 transition-colors">
+                          <Phone className="w-6 h-6 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-black tracking-tight text-[hsl(var(--deep-navy))] mb-0.5">
+                            EXPRESS TERMÍN
+                          </h3>
+                          <p className="text-[17px] font-medium leading-tight text-[hsl(var(--soft-navy))]">
+                            Počas sviatkov a víkendov je možné objednanie iba telefonicky na čísle <span className="font-bold text-primary whitespace-nowrap">+421 905 307 198</span>.
+                          </p>
+                        </div>
+                      </div>
+                    </a>
+                  )}
+                </motion.div>
               );
             })}
           </div>
         </div>
       ))}
-    </div>
+    </motion.div>
   );
 };
 

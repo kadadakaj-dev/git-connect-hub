@@ -167,21 +167,26 @@ const BookingWizard = () => {
 
       <div className="container max-w-2xl mx-auto px-4 py-3 sm:py-5 flex-1 relative z-10">
         {/* Step 1: Service */}
-        <section className="mb-3 sm:mb-4">
+        <motion.section
+          className="mb-3 sm:mb-4"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
           <SectionHeader number={1} title={language === 'sk' ? 'Vyberte službu' : 'Select service'} completed={hasService} />
           <div className="mt-2">
             <GlassCard>
               <ServiceSelection selectedService={bookingData.service} onSelect={handleServiceSelect} />
             </GlassCard>
           </div>
-        </section>
+        </motion.section>
 
         {/* Step 2 & 3: Date & Time */}
         <motion.section
           ref={dateTimeRef}
-          animate={{ opacity: hasService ? 1 : 0.3 }}
-          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{ opacity: 0.3 }}
+          initial={{ opacity: 0.3, y: 14 }}
+          animate={{ opacity: hasService ? 1 : 0.3, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
           className={cn("mb-3 sm:mb-4 scroll-mt-20 sm:scroll-mt-28", !hasService && "pointer-events-none")}
         >
           <div className="flex items-center gap-6 mb-2">
@@ -204,9 +209,9 @@ const BookingWizard = () => {
         {/* Step 4: Client Details */}
         <motion.section
           ref={detailsRef}
-          animate={{ opacity: hasDateTime ? 1 : 0.3 }}
-          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{ opacity: 0.3 }}
+          initial={{ opacity: 0.3, y: 14 }}
+          animate={{ opacity: hasDateTime ? 1 : 0.3, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           className={cn("mb-3 sm:mb-4 scroll-mt-20 sm:scroll-mt-24", !hasDateTime && "pointer-events-none")}
         >
           <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
@@ -218,9 +223,14 @@ const BookingWizard = () => {
         </motion.section>
 
         {/* Submit */}
-        <div ref={submitRef}>
+        <motion.div
+          ref={submitRef}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
           <SubmitButton enabled={hasService && hasDateTime} isPending={createBooking.isPending} onSubmit={handleSubmit} />
-        </div>
+        </motion.div>
       </div>
 
       <Footer />

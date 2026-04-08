@@ -102,7 +102,7 @@ const App = () => {
                               <Admin />
                             </AdminProtectedRoute>
                           } 
-                          path="/admin*" 
+                          path="/admin/*"
                         />
                         <Route element={<DesignShowcase />} path="/design-showcase" />
 

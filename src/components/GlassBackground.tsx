@@ -20,9 +20,13 @@ const GlassBackground = () => (
       className="glass-blob w-[300px] h-[300px] -bottom-20 -right-20 bg-sky-200/30"
       style={{ "--blob-dur": "22s" } as React.CSSProperties}
     />
-    
+    <div
+      className="glass-blob w-[260px] h-[260px] top-1/3 -right-16 bg-indigo-100/25"
+      style={{ "--blob-dur": "31s" } as React.CSSProperties}
+    />
+
     {/* Subtle center glow to tie it together */}
-    <div 
+    <div
       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/40 blur-[120px] rounded-full"
     />
   </div>
