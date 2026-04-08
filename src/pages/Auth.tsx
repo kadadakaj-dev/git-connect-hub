@@ -5,7 +5,7 @@ import GlassBackground from "@/components/GlassBackground";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-type Mode = "login" | "register" | "reset";
+type Mode = "login" | "register" | "reset" | "update";
 
 export default function Auth() {
   const [mode, setMode] = useState<Mode>("login");
@@ -19,9 +19,23 @@ export default function Auth() {
   const location = useLocation();
 
   useEffect(() => {
+    // Listen for auth state changes (Recovery links redirect here)
+    // Registered once on mount and stays active
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, _session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setMode("update");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     const check = async () => {
       const { data } = await supabase.auth.getSession();
-      if (data.session) {
+      if (data.session && mode !== "update") {
         const target = (location.state as { from?: { pathname?: string } })?.from
           ?.pathname || "/portal";
         navigate(target, { replace: true });
@@ -29,7 +43,7 @@ export default function Auth() {
     };
 
     check();
-  }, [location.state, navigate]);
+  }, [location.state, navigate, mode]);
 
   const clearFeedback = () => {
     setError("");
@@ -96,6 +110,18 @@ export default function Auth() {
         }
 
         setMessage("Link na obnovu bol odoslaný");
+        return;
+      }
+
+      if (mode === "update") {
+        const { error: updateError } = await supabase.auth.updateUser({
+          password,
+        });
+
+        if (updateError) throw updateError;
+
+        setMessage("Heslo bolo úspešne zmenené. Teraz sa môžeš prihlásiť.");
+        setMode("login");
       }
     } catch (err) {
       setError("Skús to ešte raz");
@@ -119,6 +145,11 @@ export default function Auth() {
       title: "Obnova hesla",
       subtitle: "Pošleme ti bezpečný link na nové heslo",
       button: "Odoslať",
+    },
+    update: {
+      title: "Nové heslo",
+      subtitle: "Zadaj svoje nové silné heslo",
+      button: "Uložiť heslo",
     },
   };
 

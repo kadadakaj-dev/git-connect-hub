@@ -17,6 +17,7 @@ import PushOptIn from "@/components/PushOptIn";
 import { useServiceWorkerMessages } from "@/hooks/useServiceWorkerMessages";
 import ClientLayout from "./components/layouts/ClientLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminProtectedRoute from "./components/auth/AdminProtectedRoute";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // Lazy load pages for code splitting
@@ -27,6 +28,7 @@ const Legal = lazy(() => import("./pages/Legal"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 const Auth = lazy(() => import("./pages/Auth"));
 const DesignShowcase = lazy(() => import("./pages/DesignShowcase"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -93,10 +95,15 @@ const App = () => {
                         />
                         <Route element={<ClientLayout><CancelBooking /></ClientLayout>} path="/cancel" />
                         <Route element={<ClientLayout><Legal /></ClientLayout>} path="/legal" />
-                        <Route element={<Navigate to="/auth" replace />} path="/client-auth" />
-
-                        {/* Admin Routes (Disabled/Hidden) */}
-                        <Route element={<NotFound />} path="/admin*" />
+                        {/* Admin Routes */}
+                        <Route 
+                          element={
+                            <AdminProtectedRoute>
+                              <Admin />
+                            </AdminProtectedRoute>
+                          } 
+                          path="/admin*" 
+                        />
                         <Route element={<DesignShowcase />} path="/design-showcase" />
 
                         <Route element={<NotFound />} path="*" />

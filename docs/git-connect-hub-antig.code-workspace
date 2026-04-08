@@ -2,14 +2,6 @@
 	"folders": [
 		{
 			"path": ".."
-		},
-		{
-			"path": "../../../Desktop/P R O J E  K  T Y/Liquiidglassdesigntokens"
 		}
-	],
-	"extensions": {
-		"recommendations": [
-			"supabase.postgrestools"
-		]
-	}
+	]
 }

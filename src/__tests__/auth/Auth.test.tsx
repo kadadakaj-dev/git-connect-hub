@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Auth from "@/pages/Auth";
 
@@ -17,7 +17,43 @@ vi.mock("react-router-dom", async () => {
 const mockSignInWithPassword = vi.fn();
 const mockSignUp = vi.fn();
 const mockResetPasswordForEmail = vi.fn();
+const mockUpdateUser = vi.fn();
 const mockGetSession = vi.fn();
+const mockOnAuthStateChange = vi.fn();
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
+vi.mock("lucide-react", () => ({
+  Loader2: () => <div />,
+  Mail: () => <div />,
+  Lock: () => <div />,
+  Eye: () => <div />,
+  EyeOff: () => <div />,
+  AlertCircle: () => <div />,
+  CheckCircle2: () => <div />,
+  ArrowLeft: () => <div />,
+  ChevronRight: () => <div />,
+}));
+
+vi.mock("framer-motion", () => ({
+  motion: {
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
+    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
+    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
+  },
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
+vi.mock("@/components/GlassBackground", () => ({
+  default: () => <div data-testid="glass-background" />,
+}));
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
@@ -26,6 +62,11 @@ vi.mock("@/integrations/supabase/client", () => ({
       signInWithPassword: (...args: unknown[]) => mockSignInWithPassword(...args),
       signUp: (...args: unknown[]) => mockSignUp(...args),
       resetPasswordForEmail: (...args: unknown[]) => mockResetPasswordForEmail(...args),
+      updateUser: (...args: unknown[]) => mockUpdateUser(...args),
+      onAuthStateChange: (cb: any) => {
+        mockOnAuthStateChange(cb);
+        return { data: { subscription: { unsubscribe: vi.fn() } } };
+      },
     },
   },
 }));
@@ -43,7 +84,7 @@ describe("Auth page", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Prihlásenie" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /Prihlásenie/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pokračovať" })).toBeInTheDocument();
   });
 
@@ -55,7 +96,7 @@ describe("Auth page", () => {
     );
 
     fireEvent.click(await screen.findByRole("button", { name: "Vytvoriť účet" }));
-    expect(await screen.findByRole("heading", { name: "Vytvoriť účet" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /Vytvoriť účet/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Začať" })).toBeInTheDocument();
   });
 
@@ -166,5 +207,50 @@ describe("Auth page", () => {
     expect(
       await screen.findByText(/Link na obnovu bol odoslaný/i)
     ).toBeInTheDocument();
+  });
+
+  it("handles password update flow via recovery event", async () => {
+    mockUpdateUser.mockResolvedValue({ error: null });
+    
+    // Store the callback
+    let capturedCallback: any = null;
+    mockOnAuthStateChange.mockImplementation((cb) => {
+      capturedCallback = cb;
+      return { data: { subscription: { unsubscribe: vi.fn() } } };
+    });
+
+    render(
+      <MemoryRouter>
+        <Auth />
+      </MemoryRouter>
+    );
+
+    // Wait for callback to be captured
+    await waitFor(() => expect(capturedCallback).not.toBeNull());
+    
+    // Simulate RECOVERY event
+    await act(async () => {
+      await capturedCallback("PASSWORD_RECOVERY", { user: { email: 'test@example.com' } });
+    });
+
+    // Ensure we are in update mode
+    expect(await screen.findByText("Nové heslo")).toBeInTheDocument();
+
+    const passwordInput = screen.getByLabelText("Heslo");
+    await act(async () => {
+      fireEvent.change(passwordInput, { target: { value: "newsecure123" } });
+    });
+
+    const submitButton = screen.getByRole("button", { name: "Uložiť heslo" });
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
+
+    await waitFor(() => {
+      expect(mockUpdateUser).toHaveBeenCalled();
+    }, { timeout: 3000 });
+
+    expect(await screen.findByText(/Heslo bolo úspešne zmenené/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Prihlásenie/i })).toBeInTheDocument();
   });
 });

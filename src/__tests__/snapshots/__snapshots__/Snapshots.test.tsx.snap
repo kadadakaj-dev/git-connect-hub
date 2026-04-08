@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Snapshot Tests > should match GlassBackground snapshot 1`] = `"<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none select-none bg-slate-50/50"><div class="absolute inset-0"></div></div>"`;
+exports[`Snapshot Tests > should match GlassBackground snapshot 1`] = `"<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none select-none bg-slate-50/50"><div class="absolute inset-0"></div><div class="glass-blob w-[400px] h-[400px] -top-20 -left-20 bg-blue-200/40" style="--blob-dur: 26s;"></div><div class="glass-blob w-[300px] h-[300px] -bottom-20 -right-20 bg-sky-200/30" style="--blob-dur: 22s;"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/40 blur-[120px] rounded-full"></div></div>"`;
 
 exports[`Snapshot Tests > should match GlassCard snapshot 1`] = `"<div class="lg-glass-card p-4 sm:p-5 md:p-6 relative test-class"><div class="relative z-[2]">Test Content</div></div>"`;
 

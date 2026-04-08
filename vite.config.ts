@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => ({
       srcDir: 'src',
       filename: 'sw.ts',
       registerType: 'prompt',
-      includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'pwa-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png'],
       manifest: {
         name: 'FYZIO&FIT – Rezervácie',
         short_name: 'FYZIO&FIT',
@@ -60,11 +60,7 @@ export default defineConfig(({ mode }) => ({
             sizes: '512x512',
             type: 'image/png',
           },
-          {
-            src: '/pwa-icon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-          },
+
           {
             src: '/maskable-icon-512x512.png',
             sizes: '512x512',

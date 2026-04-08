@@ -32,9 +32,31 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { 
+  Plus, 
+  Pencil, 
+  Trash2, 
+  Loader2,
+  Activity,
+  Bone,
+  Hand,
+  ClipboardCheck,
+  Dumbbell,
+  MessageSquare,
+  Stethoscope
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+
+const ICON_MAP = {
+  Activity,
+  Bone,
+  Hand,
+  ClipboardCheck,
+  Dumbbell,
+  MessageSquare,
+  Stethoscope
+};
 
 interface ServiceFormData {
   id?: string;
@@ -70,6 +92,7 @@ const iconOptions = [
   'ClipboardCheck',
   'Dumbbell',
   'MessageSquare',
+  'Stethoscope',
 ];
 
 const ServiceManagement = () => {
@@ -410,8 +433,10 @@ const ServiceManagement = () => {
                     <TableCell className="py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-primary/5 text-primary border border-primary/10 shadow-sm sm:h-10 sm:w-10">
-                          {/* Placeholder for actual icon mapping if needed, or generic Activity */}
-                          <Plus className="w-5 h-5 opacity-40 group-hover:scale-110 transition-transform" />
+                          {(() => {
+                            const IconComponent = ICON_MAP[service.icon as keyof typeof ICON_MAP] || Activity;
+                            return <IconComponent className="w-5 h-5 group-hover:scale-110 transition-transform" />;
+                          })()}
                         </div>
                         <div className="flex flex-col">
                           <span className="font-bold text-[hsl(var(--deep-navy))] text-sm sm:text-base">

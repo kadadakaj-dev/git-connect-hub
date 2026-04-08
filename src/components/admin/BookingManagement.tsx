@@ -66,11 +66,8 @@ const BookingManagement = () => {
   
   const deleteBookingMutation = useMutation({
     mutationFn: async (id: string) => {
-      // First, delete related data that might cause 409 Conflict
-      await supabase.from('booking_reminders').delete().eq('booking_id', id);
-      await supabase.from('therapist_notes').delete().eq('booking_id', id);
-
-      // Now delete the booking itself
+      // We rely on ON DELETE CASCADE in the database to remove 
+      // booking_reminders, therapist_notes, and booking_events.
       const { error } = await supabase
         .from('bookings')
         .delete()
@@ -249,12 +246,11 @@ const BookingManagement = () => {
             {/* Mobile card view */}
             <div className="space-y-2 md:hidden">
               {filteredBookings.map((booking) => (
-                <button
-                  key={booking.id}
-                  type="button"
-                  onClick={() => setSelectedBooking(booking)}
-                  className="w-full rounded-[24px] border border-[var(--glass-border-subtle)] bg-white/72 p-3 text-left shadow-[0_8px_16px_rgba(126,195,255,0.06)] transition-colors hover:bg-white/82"
-                >
+                  <div
+                    key={booking.id}
+                    onClick={() => setSelectedBooking(booking)}
+                    className="w-full rounded-[24px] border border-[var(--glass-border-subtle)] bg-white/72 p-3 text-left shadow-[0_8px_16px_rgba(126,195,255,0.06)] transition-colors hover:bg-white/82 cursor-pointer"
+                  >
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <div className="min-w-0">
                       <p className="font-semibold text-sm text-[hsl(var(--soft-navy))] truncate">{booking.client_name}</p>
@@ -297,7 +293,7 @@ const BookingManagement = () => {
                       </Button>
                     </div>
                   </div>
-                </button>
+                  </div>
               ))}
             </div>
 

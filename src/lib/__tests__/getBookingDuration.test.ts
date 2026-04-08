@@ -1,6 +1,6 @@
 // Category 1b: Unit Tests - getBookingDuration pure function
 import { describe, it, expect } from 'vitest';
-import { getBookingDuration } from '../../hooks/useTimeSlots';
+import { getBookingDuration } from '@/lib/booking-utils';
 
 describe('getBookingDuration', () => {
     it('should return 30 for 30 minutes', () => {

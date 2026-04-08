@@ -29,21 +29,32 @@ const OverviewStats = () => {
   const today = useMemo(() => new Date(), []);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Cutoff date for filtering legacy/test records from stats
+  // We use April 1st, 2026 as the baseline for the production-ready state
+  const STATS_CUTOFF_DATE = useMemo(() => new Date('2026-04-01'), []);
 
   useEffect(() => {
     setIsMounted(true);
     
-    const updateWidth = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
-      }
-    };
+    if (!containerRef.current) return;
 
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0) {
+          setContainerWidth(entry.contentRect.width);
+        }
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    
+    // Fallback for initial measure
+    setContainerWidth(containerRef.current.offsetWidth);
+
+    return () => resizeObserver.disconnect();
   }, []);
 
   const { data: bookings, isLoading: bookingsLoading } = useQuery({
@@ -79,7 +90,13 @@ const OverviewStats = () => {
   const stats = useMemo(() => {
     if (!bookings) return null;
 
-    const activeBookings = bookings.filter(b => b.status !== 'cancelled');
+    const activeBookings = bookings.filter(b => {
+      const bDate = startOfDay(new Date(b.date));
+      return b.status !== 'cancelled' && bDate >= STATS_CUTOFF_DATE;
+    });
+    
+    // Logic for "Deleted" or "Archived" records could be added here
+    // For now we treat historical records accurately by filtering test data
     
     // 1. Basic Counts
     const todayCount = activeBookings.filter(b => isToday(new Date(b.date))).length;
@@ -96,7 +113,10 @@ const OverviewStats = () => {
       isWithinInterval(new Date(b.date), { start: monthStart, end: monthEnd })
     ).length;
 
-    const pendingCount = bookings.filter(b => b.status === 'pending').length;
+    const pendingCount = bookings.filter(b => {
+      const bDate = startOfDay(new Date(b.date));
+      return b.status === 'pending' && bDate >= STATS_CUTOFF_DATE;
+    }).length;
 
     // 2. Revenue Calculation (Current Month)
     const monthlyConfirmedRevenue = activeBookings
@@ -143,7 +163,7 @@ const OverviewStats = () => {
       last7Days,
       serviceData
     };
-  }, [bookings, language, today]);
+  }, [bookings, language, today, STATS_CUTOFF_DATE]);
 
   // Recent bookings (last 5)
   const recentBookings = bookings?.slice(0, 5) || [];

@@ -103,10 +103,10 @@ describe('SplashScreen', () => {
 });
 
 describe('GlassBackground', () => {
-    it('should render clean background without distracting blobs', () => {
+    it('should render high-quality backdrop with signature glass blobs', () => {
         const { container } = render(<GlassBackground />);
         const blobs = container.querySelectorAll('.glass-blob');
-        expect(blobs.length).toBe(0);
+        expect(blobs.length).toBe(2);
     });
 
     it('should be fixed positioned and non-interactive', () => {

@@ -34,7 +34,7 @@ describe('Booking 36h Lead Time Rule (Integration)', () => {
   describe('Shared Utility Rule Test', () => {
     it('should REJECT booking exactly 35h 59m from now', () => {
       const now = getBratislavaNow();
-      const target = subMinutes(addHours(now, 36), 1);
+      const target = subMinutes(addHours(now.toJSDate(), 36), 1);
       const timeSlot = format(target, 'HH:mm');
 
       const result = validateBookingLeadTime(target, timeSlot);
@@ -44,7 +44,7 @@ describe('Booking 36h Lead Time Rule (Integration)', () => {
 
     it('should ALLOW booking 36h 01m from now', () => {
       const now = getBratislavaNow();
-      const target = addMinutes(addHours(now, 36), 1);
+      const target = addMinutes(addHours(now.toJSDate(), 36), 1);
       const timeSlot = format(target, 'HH:mm');
 
       const result = validateBookingLeadTime(target, timeSlot);
@@ -53,8 +53,8 @@ describe('Booking 36h Lead Time Rule (Integration)', () => {
   });
 
   describe('useCreateBooking Hook Guard', () => {
-    const invalidTarget = subMinutes(addHours(getBratislavaNow(), 36), 1);
-    const validTarget = addMinutes(addHours(getBratislavaNow(), 36), 1);
+    const invalidTarget = subMinutes(addHours(getBratislavaNow().toJSDate(), 36), 1);
+    const validTarget = addMinutes(addHours(getBratislavaNow().toJSDate(), 36), 1);
 
     it('should immediately throw and NOT call the backend if under 36h', async () => {
       const { result } = renderHook(() => useCreateBooking(), { wrapper: createWrapper() });

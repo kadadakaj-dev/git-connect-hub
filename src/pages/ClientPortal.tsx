@@ -25,12 +25,35 @@ import {
   ShieldCheck,
   LogOut,
   Loader2,
+  Edit2,
+  Trash2,
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { useClientProfile } from '@/hooks/useClientProfile';
-import { useClientBookings } from '@/hooks/useClientBookings';
+import { useClientProfile, useUpdateClientProfile } from '@/hooks/useClientProfile';
+import { useClientBookings, useCancelBooking } from '@/hooks/useClientBookings';
 import { useFavoriteServices } from '@/hooks/useFavoriteServices';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import GlassBackground from '@/components/GlassBackground';
 import { cn } from '@/lib/utils';
 
@@ -43,6 +66,11 @@ const ClientPortal = () => {
   const [loggingOut, setLoggingOut] = useState(false);
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+  
+  // New States
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+  const [profileForm, setProfileForm] = useState({ fullName: "", phone: "" });
 
   useEffect(() => {
     let mounted = true;
@@ -107,6 +135,48 @@ const ClientPortal = () => {
   const { data: profile, isLoading: profileLoading } = useClientProfile(user?.id);
   const { data: bookings, isLoading: bookingsLoading } = useClientBookings(user?.id);
   const { data: favorites, isLoading: favoritesLoading, toggleFavorite } = useFavoriteServices(user?.id);
+  const updateProfile = useUpdateClientProfile();
+  const cancelBooking = useCancelBooking();
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    try {
+      await updateProfile.mutateAsync({
+        userId: user.id,
+        updates: {
+          full_name: profileForm.fullName,
+          phone: profileForm.phone,
+        },
+      });
+      toast.success(language === 'sk' ? "Profil bol úspešne aktualizovaný" : "Profile updated successfully");
+      setIsProfileDialogOpen(false);
+    } catch (err) {
+      toast.error(language === 'sk' ? "Nastala chyba pri aktualizácii" : "Update failed");
+    }
+  };
+
+  const handleCancelBooking = async () => {
+    if (!selectedBookingId) return;
+
+    try {
+      await cancelBooking.mutateAsync(selectedBookingId);
+      toast.success(language === 'sk' ? "Rezervácia bola zrušená" : "Booking cancelled");
+      setIsCancelDialogOpen(false);
+    } catch (err) {
+      toast.error(language === 'sk' ? "Nepodarilo sa zrušiť rezerváciu" : "Cancellation failed");
+    }
+  };
+
+  useEffect(() => {
+    if (profile) {
+      setProfileForm({
+        fullName: profile.full_name || "",
+        phone: profile.phone || "",
+      });
+    }
+  }, [profile]);
 
   const handleProfileUpdated = () => {
     queryClient.invalidateQueries({ queryKey: ['client-profile', user?.id] });
@@ -142,6 +212,14 @@ const ClientPortal = () => {
       therapistNotes: 'Poznámky od Personál FYZIO&FIT',
       favoritesHint: 'Vaše obľúbené služby pre rýchlu rezerváciu',
       addToFavorites: 'Pridať medzi obľúbené',
+      editProfile: 'Upraviť profil',
+      cancelBooking: 'Zrušiť termín',
+      fullName: 'Celé meno',
+      phone: 'Telefón',
+      saveChanges: 'Uložiť zmeny',
+      cancelConfirm: 'Naozaj chcete zrušiť tento termín?',
+      cancelDesc: 'Tento krok je nevratný. Ak si ho rozmyslíte, budete si musieť vytvoriť novú rezerváciu.',
+      keepTerm: 'Ponechať termín',
     },
     en: {
       title: 'Dashboard',
@@ -164,6 +242,14 @@ const ClientPortal = () => {
       therapistNotes: 'Notes from Staff of FYZIO&FIT',
       favoritesHint: 'Your favorite services for quick booking',
       addToFavorites: 'Add to favorites',
+      editProfile: 'Edit Profile',
+      cancelBooking: 'Cancel Appointment',
+      fullName: 'Full Name',
+      phone: 'Phone',
+      saveChanges: 'Save Changes',
+      cancelConfirm: 'Are you sure you want to cancel?',
+      cancelDesc: 'This action cannot be undone. You will need to make a new booking if you change your mind.',
+      keepTerm: 'Keep Appointment',
     },
   };
 
@@ -260,6 +346,15 @@ const ClientPortal = () => {
 
             <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
               <LanguageSwitcher />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setIsProfileDialogOpen(true)}
+                className="h-10 w-10 rounded-2xl border border-[var(--glass-border-subtle)] bg-white/64 text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.12)] hover:bg-white/78 hover:text-[hsl(var(--navy))]"
+                title={text.editProfile}
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -399,7 +494,21 @@ const ClientPortal = () => {
                               </span>
                             </div>
                           </div>
-                          {getStatusBadge(booking.status)}
+                          <div className="flex items-center gap-2">
+                            {getStatusBadge(booking.status)}
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => {
+                                setSelectedBookingId(booking.id);
+                                setIsCancelDialogOpen(true);
+                              }}
+                              className="h-9 w-9 rounded-xl border border-destructive/10 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                              title={text.cancelBooking}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -546,8 +655,73 @@ const ClientPortal = () => {
             </TabsContent>
           </Tabs>
         </main>
-      </div>
 
+        {/* Edit Profile Dialog */}
+        <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+          <DialogContent className="sm:max-w-[425px] border-[var(--glass-border-subtle)] bg-white/94 backdrop-blur-xl rounded-[28px] p-6 shadow-glass-float">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-heading font-semibold text-[hsl(var(--soft-navy))]">{text.editProfile}</DialogTitle>
+              <DialogDescription>
+                {language === 'sk' ? 'Upravte svoje kontaktné údaje pre rýchlejšie rezervácie.' : 'Update your contact details for faster bookings.'}
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleUpdateProfile} className="space-y-6 pt-4">
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-sm font-medium pl-1">{text.fullName}</Label>
+                <Input
+                  id="fullName"
+                  value={profileForm.fullName}
+                  onChange={(e) => setProfileForm(prev => ({ ...prev, fullName: e.target.value }))}
+                  className="rounded-2xl bg-white/50 border-[var(--glass-border-subtle)] focus:ring-primary/20 h-12"
+                  placeholder="Peter Novák"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-sm font-medium pl-1">{text.phone}</Label>
+                <Input
+                  id="phone"
+                  value={profileForm.phone}
+                  onChange={(e) => setProfileForm(prev => ({ ...prev, phone: e.target.value }))}
+                  className="rounded-2xl bg-white/50 border-[var(--glass-border-subtle)] focus:ring-primary/20 h-12"
+                  placeholder="+421 900 000 000"
+                />
+              </div>
+              <DialogFooter className="pt-4">
+                <Button type="submit" disabled={updateProfile.isPending} className="w-full h-12 rounded-[18px] bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white font-semibold">
+                  {updateProfile.isPending ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : text.saveChanges}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Cancel Booking AlertDialog */}
+        <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
+          <AlertDialogContent className="border-[var(--glass-border-subtle)] bg-white/96 backdrop-blur-xl rounded-[28px] p-8 shadow-glass-float">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-2xl font-heading font-semibold text-[hsl(var(--soft-navy))]">
+                {text.cancelConfirm}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-base pt-2">
+                {text.cancelDesc}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex gap-3 pt-6">
+              <AlertDialogCancel className="h-12 rounded-[18px] flex-1 border-[var(--glass-border-subtle)] bg-white/40 font-medium">
+                {text.keepTerm}
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleCancelBooking}
+                disabled={cancelBooking.isPending}
+                className="h-12 rounded-[18px] flex-1 bg-destructive hover:bg-destructive/90 text-white border-0 shadow-lg shadow-destructive/20 font-semibold"
+              >
+                {cancelBooking.isPending ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : text.cancelBooking}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </>
   );
 };
