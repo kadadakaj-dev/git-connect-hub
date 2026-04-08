@@ -1,4 +1,4 @@
-# FYZIO&FIT Booking Platform
+# FYZIOAFIT Booking Platform
 
 A premium, high-performance booking platform designed for clinical and high-end physical therapy services. The system features the signature **"Baby Blue Glass"** design system, providing a modern, liquid, and professional user interface.
 
@@ -46,7 +46,7 @@ The platform enforces strict rules to ensure operational stability:
 1.  **36h Advance Booking**: Customers cannot book appointments that begin within 36 hours of the current moment.
 2.  **Clinic-Wide Exclusivity**: Each time slot has a global capacity of **1**. If any therapist is booked for a slot, that slot becomes unavailable for all other service requests.
 3.  **Opening Hours**: Bookings are only allowed within defined operating windows, specialized rules handle holidays and weekends (Saturday off).
-4.  **No Therapist Choice**: To ensure optimal internal scheduling, customers are assigned to "Personál – FYZIO&FIT".
+4.  **No Therapist Choice**: To ensure optimal internal scheduling, customers are assigned to "Personál – FYZIOAFIT".
 
 ## 🗺️ Route Matrix
 
@@ -80,4 +80,4 @@ The project uses GitHub Actions for continuous integration, automatically verify
 3.  Cross-environment Vitest execution
 
 ---
-© 2026 FYZIO&FIT. All rights reserved.
+© 2026 FYZIOAFIT. All rights reserved.

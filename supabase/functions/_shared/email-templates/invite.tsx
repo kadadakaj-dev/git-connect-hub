@@ -1,6 +1,4 @@
-/// <reference types="npm:@types/react@18.3.1" />
-
-import * as React from 'npm:react@18.3.1'
+import * as React from 'react'
 
 import {
   Body,
@@ -13,7 +11,7 @@ import {
   Preview,
   Section,
   Text,
-} from 'npm:@react-email/components@0.0.22'
+} from '@react-email/components'
 
 interface InviteEmailProps {
   siteName: string
@@ -28,17 +26,17 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Pozvánka do FYZIO&FIT</Preview>
+    <Preview>Pozvánka do FYZIOAFIT</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIO&FIT</Heading>
+          <Heading style={headerTitle}>FYZIOAFIT</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Boli ste pozvaní</Heading>
           <Text style={text}>
             Boli ste pozvaní do{' '}
-            <Link href={siteUrl} style={link}><strong>FYZIO&FIT</strong></Link>.
+            <Link href={siteUrl} style={link}><strong>FYZIOAFIT</strong></Link>.
             Kliknite na tlačidlo nižšie pre prijatie pozvánky a vytvorenie účtu.
           </Text>
           <Button style={button} href={confirmationUrl}>
@@ -49,7 +47,7 @@ export const InviteEmail = ({
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>FYZIO&FIT</Text>
+          <Text style={footerBrand}>FYZIOAFIT</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>

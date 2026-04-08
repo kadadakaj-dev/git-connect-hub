@@ -1,6 +1,4 @@
-/// <reference types="npm:@types/react@18.3.1" />
-
-import * as React from 'npm:react@18.3.1'
+import * as React from 'react'
 
 import {
   Body,
@@ -12,7 +10,7 @@ import {
   Preview,
   Section,
   Text,
-} from 'npm:@react-email/components@0.0.22'
+} from '@react-email/components'
 
 interface MagicLinkEmailProps {
   siteName: string
@@ -25,16 +23,16 @@ export const MagicLinkEmail = ({
 }: MagicLinkEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Váš prihlasovací odkaz – FYZIO&FIT</Preview>
+    <Preview>Váš prihlasovací odkaz – FYZIOAFIT</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIO&FIT</Heading>
+          <Heading style={headerTitle}>FYZIOAFIT</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Váš prihlasovací odkaz</Heading>
           <Text style={text}>
-            Kliknite na tlačidlo nižšie pre prihlásenie do FYZIO&FIT.
+            Kliknite na tlačidlo nižšie pre prihlásenie do FYZIOAFIT.
             Platnosť odkazu je obmedzená.
           </Text>
           <Button style={button} href={confirmationUrl}>
@@ -45,7 +43,7 @@ export const MagicLinkEmail = ({
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>FYZIO&FIT</Text>
+          <Text style={footerBrand}>FYZIOAFIT</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>

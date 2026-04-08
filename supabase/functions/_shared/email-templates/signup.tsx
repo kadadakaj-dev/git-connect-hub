@@ -1,6 +1,4 @@
-/// <reference types="npm:@types/react@18.3.1" />
-
-import * as React from 'npm:react@18.3.1'
+import * as React from 'react'
 
 import {
   Body,
@@ -13,7 +11,7 @@ import {
   Preview,
   Section,
   Text,
-} from 'npm:@react-email/components@0.0.22'
+} from '@react-email/components'
 
 interface SignupEmailProps {
   siteName: string
@@ -30,17 +28,17 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Potvrďte svoj e-mail – FYZIO&FIT</Preview>
+    <Preview>Potvrďte svoj e-mail – FYZIOAFIT</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIO&FIT</Heading>
+          <Heading style={headerTitle}>FYZIOAFIT</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Potvrďte svoj e-mail</Heading>
           <Text style={text}>
             Ďakujeme za registráciu v{' '}
-            <Link href={siteUrl} style={link}><strong>FYZIO&FIT</strong></Link>!
+            <Link href={siteUrl} style={link}><strong>FYZIOAFIT</strong></Link>!
           </Text>
           <Text style={text}>
             Prosím, potvrďte svoju e-mailovú adresu (

@@ -124,7 +124,7 @@ self.addEventListener('push', (event) => {
   try {
     data = event.data.json();
   } catch {
-    data = { title: 'FYZIO&FIT', body: event.data.text() };
+    data = { title: 'FYZIOAFIT', body: event.data.text() };
   }
 
   const options: NotificationOptions & { renotify: boolean } = {
@@ -142,7 +142,7 @@ self.addEventListener('push', (event) => {
   ];
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'FYZIO&FIT', options)
+    self.registration.showNotification(data.title || 'FYZIOAFIT', options)
   );
 });
 

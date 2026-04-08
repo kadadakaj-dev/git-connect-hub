@@ -94,7 +94,7 @@ serve(async (req: Request) => {
     }
 
     await client.send({
-      from: "FYZIO&FIT <booking@fyzioafit.sk>",
+      from: "FYZIOAFIT <booking@fyzioafit.sk>",
       to: data.to,
       subject: subject,
       content: textContent,

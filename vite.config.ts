@@ -33,9 +33,9 @@ export default defineConfig(({ mode }) => ({
       registerType: 'prompt',
       includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png'],
       manifest: {
-        name: 'FYZIO&FIT – Rezervácie',
-        short_name: 'FYZIO&FIT',
-        description: 'Online rezervačný systém pre FYZIO&FIT Košice',
+        name: 'FYZIOAFIT – Rezervácie',
+        short_name: 'FYZIOAFIT',
+        description: 'Online rezervačný systém pre FYZIOAFIT Košice',
         theme_color: '#24476B',
         background_color: '#EAF6FF',
         display: 'standalone',

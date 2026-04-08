@@ -29,7 +29,7 @@ export const translations = {
     cancelText: "Ak potrebujete zrušiť rezerváciu, kliknite na nasledujúci odkaz:",
     cancelButton: "Zrušiť rezerváciu",
     footer: "Tešíme sa na vašu návštevu!",
-    clinicName: "FYZIO&FIT",
+    clinicName: "FYZIOAFIT",
     contact: "Kontakt: booking@fyzioafit.sk",
     addToCalendar: "Pridať do kalendára",
   },
@@ -46,7 +46,7 @@ export const translations = {
     cancelText: "If you need to cancel your booking, click the following link:",
     cancelButton: "Cancel Booking",
     footer: "We look forward to seeing you!",
-    clinicName: "FYZIO&FIT",
+    clinicName: "FYZIOAFIT",
     contact: "Contact: booking@fyzioafit.sk",
     addToCalendar: "Add to Calendar",
   },
@@ -83,7 +83,7 @@ export function generateGoogleCalendarUrl(data: EmailRequest): string {
   
   const formatG = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   
-  const title = `FYZIO & FIT: ${data.serviceName}`;
+  const title = `FYZIOAFIT: ${data.serviceName}`;
   const details = `Vaša rezervácia pre ${data.clientName}.\nMiesto: Krmanová 6, Košice`;
   const location = "Krmanová 6, 040 01 Košice, Slovensko";
   
@@ -98,16 +98,15 @@ export function generateSubject(data: EmailRequest): string {
   const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
   
   if (isCancellationClient) {
-    return `❌ Zrušenie rezervácie: ${serviceName} - FYZIO&FIT`;
+    return `Zrušenie: ${serviceName} - FYZIOAFIT`;
   } else if (isCancellationAdmin) {
-    return `❌ ZRUŠENÁ: ${serviceName} | ${data.adminData?.clientName || 'Klient'}`;
+    return `ZRUŠENÁ: ${serviceName} | ${data.adminData?.clientName || 'Klient'}`;
   } else if (isAdminNotification) {
-    const formattedDate = formatDate(data.date, 'sk');
-    return `📅 NOVÁ: ${serviceName} | ${formattedDate} ${data.time}`;
+    return `[REZERVÁCIA] ${serviceName} - ${data.adminData?.clientName || 'Klient'}`;
   } else if (isReminder) {
-    return `🔔 Pripomienka: ${serviceName} (Zajtra) - FYZIO&FIT`;
+    return `Pripomienka: ${serviceName} - FYZIOAFIT`;
   } else {
-    return `✅ Potvrdenie rezervácie: ${serviceName} - FYZIO&FIT`;
+    return `Potvrdenie: ${serviceName} - FYZIOAFIT`;
   }
 }
 
@@ -157,7 +156,7 @@ export function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
                 <tr>
                   <td style="background: linear-gradient(135deg, ${colors.brandSky} 0%, ${colors.brandBlueLight} 100%); padding: 45px 30px; text-align: center;">
                     <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">${serviceName}</h1>
-                    <p style="color: rgba(255,255,255,0.95); margin: 8px 0 0; font-size: 15px; font-weight: 500; letter-spacing: 0.5px;">FYZIO&FIT Booking System</p>
+                    <p style="color: rgba(255,255,255,0.95); margin: 8px 0 0; font-size: 15px; font-weight: 500; letter-spacing: 0.5px;">FYZIOAFIT Booking System</p>
                   </td>
                 </tr>
                 <tr>
@@ -228,7 +227,7 @@ export function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
           <tr>
             <td align="center" style="padding-top: 24px;">
               <p style="color: #94a3b8; font-size: 12px; margin: 0; letter-spacing: 0.2px;">
-                Tento luxusný e-mail bol odoslaný automaticky rezervačným systémom FYZIO & FIT.
+                Tento luxusný e-mail bol odoslaný automaticky rezervačným systémom FYZIOAFIT.
               </p>
             </td>
           </tr>
@@ -251,7 +250,7 @@ export function generateEmailText(data: EmailRequest, baseUrl: string): string {
 
   return [
     `✅ ${serviceName.toUpperCase()}`,
-    `FYZIO&FIT Booking System`,
+    `FYZIOAFIT Booking System`,
     "----------------------------------------",
     `${t.greeting}, ${data.clientName}!`,
     title,
@@ -334,7 +333,7 @@ export function generateAdminNotificationHtml(data: EmailRequest): string {
           </tr>
           <tr>
             <td style="background-color: #f8fafc; padding: 25px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
-              <p style="color: #64748b; margin: 0; font-size: 14px; font-weight: 600;">FYZIO&FIT Booking System</p>
+              <p style="color: #64748b; margin: 0; font-size: 14px; font-weight: 600;">FYZIOAFIT Booking System</p>
             </td>
           </tr>
         </table>
@@ -352,7 +351,7 @@ export function generateAdminNotificationText(data: EmailRequest): string {
   const serviceName = data.serviceName || 'Nová služba';
 
   return [
-    `📅 NOVÁ REZERVÁCIA: ${serviceName.toUpperCase()}`,
+    `REZERVÁCIA: ${serviceName.toUpperCase()}`,
     "========================================",
     `Klient: ${escapeHtml(admin?.clientName || 'Neznámy klient')}`,
     `Email: ${escapeHtml(admin?.clientEmail || '-')}`,

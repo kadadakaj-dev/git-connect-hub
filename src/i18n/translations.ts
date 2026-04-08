@@ -3,7 +3,7 @@ export type Language = 'sk' | 'en';
 export const translations = {
   sk: {
     // Header
-    clinicName: 'FYZIO&FIT',
+    clinicName: 'FYZIOAFIT',
     clinicSubtitle: 'Rezervujte si termín v niekoľkých krokoch',
 
     // Steps
@@ -121,7 +121,7 @@ export const translations = {
   },
   en: {
     // Header
-    clinicName: 'FYZIO&FIT',
+    clinicName: 'FYZIOAFIT',
     clinicSubtitle: 'Book your appointment in just a few steps',
 
     // Steps

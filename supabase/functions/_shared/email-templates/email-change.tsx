@@ -1,6 +1,4 @@
-/// <reference types="npm:@types/react@18.3.1" />
-
-import * as React from 'npm:react@18.3.1'
+import * as React from 'react'
 
 import {
   Body,
@@ -13,7 +11,7 @@ import {
   Preview,
   Section,
   Text,
-} from 'npm:@react-email/components@0.0.22'
+} from '@react-email/components'
 
 interface EmailChangeEmailProps {
   siteName: string
@@ -30,16 +28,16 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Potvrďte zmenu e-mailu – FYZIO&FIT</Preview>
+    <Preview>Potvrďte zmenu e-mailu – FYZIOAFIT</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIO&FIT</Heading>
+          <Heading style={headerTitle}>FYZIOAFIT</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Potvrďte zmenu e-mailu</Heading>
           <Text style={text}>
-            Požiadali ste o zmenu e-mailovej adresy v FYZIO&FIT z{' '}
+            Požiadali ste o zmenu e-mailovej adresy v FYZIOAFIT z{' '}
             <Link href={`mailto:${email}`} style={link}>{email}</Link>{' '}
             na{' '}
             <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.
@@ -55,7 +53,7 @@ export const EmailChangeEmail = ({
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>FYZIO&FIT</Text>
+          <Text style={footerBrand}>FYZIOAFIT</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>
