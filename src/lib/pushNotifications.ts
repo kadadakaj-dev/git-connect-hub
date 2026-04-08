@@ -84,14 +84,12 @@ export async function isSubscribedToPush(): Promise<boolean> {
  * This requires a `push_subscriptions` table or edge function on the server.
  */
 async function saveSubscriptionToServer(subscription: PushSubscription): Promise<void> {
-  const { data: { user } } = await supabase.auth.getUser();
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (supabase as any).from('push_subscriptions').upsert(
     {
       endpoint: subscription.endpoint,
       keys: JSON.stringify(subscription.toJSON().keys),
-      user_id: user?.id ?? null,
+      user_id: null,
     },
     { onConflict: 'endpoint' }
   );

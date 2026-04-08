@@ -11,10 +11,6 @@ const mockFrom = vi.fn();
 vi.mock('@/integrations/supabase/client', () => ({
     supabase: {
         from: (...args: any[]) => mockFrom(...args),
-        auth: {
-            getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-            onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
-        },
     },
 }));
 

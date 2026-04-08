@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import PageMeta from '@/components/seo/PageMeta';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,9 +24,6 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import ProfileEditDialog from '@/components/client/ProfileEditDialog';
-import AvatarEditDialog from '@/components/client/AvatarEditDialog';
-import SettingsMenu from '@/components/client/SettingsMenu';
 import { useClientProfile } from '@/hooks/useClientProfile';
 import { useClientBookings } from '@/hooks/useClientBookings';
 import { useFavoriteServices } from '@/hooks/useFavoriteServices';
@@ -39,60 +35,22 @@ const ClientPortal = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const queryClient = useQueryClient();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    const checkAdmin = async (userId: string) => {
-      const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .eq('role', 'admin')
-        .maybeSingle();
-      
-      if (data) setIsAdmin(true);
-    };
+  // Auth removed
 
-    if (user?.id) {
-      checkAdmin(user.id);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-      if (!session?.user) {
-        navigate('/auth');
-      }
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-      if (!session?.user) {
-        navigate('/auth');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const { data: profile, isLoading: profileLoading } = useClientProfile(user?.id);
-  const { data: bookings, isLoading: bookingsLoading } = useClientBookings(user?.id);
-  const { data: favorites, isLoading: favoritesLoading, toggleFavorite } = useFavoriteServices(user?.id);
+  const { data: profile, isLoading: profileLoading } = useClientProfile(undefined);
+  const { data: bookings, isLoading: bookingsLoading } = useClientBookings(undefined);
+  const { data: favorites, isLoading: favoritesLoading, toggleFavorite } = useFavoriteServices(undefined);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
     navigate('/');
   };
 
   const handleProfileUpdated = () => {
-    queryClient.invalidateQueries({ queryKey: ['client-profile', user?.id] });
+    queryClient.invalidateQueries({ queryKey: ['client-profile'] });
   };
 
   const getInitials = (name: string) =>
@@ -236,31 +194,13 @@ const ClientPortal = () => {
                   {text.title}
                 </h1>
                 <p className="truncate text-sm text-muted-foreground">
-                  {text.welcome}, {profile?.full_name || user?.email}
+                  {text.welcome}, {profile?.full_name || 'Guest'}
                 </p>
               </div>
             </div>
 
             <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
-              {isAdmin && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hidden h-9 items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 text-[13px] font-medium text-primary hover:bg-primary/10 sm:flex"
-                  onClick={() => navigate('/admin')}
-                >
-                  <ShieldCheck className="h-4 w-4" />
-                  {language === 'sk' ? 'Admin Panel' : 'Admin Panel'}
-                </Button>
-              )}
               <LanguageSwitcher />
-              <SettingsMenu
-                onEditProfile={() => setIsProfileDialogOpen(true)}
-                onSignOut={handleSignOut}
-                emailNotifications={profile?.email_notifications ?? true}
-                userId={user?.id || ''}
-                userEmail={user?.email || ''}
-              />
             </div>
           </div>
         </header>
@@ -539,25 +479,6 @@ const ClientPortal = () => {
         </main>
       </div>
 
-      {profile && (
-        <ProfileEditDialog
-          open={isProfileDialogOpen}
-          onOpenChange={setIsProfileDialogOpen}
-          profile={profile}
-          onProfileUpdated={handleProfileUpdated}
-        />
-      )}
-
-      {profile && user && (
-        <AvatarEditDialog
-          open={isAvatarDialogOpen}
-          onOpenChange={setIsAvatarDialogOpen}
-          currentAvatarUrl={profile.avatar_url}
-          fullName={profile.full_name}
-          userId={user.id}
-          onAvatarUpdated={handleProfileUpdated}
-        />
-      )}
     </>
   );
 };

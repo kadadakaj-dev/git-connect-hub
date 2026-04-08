@@ -1,4 +1,5 @@
 import { Suspense, lazy, useState, useCallback, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import CookieBanner from "@/components/CookieBanner";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -20,12 +21,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 // Lazy load pages for code splitting
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const AdminLogin = lazy(() => import("./pages/AdminLogin"));
-const AdminResetPassword = lazy(() => import("./pages/AdminResetPassword"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const CancelBooking = lazy(() => import("./pages/CancelBooking"));
 const Legal = lazy(() => import("./pages/Legal"));
-const ClientAuth = lazy(() => import("./pages/ClientAuth"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 const DesignShowcase = lazy(() => import("./pages/DesignShowcase"));
 
@@ -46,10 +43,12 @@ const App = () => {
   });
 
   useEffect(() => {
+    console.log("[App] Component mounted, isHydrated set to true");
     setIsHydrated(true);
     // Clear query cache on mount ONLY during E2E tests to ensure fresh state
     // @ts-expect-error - playwright is injected by our fixtures
     if (window.playwright) {
+      console.log("[App] Playwright detected, clearing query cache");
       queryClient.clear();
     }
   }, []);
@@ -72,21 +71,19 @@ const App = () => {
                   style={showSplash ? { opacity: 0, pointerEvents: 'none', position: 'absolute', width: '100%', height: '100%' } : { opacity: 1 }}>
                   <Toaster />
                   <Sonner position="top-center" />
+                  {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
                   <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                     <OfflineBanner />
                     <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                       <Routes>
                         {/* Client Routes with Layout */}
                         <Route element={<ClientLayout><Index /></ClientLayout>} path="/" />
-                        <Route element={<ClientLayout><ClientAuth /></ClientLayout>} path="/auth" />
                         <Route element={<ClientLayout><ClientPortal /></ClientLayout>} path="/portal" />
                         <Route element={<ClientLayout><CancelBooking /></ClientLayout>} path="/cancel" />
                         <Route element={<ClientLayout><Legal /></ClientLayout>} path="/legal" />
 
-                        {/* Admin Routes (No Layout) */}
-                        <Route element={<AdminLogin />} path="/admin/login" />
-                        <Route element={<AdminResetPassword />} path="/admin/reset-password" />
-                        <Route element={<AdminDashboard />} path="/admin" />
+                        {/* Admin Routes (Disabled/Hidden) */}
+                        <Route element={<NotFound />} path="/admin*" />
                         <Route element={<DesignShowcase />} path="/design-showcase" />
 
                         <Route element={<NotFound />} path="*" />
