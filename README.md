@@ -6,7 +6,8 @@ A premium, high-performance booking platform designed for clinical and high-end 
 
 ### Prerequisites
 - Node.js 18+
-- Supabase account with the database schema applied
+- Supabase CLI & Edge Runtime (for email system)
+- SMTP Credentials (configured in Supabase Env)
 
 ### Installation
 ```bash
@@ -15,6 +16,10 @@ npm install
 
 # Start development server
 npm run dev
+
+# Run Edge Function tests
+supabase functions serve --no-verify-jwt
+deno test supabase/functions/send-booking-email/templates_test.ts
 ```
 
 ### Environment Variables
@@ -25,14 +30,23 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your_anon_key
 VITE_VAPID_PUBLIC_KEY=your_pwa_push_key
 ```
 
+## 💎 Premium Communication ("Luxury Mode")
+
+The platform utilizes a service-centric communication suite designed to provide immediate clarity and a premium experience:
+
+- **Service-First Subject Lines**: Administrative and client emails lead with the actual service name (e.g., `Nová rezervácia: Chiropraxia ✅`).
+- **Dynamic UX Emojis**: Instant recognition of email types (✅ Confirmation, 🔔 Reminder, ❌ Cancellation, 📅 Admin).
+- **Anti-Defacing Architecture**: Robust localized fallbacks and strict type-safety (tested via Deno) ensure no `undefined` or generic labels reach the client.
+- **Logo-free Design**: High-contrast typography, rounded aesthetics, and modern CSS gradients replace heavy assets for maximum performance.
+
 ## 📅 Business & Booking Rules
 
 The platform enforces strict rules to ensure operational stability:
 
 1.  **36h Advance Booking**: Customers cannot book appointments that begin within 36 hours of the current moment.
 2.  **Clinic-Wide Exclusivity**: Each time slot has a global capacity of **1**. If any therapist is booked for a slot, that slot becomes unavailable for all other service requests.
-3.  **Opening Hours**: Bookings are only allowed within the hours defined in `time_slots_config`.
-4.  **No Therapist Choice**: To ensure optimal internal scheduling, customers are assigned to "Personál – FYZIO&FIT" rather than selecting individual therapists.
+3.  **Opening Hours**: Bookings are only allowed within defined operating windows, specialized rules handle holidays and weekends (Saturday off).
+4.  **No Therapist Choice**: To ensure optimal internal scheduling, customers are assigned to "Personál – FYZIO&FIT".
 
 ## 🗺️ Route Matrix
 
@@ -48,33 +62,22 @@ The platform enforces strict rules to ensure operational stability:
 ## 🧪 Engineering & Verification
 
 ### Test Suite
-- **Unit/Integration**: `npm test` (Powered by Vitest)
+- **Web (React/TypeScript)**: `npm test` (Powered by Vitest)
+- **Email System (Deno)**: `supabase/functions/.../templates_test.ts`
 - **End-to-End**: `npm run test:e2e` (Powered by Playwright)
 - **Linting**: `npm run lint`
 
-### ⚠️ Known Issues / Skipped Tests
-The following tests are currently skipped but do NOT block production release:
-- **`src/__tests__/auth/Auth.test.tsx`**: "should initiate password recovery flow".
-  - **Reason**: Brittle JSDOM/Vi-mock environment consistency issue when tracking UI redirects during mock resolution.
-  - **Status**: Non-blocking. The password recovery logic has been manually verified in the live environment.
-  - **Action**: Fix scheduled for P2 stabilization phase once JSDOM mocks are updated.
+### 🛡️ Infrastructure Hardening
+The system is protected by a series of specialized migrations:
+- **Universal Cascade Delete**: Ensures clean data integrity when removing dependencies.
+- **Security Hardening**: Strict RLS policies and server-side verification of business hours.
+- **Edge Deployment**: Fast, globally distributed Edge Functions for background tasks.
 
 ### CI/CD
-The project uses GitHub Actions (`.github/workflows/ci.yml`) for continuous integration, automatically verifying every push to `main` via:
-1.  Environment Sync
-2.  Linting Audit
-3.  Production Build
-4.  Vitest & Playwright execution
-
-## 🔐 Administrative Access
-Admin users must have the `admin` role in the `user_roles` database table. Identity is strictly verified at both the UI level (`AdminProtectedRoute.tsx`) and the Database level (RLS).
-
-## 📦 Production Release Checklist
-- [ ] Environment variables configured in Vercel/Production
-- [ ] Database migrations successfully applied
-- [ ] PWA Manifest and Service Worker verified (`npm run build`)
-- [ ] 36h lead time rule verified in production timezone (Bratislava)
-- [ ] Admin user identity verified in the production database
+The project uses GitHub Actions for continuous integration, automatically verifying:
+1.  Environment Sync & Linting Audit
+2.  Production Build & PWA Integrity
+3.  Cross-environment Vitest execution
 
 ---
 © 2026 FYZIO&FIT. All rights reserved.
