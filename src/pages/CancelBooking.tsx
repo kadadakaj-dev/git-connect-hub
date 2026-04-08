@@ -90,7 +90,7 @@ const CancelBooking = () => {
   const verifyBooking = useCallback(async () => {
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
       const response = await fetch(`${supabaseUrl}/functions/v1/get-booking-by-token`, {
         method: 'POST',
@@ -144,7 +144,7 @@ const CancelBooking = () => {
     setIsProcessing(true);
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
       const response = await fetch(`${supabaseUrl}/functions/v1/cancel-booking`, {
         method: 'POST',

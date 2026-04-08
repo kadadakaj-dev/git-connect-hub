@@ -24,6 +24,19 @@ END $$;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_bookings_client_request_id ON public.bookings (client_request_id) WHERE client_request_id IS NOT NULL;
 
 -- 3. Create/Update the secure booking function
+DROP FUNCTION IF EXISTS public.create_secure_booking(
+  uuid,
+  date,
+  text,
+  text,
+  text,
+  text,
+  text,
+  uuid,
+  uuid,
+  uuid
+);
+
 CREATE OR REPLACE FUNCTION public.create_secure_booking(
     p_service_id UUID,
     p_date DATE,

@@ -30,28 +30,28 @@ ALTER TABLE public.favorite_services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
 
 -- Policies for favorite_services
-CREATE POLICY "Users can view their own favorites"
-ON public.favorite_services FOR SELECT TO authenticated 
+DROP POLICY IF EXISTS "Users can view their own favorites" ON public.favorite_services; CREATE POLICY "Users can view their own favorites" ON public.favorite_services FOR SELECT TO authenticated 
 USING (client_id = auth.uid());
 
-CREATE POLICY "Users can add their own favorites"
-ON public.favorite_services FOR INSERT TO authenticated 
+DROP POLICY IF EXISTS "Users can add their own favorites" ON public.favorite_services; CREATE POLICY "Users can add their own favorites" ON public.favorite_services FOR INSERT TO authenticated 
 WITH CHECK (client_id = auth.uid());
 
-CREATE POLICY "Users can delete their own favorites"
-ON public.favorite_services FOR DELETE TO authenticated 
+DROP POLICY IF EXISTS "Users can delete their own favorites" ON public.favorite_services; CREATE POLICY "Users can delete their own favorites" ON public.favorite_services FOR DELETE TO authenticated 
 USING (client_id = auth.uid());
 
 -- Policies for user_roles
-CREATE POLICY "Users can view their own roles"
-ON public.user_roles FOR SELECT TO authenticated 
+DROP POLICY IF EXISTS "Users can view their own roles" ON public.user_roles; CREATE POLICY "Users can view their own roles" ON public.user_roles FOR SELECT TO authenticated 
 USING (user_id = auth.uid());
 
-CREATE POLICY "Admins can manage roles"
-ON public.user_roles FOR ALL TO authenticated 
+DROP POLICY IF EXISTS "Admins can manage roles" ON public.user_roles; CREATE POLICY "Admins can manage roles" ON public.user_roles FOR ALL TO authenticated 
 USING (auth.role() = 'authenticated');
 
--- Insert default admin user (will need to be updated with real user ID)
-INSERT INTO public.user_roles (user_id, role) VALUES
-('00000000-0000-0000-0000-000000000000', 'admin')
+-- Admin role should be assigned only after a real user exists
+-- This migration intentionally does not insert a default admin with a hardcoded UUID
+-- SAFE insert that only runs if a real user exists:
+INSERT INTO public.user_roles (user_id, role)
+SELECT id, 'admin'
+FROM auth.users
+WHERE email = 'booking@fyzioafit.sk'
 ON CONFLICT DO NOTHING;
+

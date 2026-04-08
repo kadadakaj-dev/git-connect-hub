@@ -34,22 +34,19 @@ CREATE TABLE IF NOT EXISTS public.email_send_log (
 ALTER TABLE public.email_send_log ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
-  CREATE POLICY "Service role can read send log"
-    ON public.email_send_log FOR SELECT
+  DROP POLICY IF EXISTS "Service role can read send log" ON public.email_send_log; CREATE POLICY "Service role can read send log" ON public.email_send_log FOR SELECT
     USING (auth.role() = 'service_role');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-  CREATE POLICY "Service role can insert send log"
-    ON public.email_send_log FOR INSERT
+  DROP POLICY IF EXISTS "Service role can insert send log" ON public.email_send_log; CREATE POLICY "Service role can insert send log" ON public.email_send_log FOR INSERT
     WITH CHECK (auth.role() = 'service_role');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-  CREATE POLICY "Service role can update send log"
-    ON public.email_send_log FOR UPDATE
+  DROP POLICY IF EXISTS "Service role can update send log" ON public.email_send_log; CREATE POLICY "Service role can update send log" ON public.email_send_log FOR UPDATE
     USING (auth.role() = 'service_role')
     WITH CHECK (auth.role() = 'service_role');
 EXCEPTION WHEN duplicate_object THEN NULL;
@@ -113,8 +110,7 @@ END $$;
 ALTER TABLE public.email_send_state ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
-  CREATE POLICY "Service role can manage send state"
-    ON public.email_send_state FOR ALL
+  DROP POLICY IF EXISTS "Service role can manage send state" ON public.email_send_state; CREATE POLICY "Service role can manage send state" ON public.email_send_state FOR ALL
     USING (auth.role() = 'service_role')
     WITH CHECK (auth.role() = 'service_role');
 EXCEPTION WHEN duplicate_object THEN NULL;
@@ -179,15 +175,13 @@ CREATE TABLE IF NOT EXISTS public.suppressed_emails (
 ALTER TABLE public.suppressed_emails ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
-  CREATE POLICY "Service role can read suppressed emails"
-    ON public.suppressed_emails FOR SELECT
+  DROP POLICY IF EXISTS "Service role can read suppressed emails" ON public.suppressed_emails; CREATE POLICY "Service role can read suppressed emails" ON public.suppressed_emails FOR SELECT
     USING (auth.role() = 'service_role');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-  CREATE POLICY "Service role can insert suppressed emails"
-    ON public.suppressed_emails FOR INSERT
+  DROP POLICY IF EXISTS "Service role can insert suppressed emails" ON public.suppressed_emails; CREATE POLICY "Service role can insert suppressed emails" ON public.suppressed_emails FOR INSERT
     WITH CHECK (auth.role() = 'service_role');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
@@ -207,22 +201,19 @@ CREATE TABLE IF NOT EXISTS public.email_unsubscribe_tokens (
 ALTER TABLE public.email_unsubscribe_tokens ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
-  CREATE POLICY "Service role can read tokens"
-    ON public.email_unsubscribe_tokens FOR SELECT
+  DROP POLICY IF EXISTS "Service role can read tokens" ON public.email_unsubscribe_tokens; CREATE POLICY "Service role can read tokens" ON public.email_unsubscribe_tokens FOR SELECT
     USING (auth.role() = 'service_role');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-  CREATE POLICY "Service role can insert tokens"
-    ON public.email_unsubscribe_tokens FOR INSERT
+  DROP POLICY IF EXISTS "Service role can insert tokens" ON public.email_unsubscribe_tokens; CREATE POLICY "Service role can insert tokens" ON public.email_unsubscribe_tokens FOR INSERT
     WITH CHECK (auth.role() = 'service_role');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-  CREATE POLICY "Service role can mark tokens as used"
-    ON public.email_unsubscribe_tokens FOR UPDATE
+  DROP POLICY IF EXISTS "Service role can mark tokens as used" ON public.email_unsubscribe_tokens; CREATE POLICY "Service role can mark tokens as used" ON public.email_unsubscribe_tokens FOR UPDATE
     USING (auth.role() = 'service_role')
     WITH CHECK (auth.role() = 'service_role');
 EXCEPTION WHEN duplicate_object THEN NULL;
@@ -251,3 +242,4 @@ CREATE INDEX IF NOT EXISTS idx_unsubscribe_tokens_token ON public.email_unsubscr
 --    If conditions are met, it calls the process-email-queue Edge Function
 --    via net.http_post using the vault-stored service_role key.
 --    To revert: SELECT cron.unschedule('process-email-queue');
+

@@ -55,61 +55,51 @@ ALTER TABLE public.time_slots_config ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.blocked_dates ENABLE ROW LEVEL SECURITY;
 
 -- Services: Everyone can view active services
-CREATE POLICY "Anyone can view active services"
-ON public.services FOR SELECT
+DROP POLICY IF EXISTS "Anyone can view active services" ON public.services; CREATE POLICY "Anyone can view active services" ON public.services FOR SELECT
 USING (is_active = true);
 
 -- Services: Only admins can manage services
-CREATE POLICY "Admins can manage services"
-ON public.services FOR ALL
+DROP POLICY IF EXISTS "Admins can manage services" ON public.services; CREATE POLICY "Admins can manage services" ON public.services FOR ALL
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
 -- Bookings: Anyone can create a booking (public form)
-CREATE POLICY "Anyone can create bookings"
-ON public.bookings FOR INSERT
+DROP POLICY IF EXISTS "Anyone can create bookings" ON public.bookings; CREATE POLICY "Anyone can create bookings" ON public.bookings FOR INSERT
 WITH CHECK (true);
 
 -- Bookings: Only admins can view all bookings
-CREATE POLICY "Admins can view all bookings"
-ON public.bookings FOR SELECT
+DROP POLICY IF EXISTS "Admins can view all bookings" ON public.bookings; CREATE POLICY "Admins can view all bookings" ON public.bookings FOR SELECT
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'));
 
 -- Bookings: Only admins can update bookings
-CREATE POLICY "Admins can update bookings"
-ON public.bookings FOR UPDATE
+DROP POLICY IF EXISTS "Admins can update bookings" ON public.bookings; CREATE POLICY "Admins can update bookings" ON public.bookings FOR UPDATE
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
 -- Bookings: Only admins can delete bookings
-CREATE POLICY "Admins can delete bookings"
-ON public.bookings FOR DELETE
+DROP POLICY IF EXISTS "Admins can delete bookings" ON public.bookings; CREATE POLICY "Admins can delete bookings" ON public.bookings FOR DELETE
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'));
 
 -- Time slots config: Anyone can view
-CREATE POLICY "Anyone can view time slots config"
-ON public.time_slots_config FOR SELECT
+DROP POLICY IF EXISTS "Anyone can view time slots config" ON public.time_slots_config; CREATE POLICY "Anyone can view time slots config" ON public.time_slots_config FOR SELECT
 USING (true);
 
 -- Time slots config: Only admins can manage
-CREATE POLICY "Admins can manage time slots config"
-ON public.time_slots_config FOR ALL
+DROP POLICY IF EXISTS "Admins can manage time slots config" ON public.time_slots_config; CREATE POLICY "Admins can manage time slots config" ON public.time_slots_config FOR ALL
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
 -- Blocked dates: Anyone can view
-CREATE POLICY "Anyone can view blocked dates"
-ON public.blocked_dates FOR SELECT
+DROP POLICY IF EXISTS "Anyone can view blocked dates" ON public.blocked_dates; CREATE POLICY "Anyone can view blocked dates" ON public.blocked_dates FOR SELECT
 USING (true);
 
 -- Blocked dates: Only admins can manage
-CREATE POLICY "Admins can manage blocked dates"
-ON public.blocked_dates FOR ALL
+DROP POLICY IF EXISTS "Admins can manage blocked dates" ON public.blocked_dates; CREATE POLICY "Admins can manage blocked dates" ON public.blocked_dates FOR ALL
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));

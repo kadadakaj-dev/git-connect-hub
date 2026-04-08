@@ -1,6 +1,8 @@
 -- Migration to implement atomic booking cancellation with timezone support.
 -- Fixed syntax error and improved race-condition handling.
 
+DROP FUNCTION IF EXISTS public.cancel_secure_booking(UUID);
+
 CREATE OR REPLACE FUNCTION public.cancel_secure_booking(
   p_cancellation_token UUID
 )

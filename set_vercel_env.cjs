@@ -4,7 +4,7 @@ const path = require('path');
 
 const envs = [
   { name: 'VITE_SUPABASE_URL', value: 'https://gtefgucwbskgknsdirvj.supabase.co' },
-  { name: 'VITE_SUPABASE_PUBLISHABLE_KEY', value: 'sb_publishable_LHXMJxk4HF71YLtQxNt94Q_yIbH7Kta' },
+  { name: 'VITE_SUPABASE_ANON_KEY', value: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0ZWZndWN3YnNrZ2tuc2RpcnZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNDA1MjgsImV4cCI6MjA4OTcxNjUyOH0.0U0_nqaraTmezjEONg16wyal_q5CFmJaRho7xqDkiuc' },
   { name: 'VITE_SUPABASE_PROJECT_ID', value: 'gtefgucwbskgknsdirvj' },
   { name: 'VITE_VAPID_PUBLIC_KEY', value: 'BByTjS2R7rEqoVjW_nK6F9Z8VlWb3F4M8N3W5_nK9v0z1Z8VlWb3F4M8A' }
 ];

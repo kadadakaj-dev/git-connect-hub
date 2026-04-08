@@ -4,8 +4,7 @@ VALUES ('avatars', 'avatars', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- Allow authenticated users to upload their own avatar
-CREATE POLICY "Users can upload their own avatar"
-ON storage.objects FOR INSERT
+DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects; CREATE POLICY "Users can upload their own avatar" ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
   bucket_id = 'avatars' AND
@@ -13,8 +12,7 @@ WITH CHECK (
 );
 
 -- Allow authenticated users to update their own avatar
-CREATE POLICY "Users can update their own avatar"
-ON storage.objects FOR UPDATE
+DROP POLICY IF EXISTS "Users can update their own avatar" ON storage.objects; CREATE POLICY "Users can update their own avatar" ON storage.objects FOR UPDATE
 TO authenticated
 USING (
   bucket_id = 'avatars' AND
@@ -22,8 +20,7 @@ USING (
 );
 
 -- Allow authenticated users to delete their own avatar
-CREATE POLICY "Users can delete their own avatar"
-ON storage.objects FOR DELETE
+DROP POLICY IF EXISTS "Users can delete their own avatar" ON storage.objects; CREATE POLICY "Users can delete their own avatar" ON storage.objects FOR DELETE
 TO authenticated
 USING (
   bucket_id = 'avatars' AND
@@ -31,7 +28,6 @@ USING (
 );
 
 -- Allow public read access to avatars
-CREATE POLICY "Avatars are publicly accessible"
-ON storage.objects FOR SELECT
+DROP POLICY IF EXISTS "Avatars are publicly accessible" ON storage.objects; CREATE POLICY "Avatars are publicly accessible" ON storage.objects FOR SELECT
 TO public
 USING (bucket_id = 'avatars');

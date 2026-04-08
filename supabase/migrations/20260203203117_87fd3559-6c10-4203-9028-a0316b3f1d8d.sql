@@ -7,13 +7,11 @@
 DROP POLICY IF EXISTS "Users can view their own roles" ON user_roles;
 DROP POLICY IF EXISTS "Admins can manage all roles" ON user_roles;
 
-CREATE POLICY "Users can view their own roles"
-ON user_roles FOR SELECT
+DROP POLICY IF EXISTS "Users can view their own roles" ON user_roles; CREATE POLICY "Users can view their own roles" ON user_roles FOR SELECT
 TO authenticated
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Admins can manage all roles"
-ON user_roles FOR ALL
+DROP POLICY IF EXISTS "Admins can manage all roles" ON user_roles; CREATE POLICY "Admins can manage all roles" ON user_roles FOR ALL
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));
@@ -24,12 +22,10 @@ WITH CHECK (public.has_role(auth.uid(), 'admin'));
 DROP POLICY IF EXISTS "Anyone can view active services" ON services;
 DROP POLICY IF EXISTS "Admins can manage services" ON services;
 
-CREATE POLICY "Anyone can view active services"
-ON services FOR SELECT
+DROP POLICY IF EXISTS "Anyone can view active services" ON services; CREATE POLICY "Anyone can view active services" ON services FOR SELECT
 USING (is_active = true);
 
-CREATE POLICY "Admins can manage services"
-ON services FOR ALL
+DROP POLICY IF EXISTS "Admins can manage services" ON services; CREATE POLICY "Admins can manage services" ON services FOR ALL
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));
@@ -42,23 +38,19 @@ DROP POLICY IF EXISTS "Admins can view all bookings" ON bookings;
 DROP POLICY IF EXISTS "Admins can update bookings" ON bookings;
 DROP POLICY IF EXISTS "Admins can delete bookings" ON bookings;
 
-CREATE POLICY "Anyone can create bookings"
-ON bookings FOR INSERT
+DROP POLICY IF EXISTS "Anyone can create bookings" ON bookings; CREATE POLICY "Anyone can create bookings" ON bookings FOR INSERT
 WITH CHECK (true);
 
-CREATE POLICY "Admins can view all bookings"
-ON bookings FOR SELECT
+DROP POLICY IF EXISTS "Admins can view all bookings" ON bookings; CREATE POLICY "Admins can view all bookings" ON bookings FOR SELECT
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'));
 
-CREATE POLICY "Admins can update bookings"
-ON bookings FOR UPDATE
+DROP POLICY IF EXISTS "Admins can update bookings" ON bookings; CREATE POLICY "Admins can update bookings" ON bookings FOR UPDATE
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
-CREATE POLICY "Admins can delete bookings"
-ON bookings FOR DELETE
+DROP POLICY IF EXISTS "Admins can delete bookings" ON bookings; CREATE POLICY "Admins can delete bookings" ON bookings FOR DELETE
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'));
 
@@ -68,12 +60,10 @@ USING (public.has_role(auth.uid(), 'admin'));
 DROP POLICY IF EXISTS "Anyone can view time slots config" ON time_slots_config;
 DROP POLICY IF EXISTS "Admins can manage time slots config" ON time_slots_config;
 
-CREATE POLICY "Anyone can view time slots config"
-ON time_slots_config FOR SELECT
+DROP POLICY IF EXISTS "Anyone can view time slots config" ON time_slots_config; CREATE POLICY "Anyone can view time slots config" ON time_slots_config FOR SELECT
 USING (true);
 
-CREATE POLICY "Admins can manage time slots config"
-ON time_slots_config FOR ALL
+DROP POLICY IF EXISTS "Admins can manage time slots config" ON time_slots_config; CREATE POLICY "Admins can manage time slots config" ON time_slots_config FOR ALL
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));
@@ -84,12 +74,10 @@ WITH CHECK (public.has_role(auth.uid(), 'admin'));
 DROP POLICY IF EXISTS "Anyone can view blocked dates" ON blocked_dates;
 DROP POLICY IF EXISTS "Admins can manage blocked dates" ON blocked_dates;
 
-CREATE POLICY "Anyone can view blocked dates"
-ON blocked_dates FOR SELECT
+DROP POLICY IF EXISTS "Anyone can view blocked dates" ON blocked_dates; CREATE POLICY "Anyone can view blocked dates" ON blocked_dates FOR SELECT
 USING (true);
 
-CREATE POLICY "Admins can manage blocked dates"
-ON blocked_dates FOR ALL
+DROP POLICY IF EXISTS "Admins can manage blocked dates" ON blocked_dates; CREATE POLICY "Admins can manage blocked dates" ON blocked_dates FOR ALL
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));

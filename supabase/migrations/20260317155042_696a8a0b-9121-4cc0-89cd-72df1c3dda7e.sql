@@ -12,26 +12,21 @@ CREATE TABLE public.push_subscriptions (
 ALTER TABLE public.push_subscriptions ENABLE ROW LEVEL SECURITY;
 
 -- Authenticated users can manage their own subscriptions
-CREATE POLICY "Users can view their own push subscriptions"
-  ON public.push_subscriptions FOR SELECT TO authenticated
+DROP POLICY IF EXISTS "Users can view their own push subscriptions" ON public.push_subscriptions; CREATE POLICY "Users can view their own push subscriptions" ON public.push_subscriptions FOR SELECT TO authenticated
   USING (user_id = auth.uid());
 
-CREATE POLICY "Users can insert their own push subscriptions"
-  ON public.push_subscriptions FOR INSERT TO authenticated
+DROP POLICY IF EXISTS "Users can insert their own push subscriptions" ON public.push_subscriptions; CREATE POLICY "Users can insert their own push subscriptions" ON public.push_subscriptions FOR INSERT TO authenticated
   WITH CHECK (user_id = auth.uid());
 
-CREATE POLICY "Users can delete their own push subscriptions"
-  ON public.push_subscriptions FOR DELETE TO authenticated
+DROP POLICY IF EXISTS "Users can delete their own push subscriptions" ON public.push_subscriptions; CREATE POLICY "Users can delete their own push subscriptions" ON public.push_subscriptions FOR DELETE TO authenticated
   USING (user_id = auth.uid());
 
 -- Allow upsert (update endpoint keys)
-CREATE POLICY "Users can update their own push subscriptions"
-  ON public.push_subscriptions FOR UPDATE TO authenticated
+DROP POLICY IF EXISTS "Users can update their own push subscriptions" ON public.push_subscriptions; CREATE POLICY "Users can update their own push subscriptions" ON public.push_subscriptions FOR UPDATE TO authenticated
   USING (user_id = auth.uid());
 
 -- Service role full access (for edge functions cleanup)
-CREATE POLICY "Service role full access to push subscriptions"
-  ON public.push_subscriptions FOR ALL
+DROP POLICY IF EXISTS "Service role full access to push subscriptions" ON public.push_subscriptions; CREATE POLICY "Service role full access to push subscriptions" ON public.push_subscriptions FOR ALL
   USING (auth.role() = 'service_role');
 
 -- Create booking_reminders table with per-channel dedup
@@ -46,10 +41,10 @@ CREATE TABLE public.booking_reminders (
 ALTER TABLE public.booking_reminders ENABLE ROW LEVEL SECURITY;
 
 -- Only service role can manage reminders (edge functions)
-CREATE POLICY "Service role can manage booking reminders"
-  ON public.booking_reminders FOR ALL
+DROP POLICY IF EXISTS "Service role can manage booking reminders" ON public.booking_reminders; CREATE POLICY "Service role can manage booking reminders" ON public.booking_reminders FOR ALL
   USING (auth.role() = 'service_role');
 
 -- Index for fast lookups
 CREATE INDEX idx_booking_reminders_booking_type ON public.booking_reminders (booking_id, reminder_type);
 CREATE INDEX idx_push_subscriptions_user ON public.push_subscriptions (user_id);
+

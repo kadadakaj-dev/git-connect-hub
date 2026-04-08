@@ -1,33 +1,31 @@
+import { DateTime } from 'luxon';
+
+const TIMEZONE = 'Europe/Bratislava';
+
 /**
  * Helper to get current time in Europe/Bratislava timezone
  */
-export function getBratislavaNow(): Date {
-  const now = new Date();
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Europe/Bratislava',
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-    hour12: false,
-  });
+export function getBratislavaNow(): DateTime {
+  return DateTime.now().setZone(TIMEZONE);
+}
+
+/**
+ * Helper to format a native Date and time string into a Bratislava DateTime
+ */
+export function parseBratislavaDate(date: Date, timeSlot: string): DateTime {
+  const [hours, minutes] = timeSlot.split(':').map(Number);
   
-  const parts = formatter.formatToParts(now);
-  const dateObj: Record<string, string> = {};
-  parts.forEach(({ type, value }) => {
-    dateObj[type] = value;
-  });
-  
-  return new Date(
-    Number(dateObj.year),
-    Number(dateObj.month) - 1,
-    Number(dateObj.day),
-    Number(dateObj.hour),
-    Number(dateObj.minute),
-    Number(dateObj.second)
-  );
+  // We want the specific Day/Month/Year from the picker to be interpreted 
+  // as that day in Bratislava time, regardless of where the server/browser is.
+  return DateTime.fromObject({
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+    hour: hours,
+    minute: minutes,
+    second: 0,
+    millisecond: 0
+  }, { zone: TIMEZONE });
 }
 
 /**
@@ -37,16 +35,11 @@ export function getBratislavaNow(): Date {
  * @returns { allowed: boolean; error?: string }
  */
 export function validateBookingLeadTime(date: Date, timeSlot: string): { allowed: boolean; error?: string } {
-  const [hours, minutes] = timeSlot.split(':').map(Number);
-  
-  // Clone the date to avoid mutating the original
-  const targetDateTime = new Date(date);
-  targetDateTime.setHours(hours, minutes, 0, 0);
-  
+  const targetDateTime = parseBratislavaDate(date, timeSlot);
   const now = getBratislavaNow();
-  const leadTimeMs = 36 * 60 * 60 * 1000;
+  const leadTimeHours = 36;
   
-  if (targetDateTime.getTime() < now.getTime() + leadTimeMs) {
+  if (targetDateTime < now.plus({ hours: leadTimeHours })) {
     return { allowed: false, error: 'Advance booking required (min 36h)' };
   }
   

@@ -8,15 +8,13 @@ DROP POLICY IF EXISTS "Clients can view their own bookings" ON public.bookings;
 
 -- Step 2: Create PERMISSIVE SELECT policies with proper access control
 -- Admins can view all bookings
-CREATE POLICY "Admins can view all bookings"
-ON public.bookings
+DROP POLICY IF EXISTS "Admins can view all bookings" ON public.bookings; CREATE POLICY "Admins can view all bookings" ON public.bookings
 FOR SELECT
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'::app_role));
 
 -- Clients can view only their own bookings (must be authenticated and match client_user_id)
-CREATE POLICY "Clients can view their own bookings"
-ON public.bookings
+DROP POLICY IF EXISTS "Clients can view their own bookings" ON public.bookings; CREATE POLICY "Clients can view their own bookings" ON public.bookings
 FOR SELECT
 TO authenticated
 USING (client_user_id = auth.uid());
@@ -25,15 +23,13 @@ USING (client_user_id = auth.uid());
 DROP POLICY IF EXISTS "Admins can update bookings" ON public.bookings;
 DROP POLICY IF EXISTS "Admins can delete bookings" ON public.bookings;
 
-CREATE POLICY "Admins can update bookings"
-ON public.bookings
+DROP POLICY IF EXISTS "Admins can update bookings" ON public.bookings; CREATE POLICY "Admins can update bookings" ON public.bookings
 FOR UPDATE
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'::app_role))
 WITH CHECK (public.has_role(auth.uid(), 'admin'::app_role));
 
-CREATE POLICY "Admins can delete bookings"
-ON public.bookings
+DROP POLICY IF EXISTS "Admins can delete bookings" ON public.bookings; CREATE POLICY "Admins can delete bookings" ON public.bookings
 FOR DELETE
 TO authenticated
 USING (public.has_role(auth.uid(), 'admin'::app_role));
@@ -44,8 +40,7 @@ DROP POLICY IF EXISTS "Anyone can create bookings" ON public.bookings;
 
 -- Allow booking creation - this is intentionally open for the booking wizard
 -- The edge function handles validation, but we add basic protection
-CREATE POLICY "Authenticated users and guests can create bookings"
-ON public.bookings
+DROP POLICY IF EXISTS "Authenticated users and guests can create bookings" ON public.bookings; CREATE POLICY "Authenticated users and guests can create bookings" ON public.bookings
 FOR INSERT
 WITH CHECK (true);
 

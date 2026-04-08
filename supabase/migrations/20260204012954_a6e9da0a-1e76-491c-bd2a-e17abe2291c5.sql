@@ -50,33 +50,26 @@ ALTER TABLE public.favorite_services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.booking_reminders ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for client_profiles
-CREATE POLICY "Users can view their own profile"
-ON public.client_profiles FOR SELECT
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.client_profiles; CREATE POLICY "Users can view their own profile" ON public.client_profiles FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own profile"
-ON public.client_profiles FOR UPDATE
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.client_profiles; CREATE POLICY "Users can update their own profile" ON public.client_profiles FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert their own profile"
-ON public.client_profiles FOR INSERT
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.client_profiles; CREATE POLICY "Users can insert their own profile" ON public.client_profiles FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Admins can view all profiles"
-ON public.client_profiles FOR SELECT
+DROP POLICY IF EXISTS "Admins can view all profiles" ON public.client_profiles; CREATE POLICY "Admins can view all profiles" ON public.client_profiles FOR SELECT
 USING (has_role(auth.uid(), 'admin'));
 
-CREATE POLICY "Admins can manage all profiles"
-ON public.client_profiles FOR ALL
+DROP POLICY IF EXISTS "Admins can manage all profiles" ON public.client_profiles; CREATE POLICY "Admins can manage all profiles" ON public.client_profiles FOR ALL
 USING (has_role(auth.uid(), 'admin'));
 
 -- RLS Policies for therapist_notes (only admins)
-CREATE POLICY "Admins can manage therapist notes"
-ON public.therapist_notes FOR ALL
+DROP POLICY IF EXISTS "Admins can manage therapist notes" ON public.therapist_notes; CREATE POLICY "Admins can manage therapist notes" ON public.therapist_notes FOR ALL
 USING (has_role(auth.uid(), 'admin'));
 
-CREATE POLICY "Clients can view notes on their bookings"
-ON public.therapist_notes FOR SELECT
+DROP POLICY IF EXISTS "Clients can view notes on their bookings" ON public.therapist_notes; CREATE POLICY "Clients can view notes on their bookings" ON public.therapist_notes FOR SELECT
 USING (
   EXISTS (
     SELECT 1 FROM public.bookings b
@@ -85,8 +78,7 @@ USING (
 );
 
 -- RLS Policies for favorite_services
-CREATE POLICY "Users can manage their favorites"
-ON public.favorite_services FOR ALL
+DROP POLICY IF EXISTS "Users can manage their favorites" ON public.favorite_services; CREATE POLICY "Users can manage their favorites" ON public.favorite_services FOR ALL
 USING (
   EXISTS (
     SELECT 1 FROM public.client_profiles cp
@@ -95,13 +87,11 @@ USING (
 );
 
 -- RLS Policies for booking_reminders
-CREATE POLICY "Admins can manage reminders"
-ON public.booking_reminders FOR ALL
+DROP POLICY IF EXISTS "Admins can manage reminders" ON public.booking_reminders; CREATE POLICY "Admins can manage reminders" ON public.booking_reminders FOR ALL
 USING (has_role(auth.uid(), 'admin'));
 
 -- Update bookings RLS to allow clients to view their own bookings
-CREATE POLICY "Clients can view their own bookings"
-ON public.bookings FOR SELECT
+DROP POLICY IF EXISTS "Clients can view their own bookings" ON public.bookings; CREATE POLICY "Clients can view their own bookings" ON public.bookings FOR SELECT
 USING (client_user_id = auth.uid());
 
 -- Create trigger for updating client_profiles.updated_at

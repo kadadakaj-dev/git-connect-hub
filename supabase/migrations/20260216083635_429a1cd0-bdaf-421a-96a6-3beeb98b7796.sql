@@ -4,8 +4,8 @@ DROP POLICY IF EXISTS "Authenticated users and guests can create bookings" ON pu
 
 -- Create a stricter INSERT policy: only authenticated users can insert their own bookings
 -- (Edge function uses service role key and bypasses RLS anyway)
-CREATE POLICY "Authenticated users can create their own bookings"
-ON public.bookings
+DROP POLICY IF EXISTS "Authenticated users can create their own bookings" ON public.bookings; CREATE POLICY "Authenticated users can create their own bookings" ON public.bookings
 FOR INSERT
 TO authenticated
 WITH CHECK (client_user_id = auth.uid());
+

@@ -7,9 +7,9 @@ declare const Deno: {
 
 type EdgeRequest = Request;
 // @ts-expect-error: Deno module imports
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.89.0'
-// @ts-expect-error: Deno module imports
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.7'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { DateTime } from 'https://esm.sh/luxon@3.4.4'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -234,32 +234,17 @@ serve(async (req: EdgeRequest) => {
     // 36h Lead Time Check (Server-Side Enforcement)
     try {
       const [hours, minutes] = body.time_slot.split(':').map(Number);
-      const targetDateTime = new Date(body.date);
-      targetDateTime.setHours(hours, minutes, 0, 0);
-
-      const now = new Date();
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'Europe/Bratislava',
-        year: 'numeric', month: 'numeric', day: 'numeric',
-        hour: 'numeric', minute: 'numeric', second: 'numeric',
-        hour12: false,
-      });
+      const [year, month, day] = body.date.split('-').map(Number);
       
-      const parts = formatter.formatToParts(now);
-      const dateObj: Record<string, string> = {};
-      parts.forEach(({ type, value }) => { dateObj[type] = value; });
-      
-      const bratislavaNow = new Date(
-        Number(dateObj.year),
-        Number(dateObj.month) - 1,
-        Number(dateObj.day),
-        Number(dateObj.hour),
-        Number(dateObj.minute),
-        Number(dateObj.second)
-      );
+      // Parse the requested date/time specifically in the Bratislava zone
+      const targetDateTime = DateTime.fromObject({
+        year, month, day, hour: hours, minute: minutes, second: 0, millisecond: 0
+      }, { zone: 'Europe/Bratislava' });
 
-      const leadTimeMs = 36 * 60 * 60 * 1000;
-      if (targetDateTime.getTime() < bratislavaNow.getTime() + leadTimeMs) {
+      const now = DateTime.now().setZone('Europe/Bratislava');
+      const leadTimeHours = 36;
+      
+      if (targetDateTime < now.plus({ hours: leadTimeHours })) {
         return new Response(
           JSON.stringify({ error: 'Advance booking required (min 36h)' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

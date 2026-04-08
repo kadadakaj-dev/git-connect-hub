@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TimeSlot } from '@/types/booking';
 import { format } from 'date-fns';
-import { getBratislavaNow } from '@/lib/booking-rules';
+import { getBratislavaNow, parseBratislavaDate } from '@/lib/booking-rules';
 
 interface TimeSlotConfig {
   day_of_week: number;
@@ -131,7 +131,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
       if (!selectedDate) return [];
 
       const now = getBratislavaNow();
-      const minBookableTime = new Date(now.getTime() + 36 * 60 * 60 * 1000);
+      const minBookableTime = now.plus({ hours: 36 });
 
       const dayOfWeek = selectedDate.getDay();
       const dateString = format(selectedDate, 'yyyy-MM-dd');
@@ -199,9 +199,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
 
       // Filter out slots within the 36h lead time window
       const filtered = uniqueSlots.map((slot) => {
-        const [h, m] = slot.time.split(':').map(Number);
-        const slotDateTime = new Date(selectedDate);
-        slotDateTime.setHours(h, m, 0, 0);
+        const slotDateTime = parseBratislavaDate(selectedDate, slot.time);
         if (slotDateTime < minBookableTime) {
           return { ...slot, available: false };
         }

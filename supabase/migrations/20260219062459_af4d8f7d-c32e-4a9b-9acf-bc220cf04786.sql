@@ -19,15 +19,13 @@ CREATE TABLE public.employees (
 ALTER TABLE public.employees ENABLE ROW LEVEL SECURITY;
 
 -- Admin can manage employees
-CREATE POLICY "Admins can manage employees"
-ON public.employees
+DROP POLICY IF EXISTS "Admins can manage employees" ON public.employees; CREATE POLICY "Admins can manage employees" ON public.employees
 FOR ALL
 USING (public.has_role(auth.uid(), 'admin'))
 WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
 -- Anyone can view active employees (for public display)
-CREATE POLICY "Anyone can view active employees"
-ON public.employees
+DROP POLICY IF EXISTS "Anyone can view active employees" ON public.employees; CREATE POLICY "Anyone can view active employees" ON public.employees
 FOR SELECT
 USING (is_active = true);
 
@@ -36,3 +34,4 @@ CREATE TRIGGER update_employees_updated_at
 BEFORE UPDATE ON public.employees
 FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
+

@@ -103,73 +103,73 @@ ALTER TABLE public.client_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.therapist_notes ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for services (public read, admin write)
-CREATE POLICY "Services are publicly viewable"
-ON public.services FOR SELECT TO public USING (is_active = true);
+DROP POLICY IF EXISTS "Services are publicly viewable" ON public.services;
+DROP POLICY IF EXISTS "Services are publicly viewable" ON public.services; CREATE POLICY "Services are publicly viewable" ON public.services FOR SELECT TO public USING (is_active = true);
 
-CREATE POLICY "Admins can manage services"
-ON public.services FOR ALL TO authenticated 
+DROP POLICY IF EXISTS "Admins can manage services" ON public.services;
+DROP POLICY IF EXISTS "Admins can manage services" ON public.services; CREATE POLICY "Admins can manage services" ON public.services FOR ALL TO authenticated 
 USING (auth.role() = 'authenticated');
 
 -- Create policies for employees (public read, admin write)
-CREATE POLICY "Employees are publicly viewable"
-ON public.employees FOR SELECT TO public USING (is_active = true);
+DROP POLICY IF EXISTS "Employees are publicly viewable" ON public.employees;
+DROP POLICY IF EXISTS "Employees are publicly viewable" ON public.employees; CREATE POLICY "Employees are publicly viewable" ON public.employees FOR SELECT TO public USING (is_active = true);
 
-CREATE POLICY "Admins can manage employees"
-ON public.employees FOR ALL TO authenticated 
+DROP POLICY IF EXISTS "Admins can manage employees" ON public.employees;
+DROP POLICY IF EXISTS "Admins can manage employees" ON public.employees; CREATE POLICY "Admins can manage employees" ON public.employees FOR ALL TO authenticated 
 USING (auth.role() = 'authenticated');
 
 -- Create policies for time_slots_config (public read, admin write)
-CREATE POLICY "Time slots are publicly viewable"
-ON public.time_slots_config FOR SELECT TO public USING (true);
+DROP POLICY IF EXISTS "Time slots are publicly viewable" ON public.time_slots_config;
+DROP POLICY IF EXISTS "Time slots are publicly viewable" ON public.time_slots_config; CREATE POLICY "Time slots are publicly viewable" ON public.time_slots_config FOR SELECT TO public USING (true);
 
-CREATE POLICY "Admins can manage time slots"
-ON public.time_slots_config FOR ALL TO authenticated 
+DROP POLICY IF EXISTS "Admins can manage time slots" ON public.time_slots_config;
+DROP POLICY IF EXISTS "Admins can manage time slots" ON public.time_slots_config; CREATE POLICY "Admins can manage time slots" ON public.time_slots_config FOR ALL TO authenticated 
 USING (auth.role() = 'authenticated');
 
 -- Create policies for blocked_dates (public read, admin write)
-CREATE POLICY "Blocked dates are publicly viewable"
-ON public.blocked_dates FOR SELECT TO public USING (true);
+DROP POLICY IF EXISTS "Blocked dates are publicly viewable" ON public.blocked_dates;
+DROP POLICY IF EXISTS "Blocked dates are publicly viewable" ON public.blocked_dates; CREATE POLICY "Blocked dates are publicly viewable" ON public.blocked_dates FOR SELECT TO public USING (true);
 
-CREATE POLICY "Admins can manage blocked dates"
-ON public.blocked_dates FOR ALL TO authenticated 
+DROP POLICY IF EXISTS "Admins can manage blocked dates" ON public.blocked_dates;
+DROP POLICY IF EXISTS "Admins can manage blocked dates" ON public.blocked_dates; CREATE POLICY "Admins can manage blocked dates" ON public.blocked_dates FOR ALL TO authenticated 
 USING (auth.role() = 'authenticated');
 
 -- Create policies for bookings
-CREATE POLICY "Users can view their own bookings"
-ON public.bookings FOR SELECT TO authenticated 
+DROP POLICY IF EXISTS "Users can view their own bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Users can view their own bookings" ON public.bookings; CREATE POLICY "Users can view their own bookings" ON public.bookings FOR SELECT TO authenticated 
 USING (client_user_id = auth.uid());
 
-CREATE POLICY "Public can create bookings"
-ON public.bookings FOR INSERT TO public WITH CHECK (true);
+DROP POLICY IF EXISTS "Public can create bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Public can create bookings" ON public.bookings; CREATE POLICY "Public can create bookings" ON public.bookings FOR INSERT TO public WITH CHECK (true);
 
-CREATE POLICY "Users can update their own bookings"
-ON public.bookings FOR UPDATE TO authenticated 
+DROP POLICY IF EXISTS "Users can update their own bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Users can update their own bookings" ON public.bookings; CREATE POLICY "Users can update their own bookings" ON public.bookings FOR UPDATE TO authenticated 
 USING (client_user_id = auth.uid());
 
-CREATE POLICY "Admins can view all bookings"
-ON public.bookings FOR SELECT TO authenticated 
+DROP POLICY IF EXISTS "Admins can view all bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Admins can view all bookings" ON public.bookings; CREATE POLICY "Admins can view all bookings" ON public.bookings FOR SELECT TO authenticated 
 USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Admins can manage all bookings"
-ON public.bookings FOR ALL TO authenticated 
+DROP POLICY IF EXISTS "Admins can manage all bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Admins can manage all bookings" ON public.bookings; CREATE POLICY "Admins can manage all bookings" ON public.bookings FOR ALL TO authenticated 
 USING (auth.role() = 'authenticated');
 
 -- Create policies for client_profiles
-CREATE POLICY "Users can view their own profile"
-ON public.client_profiles FOR SELECT TO authenticated 
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.client_profiles;
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.client_profiles; CREATE POLICY "Users can view their own profile" ON public.client_profiles FOR SELECT TO authenticated 
 USING (user_id = auth.uid());
 
-CREATE POLICY "Users can update their own profile"
-ON public.client_profiles FOR UPDATE TO authenticated 
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.client_profiles;
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.client_profiles; CREATE POLICY "Users can update their own profile" ON public.client_profiles FOR UPDATE TO authenticated 
 USING (user_id = auth.uid());
 
-CREATE POLICY "Users can insert their own profile"
-ON public.client_profiles FOR INSERT TO authenticated 
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.client_profiles;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.client_profiles; CREATE POLICY "Users can insert their own profile" ON public.client_profiles FOR INSERT TO authenticated 
 WITH CHECK (user_id = auth.uid());
 
 -- Create policies for therapist_notes
-CREATE POLICY "Users can view notes on their bookings"
-ON public.therapist_notes FOR SELECT TO authenticated 
+DROP POLICY IF EXISTS "Users can view notes on their bookings" ON public.therapist_notes;
+DROP POLICY IF EXISTS "Users can view notes on their bookings" ON public.therapist_notes; CREATE POLICY "Users can view notes on their bookings" ON public.therapist_notes FOR SELECT TO authenticated 
 USING (
     EXISTS (
         SELECT 1 FROM public.bookings b 
@@ -178,8 +178,8 @@ USING (
     )
 );
 
-CREATE POLICY "Admins can manage therapist notes"
-ON public.therapist_notes FOR ALL TO authenticated 
+DROP POLICY IF EXISTS "Admins can manage therapist notes" ON public.therapist_notes;
+DROP POLICY IF EXISTS "Admins can manage therapist notes" ON public.therapist_notes; CREATE POLICY "Admins can manage therapist notes" ON public.therapist_notes FOR ALL TO authenticated 
 USING (auth.role() = 'authenticated');
 
 -- Insert default time slots (Mon-Fri 8:00-18:00)
@@ -197,3 +197,4 @@ INSERT INTO public.services (name_sk, name_en, description_sk, description_en, d
 ('Chiropraxia', 'Chiropractic', 'Chiropraktická liečba chrbtice a kĺbov', 'Chiropractic treatment for spine and joints', 45, 40.00, 'chiropractic', 'User', true, 2),
 ('Masáž', 'Massage', 'Relaxačná a terapeutická masáž', 'Relaxing and therapeutic massage', 60, 35.00, 'physiotherapy', 'Heart', true, 3)
 ON CONFLICT DO NOTHING;
+
