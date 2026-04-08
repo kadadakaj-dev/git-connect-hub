@@ -1,6 +1,9 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import GlassBackground from "@/components/GlassBackground";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 type Mode = "login" | "register" | "reset";
 
@@ -45,7 +48,10 @@ export default function Auth() {
           password,
         });
 
-        if (signInError) throw signInError;
+        if (signInError) {
+          setError("Nesprávny e-mail alebo heslo");
+          return;
+        }
 
         const target = (location.state as { from?: { pathname?: string } })?.from
           ?.pathname || "/portal";
@@ -63,11 +69,16 @@ export default function Auth() {
           },
         });
 
-        if (signUpError) throw signUpError;
+        if (signUpError) {
+          if (signUpError.message.includes("already registered")) {
+            setError("Tento účet už existuje");
+          } else {
+            setError("Skús to ešte raz");
+          }
+          return;
+        }
 
-        setMessage(
-          "Registrácia prebehla. Ak máš zapnuté potvrdenie e-mailu v Supabase, skontroluj inbox."
-        );
+        setMessage("Účet bol vytvorený. Skontroluj svoj e-mail");
         return;
       }
 
@@ -79,51 +90,76 @@ export default function Auth() {
           }
         );
 
-        if (resetError) throw resetError;
+        if (resetError) {
+          setError("Nesprávne zadaný e-mail");
+          return;
+        }
 
-        setMessage("Link na reset hesla bol odoslaný na e-mail.");
+        setMessage("Link na obnovu bol odoslaný");
       }
     } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : "Nastala neočakávaná chyba.";
-      setError(msg);
+      setError("Skús to ešte raz");
     } finally {
       setLoading(false);
     }
   };
 
+  const texts = {
+    login: {
+      title: "Prihlásenie",
+      subtitle: "Vstup do tvojho klientského priestoru",
+      button: "Pokračovať",
+    },
+    register: {
+      title: "Vytvoriť účet",
+      subtitle: "Rýchly prístup k rezerváciám a službám",
+      button: "Začať",
+    },
+    reset: {
+      title: "Obnova hesla",
+      subtitle: "Pošleme ti bezpečný link na nové heslo",
+      button: "Odoslať",
+    },
+  };
+
+  const currentText = texts[mode];
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md rounded-2xl border p-6 shadow-sm bg-white">
-        <h1 className="text-2xl font-semibold mb-2">
-          {mode === "login" && "Prihlásenie"}
-          {mode === "register" && "Registrácia"}
-          {mode === "reset" && "Obnova hesla"}
-        </h1>
+    <div className="min-h-app-screen relative flex items-center justify-center px-4 py-10 overflow-hidden">
+      <GlassBackground />
 
-        <p className="text-sm opacity-70 mb-6">
-          Klasický e-mail + heslo flow, bez Google Sign-In.
-        </p>
+      <div className="relative z-10 w-full max-w-[440px] surface-panel shadow-glass-float p-8 sm:p-10 fade-in-up">
+        <div className="mb-8 text-center sm:text-left">
+          <h1 className="text-3xl font-heading font-semibold tracking-tight text-[hsl(var(--soft-navy))] mb-2">
+            {currentText.title}
+          </h1>
+          <p className="text-muted-foreground">
+            {currentText.subtitle}
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm mb-1">E-mail</label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="text-sm font-medium text-[hsl(var(--soft-navy))] pl-1">E-mail</label>
             <input
+              id="email"
               type="email"
-              className="w-full rounded-xl border px-3 py-2"
+              className="w-full rounded-2xl border border-[var(--glass-border-subtle)] bg-white/64 px-4 py-3 text-[hsl(var(--soft-navy))] placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all outline-none"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
+              placeholder="meno@example.com"
             />
           </div>
 
           {mode !== "reset" && (
-            <div>
-              <label className="block text-sm mb-1">Heslo</label>
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-sm font-medium text-[hsl(var(--soft-navy))] pl-1">Heslo</label>
               <input
+                id="password"
                 type="password"
-                className="w-full rounded-xl border px-3 py-2"
+                className="w-full rounded-2xl border border-[var(--glass-border-subtle)] bg-white/64 px-4 py-3 text-[hsl(var(--soft-navy))] placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -131,70 +167,73 @@ export default function Auth() {
                 autoComplete={
                   mode === "login" ? "current-password" : "new-password"
                 }
+                placeholder="••••••••"
               />
             </div>
           )}
 
           {error && (
-            <div className="rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <div className="rounded-2xl border border-red-200/50 bg-red-50/50 px-4 py-3 text-sm text-red-600 animate-in fade-in slide-in-from-top-1">
               {error}
             </div>
           )}
 
           {message && (
-            <div className="rounded-xl border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700">
+            <div className="rounded-2xl border border-green-200/50 bg-green-50/50 px-4 py-3 text-sm text-green-700 animate-in fade-in slide-in-from-top-1">
               {message}
             </div>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl px-4 py-2 border bg-black text-white disabled:opacity-60"
+            className="w-full h-12 rounded-[18px] bg-[linear-gradient(135deg,#24476B_0%,#4F95D5_100%)] text-white font-semibold shadow-[0_12px_28px_rgba(79,149,213,0.24)] hover:shadow-[0_18px_38px_rgba(79,149,213,0.3)] hover:brightness-[1.03] active:scale-[0.98] transition-all disabled:opacity-70"
           >
-            {loading
-              ? "Spracúvam..."
-              : mode === "login"
-              ? "Prihlásiť sa"
-              : mode === "register"
-              ? "Vytvoriť účet"
-              : "Poslať reset link"}
-          </button>
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+            ) : (
+              currentText.button
+            )}
+          </Button>
         </form>
 
-        <div className="mt-6 flex flex-wrap gap-2 text-sm">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
           <button
             type="button"
             onClick={() => {
               clearFeedback();
-              setMode("login");
+              setMode(mode === "login" ? "register" : "login");
             }}
-            className="underline"
+            className="text-[hsl(var(--navy))] font-semibold hover:opacity-70 transition-opacity"
           >
-            Login
+            {mode === "login" ? "Vytvoriť účet" : "Mám účet"}
           </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              clearFeedback();
-              setMode("register");
-            }}
-            className="underline"
-          >
-            Registrácia
-          </button>
+          {mode === "login" && (
+            <button
+              type="button"
+              onClick={() => {
+                clearFeedback();
+                setMode("reset");
+              }}
+              className="text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors"
+            >
+              Zabudnuté heslo
+            </button>
+          )}
 
-          <button
-            type="button"
-            onClick={() => {
-              clearFeedback();
-              setMode("reset");
-            }}
-            className="underline"
-          >
-            Zabudnuté heslo
-          </button>
+          {mode === "reset" && (
+            <button
+              type="button"
+              onClick={() => {
+                clearFeedback();
+                setMode("login");
+              }}
+              className="text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors"
+            >
+              Späť na prihlásenie
+            </button>
+          )}
         </div>
       </div>
     </div>
