@@ -9,7 +9,7 @@ vi.mock('@/i18n/LanguageContext', () => ({
     useLanguage: () => ({
         language: 'sk',
         t: {
-            clinicName: 'FYZIO&FIT',
+            clinicName: 'FYZIOAFIT',
             clinicSubtitle: 'Rezervujte si termín',
             selectService: 'Vyberte službu',
             fullNamePlaceholder: 'Meno a priezvisko',
@@ -159,3 +159,4 @@ describe('BookingWizard', () => {
         expect(screen.getByTestId('footer')).toBeInTheDocument();
     });
 });
+

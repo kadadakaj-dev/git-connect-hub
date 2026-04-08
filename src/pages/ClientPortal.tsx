@@ -209,7 +209,7 @@ const ClientPortal = () => {
         completed: 'Dokončené',
         cancelled: 'Zrušené',
       },
-      therapistNotes: 'Poznámky od Personál FYZIO&FIT',
+      therapistNotes: 'Poznámky od Personál FYZIOAFIT',
       favoritesHint: 'Vaše obľúbené služby pre rýchlu rezerváciu',
       addToFavorites: 'Pridať medzi obľúbené',
       editProfile: 'Upraviť profil',
@@ -239,7 +239,7 @@ const ClientPortal = () => {
         completed: 'Completed',
         cancelled: 'Cancelled',
       },
-      therapistNotes: 'Notes from Staff of FYZIO&FIT',
+      therapistNotes: 'Notes from Staff of FYZIOAFIT',
       favoritesHint: 'Your favorite services for quick booking',
       addToFavorites: 'Add to favorites',
       editProfile: 'Edit Profile',
@@ -309,8 +309,8 @@ const ClientPortal = () => {
   return (
     <>
       <PageMeta
-        titleSk="Klientský portál | FYZIO&FIT"
-        titleEn="Client Portal | FYZIO&FIT"
+        titleSk="Klientský portál | FYZIOAFIT"
+        titleEn="Client Portal | FYZIOAFIT"
         descriptionSk="Spravujte svoje rezervácie, obľúbené služby a osobné údaje na jednom mieste."
         descriptionEn="Manage your bookings, favorite services and personal details in one place."
         path="/portal"
@@ -727,3 +727,4 @@ const ClientPortal = () => {
 };
 
 export default ClientPortal;
+

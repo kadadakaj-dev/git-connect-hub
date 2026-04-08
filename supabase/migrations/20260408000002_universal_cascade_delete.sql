@@ -1,5 +1,5 @@
 -- =====================================================================================
--- FYZIO&FIT - UNIVERSAL CASCADE DELETE HARDENING
+-- FYZIOAFIT - UNIVERSAL CASCADE DELETE HARDENING
 -- =====================================================================================
 -- This migration ensures that deleting a booking automatically removes ALL related
 -- records in order to prevent "409 Conflict" errors in the admin dashboard.
@@ -38,3 +38,4 @@ ON DELETE CASCADE;
 -- 4. favorite_services (Client favorites)
 -- Usually linked to client_profiles, but some schemas link directly to service_id.
 -- No change needed here if it doesn't reference bookings.id.
+

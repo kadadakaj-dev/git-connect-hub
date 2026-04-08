@@ -39,7 +39,7 @@ const PageMeta = ({ titleSk, titleEn, descriptionSk, descriptionEn, path, noinde
       <meta property="og:image" content={OG_IMAGE} />
       <meta property="og:locale" content={language === 'sk' ? 'sk_SK' : 'en_US'} />
       <meta property="og:locale:alternate" content={language === 'sk' ? 'en_US' : 'sk_SK'} />
-      <meta property="og:site_name" content="FYZIO&FIT" />
+      <meta property="og:site_name" content="FYZIOAFIT" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -53,3 +53,4 @@ const PageMeta = ({ titleSk, titleEn, descriptionSk, descriptionEn, path, noinde
 };
 
 export default PageMeta;
+

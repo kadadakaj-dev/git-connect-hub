@@ -69,8 +69,8 @@ describe('i18n - Translations structure', () => {
     });
 
     it('should have clinic name in both languages', () => {
-        expect(translations.sk.clinicName).toBe('FYZIO&FIT');
-        expect(translations.en.clinicName).toBe('FYZIO&FIT');
+        expect(translations.sk.clinicName).toBe('FYZIOAFIT');
+        expect(translations.en.clinicName).toBe('FYZIOAFIT');
     });
 
     it('should have step definitions in both languages', () => {
@@ -101,7 +101,7 @@ describe('i18n - Component Integration', () => {
         ));
 
         expect(screen.getByTestId('lang').textContent).toBe('sk');
-        expect(screen.getByTestId('name').textContent).toBe('FYZIO&FIT');
+        expect(screen.getByTestId('name').textContent).toBe('FYZIOAFIT');
     });
 
     it('should update component when language changes', () => {
@@ -125,3 +125,4 @@ describe('i18n - Component Integration', () => {
         expect(screen.getByTestId('subtitle').textContent).toBe(translations.en.clinicSubtitle);
     });
 });
+

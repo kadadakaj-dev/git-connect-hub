@@ -30,17 +30,17 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Potvrďte svoj e-mail – FYZIO&FIT</Preview>
+    <Preview>Potvrďte svoj e-mail – FYZIOAFIT</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIO&FIT</Heading>
+          <Heading style={headerTitle}>FYZIOAFIT</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Potvrďte svoj e-mail</Heading>
           <Text style={text}>
             Ďakujeme za registráciu v{' '}
-            <Link href={siteUrl} style={link}><strong>FYZIO&FIT</strong></Link>!
+            <Link href={siteUrl} style={link}><strong>FYZIOAFIT</strong></Link>!
           </Text>
           <Text style={text}>
             Prosím, potvrďte svoju e-mailovú adresu (
@@ -78,3 +78,4 @@ const footerText = { fontSize: '12px', color: '#6b7c94', margin: '30px 0 0' }
 const footer = { backgroundColor: '#f0f4f8', padding: '20px 30px', textAlign: 'center' as const, borderTop: '1px solid #dde5ef' }
 const footerBrand = { color: '#4a90d9', margin: '0 0 10px', fontSize: '16px', fontWeight: '500' as const }
 const footerContact = { color: '#6b7c94', margin: '0', fontSize: '14px' }
+

@@ -236,8 +236,8 @@ const CancelBooking = () => {
     <div className="min-h-app-screen relative overflow-hidden">
       <GlassBackground />
       <PageMeta
-        titleSk="Zrušenie rezervácie | FYZIO&FIT"
-        titleEn="Cancel Booking | FYZIO&FIT"
+        titleSk="Zrušenie rezervácie | FYZIOAFIT"
+        titleEn="Cancel Booking | FYZIOAFIT"
         descriptionSk="Zrušte svoju rezerváciu online."
         descriptionEn="Cancel your booking online."
         path="/cancel"
@@ -349,3 +349,4 @@ const CancelBooking = () => {
 };
 
 export default CancelBooking;
+

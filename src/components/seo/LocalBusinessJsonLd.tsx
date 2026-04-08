@@ -5,8 +5,8 @@ const LocalBusinessJsonLd = () => {
     "@context": "https://schema.org",
     "@type": "HealthAndBeautyBusiness",
     "@id": "https://booking.fyzioafit.sk/#business",
-    "name": "FYZIO&FIT",
-    "alternateName": "FYZIO&FIT - Fyzioterapia a chiropraktika",
+    "name": "FYZIOAFIT",
+    "alternateName": "FYZIOAFIT - Fyzioterapia a chiropraktika",
     "description": "Odborná fyzioterapia a chiropraktika v Košiciach. Online rezervácia termínov.",
     "url": "https://booking.fyzioafit.sk",
     "telephone": "+421905307198",
@@ -76,3 +76,4 @@ const LocalBusinessJsonLd = () => {
 };
 
 export default LocalBusinessJsonLd;
+

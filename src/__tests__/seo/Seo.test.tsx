@@ -88,13 +88,13 @@ describe('SEO - LocalBusinessJsonLd', () => {
         const expectedData = {
             '@context': 'https://schema.org',
             '@type': 'HealthAndBeautyBusiness',
-            name: 'FYZIO&FIT',
+            name: 'FYZIOAFIT',
             telephone: '+421905307198',
             email: 'booking@fyzioafit.sk',
         };
 
         expect(expectedData['@type']).toBe('HealthAndBeautyBusiness');
-        expect(expectedData.name).toBe('FYZIO&FIT');
+        expect(expectedData.name).toBe('FYZIOAFIT');
     });
 
     it('should have correct address structure', () => {
@@ -142,3 +142,4 @@ describe('SEO - LocalBusinessJsonLd', () => {
         expect(geo.longitude).toBeLessThan(22);
     });
 });
+

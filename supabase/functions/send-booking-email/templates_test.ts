@@ -44,7 +44,7 @@ Deno.test("Email Template: Confirmation (Client)", () => {
   // HTML Visual Assertions
   assertStringIncludes(html, "<h1");
   assertStringIncludes(html, "Chiro masáž (60 min)</h1>");
-  assertStringIncludes(html, "FYZIO&FIT Booking System");
+  assertStringIncludes(html, "FYZIOAFIT Booking System");
   
   // Anti-Regression: Generic fallback must NOT be dominant
   assertNotMatch(html, /<h1[^>]*>Potvrdenie rezervácie<\/h1>/);
@@ -108,3 +108,4 @@ Deno.test("Email Template: Admin Cancellation", () => {
   assertStringIncludes(subject, "❌");
   assertStringIncludes(subject, "ZRUŠENÁ");
 });
+

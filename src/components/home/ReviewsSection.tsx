@@ -67,7 +67,7 @@ const ReviewsSection = () => {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h2 className="text-2xl md:text-3xl font-black text-[#202124]">FYZIO&FIT</h2>
+                  <h2 className="text-2xl md:text-3xl font-black text-[#202124]">FYZIOAFIT</h2>
                   <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                     <Check className="w-3.5 h-3.5 text-white" />
                   </div>
@@ -162,3 +162,4 @@ const ReviewsSection = () => {
 };
 
 export default ReviewsSection;
+

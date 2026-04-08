@@ -1,5 +1,5 @@
 -- =====================================================================================
--- FYZIO&FIT - SINGLE ADMIN BOOTSTRAP SCRIPT
+-- FYZIOAFIT - SINGLE ADMIN BOOTSTRAP SCRIPT
 -- =====================================================================================
 -- IMPORTANT: Do not run this script on the client side.
 -- This script safely inserts the single designated Administrator into the Supabase auth schema.
@@ -72,3 +72,4 @@ ON CONFLICT (user_id) DO UPDATE SET role = 'admin';
 -- 3. You should see the Admin Dashboard.
 -- 4. From there, you can change your password securely using the Supabase "Reset Password" flow if configured.
 -- =====================================================================================
+

@@ -54,12 +54,12 @@ describe('SplashScreen', () => {
         vi.useRealTimers();
     });
 
-    it('should render FYZIO&FIT branding', () => {
+    it('should render FYZIOAFIT branding', () => {
         render(<SplashScreen onComplete={vi.fn()} />);
         // Letters are rendered individually via motion.span
         const heading = screen.getByRole('status');
         expect(heading).toBeInTheDocument();
-        expect(heading).toHaveAttribute('aria-label', 'Loading FYZIO&FIT');
+        expect(heading).toHaveAttribute('aria-label', 'Loading FYZIOAFIT');
     });
 
     it('should call onComplete after 4s animation', () => {
@@ -116,3 +116,4 @@ describe('GlassBackground', () => {
         expect(wrapper.className).toContain('pointer-events-none');
     });
 });
+

@@ -110,7 +110,7 @@ const DesignShowcase = () => {
 
         <footer className="mt-24 pt-12 border-t border-lg-color-brand-blue/10 text-center">
           <p className="text-sm text-lg-color-text-slate opacity-60">
-            Liquid Glass Design Tokens v1.0 • Fyzio&Fit Premium
+            Liquid Glass Design Tokens v1.0 • FYZIOAFIT Premium
           </p>
         </footer>
       </div>
@@ -119,3 +119,4 @@ const DesignShowcase = () => {
 };
 
 export default DesignShowcase;
+

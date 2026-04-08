@@ -1,8 +1,8 @@
-# Copilot Instructions for FYZIO&FIT Booking App
+# Copilot Instructions for FYZIOAFIT Booking App
 
 ## Project Overview
 
-This is a **FYZIO&FIT** appointment booking web application for a physiotherapy and chiropractic clinic. It is a bilingual (Slovak/English) Progressive Web App (PWA) that allows clients to book, manage, and cancel appointments online. It also includes an admin dashboard for managing bookings, services, time slots, and blocked dates.
+This is a **FYZIOAFIT** appointment booking web application for a physiotherapy and chiropractic clinic. It is a bilingual (Slovak/English) Progressive Web App (PWA) that allows clients to book, manage, and cancel appointments online. It also includes an admin dashboard for managing bookings, services, time slots, and blocked dates.
 
 The project uses **Vite + React + TypeScript + shadcn-ui + Tailwind CSS** on the frontend, backed by **Supabase** (PostgreSQL, Auth, Edge Functions, Storage).
 
@@ -143,3 +143,4 @@ The ESLint config (`eslint.config.js`) uses the flat config format. `@typescript
 
 ### Environment variables
 Supabase credentials are read from environment variables. For local development, copy `.env` and populate `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Never commit secrets.
+

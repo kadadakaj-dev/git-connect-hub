@@ -19,7 +19,7 @@ vi.mock('@/i18n/LanguageContext', () => ({
     useLanguage: () => ({
         language: 'sk',
         t: {
-            clinicName: 'FYZIO&FIT',
+            clinicName: 'FYZIOAFIT',
         },
     }),
 }));
@@ -209,3 +209,4 @@ describe('CancelBooking', () => {
         });
     });
 });
+

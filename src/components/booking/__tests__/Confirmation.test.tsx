@@ -144,7 +144,7 @@ describe('Confirmation', () => {
         expect(windowOpenSpy).toHaveBeenCalledTimes(1);
         const calendarUrl = windowOpenSpy.mock.calls[0][0] as string;
         expect(calendarUrl).toContain('calendar.google.com');
-        expect(calendarUrl).toContain('FYZIO%26FIT');
+        expect(calendarUrl).toContain('FYZIOAFIT');
         expect(calendarUrl).toContain('Krmanov');
 
         windowOpenSpy.mockRestore();

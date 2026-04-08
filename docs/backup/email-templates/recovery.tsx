@@ -25,16 +25,16 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Obnovenie hesla – FYZIO&FIT</Preview>
+    <Preview>Obnovenie hesla – FYZIOAFIT</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIO&FIT</Heading>
+          <Heading style={headerTitle}>FYZIOAFIT</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Obnovenie hesla</Heading>
           <Text style={text}>
-            Prijali sme žiadosť o obnovenie hesla pre váš účet v FYZIO&FIT.
+            Prijali sme žiadosť o obnovenie hesla pre váš účet v FYZIOAFIT.
             Kliknite na tlačidlo nižšie a zvoľte si nové heslo.
           </Text>
           <Button style={button} href={confirmationUrl}>
@@ -46,7 +46,7 @@ export const RecoveryEmail = ({
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>FYZIO&FIT</Text>
+          <Text style={footerBrand}>FYZIOAFIT</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>
@@ -68,3 +68,4 @@ const footerText = { fontSize: '12px', color: '#6b7c94', margin: '30px 0 0' }
 const footer = { backgroundColor: '#f0f4f8', padding: '20px 30px', textAlign: 'center' as const, borderTop: '1px solid #dde5ef' }
 const footerBrand = { color: '#4a90d9', margin: '0 0 10px', fontSize: '16px', fontWeight: '500' as const }
 const footerContact = { color: '#6b7c94', margin: '0', fontSize: '14px' }
+

@@ -18,13 +18,13 @@ const Legal = () => {
   };
   const content = {
     sk: {
-      pageTitle: 'Právne dokumenty | FYZIO&FIT',
-      pageDescription: 'Obchodné podmienky a zásady ochrany osobných údajov FYZIO&FIT',
+      pageTitle: 'Právne dokumenty | FYZIOAFIT',
+      pageDescription: 'Obchodné podmienky a zásady ochrany osobných údajov FYZIOAFIT',
       backToHome: 'Späť na rezerváciu',
       terms: {
         title: 'Obchodné podmienky',
         sections: [
-          { heading: '1. Základné ustanovenia', text: 'Tieto obchodné podmienky upravujú vzťahy medzi poskytovateľom služieb FYZIO&FIT (ďalej len "poskytovateľ") a klientom pri poskytovaní fyzioterapeutických a chiropraktických služieb.' },
+          { heading: '1. Základné ustanovenia', text: 'Tieto obchodné podmienky upravujú vzťahy medzi poskytovateľom služieb FYZIOAFIT (ďalej len "poskytovateľ") a klientom pri poskytovaní fyzioterapeutických a chiropraktických služieb.' },
           { heading: '2. Rezervácia termínu', text: 'Rezerváciu je možné vykonať prostredníctvom online rezervačného systému. Po úspešnej rezervácii obdrží klient potvrdzujúci email s detailmi o termíne. Rezervácia je záväzná po jej potvrdení.' },
           { heading: '3. Zrušenie a zmena termínu', text: 'Rezerváciu je možné zrušiť online najneskôr 12 hodín pred termínom. Menej ako 12 hodín pred termínom je zrušenie možné, len telefonicky: +421 905 307 198 ale bude Vám účtovaný storno poplatok 10 €.' },
           { heading: '4. Platobné podmienky', text: 'Platba za služby sa uskutočňuje v hotovosti alebo platobnou kartou priamo na mieste po poskytnutí služby. Ceny služieb sú uvedené v cenníku na webovej stránke.' },
@@ -35,7 +35,7 @@ const Legal = () => {
       privacy: {
         title: 'Ochrana osobných údajov (GDPR)',
         sections: [
-          { heading: '1. Prevádzkovateľ', text: 'Prevádzkovateľom osobných údajov je FYZIO&FIT, Krmanová 6, Košice. Kontakt: +421 905 307 198, booking@fyzioafit.sk' },
+          { heading: '1. Prevádzkovateľ', text: 'Prevádzkovateľom osobných údajov je FYZIOAFIT, Krmanová 6, Košice. Kontakt: +421 905 307 198, booking@fyzioafit.sk' },
           { heading: '2. Aké údaje spracovávame', text: 'Spracovávame nasledovné osobné údaje: meno a priezvisko, telefónne číslo, emailová adresa, údaje o rezerváciách a poznámky k zdravotnému stavu poskytnuté klientom.' },
           { heading: '3. Účel spracovania', text: 'Osobné údaje spracovávame za účelom: poskytovania objednaných služieb, správy rezervácií, komunikácie s klientom, zasielania potvrdení a pripomienok termínov.' },
           { heading: '4. Právny základ', text: 'Spracovanie osobných údajov je nevyhnutné na plnenie zmluvy (poskytnutie služby). Pre zasielanie marketingových oznámení vyžadujeme výslovný súhlas.' },
@@ -46,13 +46,13 @@ const Legal = () => {
       },
     },
     en: {
-      pageTitle: 'Legal Documents | FYZIO&FIT',
-      pageDescription: 'Terms of Service and Privacy Policy of FYZIO&FIT',
+      pageTitle: 'Legal Documents | FYZIOAFIT',
+      pageDescription: 'Terms of Service and Privacy Policy of FYZIOAFIT',
       backToHome: 'Back to booking',
       terms: {
         title: 'Terms of Service',
         sections: [
-          { heading: '1. General Provisions', text: 'These terms of service govern the relationship between the service provider FYZIO&FIT (hereinafter "provider") and the client in providing physiotherapy and chiropractic services.' },
+          { heading: '1. General Provisions', text: 'These terms of service govern the relationship between the service provider FYZIOAFIT (hereinafter "provider") and the client in providing physiotherapy and chiropractic services.' },
           { heading: '2. Appointment Booking', text: 'Bookings can be made through the online reservation system. Upon successful booking, the client will receive a confirmation email with appointment details. The booking is binding upon confirmation.' },
           { heading: '3. Cancellation and Rescheduling', text: 'You can cancel online up to 12 hours before your appointment. Less than 12 hours before, cancellation is only possible by phone: +421 905 307 198 and a cancellation fee of €10 will be charged.' },
           { heading: '4. Payment Terms', text: 'Payment for services is made in cash or by card directly on-site after the service is provided. Service prices are listed in the price list on the website.' },
@@ -63,7 +63,7 @@ const Legal = () => {
       privacy: {
         title: 'Privacy Policy (GDPR)',
         sections: [
-          { heading: '1. Data Controller', text: 'The data controller is FYZIO&FIT, Krmanová 6, Košice. Contact: +421 905 307 198, booking@fyzioafit.sk' },
+          { heading: '1. Data Controller', text: 'The data controller is FYZIOAFIT, Krmanová 6, Košice. Contact: +421 905 307 198, booking@fyzioafit.sk' },
           { heading: '2. Data We Process', text: 'We process the following personal data: name and surname, phone number, email address, booking information, and health-related notes provided by the client.' },
           { heading: '3. Purpose of Processing', text: 'We process personal data for: providing requested services, managing reservations, communicating with clients, sending confirmations and appointment reminders.' },
           { heading: '4. Legal Basis', text: 'Processing of personal data is necessary for the performance of a contract (service provision). For marketing communications, we require explicit consent.' },
@@ -80,10 +80,10 @@ const Legal = () => {
   return (
     <>
       <PageMeta
-        titleSk="Právne dokumenty | FYZIO&FIT"
-        titleEn="Legal Documents | FYZIO&FIT"
-        descriptionSk="Obchodné podmienky a zásady ochrany osobných údajov FYZIO&FIT"
-        descriptionEn="Terms of service and privacy policy of FYZIO&FIT"
+        titleSk="Právne dokumenty | FYZIOAFIT"
+        titleEn="Legal Documents | FYZIOAFIT"
+        descriptionSk="Obchodné podmienky a zásady ochrany osobných údajov FYZIOAFIT"
+        descriptionEn="Terms of service and privacy policy of FYZIOAFIT"
         path={`/legal?tab=${defaultTab}`}
       />
 
@@ -99,7 +99,7 @@ const Legal = () => {
 
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-heading font-semibold text-foreground mb-2">
-              FYZIO&FIT
+              FYZIOAFIT
             </h1>
           </div>
 
@@ -158,3 +158,4 @@ const Legal = () => {
 };
 
 export default Legal;
+

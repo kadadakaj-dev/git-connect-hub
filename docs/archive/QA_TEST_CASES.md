@@ -1,6 +1,6 @@
-# QA Test Cases — FYZIO&FIT Booking System
+# QA Test Cases — FYZIOAFIT Booking System
 
-> **Project**: FYZIO&FIT physiotherapy booking (Lovable.dev + Supabase)
+> **Project**: FYZIOAFIT physiotherapy booking (Lovable.dev + Supabase)
 > **Scope**: Only what is explicitly visible, configured, or present in the codebase.
 > **Out of scope**: Internal DB schema, direct SQL testing, infrastructure, server-side unit tests, admin module deep testing.
 > **Language**: Default Slovak (sk), secondary English (en). Tests written for SK unless stated.
@@ -475,7 +475,7 @@
 - **Preconditions**: On confirmation screen.
 - **Steps**:
   1. Click "Pridať do kalendára" button.
-- **Expected Result**: New tab opens with Google Calendar event creation URL. Pre-filled with: title "FYZIO&FIT - {service name}", correct start/end times, location "Krmanová 6, Košice".
+- **Expected Result**: New tab opens with Google Calendar event creation URL. Pre-filled with: title "FYZIOAFIT - {service name}", correct start/end times, location "Krmanová 6, Košice".
 
 ---
 
@@ -609,7 +609,7 @@
 - **Preconditions**: No `splashShown` flag in sessionStorage.
 - **Steps**:
   1. Open `/` in a fresh session.
-- **Expected Result**: Splash screen shows "FYZIO&FIT" branding with progress bar animation. Fades out after ~320ms, completes at ~640ms. Not shown on subsequent navigations in same session (sessionStorage flag set).
+- **Expected Result**: Splash screen shows "FYZIOAFIT" branding with progress bar animation. Fades out after ~320ms, completes at ~640ms. Not shown on subsequent navigations in same session (sessionStorage flag set).
 
 ### TC-10.2 — Offline banner
 
@@ -770,3 +770,4 @@ The following are **not testable** without additional context or access:
 | P2 (Medium) | 14 | Edge cases, i18n, mobile, secondary flows |
 | P3 (Low) | 4 | Meta, SEO, autocomplete attributes |
 | **Total** | **62** | |
+

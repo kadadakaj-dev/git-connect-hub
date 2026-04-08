@@ -4,7 +4,7 @@ Sender email address
 booking@fyzioafit.sk
 The email address the emails are sent from.
 Sender name
-Personál FYZIO&FIT
+Personál FYZIOAFIT
 Name displayed in the recipient's inbox.
 SMTP provider settings
 Your SMTP credentials will always be encrypted in our database.

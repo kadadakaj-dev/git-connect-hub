@@ -72,7 +72,7 @@ const Footer = () => {
             </Link>
           </div>
           <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-            © {new Date().getFullYear()} <span className="font-semibold text-foreground">FYZIO&FIT</span>
+            © {new Date().getFullYear()} <span className="font-semibold text-foreground">FYZIOAFIT</span>
             <span className="hidden sm:inline">•</span>
             <span className="hidden sm:inline-flex items-center gap-1">
               {language === 'sk' ? 'S' : 'Made with'}
@@ -87,3 +87,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

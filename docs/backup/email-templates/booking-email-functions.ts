@@ -26,8 +26,8 @@ interface EmailRequest {
 
 const translations = {
   sk: {
-    subject: "Potvrdenie rezervácie - FYZIO&FIT",
-    reminderSubject: "Pripomienka: Váš termín zajtra - FYZIO&FIT",
+    subject: "Potvrdenie rezervácie - FYZIOAFIT",
+    reminderSubject: "Pripomienka: Váš termín zajtra - FYZIOAFIT",
     greeting: "Dobrý deň",
     confirmationTitle: "Vaša rezervácia bola úspešne vytvorená",
     reminderTitle: "Pripomíname vám zajtrajší termín",
@@ -38,12 +38,12 @@ const translations = {
     cancelText: "Ak potrebujete zrušiť rezerváciu, kliknite na nasledujúci odkaz:",
     cancelButton: "Zrušiť rezerváciu",
     footer: "Tešíme sa na vašu návštevu!",
-    clinicName: "FYZIO&FIT",
+    clinicName: "FYZIOAFIT",
     contact: "Kontakt: booking@fyzioafit.sk",
   },
   en: {
-    subject: "Booking Confirmation - FYZIO&FIT",
-    reminderSubject: "Reminder: Your appointment tomorrow - FYZIO&FIT",
+    subject: "Booking Confirmation - FYZIOAFIT",
+    reminderSubject: "Reminder: Your appointment tomorrow - FYZIOAFIT",
     greeting: "Hello",
     confirmationTitle: "Your booking has been successfully created",
     reminderTitle: "Reminder about your appointment tomorrow",
@@ -54,7 +54,7 @@ const translations = {
     cancelText: "If you need to cancel your booking, click the following link:",
     cancelButton: "Cancel Booking",
     footer: "We look forward to seeing you!",
-    clinicName: "FYZIO&FIT",
+    clinicName: "FYZIOAFIT",
     contact: "Contact: booking@fyzioafit.sk",
   },
 };
@@ -237,7 +237,7 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
-  <title>Nova rezervacia - FYZIO&FIT</title>
+  <title>Nova rezervacia - FYZIOAFIT</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" class="email-body" style="background-color: #ffffff; padding: 20px;">
@@ -247,7 +247,7 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
           <tr>
             <td style="background: linear-gradient(135deg, #2d8a5e 0%, #40b07a 100%); padding: 36px 30px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: 1px;">Nova rezervacia</h1>
-              <p style="color: rgba(255,255,255,0.85); margin: 10px 0 0; font-size: 14px; font-weight: 400;">FYZIO&FIT Booking System</p>
+              <p style="color: rgba(255,255,255,0.85); margin: 10px 0 0; font-size: 14px; font-weight: 400;">FYZIOAFIT Booking System</p>
             </td>
           </tr>
           <tr>
@@ -299,7 +299,7 @@ function generateAdminNotificationHtml(data: EmailRequest): string {
           </tr>
           <tr>
             <td class="footer-section" style="background-color: #f0f4f8; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
-              <p class="text-muted" style="color: #6b7c94; margin: 0; font-size: 13px;">Tento email bol automaticky vygenerovany rezervacnym systemom FYZIO&FIT.</p>
+              <p class="text-muted" style="color: #6b7c94; margin: 0; font-size: 13px;">Tento email bol automaticky vygenerovany rezervacnym systemom FYZIOAFIT.</p>
             </td>
           </tr>
         </table>
@@ -316,7 +316,7 @@ function generateAdminNotificationText(data: EmailRequest): string {
   const admin = data.adminData!;
 
   return [
-    "NOVA REZERVACIA - FYZIO&FIT",
+    "NOVA REZERVACIA - FYZIOAFIT",
     "========================================",
     `Klient: ${escapeHtml(admin.clientName)}`,
     `Email: ${escapeHtml(admin.clientEmail)}`,
@@ -521,7 +521,7 @@ function generateCancellationAdminHtml(data: EmailRequest): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
-  <title>Zrusena rezervacia - FYZIO&FIT</title>
+  <title>Zrusena rezervacia - FYZIOAFIT</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" class="email-body" style="background-color: #ffffff; padding: 20px;">
@@ -531,7 +531,7 @@ function generateCancellationAdminHtml(data: EmailRequest): string {
           <tr>
             <td style="background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%); padding: 36px 30px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: 1px;">Zrusena rezervacia</h1>
-              <p style="color: rgba(255,255,255,0.85); margin: 10px 0 0; font-size: 14px; font-weight: 400;">FYZIO&FIT Booking System</p>
+              <p style="color: rgba(255,255,255,0.85); margin: 10px 0 0; font-size: 14px; font-weight: 400;">FYZIOAFIT Booking System</p>
             </td>
           </tr>
           <tr>
@@ -577,7 +577,7 @@ function generateCancellationAdminHtml(data: EmailRequest): string {
           </tr>
           <tr>
             <td class="footer-section" style="background-color: #f0f4f8; padding: 20px 30px; text-align: center; border-top: 1px solid #dde5ef;">
-              <p class="text-muted" style="color: #6b7c94; margin: 0; font-size: 13px;">Tento email bol automaticky vygenerovany rezervacnym systemom FYZIO&FIT.</p>
+              <p class="text-muted" style="color: #6b7c94; margin: 0; font-size: 13px;">Tento email bol automaticky vygenerovany rezervacnym systemom FYZIOAFIT.</p>
             </td>
           </tr>
         </table>
@@ -594,7 +594,7 @@ function generateCancellationAdminText(data: EmailRequest): string {
   const admin = data.adminData!;
 
   return [
-    "ZRUSENA REZERVACIA - FYZIO&FIT",
+    "ZRUSENA REZERVACIA - FYZIOAFIT",
     "========================================",
     `Klient: ${escapeHtml(admin.clientName)}`,
     `Email: ${escapeHtml(admin.clientEmail)}`,
@@ -802,8 +802,8 @@ serve(async (req) => {
 
     if (isCancellationClient) {
       subject = data.language === 'sk'
-        ? 'Potvrdenie zrušenia rezervácie - FYZIO&FIT'
-        : 'Booking Cancellation Confirmation - FYZIO&FIT';
+        ? 'Potvrdenie zrušenia rezervácie - FYZIOAFIT'
+        : 'Booking Cancellation Confirmation - FYZIOAFIT';
       html = generateCancellationClientHtml(data, baseUrl);
       textContent = generateCancellationClientText(data, baseUrl);
     } else if (isCancellationAdmin) {
@@ -816,8 +816,8 @@ serve(async (req) => {
       textContent = generateAdminNotificationText(data);
     } else if (isReminder) {
       subject = data.language === 'sk'
-        ? '⚠️ PRIPOMIENKA: Váš termín zajtra - FYZIO&FIT'
-        : '⚠️ REMINDER: Your appointment tomorrow - FYZIO&FIT';
+        ? '⚠️ PRIPOMIENKA: Váš termín zajtra - FYZIOAFIT'
+        : '⚠️ REMINDER: Your appointment tomorrow - FYZIOAFIT';
       html = generateReminderHtml(data, baseUrl);
       textContent = generateReminderText(data, baseUrl);
     } else {
@@ -827,7 +827,7 @@ serve(async (req) => {
     }
 
     await client.send({
-      from: "FYZIO&FIT <booking@fyzioafit.sk>",
+      from: "FYZIOAFIT <booking@fyzioafit.sk>",
       to: data.to,
       subject: subject,
       content: textContent,
@@ -851,3 +851,4 @@ serve(async (req) => {
     });
   }
 });
+

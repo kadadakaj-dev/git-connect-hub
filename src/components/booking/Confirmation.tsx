@@ -23,7 +23,7 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
 
   const handleAddToCalendar = () => {
     if (date && time && service) {
-      const title = `FYZIO&FIT - ${service.name}`;
+      const title = `FYZIOAFIT - ${service.name}`;
       const startDate = new Date(date);
       const [hours, minutes] = time.split(':');
       startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
@@ -42,7 +42,7 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
 
   const handleDownloadICS = () => {
     if (date && time && service) {
-      const title = `FYZIO&FIT - ${service.name}`;
+      const title = `FYZIOAFIT - ${service.name}`;
       const startDate = new Date(date);
       const [hours, minutes] = time.split(':');
       startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
@@ -55,7 +55,7 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
       const icsContent = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PROID:-//FYZIO&FIT//Booking System//SK',
+        'PROID:-//FYZIOAFIT//Booking System//SK',
         'BEGIN:VEVENT',
         `DTSTART:${formatICSDate(startDate)}`,
         `DTEND:${formatICSDate(endDate)}`,
@@ -134,7 +134,7 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
           <div className="flex items-center gap-2 py-2 px-3 rounded-lg bg-primary/5 border border-primary/10">
             <User className="w-3.5 h-3.5 text-primary" />
             <span className="text-[13px] font-medium text-foreground">
-              {language === 'sk' ? 'Personál – FYZIO&FIT' : 'Staff of FYZIO&FIT'}
+              {language === 'sk' ? 'Personál – FYZIOAFIT' : 'Staff of FYZIOAFIT'}
             </span>
           </div>
 
@@ -198,3 +198,4 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
 };
 
 export default Confirmation;
+

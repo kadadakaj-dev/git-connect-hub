@@ -6,7 +6,7 @@ interface SplashScreenProps {
 }
 
 /* ── timing constants (seconds) ── */
-const LETTERS = 'FYZIO&FIT'.split('');
+const LETTERS = 'FYZIOAFIT'.split('');
 const LETTER_STAGGER = 0.08;
 const GLOW_START = LETTERS.length * LETTER_STAGGER;     // ~0.72 s
 const FADE_START = 2.4;                                 // begin exit fade
@@ -36,10 +36,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       <div
         className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-b from-[#BFE2FF] to-[#EAF6FF]"
         role="status"
-        aria-label="Loading FYZIO&FIT"
+        aria-label="Loading FYZIOAFIT"
       >
         <h1 className="text-4xl font-heading font-semibold text-[hsl(211,48%,29%)] tracking-[0.2em]">
-          FYZIO&FIT
+          FYZIOAFIT
         </h1>
       </div>
     );
@@ -51,7 +51,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
       role="status"
-      aria-label="Loading FYZIO&FIT"
+      aria-label="Loading FYZIOAFIT"
     >
       {/* ── content wrapper (no scale/breathing — CLS safe) ── */}
       <div className="flex flex-col items-center gap-6">
@@ -123,3 +123,4 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
 };
 
 export default SplashScreen;
+
