@@ -23,16 +23,16 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Obnovenie hesla – FYZIOAFIT</Preview>
+    <Preview>{`Obnovenie hesla – ${siteName}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIOAFIT</Heading>
+          <Heading style={headerTitle}>{siteName}</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Obnovenie hesla</Heading>
           <Text style={text}>
-            Prijali sme žiadosť o obnovenie hesla pre váš účet v FYZIOAFIT.
+            Prijali sme žiadosť o obnovenie hesla pre váš účet v {siteName}.
             Kliknite na tlačidlo nižšie a zvoľte si nové heslo.
           </Text>
           <Button style={button} href={confirmationUrl}>
@@ -44,7 +44,7 @@ export const RecoveryEmail = ({
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>FYZIOAFIT</Text>
+          <Text style={footerBrand}>{siteName}</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>

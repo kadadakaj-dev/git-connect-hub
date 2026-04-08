@@ -26,17 +26,17 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Pozvánka do FYZIOAFIT</Preview>
+    <Preview>{`Pozvánka do ${siteName}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIOAFIT</Heading>
+          <Heading style={headerTitle}>{siteName}</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Boli ste pozvaní</Heading>
           <Text style={text}>
             Boli ste pozvaní do{' '}
-            <Link href={siteUrl} style={link}><strong>FYZIOAFIT</strong></Link>.
+            <Link href={siteUrl} style={link}><strong>{siteName}</strong></Link>.
             Kliknite na tlačidlo nižšie pre prijatie pozvánky a vytvorenie účtu.
           </Text>
           <Button style={button} href={confirmationUrl}>
@@ -47,7 +47,7 @@ export const InviteEmail = ({
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>FYZIOAFIT</Text>
+          <Text style={footerBrand}>{siteName}</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>

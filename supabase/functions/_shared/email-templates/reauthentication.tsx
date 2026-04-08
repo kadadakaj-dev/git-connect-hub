@@ -12,17 +12,18 @@ import {
 } from '@react-email/components'
 
 interface ReauthenticationEmailProps {
+  siteName: string
   token: string
 }
 
-export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
+export const ReauthenticationEmail = ({ siteName, token }: ReauthenticationEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Váš overovací kód – FYZIOAFIT</Preview>
+    <Preview>{`Váš overovací kód – ${siteName}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIOAFIT</Heading>
+          <Heading style={headerTitle}>{siteName}</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Overovací kód</Heading>
@@ -34,7 +35,7 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>FYZIOAFIT</Text>
+          <Text style={footerBrand}>{siteName}</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>

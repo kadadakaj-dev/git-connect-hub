@@ -35,6 +35,51 @@ export type Database = {
         }
         Relationships: []
       }
+      blocked_slots: {
+        Row: {
+          created_at: string
+          date: string
+          duration: number
+          id: string
+          reason: string | null
+          therapist_id: string | null
+          time_slot: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          duration?: number
+          id?: string
+          reason?: string | null
+          therapist_id?: string | null
+          time_slot: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          duration?: number
+          id?: string
+          reason?: string | null
+          therapist_id?: string | null
+          time_slot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocked_slots_therapist_id_fkey"
+            columns: ["therapist_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blocked_slots_therapist_id_fkey"
+            columns: ["therapist_id"]
+            isOneToOne: false
+            referencedRelation: "employees_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_reminders: {
         Row: {
           booking_id: string

@@ -143,4 +143,33 @@ describe('useTimeSlots', () => {
       { time: '09:30', available: false, bookedCount: 1, totalCapacity: 1 },
     ]);
   });
+
+  it('should mark slots as unavailable when blocked via blocked_slots', async () => {
+    const date = new Date('2026-12-07T12:00:00');
+
+    // Simulate RPC returning a block (which has same structure as booking in RPC response)
+    mockRpc.mockImplementation(() => mockChain({ 
+      data: [{ time_slot: '09:00', booking_duration: 30 }], 
+      error: null 
+    }));
+    
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'blocked_dates') return mockChain({ data: null, error: null });
+      if (table === 'time_slots_config') {
+        return mockChain({
+          data: [{ day_of_week: 1, start_time: '09:00', end_time: '09:30', is_active: true }],
+          error: null,
+        });
+      }
+      if (table === 'employees_public') return mockChain({ data: [{ id: 'emp-1' }], error: null });
+      return mockChain({ data: [], error: null });
+    });
+
+    const { result } = renderHook(() => useTimeSlots(date), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual([
+      { time: '09:00', available: false, bookedCount: 1, totalCapacity: 1 },
+    ]);
+  });
 });

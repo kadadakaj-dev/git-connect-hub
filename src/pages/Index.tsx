@@ -8,10 +8,10 @@ const Index = () => {
   return (
     <>
       <PageMeta
-        titleSk="Rezervácia termínu | FYZIO&FIT - Fyzioterapia a chiropraktika"
-        titleEn="Book Appointment | FYZIO&FIT - Physiotherapy & Chiropractic"
-        descriptionSk="Rezervujte si termín fyzioterapie alebo chiropraktiky online. Jednoduché plánovanie, okamžité potvrdenie. FYZIO&FIT ponúka odbornú starostlivosť pre vaše zdravie."
-        descriptionEn="Book your physiotherapy or chiropractic appointment online. Easy scheduling, instant confirmation. FYZIO&FIT offers professional care for your health."
+        titleSk="Rezervácia termínu | FYZIOAFIT - Fyzioterapia a chiropraktika"
+        titleEn="Book Appointment | FYZIOAFIT - Physiotherapy & Chiropractic"
+        descriptionSk="Rezervujte si termín fyzioterapie alebo chiropraktiky online. Jednoduché plánovanie, okamžité potvrdenie. FYZIOAFIT ponúka odbornú starostlivosť pre vaše zdravie."
+        descriptionEn="Book your physiotherapy or chiropractic appointment online. Easy scheduling, instant confirmation. FYZIOAFIT offers professional care for your health."
         path="/"
       />
       <LocalBusinessJsonLd />

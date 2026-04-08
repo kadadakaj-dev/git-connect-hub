@@ -141,7 +141,7 @@ const CalendarView = () => {
       rangeEnd = currentDate;
     }
 
-    const [bookingsRes, employeesRes, blockedRes, servicesRes] = await Promise.all([
+    const [bookingsRes, employeesRes, blockedRes, blockedSlotsRes, servicesRes] = await Promise.all([
       supabase
         .from('bookings')
         .select(`
@@ -164,6 +164,11 @@ const CalendarView = () => {
         .gte('date', format(rangeStart, 'yyyy-MM-dd'))
         .lte('date', format(rangeEnd, 'yyyy-MM-dd')),
       supabase
+        .from('blocked_slots')
+        .select('id, date, time_slot, duration, therapist_id, reason')
+        .gte('date', format(rangeStart, 'yyyy-MM-dd'))
+        .lte('date', format(rangeEnd, 'yyyy-MM-dd')),
+      supabase
         .from('services')
         .select('id, name_sk, name_en, duration, price, category')
         .eq('is_active', true)
@@ -176,13 +181,14 @@ const CalendarView = () => {
 
     if (bookingsRes.data) {
       const empMap = new Map((employeesRes.data || []).map((e: { id: string; full_name: string }) => [e.id, e.full_name]));
-      const mapped: CalendarEvent[] = (bookingsRes.data as BookingWithService[]).map(b => ({
+      
+      const bookingEvents: CalendarEvent[] = (bookingsRes.data as BookingWithService[]).map(b => ({
         id: b.id,
         date: b.date,
         startTime: b.time_slot,
         duration: b.booking_duration || b.service?.duration || 60,
         title: b.client_name,
-        type: (b.client_name === 'Blokovaný čas' || b.client_name === 'Blocked time') ? 'block' as const : 'booking' as const,
+        type: 'booking' as const,
         notes: b.notes,
         therapistId: b.employee_id,
         status: b.status,
@@ -197,7 +203,21 @@ const CalendarView = () => {
         servicePrice: b.service?.price != null ? Number(b.service.price) : undefined,
         serviceDuration: b.service?.duration ?? undefined,
       }));
-      setEvents(mapped);
+
+      const slotBlocks: CalendarEvent[] = (blockedSlotsRes.data || []).map((s) => ({
+        id: s.id,
+        date: s.date,
+        startTime: s.time_slot,
+        duration: s.duration,
+        title: s.reason || (language === 'sk' ? 'Blokovaný čas' : 'Blocked time'),
+        type: 'block' as const,
+        therapistId: s.therapist_id || undefined,
+        employeeName: s.therapist_id ? (empMap.get(s.therapist_id) as string ?? undefined) : undefined,
+        notes: '',
+        status: 'confirmed',
+      }));
+
+      setEvents([...bookingEvents, ...slotBlocks]);
     }
 
     setIsLoading(false);
@@ -412,15 +432,12 @@ const CalendarView = () => {
       } else {
         if (isBlock) {
           if (formData.blockScope === 'time_slot') {
-            const { error } = await supabase.from('bookings').insert({
+            const { error } = await supabase.from('blocked_slots').insert({
               date: formData.date,
               time_slot: formData.startTime,
-              client_name: formData.title,
-              client_email: 'block@system.local',
-              employee_id: formData.therapistId || null,
-              booking_duration: formData.duration,
-              status: 'confirmed',
-              notes: formData.notes || null,
+              duration: formData.duration,
+              therapist_id: formData.therapistId || null,
+              reason: formData.title,
             });
             if (error) throw error;
             toast.success(language === 'sk' ? 'Čas bol zablokovaný' : 'Time slot blocked');
@@ -532,17 +549,30 @@ const CalendarView = () => {
 
 
   const handleDelete = async () => {
-    const { error } = await supabase
-      .from('bookings')
-      .update({ status: 'cancelled' })
-      .eq('id', formData.id);
+    if (formData.type === 'block') {
+      const { error } = await supabase
+        .from('blocked_slots')
+        .delete()
+        .eq('id', formData.id);
 
-    if (error) {
-      toast.error(language === 'sk' ? 'Nepodarilo sa zrušiť' : 'Failed to cancel');
-      return;
+      if (error) {
+        toast.error(language === 'sk' ? 'Nepodarilo sa odstrániť blokáciu' : 'Failed to delete block');
+        return;
+      }
+      toast.success(language === 'sk' ? 'Blokácia odstránená' : 'Block deleted');
+    } else {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'cancelled' })
+        .eq('id', formData.id);
+
+      if (error) {
+        toast.error(language === 'sk' ? 'Nepodarilo sa zrušiť' : 'Failed to cancel');
+        return;
+      }
+      toast.success(language === 'sk' ? 'Rezervácia zrušená' : 'Booking cancelled');
     }
 
-    toast.success(language === 'sk' ? 'Rezervácia zrušená' : 'Booking cancelled');
     setModalOpen(false);
     fetchData();
   };

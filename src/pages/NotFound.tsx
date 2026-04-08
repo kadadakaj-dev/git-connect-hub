@@ -19,8 +19,8 @@ const NotFound = () => {
     <div className="flex min-h-app-screen items-center justify-center relative overflow-hidden">
       <GlassBackground />
       <PageMeta
-        titleSk="Stránka nenájdená | FYZIO&FIT"
-        titleEn="Page Not Found | FYZIO&FIT"
+        titleSk="Stránka nenájdená | FYZIOAFIT"
+        titleEn="Page Not Found | FYZIOAFIT"
         descriptionSk="Požadovaná stránka nebola nájdená."
         descriptionEn="The requested page was not found."
         path={location.pathname}

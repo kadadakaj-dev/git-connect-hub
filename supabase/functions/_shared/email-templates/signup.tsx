@@ -18,6 +18,7 @@ interface SignupEmailProps {
   siteUrl: string
   recipient: string
   confirmationUrl: string
+  language?: 'sk' | 'en'
 }
 
 export const SignupEmail = ({
@@ -25,20 +26,21 @@ export const SignupEmail = ({
   siteUrl,
   recipient,
   confirmationUrl,
+  language = 'sk',
 }: SignupEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Potvrďte svoj e-mail – FYZIOAFIT</Preview>
+    <Preview>{`Potvrďte svoj e-mail – ${siteName}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIOAFIT</Heading>
+          <Heading style={headerTitle}>{siteName}</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Potvrďte svoj e-mail</Heading>
           <Text style={text}>
             Ďakujeme za registráciu v{' '}
-            <Link href={siteUrl} style={link}><strong>FYZIOAFIT</strong></Link>!
+            <Link href={siteUrl} style={link}><strong>{siteName}</strong></Link>!
           </Text>
           <Text style={text}>
             Prosím, potvrďte svoju e-mailovú adresu (
@@ -53,7 +55,7 @@ export const SignupEmail = ({
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>Tešíme sa na vašu návštevu!</Text>
+          <Text style={footerBrand}>{language === 'sk' ? 'Tešíme sa na vašu návštevu!' : 'We look forward to your visit!'}</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>

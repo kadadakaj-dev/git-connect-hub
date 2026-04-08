@@ -28,16 +28,16 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Potvrďte zmenu e-mailu – FYZIOAFIT</Preview>
+    <Preview>{`Potvrďte zmenu e-mailu – ${siteName}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIOAFIT</Heading>
+          <Heading style={headerTitle}>{siteName}</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Potvrďte zmenu e-mailu</Heading>
           <Text style={text}>
-            Požiadali ste o zmenu e-mailovej adresy v FYZIOAFIT z{' '}
+            Požiadali ste o zmenu e-mailovej adresy v {siteName} z{' '}
             <Link href={`mailto:${email}`} style={link}>{email}</Link>{' '}
             na{' '}
             <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.
@@ -53,7 +53,7 @@ export const EmailChangeEmail = ({
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>FYZIOAFIT</Text>
+          <Text style={footerBrand}>{siteName}</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>

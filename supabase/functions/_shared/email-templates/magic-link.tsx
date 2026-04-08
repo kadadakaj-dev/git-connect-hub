@@ -23,16 +23,16 @@ export const MagicLinkEmail = ({
 }: MagicLinkEmailProps) => (
   <Html lang="sk" dir="ltr">
     <Head />
-    <Preview>Váš prihlasovací odkaz – FYZIOAFIT</Preview>
+    <Preview>{`Váš prihlasovací odkaz – ${siteName}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
-          <Heading style={headerTitle}>FYZIOAFIT</Heading>
+          <Heading style={headerTitle}>{siteName}</Heading>
         </Section>
         <Section style={content}>
           <Heading style={h1}>Váš prihlasovací odkaz</Heading>
           <Text style={text}>
-            Kliknite na tlačidlo nižšie pre prihlásenie do FYZIOAFIT.
+            Kliknite na tlačidlo nižšie pre prihlásenie do {siteName}.
             Platnosť odkazu je obmedzená.
           </Text>
           <Button style={button} href={confirmationUrl}>
@@ -43,7 +43,7 @@ export const MagicLinkEmail = ({
           </Text>
         </Section>
         <Section style={footer}>
-          <Text style={footerBrand}>FYZIOAFIT</Text>
+          <Text style={footerBrand}>{siteName}</Text>
           <Text style={footerContact}>Kontakt: booking@fyzioafit.sk</Text>
         </Section>
       </Container>
