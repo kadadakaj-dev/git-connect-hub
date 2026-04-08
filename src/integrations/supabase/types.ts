@@ -279,7 +279,6 @@ export type Database = {
           position: string | null
           sort_order: number
           updated_at: string
-          avatar_url: string | null
         }
         Insert: {
           bio_en?: string | null
@@ -293,7 +292,6 @@ export type Database = {
           position?: string | null
           sort_order?: number
           updated_at?: string
-          avatar_url?: string | null
         }
         Update: {
           bio_en?: string | null
@@ -307,7 +305,6 @@ export type Database = {
           position?: string | null
           sort_order?: number
           updated_at?: string
-          avatar_url?: string | null
         }
         Relationships: []
       }
@@ -549,9 +546,8 @@ export type Database = {
           full_name: string | null
           id: string | null
           is_active: boolean | null
-          position: string | null | undefined
-          sort_order: number | null | undefined
-          avatar_url: string | null | undefined
+          position: string | null
+          sort_order: number | null
         }
         Insert: {
           bio_en?: string | null
@@ -575,27 +571,21 @@ export type Database = {
       }
     }
     Functions: {
+      cleanup_rate_limits: { Args: never; Returns: undefined }
+      delete_email: {
+        Args: { message_id: number; queue_name: string }
+        Returns: boolean
+      }
+      enqueue_email: {
+        Args: { payload: Json; queue_name: string }
+        Returns: number
+      }
       get_booking_slot_counts: {
-        Args: { _date: string; _employee_id?: string }
+        Args: { _date: string }
         Returns: {
           booking_duration: number
           time_slot: string
         }[]
-      }
-      create_secure_booking: {
-        Args: {
-          p_service_id: string
-          p_date: string
-          p_time_slot: string
-          p_client_name: string
-          p_client_email: string
-          p_client_phone: string
-          p_notes?: string
-          p_client_user_id?: string
-          p_client_request_id?: string
-          p_employee_id?: string
-        }
-        Returns: Json
       }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
       move_to_dlq: {
