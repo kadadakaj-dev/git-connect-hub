@@ -95,7 +95,7 @@ export function generateSubject(data: EmailRequest): string {
   const isCancellationAdmin = data.template === "cancellation-admin";
   const isAdminNotification = data.template === "admin-notification";
   const isReminder = data.template === "reminder";
-  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
+  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
   
   if (isCancellationClient) {
     return `Zrušenie: ${serviceName} - FYZIOAFIT`;
@@ -116,7 +116,7 @@ export function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
   const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`;
   const isReminder = data.template === "reminder";
   const title = isReminder ? t.reminderTitle : t.confirmationTitle;
-  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
+  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
 
   const colors = {
     brandBlue: '#006fb8',
@@ -246,7 +246,7 @@ export function generateEmailText(data: EmailRequest, baseUrl: string): string {
   const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`;
   const isReminder = data.template === "reminder";
   const title = isReminder ? t.reminderTitle : t.confirmationTitle;
-  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
+  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
 
   return [
     `✅ ${serviceName.toUpperCase()}`,
@@ -271,7 +271,7 @@ export function generateAdminNotificationHtml(data: EmailRequest): string {
   const formattedDate = formatDate(data.date, "sk");
   const admin = data.adminData!;
   const dashboardUrl = "https://fyzioafit.sk/admin";
-  const serviceName = data.serviceName || 'Nová služba';
+  const serviceName = escapeHtml(data.serviceName || 'Nová služba');
 
   return `
 <!DOCTYPE html>
@@ -348,7 +348,7 @@ export function generateAdminNotificationHtml(data: EmailRequest): string {
 export function generateAdminNotificationText(data: EmailRequest): string {
   const formattedDate = formatDate(data.date, "sk");
   const admin = data.adminData!;
-  const serviceName = data.serviceName || 'Nová služba';
+  const serviceName = escapeHtml(data.serviceName || 'Nová služba');
 
   return [
     `REZERVÁCIA: ${serviceName.toUpperCase()}`,
@@ -367,7 +367,7 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
   const t = translations[data.language];
   const formattedDate = formatDate(data.date, data.language);
   const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`;
-  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
+  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
 
   return `
 <!DOCTYPE html>
@@ -431,7 +431,7 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
 export function generateReminderText(data: EmailRequest, baseUrl: string): string {
   const t = translations[data.language];
   const formattedDate = formatDate(data.date, data.language);
-  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
+  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
 
   return [
     `🔔 PRIPOMIENKA: ${serviceName.toUpperCase()}`,
@@ -449,7 +449,7 @@ export function generateCancellationAdminHtml(data: EmailRequest): string {
   const formattedDate = formatDate(data.date, "sk");
   const admin = data.adminData!;
   const dashboardUrl = "https://fyzioafit.sk/admin";
-  const serviceName = data.serviceName || 'Zrušená služba';
+  const serviceName = escapeHtml(data.serviceName || 'Zrušená služba');
 
   return `
 <!DOCTYPE html>
@@ -515,7 +515,7 @@ export function generateCancellationAdminHtml(data: EmailRequest): string {
 export function generateCancellationAdminText(data: EmailRequest): string {
   const formattedDate = formatDate(data.date, "sk");
   const admin = data.adminData!;
-  const serviceName = data.serviceName || 'Zrušená služba';
+  const serviceName = escapeHtml(data.serviceName || 'Zrušená služba');
 
   return [
     `❌ ZRUŠENÁ REZERVÁCIA: ${serviceName.toUpperCase()}`,
@@ -529,7 +529,7 @@ export function generateCancellationAdminText(data: EmailRequest): string {
 export function generateCancellationClientHtml(data: EmailRequest, baseUrl: string): string {
   const formattedDate = formatDate(data.date, data.language);
   const t = translations[data.language];
-  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
+  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
   
   const labels = data.language === 'sk' ? {
     title: 'Vaša rezervácia bola zrušená',
@@ -603,7 +603,7 @@ export function generateCancellationClientHtml(data: EmailRequest, baseUrl: stri
 
 export function generateCancellationClientText(data: EmailRequest, baseUrl: string): string {
   const t = translations[data.language];
-  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
+  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
 
   return [
     `❌ ZRUŠENÉ: ${serviceName.toUpperCase()}`,
