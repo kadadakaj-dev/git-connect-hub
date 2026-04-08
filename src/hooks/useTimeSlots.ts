@@ -148,7 +148,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
           .eq('day_of_week', dayOfWeek)
           .eq('is_active', true),
         supabase
-          .rpc('get_booking_slot_counts', { _date: dateString, _employee_id: therapistId }),
+          .rpc('get_booking_slot_counts', { _date: dateString, _employee_id: null }),
         supabase
           .from('employees_public')
           .select('id')
@@ -168,7 +168,10 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
       const configData = configRes.data;
       if (!configData || configData.length === 0) return [];
 
-      const totalCapacity = therapistId ? 1 : Math.max(employeesRes.data?.length || 1, 1);
+      // PRODUCTION RULE: One occupied hour = fully blocked for everyone.
+      // We force totalCapacity to 1 for the customer UI to reflect this clinic-wide restriction.
+      const totalCapacity = 1;
+      
       const bookings: BookingRecord[] = (bookingsRes.data || []).map((b) => ({
         time_slot: b.time_slot,
         booking_duration: b.booking_duration || 30,

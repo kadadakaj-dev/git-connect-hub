@@ -134,7 +134,7 @@ const Confirmation = ({ bookingData, onNewBooking, bookingId }: ConfirmationProp
           <div className="flex items-center gap-2 py-2 px-3 rounded-lg bg-primary/5 border border-primary/10">
             <User className="w-3.5 h-3.5 text-primary" />
             <span className="text-[13px] font-medium text-foreground">
-              {language === 'sk' ? 'Personál FYZIO&FIT' : 'Staff of FYZIO&FIT'}
+              {language === 'sk' ? 'Personál – FYZIO&FIT' : 'Staff of FYZIO&FIT'}
             </span>
           </div>
 

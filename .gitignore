@@ -1,46 +1,60 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Testing & Coverage
 playwright-report/
 test-results/
 blob-report/
+.playwright/
+coverage/
+*.lcov
 
-.vercel
-.env*.local
+# Tools
+.claude/
+
+# Build & Cache
+.turbo/
+.cache/
+.eslintcache
+.stylelintcache
+node_modules/
+dist/
+dist-ssr/
+.vercel/
+
+# Engineering Junk
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.bak
+*.old
+*.tmp
+*.temp
+temp/
+tmp/
+.history/
+
+# Environment & Secrets
 .env
+.env*.local
+.env.test
+.env.production
+.env.development
+! .env.example
 
-.vercel
+# Editor & OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
 
-scripts/
-
-# Servisné skripty a dáta
+# Project Specific Data (Ignore generated logs/dumps)
 *.mjs
-booking_events_log.json
-booking_events_full_log.json
-services_all.json
-services_all_with_service_key.json
-services_current.json
-old_db_full_backup.sql
+*.json.log
+booking_events*.json
+services_*.json
+old_db_*.sql
+schema_*.sql
 
 .vercel
