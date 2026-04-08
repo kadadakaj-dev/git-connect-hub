@@ -69,6 +69,12 @@ describe('ServiceSelection', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        // Mock window.location to prevent JSDOM navigation warnings
+        vi.stubGlobal('location', {
+            ...window.location,
+            assign: vi.fn(),
+            href: '',
+        });
     });
 
     it('should show loading skeleton while fetching services', () => {

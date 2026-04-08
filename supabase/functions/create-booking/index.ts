@@ -8,7 +8,9 @@ declare const Deno: {
 type EdgeRequest = Request;
 // @ts-expect-error: Deno module imports
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.7'
+// @ts-expect-error: Deno module imports
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+// @ts-expect-error: Deno module imports
 import { DateTime } from 'https://esm.sh/luxon@3.4.4'
 
 const corsHeaders = {
@@ -365,7 +367,7 @@ serve(async (req: EdgeRequest) => {
       body: JSON.stringify({
         to: adminEmail,
         clientName: 'Admin',
-        serviceName: `Nová rezervácia: ${serviceName} (${serviceDuration} min)`, 
+        serviceName: `${serviceName} (${serviceDuration} min)`, 
         date: body.date,
         time: body.time_slot,
         cancellationToken: booking.cancellation_token,

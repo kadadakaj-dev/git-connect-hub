@@ -455,7 +455,7 @@ const ClientPortal = () => {
                   {bookingsLoading ? (
                     <div className="space-y-4">
                       {[1, 2].map((i) => (
-                        <Skeleton key={i} className="h-24 rounded-[22px]" />
+                        <Skeleton key={`upcoming-skeleton-${i}`} className="h-24 rounded-[22px]" />
                       ))}
                     </div>
                   ) : upcomingBookings.length === 0 ? (
@@ -526,7 +526,7 @@ const ClientPortal = () => {
                   {bookingsLoading ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
-                        <Skeleton key={i} className="h-24 rounded-[22px]" />
+                        <Skeleton key={`history-skeleton-${i}`} className="h-24 rounded-[22px]" />
                       ))}
                     </div>
                   ) : pastBookings.length === 0 ? (
@@ -611,7 +611,7 @@ const ClientPortal = () => {
                   {favoritesLoading ? (
                     <div className="grid gap-4 sm:grid-cols-2">
                       {[1, 2].map((i) => (
-                        <Skeleton key={i} className="h-32 rounded-[22px]" />
+                        <Skeleton key={`fav-skeleton-${i}`} className="h-32 rounded-[22px]" />
                       ))}
                     </div>
                   ) : !favorites || favorites.length === 0 ? (

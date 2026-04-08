@@ -44,6 +44,7 @@ export interface EventFormData {
   clientEmail?: string;
   clientPhone?: string;
   serviceId?: string;
+  sendConfirmation?: boolean;
   blockScope?: 'day' | 'week' | 'month' | 'time_slot';
 }
 
@@ -104,6 +105,7 @@ const EventModal = ({
     scopeDay: language === 'sk' ? 'Celý deň' : 'Full day',
     scopeWeek: language === 'sk' ? 'Týždeň' : 'Week',
     scopeTime: language === 'sk' ? 'Konkrétny čas' : 'Specific time',
+    sendEmail: language === 'sk' ? 'Odoslať potvrdzovací e-mail klienta' : 'Send client confirmation email',
   };
 
   const handleServiceChange = (serviceId: string) => {
@@ -294,28 +296,43 @@ const EventModal = ({
           )}
 
           {formData.type === 'booking' && mode === 'create' && (
-            <div className="flex items-center gap-3 sm:gap-4 bg-white/62 p-2.5 sm:p-3 rounded-[16px] sm:rounded-[18px] border border-[var(--glass-border-subtle)] shadow-[0_10px_24px_rgba(126,195,255,0.08)]">
-              <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[hsl(var(--soft-navy))] cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.isRecurring}
-                  onChange={(e) => onChange({ isRecurring: e.target.checked })}
-                  className="rounded border-[var(--glass-border)] text-primary focus:ring-primary"
-                />
-                <Repeat className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                {t.repeatWeekly}
-              </label>
-              {formData.isRecurring && (
-                <select
-                  value={formData.recurringWeeks}
-                  onChange={(e) => onChange({ recurringWeeks: Number(e.target.value) })}
-                  className="rounded-md border border-[var(--glass-border-subtle)] bg-white/72 p-1 text-xs text-[hsl(var(--soft-navy))]"
-                >
-                  <option value="2">{t.weeks2}</option>
-                  <option value="4">{t.weeks4}</option>
-                  <option value="8">{t.weeks8}</option>
-                </select>
-              )}
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-3 sm:gap-4 bg-white/62 p-2.5 sm:p-3 rounded-[16px] sm:rounded-[18px] border border-[var(--glass-border-subtle)] shadow-[0_10px_24px_rgba(126,195,255,0.08)]">
+                <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[hsl(var(--soft-navy))] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.isRecurring}
+                    onChange={(e) => onChange({ isRecurring: e.target.checked })}
+                    className="rounded border-[var(--glass-border)] text-primary focus:ring-primary"
+                  />
+                  <Repeat className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                  {t.repeatWeekly}
+                </label>
+                {formData.isRecurring && (
+                  <select
+                    value={formData.recurringWeeks}
+                    onChange={(e) => onChange({ recurringWeeks: Number(e.target.value) })}
+                    className="rounded-md border border-[var(--glass-border-subtle)] bg-white/72 p-1 text-xs text-[hsl(var(--soft-navy))]"
+                  >
+                    <option value="2">{t.weeks2}</option>
+                    <option value="4">{t.weeks4}</option>
+                    <option value="8">{t.weeks8}</option>
+                  </select>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3 sm:gap-4 bg-white/62 p-2.5 sm:p-3 rounded-[16px] sm:rounded-[18px] border border-[var(--glass-border-subtle)] shadow-[0_10px_24px_rgba(126,195,255,0.08)]">
+                <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[hsl(var(--soft-navy))] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.sendConfirmation}
+                    onChange={(e) => onChange({ sendConfirmation: e.target.checked })}
+                    className="rounded border-[var(--glass-border)] text-primary focus:ring-primary"
+                  />
+                  <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                  {t.sendEmail}
+                </label>
+              </div>
             </div>
           )}
 

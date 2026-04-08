@@ -52,26 +52,29 @@ function generateSlotsFromConfig(
     // For multi-slot services, check if all consecutive slots are available
     let canBook = occupiedCount < totalCapacity;
     if (canBook && requiredSlots > 1) {
-      // Check that the next (requiredSlots - 1) slots also exist and are available
       const slotMinutes = currentHour * 60 + currentMin;
       for (let i = 1; i < requiredSlots; i++) {
         const nextMin = slotMinutes + i * 30;
         const nextTimeStr = `${String(Math.floor(nextMin / 60)).padStart(2, '0')}:${String(nextMin % 60).padStart(2, '0')}`;
-        // Check the next slot exists in the schedule
+        
+        // Ensure the slot is within working hours
         if (!allSlotTimes.includes(nextTimeStr)) {
           canBook = false;
           break;
         }
+
         // Check occupancy of the next slot
         let nextOccupied = 0;
         for (const b of bookings) {
           const [bH, bM] = b.time_slot.split(':').map(Number);
           const bookingStartMin = bH * 60 + bM;
-          const bookingEndMin = bookingStartMin + (b.booking_duration || 30);
+          const bookingEndMin = bookingStartMin + (Number(b.booking_duration) || 30);
+          
           if (nextMin >= bookingStartMin && nextMin < bookingEndMin) {
             nextOccupied++;
           }
         }
+        
         maxOccupiedCount = Math.max(maxOccupiedCount, nextOccupied);
         if (nextOccupied >= totalCapacity) {
           canBook = false;

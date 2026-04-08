@@ -7,12 +7,23 @@
 -- Drop all potentially legacy public insert policies
 DROP POLICY IF EXISTS "Public can create bookings" ON public.bookings;
 DROP POLICY IF EXISTS "Anyone can create bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Admins can manage bookings" ON public.bookings;
+
+-- Grant INSERT back to authenticated users so RLS can take over
+GRANT INSERT, UPDATE, DELETE ON public.bookings TO authenticated;
+
+-- Create policy for admins to manage everything
+CREATE POLICY "Admins can manage bookings" 
+    ON public.bookings 
+    FOR ALL 
+    TO authenticated 
+    USING (public.has_role(auth.uid(), 'admin'))
+    WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
 -- Remove direct INSERT permission from public roles
--- This forces usage of create_secure_booking RPC reachable via Edge Function
-REVOKE INSERT ON public.bookings FROM public;
+-- This forces usage of create_secure_booking RPC for clients
 REVOKE INSERT ON public.bookings FROM anon;
-REVOKE INSERT ON public.bookings FROM authenticated;
+REVOKE INSERT ON public.bookings FROM public;
 
 -- 2. INFRASTRUCTURE: Create missing email log table
 -- This prevents the send-booking-email Edge Function from failing its logging step
@@ -135,7 +146,7 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Booking date must be in the future');
     END IF;
 
-    IF v_booking_start_bratislava < (v_now_bratislava + interval '36 hours') THEN
+    IF NOT public.has_role(auth.uid(), 'admin') AND v_booking_start_bratislava < (v_now_bratislava + interval '36 hours') THEN
         RETURN jsonb_build_object('success', false, 'error', 'Booking must be at least 36 hours in advance');
     END IF;
 

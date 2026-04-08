@@ -65,6 +65,7 @@ const CalendarView = () => {
   const [formData, setFormData] = useState<EventFormData>({
     id: '', date: '', startTime: '09:00', duration: 60, title: '',
     type: 'booking', notes: '', therapistId: '', isRecurring: false, recurringWeeks: 4, blockScope: 'day',
+    sendConfirmation: true,
   });
 
   // Booking detail dialog state
@@ -298,6 +299,7 @@ const CalendarView = () => {
 
   // Modal handlers
   const openCreateModal = (date: Date = currentDate, time = '09:00', forceBlock = false) => {
+    const isSpecificSlot = forceBlock || time !== '09:00';
     setFormData({
       id: generateId(),
       date: formatDateForInput(date),
@@ -309,6 +311,8 @@ const CalendarView = () => {
       therapistId: selectedTherapist === 'all' ? (employees[0]?.id || '') : selectedTherapist,
       isRecurring: false,
       recurringWeeks: 4,
+      blockScope: isSpecificSlot ? 'time_slot' : 'day',
+      sendConfirmation: true,
     });
     setModalMode('create');
     setModalOpen(true);
@@ -361,129 +365,171 @@ const CalendarView = () => {
   };
 
   const handleFormChange = (data: Partial<EventFormData>) => {
-    setFormData(prev => ({ ...prev, ...data }));
+    setFormData(prev => {
+      const next = { ...prev, ...data };
+
+      // Auto-fill title for blocks if current is empty or looks like a booking title
+      if (data.type === 'block' && !next.title.trim()) {
+        next.title = language === 'sk' ? 'Blokovaný čas' : 'Blocked time';
+      }
+
+      // If switching back to booking from an auto-filled block title, clear it
+      if (data.type === 'booking' && (prev.title === 'Blokovaný čas' || prev.title === 'Blocked time')) {
+        next.title = '';
+      }
+
+      return next;
+    });
   };
 
   const handleSave = async () => {
+    const isBlock = formData.type === 'block';
+
+    // For blocks, if title is still empty, use default
+    if (isBlock && !formData.title.trim()) {
+      formData.title = language === 'sk' ? 'Blokovaný čas' : 'Blocked time';
+    }
+
     if (!formData.title.trim()) {
       toast.error(language === 'sk' ? 'Zadajte názov/meno.' : 'Enter a name/title.');
       return;
     }
 
-    if (modalMode === 'edit') {
-      const { error } = await supabase
-        .from('bookings')
-        .update({
-          date: formData.date,
-          time_slot: formData.startTime,
-          employee_id: formData.therapistId,
-          notes: formData.notes || null,
-        })
-        .eq('id', formData.id);
-
-      if (error) {
-        toast.error(language === 'sk' ? 'Nepodarilo sa aktualizovať' : 'Failed to update');
-        return;
-      }
-      toast.success(language === 'sk' ? 'Aktualizované' : 'Updated');
-    } else {
-      if (formData.type === 'block') {
-        if (formData.blockScope === 'time_slot') {
-          const { error } = await supabase.from('bookings').insert({
+    try {
+      if (modalMode === 'edit') {
+        const { error } = await supabase
+          .from('bookings')
+          .update({
             date: formData.date,
             time_slot: formData.startTime,
-            client_name: formData.title,
-            client_email: 'block@system.local',
-            employee_id: formData.therapistId || null,
-            booking_duration: formData.duration,
-            status: 'confirmed',
+            employee_id: formData.therapistId,
             notes: formData.notes || null,
-          });
-          if (error) {
-            toast.error(language === 'sk' ? 'Nepodarilo sa vytvoriť blokáciu času' : 'Failed to create time block');
-            return;
-          }
-          toast.success(language === 'sk' ? 'Čas bol zablokovaný' : 'Time slot blocked');
-        } else {
-          const dates = getBlockDates(formData.date, formData.blockScope || 'day');
-          const rows = dates.map(d => ({ date: d, reason: formData.title || null }));
-          const { error } = await supabase.from('blocked_dates').insert(rows);
-          if (error) {
-            toast.error(language === 'sk' ? 'Nepodarilo sa zablokovať' : 'Failed to block');
-            return;
-          }
-          toast.success(
-            dates.length === 1
-              ? (language === 'sk' ? 'Deň zablokovaný' : 'Day blocked')
-              : (language === 'sk' ? `Zablokovaných ${dates.length} dní` : `${dates.length} days blocked`)
-          );
-        }
+          })
+          .eq('id', formData.id);
+
+        if (error) throw error;
+        toast.success(language === 'sk' ? 'Aktualizované' : 'Updated');
       } else {
-        if (!formData.clientEmail?.trim()) {
-          toast.error(language === 'sk' ? 'Zadajte email klienta.' : 'Enter client email.');
-          return;
-        }
+        if (isBlock) {
+          if (formData.blockScope === 'time_slot') {
+            const { error } = await supabase.from('bookings').insert({
+              date: formData.date,
+              time_slot: formData.startTime,
+              client_name: formData.title,
+              client_email: 'block@system.local',
+              employee_id: formData.therapistId || null,
+              booking_duration: formData.duration,
+              status: 'confirmed',
+              notes: formData.notes || null,
+            });
+            if (error) throw error;
+            toast.success(language === 'sk' ? 'Čas bol zablokovaný' : 'Time slot blocked');
+          } else {
+            const dates = getBlockDates(formData.date, formData.blockScope || 'day');
+            const rows = dates.map(d => ({ date: d, reason: formData.title || null }));
+            const { error } = await supabase.from('blocked_dates').insert(rows);
+            if (error) throw error;
+            toast.success(
+              dates.length === 1
+                ? (language === 'sk' ? 'Deň zablokovaný' : 'Day blocked')
+                : (language === 'sk' ? `Zablokovaných ${dates.length} dní` : `${dates.length} days blocked`)
+            );
+          }
+        } else {
+          if (!formData.clientEmail?.trim()) {
+            toast.error(language === 'sk' ? 'Zadajte email klienta.' : 'Enter client email.');
+            return;
+          }
 
-        const bookingsToInsert = [];
-        const weeksCount = formData.isRecurring ? formData.recurringWeeks : 1;
+          const bookingsToInsert = [];
+          const weeksCount = formData.isRecurring ? formData.recurringWeeks : 1;
 
-        for (let w = 0; w < weeksCount; w++) {
-          const bookingDate = w === 0
-            ? formData.date
-            : format(addDays(new Date(formData.date), w * 7), 'yyyy-MM-dd');
+          for (let w = 0; w < weeksCount; w++) {
+            const bookingDate = w === 0
+              ? formData.date
+              : format(addDays(new Date(formData.date), w * 7), 'yyyy-MM-dd');
 
-          let targetEmpId = formData.therapistId;
-          const mainPersonId = 'ce777223-62f0-47ec-9b37-30a26d999610';
-          const teamIds = [mainPersonId, '5c1c02af-cbbc-47a8-b7c7-1387aa53a7bc', '06acd843-2d63-4273-b352-14efae698b17'];
+            let targetEmpId = formData.therapistId;
+            const mainPersonId = 'ce777223-62f0-47ec-9b37-30a26d999610';
+            const teamIds = [mainPersonId, '5c1c02af-cbbc-47a8-b7c7-1387aa53a7bc', '06acd843-2d63-4273-b352-14efae698b17'];
 
-          if (targetEmpId === mainPersonId) {
-            // Find first slot that doesn't have an overlap at this specific time for THIS new booking
-            // (Simple version: just check existing events in state)
-            for (const slotId of teamIds) {
-              const hasConflict = events.some(ev => 
-                ev.date === bookingDate && 
-                ev.therapistId === slotId &&
-                ev.status !== 'cancelled' &&
-                timeToMinutes(ev.startTime) < (timeToMinutes(formData.startTime) + formData.duration) &&
-                (timeToMinutes(ev.startTime) + ev.duration) > timeToMinutes(formData.startTime)
-              );
-              if (!hasConflict) {
-                targetEmpId = slotId;
-                break;
+            if (targetEmpId === mainPersonId) {
+              for (const slotId of teamIds) {
+                const hasConflict = events.some(ev =>
+                  ev.date === bookingDate &&
+                  ev.therapistId === slotId &&
+                  ev.status !== 'cancelled' &&
+                  timeToMinutes(ev.startTime) < (timeToMinutes(formData.startTime) + formData.duration) &&
+                  (timeToMinutes(ev.startTime) + ev.duration) > timeToMinutes(formData.startTime)
+                );
+                if (!hasConflict) {
+                  targetEmpId = slotId;
+                  break;
+                }
+              }
+            }
+
+            bookingsToInsert.push({
+              date: bookingDate,
+              time_slot: formData.startTime,
+              client_name: formData.title,
+              client_email: formData.clientEmail,
+              client_phone: formData.clientPhone || null,
+              employee_id: targetEmpId || null,
+              service_id: formData.serviceId || null,
+              notes: formData.notes || null,
+              booking_duration: formData.duration,
+              status: 'confirmed' as const,
+            });
+          }
+
+          const { data: insertedRows, error } = await supabase.from('bookings').insert(bookingsToInsert).select('id, cancellation_token, client_email, client_name, date, time_slot, service_id');
+          if (error) throw error;
+
+          // Trigger confirmation emails if requested
+          if (formData.sendConfirmation && insertedRows && insertedRows.length > 0) {
+            const svc = services.find(s => s.id === formData.serviceId);
+            const serviceName = svc ? (language === 'sk' ? svc.name_sk : svc.name_en) : 'Fyzioterapia';
+            const serviceDuration = svc?.duration || 60;
+
+            for (const row of insertedRows) {
+              if (row.client_email && row.client_email !== 'block@system.local') {
+                supabase.functions.invoke('send-booking-email', {
+                  body: {
+                    to: row.client_email,
+                    clientName: row.client_name,
+                    serviceName: `${serviceName} (${serviceDuration} min)`,
+                    date: row.date,
+                    time: row.time_slot,
+                    cancellationToken: row.cancellation_token,
+                    language: language === 'sk' ? 'sk' : 'en',
+                  }
+                }).catch(err => console.error('Failed to send admin-triggered confirmation:', err));
               }
             }
           }
 
-          bookingsToInsert.push({
-            date: bookingDate,
-            time_slot: formData.startTime,
-            client_name: formData.title,
-            client_email: formData.clientEmail,
-            client_phone: formData.clientPhone || null,
-            employee_id: targetEmpId || null,
-            service_id: formData.serviceId || null,
-            notes: formData.notes || null,
-            booking_duration: formData.duration,
-            status: 'confirmed' as const,
-          });
+          toast.success(
+            weeksCount > 1
+              ? (language === 'sk' ? `Vytvorených ${weeksCount} rezervácií` : `${weeksCount} bookings created`)
+              : (language === 'sk' ? 'Rezervácia vytvorená' : 'Booking created')
+          );
         }
-
-        const { error } = await supabase.from('bookings').insert(bookingsToInsert);
-        if (error) {
-          toast.error(language === 'sk' ? 'Nepodarilo sa vytvoriť rezerváciu' : 'Failed to create booking');
-          return;
-        }
-        toast.success(
-          weeksCount > 1
-            ? (language === 'sk' ? `Vytvorených ${weeksCount} rezervácií` : `${weeksCount} bookings created`)
-            : (language === 'sk' ? 'Rezervácia vytvorená' : 'Booking created')
-        );
       }
-    }
 
-    setModalOpen(false);
-    fetchData();
+      setModalOpen(false);
+      fetchData();
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error('Save error:', error);
+      toast.error(
+        language === 'sk'
+          ? `Chyba pri ukladaní: ${error.message || 'Skontrolujte oprávnenia'}`
+          : `Save failed: ${error.message || 'Check permissions'}`
+      );
+    }
   };
+
 
   const handleDelete = async () => {
     const { error } = await supabase

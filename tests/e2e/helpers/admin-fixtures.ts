@@ -14,14 +14,25 @@ export async function loginAsAdmin(page: Page) {
         window.localStorage.setItem('cookie-consent', 'accepted');
     });
 
-    await page.goto('/admin/login');
+    await page.goto('/auth');
     
     // Fill login form
     await page.locator('#email').fill(email);
     await page.locator('#password').fill(password);
-    await page.locator('button:has-text("Prihlásiť"), button:has-text("Sign In")').click();
+    
+    await page.getByRole('button', {
+        name: /Pokračovať|Prihlásiť sa|Prihlásiť|Sign In/i,
+    }).click();
 
-    // Verify redirect to dashboard
+    // Wait for either portal or admin (portal is the default redirect)
+    await page.waitForURL(url => url.pathname.includes('/portal') || url.pathname.includes('/admin'));
+    
+    // If we land on /portal (standard client redirect), navigate to /admin
+    if (page.url().includes('/portal')) {
+        await page.goto('/admin');
+    }
+
+    // Ensure we are on admin
     await page.waitForURL('**/admin');
 }
 

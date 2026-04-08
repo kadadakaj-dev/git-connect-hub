@@ -90,7 +90,7 @@ const handler = async (req: Request): Promise<Response> => {
         client_email,
         client_user_id,
         cancellation_token,
-        service:services(name_sk, name_en)
+        service:services(name_sk, name_en, duration)
       `)
       .in("date", [todayStr, tomorrowStr])
       .in("status", ["pending", "confirmed"]);
@@ -141,7 +141,9 @@ const handler = async (req: Request): Promise<Response> => {
             body: {
               to: booking.client_email,
               clientName: booking.client_name,
-              serviceName: booking.service?.name_sk || "Služba",
+              serviceName: booking.service?.duration 
+                ? `${booking.service.name_sk} (${booking.service.duration} min)` 
+                : (booking.service?.name_sk || "Služba"),
               date: booking.date,
               time: booking.time_slot,
               cancellationToken: booking.cancellation_token,
@@ -185,7 +187,7 @@ const handler = async (req: Request): Promise<Response> => {
                   user_id: booking.client_user_id,
                   payload: {
                     title: "Pripomienka: Blížiaci sa termín",
-                    body: `${booking.service?.name_sk || "Služba"} — ${booking.date} o ${timeStr}`,
+                    body: `${booking.service?.name_sk || "Služba"}${booking.service?.duration ? ` (${booking.service.duration} min)` : ''} — ${booking.date} o ${timeStr}`,
                     url: "/portal",
                   },
                 }),

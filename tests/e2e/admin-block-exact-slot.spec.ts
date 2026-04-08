@@ -11,7 +11,7 @@ test.describe('Admin Slot Blocking', () => {
     test('should prevent client from booking a slot that was blocked by admin', async ({ page, browser }) => {
         // Use stable date mocks for consistency with the rest of the suite
         await mockBookingResources(page);
-        
+
         // 1. Login as Admin
         await loginAsAdmin(page);
 
@@ -19,38 +19,61 @@ test.describe('Admin Slot Blocking', () => {
         const dateStr = '2026-04-08';
         const timeStr = '10:00';
 
-        // Navigate to the correct month/day if needed, but the admin view should default to 'now' (April 6)
-        // Wait for admin calendar
-        await expect(page.locator('.rbc-calendar')).toBeVisible({ timeout: 15000 });
-        
-        // Mock the block creation in the DB
-        await page.route('**/rest/v1/blocked_slots*', async route => {
+        // Wait for admin dashboard to load
+        await expect(page.getByTestId('admin-dashboard')).toBeVisible({ timeout: 15000 });
+
+        // Navigate to the Calendar tab where CalendarView (and the Block button) lives
+        await page.getByRole('tab', { name: /Kalendár|Calendar/i }).click();
+
+        // Mock the booking INSERT that represents a time-slot block in the bookings table
+        await page.route('**/rest/v1/bookings*', async route => {
             if (route.request().method() === 'POST') {
-                await route.fulfill({ status: 201, json: { success: true } });
+                await route.fulfill({
+                    status: 201,
+                    json: { id: 'mock-block-id', date: dateStr, time_slot: timeStr },
+                });
+            } else {
+                await route.continue();
             }
         });
 
-        // Use a simpler way to trigger the block for the test: 
-        // In a real E2E we'd click the grid, but here we can simulate the UI state or just rely on the mock 
-        // for the client side check which is the main goal.
-        
-        // 3. Open client booking as a new user
+        // Click the "Block" button in CalendarHeader
+        await page.getByRole('button', { name: /Blokovať|Block/i }).first().click();
+
+        // Wait for the EventModal dialog to open
+        await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+
+        // Verify blockScope is pre-selected to 'time_slot' (after our CalendarView fix)
+        await expect(page.getByTestId('block-scope-time_slot')).toHaveClass(/bg-primary/, { timeout: 3000 });
+
+        // Update date and time to our stable test values
+        await page.locator('input[type="date"]').fill(dateStr);
+        await page.locator('input[type="time"]').fill(timeStr);
+
+        // Submit the block
+        await page.getByRole('button', { name: /Uložiť|Save/i }).click();
+
+        // Modal should close after save
+        await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 5000 });
+
+        // 3. Open client booking page as a new user in a separate context
         const context2 = await browser.newContext();
         const clientPage = await context2.newPage();
-        
-        // IMPORTANT: Use the same stable mocks for the client page!
+
+        // Apply the same stable mocks to the client page
         await mockBookingResources(clientPage);
 
-        // Mock that the slot is now blocked for the client
+        // Mock get_booking_slot_counts to return the blocked slot
+        // (simulates the bookings table having a block entry for this slot)
         await clientPage.route('**/rest/v1/rpc/get_booking_slot_counts*', async route => {
-            await route.fulfill({ 
-                json: [{ time: timeStr, booked_count: 1, total_capacity: 1 }] 
+            await route.fulfill({
+                json: [{ time_slot: timeStr, booking_duration: 30 }],
             });
         });
 
         await clientPage.goto('/');
 
-        // 4. Try to find/book that specific slot
+        // 4. Navigate to the blocked date and verify the slot is disabled
         const serviceButton = clientPage.locator('[data-testid^="service-"]').first();
         await expect(serviceButton).toBeVisible({ timeout: 15000 });
         await serviceButton.click();
@@ -58,9 +81,11 @@ test.describe('Admin Slot Blocking', () => {
         const dateButton = clientPage.locator(`[data-testid="calendar-day-${dateStr}"]`);
         await expect(dateButton).toBeVisible({ timeout: 10000 });
         await dateButton.click();
-        
+
         const blockedSlot = clientPage.locator(`[data-testid="time-slot-${timeStr}"]`);
-        // It should be disabled
+        // Slot must be disabled — capacity is fully consumed by the block entry
         await expect(blockedSlot).toBeDisabled({ timeout: 10000 });
+
+        await context2.close();
     });
 });
