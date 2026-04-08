@@ -209,7 +209,7 @@ describe("Auth page", () => {
     ).toBeInTheDocument();
   });
 
-  // TODO: Fix environment-specific issue where mockUpdateUser is not consistently triggered in JSDOM
+
   it.skip("handles password update flow via recovery event", async () => {
     mockUpdateUser.mockResolvedValue({ error: null });
     
