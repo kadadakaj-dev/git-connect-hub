@@ -16,6 +16,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PushOptIn from "@/components/PushOptIn";
 import { useServiceWorkerMessages } from "@/hooks/useServiceWorkerMessages";
 import ClientLayout from "./components/layouts/ClientLayout";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // Lazy load pages for code splitting
@@ -24,6 +25,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const CancelBooking = lazy(() => import("./pages/CancelBooking"));
 const Legal = lazy(() => import("./pages/Legal"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
+const Auth = lazy(() => import("./pages/Auth"));
 const DesignShowcase = lazy(() => import("./pages/DesignShowcase"));
 
 const queryClient = new QueryClient({
@@ -72,15 +74,26 @@ const App = () => {
                   <Toaster />
                   <Sonner position="top-center" />
                   {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-                  <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                  <BrowserRouter>
                     <OfflineBanner />
                     <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                       <Routes>
                         {/* Client Routes with Layout */}
                         <Route element={<ClientLayout><Index /></ClientLayout>} path="/" />
-                        <Route element={<ClientLayout><ClientPortal /></ClientLayout>} path="/portal" />
+                        <Route element={<Auth />} path="/auth" />
+                        <Route 
+                          element={
+                            <ProtectedRoute>
+                              <ClientLayout>
+                                <ClientPortal />
+                              </ClientLayout>
+                            </ProtectedRoute>
+                          } 
+                          path="/portal" 
+                        />
                         <Route element={<ClientLayout><CancelBooking /></ClientLayout>} path="/cancel" />
                         <Route element={<ClientLayout><Legal /></ClientLayout>} path="/legal" />
+                        <Route element={<Navigate to="/auth" replace />} path="/client-auth" />
 
                         {/* Admin Routes (Disabled/Hidden) */}
                         <Route element={<NotFound />} path="/admin*" />

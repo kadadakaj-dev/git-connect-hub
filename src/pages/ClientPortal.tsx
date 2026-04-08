@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import PageMeta from '@/components/seo/PageMeta';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,6 +23,8 @@ import {
   User as UserIcon,
   FileText,
   ShieldCheck,
+  LogOut,
+  Loader2,
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useClientProfile } from '@/hooks/useClientProfile';
@@ -35,22 +38,78 @@ const ClientPortal = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
-  // Auth removed
+  useEffect(() => {
+    let mounted = true;
 
-  const { data: profile, isLoading: profileLoading } = useClientProfile(undefined);
-  const { data: bookings, isLoading: bookingsLoading } = useClientBookings(undefined);
-  const { data: favorites, isLoading: favoritesLoading, toggleFavorite } = useFavoriteServices(undefined);
+    const loadUser = async () => {
+      try {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
 
-  const handleSignOut = async () => {
-    navigate('/');
+        if (!mounted) return;
+
+        if (error) {
+          console.error("getUser error:", error.message);
+          setUser(null);
+          return;
+        }
+
+        setUser(user ?? null);
+      } catch (err) {
+        console.error("Unexpected getUser error:", err);
+        if (mounted) setUser(null);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      setLoggingOut(true);
+
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("signOut error:", error.message);
+        return;
+      }
+
+      window.location.href = "/auth";
+    } catch (err) {
+      console.error("Unexpected signOut error:", err);
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
+  const { data: profile, isLoading: profileLoading } = useClientProfile(user?.id);
+  const { data: bookings, isLoading: bookingsLoading } = useClientBookings(user?.id);
+  const { data: favorites, isLoading: favoritesLoading, toggleFavorite } = useFavoriteServices(user?.id);
+
   const handleProfileUpdated = () => {
-    queryClient.invalidateQueries({ queryKey: ['client-profile'] });
+    queryClient.invalidateQueries({ queryKey: ['client-profile', user?.id] });
   };
 
   const getInitials = (name: string) =>
@@ -194,13 +253,23 @@ const ClientPortal = () => {
                   {text.title}
                 </h1>
                 <p className="truncate text-sm text-muted-foreground">
-                  {text.welcome}, {profile?.full_name || 'Guest'}
+                  {text.welcome}, {profile?.full_name || user?.email || 'Guest'}
                 </p>
               </div>
             </div>
 
             <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
               <LanguageSwitcher />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="h-10 w-10 rounded-2xl border border-[var(--glass-border-subtle)] bg-white/64 text-[hsl(var(--soft-navy))] shadow-[0_10px_24px_rgba(126,195,255,0.12)] hover:bg-white/78 hover:text-[hsl(var(--navy))]"
+                title={language === 'sk' ? 'Odhlásiť sa' : 'Sign Out'}
+              >
+                {loggingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
+              </Button>
             </div>
           </div>
         </header>
