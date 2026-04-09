@@ -108,7 +108,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                             ⚡ {t.expressLabel}
                           </span>
                           <div className="flex items-baseline gap-1">
-                            <span className="text-xl font-black font-data text-[hsl(var(--deep-navy))]">15 €</span>
+                            <span className="text-xl font-black font-data text-[hsl(var(--deep-navy))]">15€</span>
                             <span className="text-[9px] text-muted-foreground font-bold uppercase">{t.expressSurcharge}</span>
                           </div>
                         </div>
@@ -194,7 +194,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                       "text-sm font-bold font-data whitespace-nowrap mt-0.5 transition-colors duration-200",
                       isSelected ? "text-primary" : "text-foreground"
                     )}>
-                      {service.price} €
+                      {service.price}€
                     </span>
                   </button>
 
