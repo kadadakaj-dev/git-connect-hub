@@ -32,9 +32,7 @@ const OverviewStats = () => {
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Cutoff date for filtering legacy/test records from stats
-  // We use April 1st, 2026 as the baseline for the production-ready state
-  const STATS_CUTOFF_DATE = useMemo(() => new Date('2026-04-01'), []);
+  // baseline for the production-ready state was removed to ensure 100% admin visibility
 
   useEffect(() => {
     setIsMounted(true);
@@ -91,8 +89,8 @@ const OverviewStats = () => {
     if (!bookings) return null;
 
     const activeBookings = bookings.filter(b => {
-      const bDate = startOfDay(new Date(b.date));
-      return b.status !== 'cancelled' && bDate >= STATS_CUTOFF_DATE;
+      // Logic: Every non-cancelled booking is active and must be visible (Rule 4)
+      return b.status !== 'cancelled';
     });
     
     // Logic for "Deleted" or "Archived" records could be added here
@@ -114,8 +112,7 @@ const OverviewStats = () => {
     ).length;
 
     const pendingCount = bookings.filter(b => {
-      const bDate = startOfDay(new Date(b.date));
-      return b.status === 'pending' && bDate >= STATS_CUTOFF_DATE;
+      return b.status === 'pending';
     }).length;
 
     // 2. Revenue Calculation (Current Month)
@@ -163,7 +160,7 @@ const OverviewStats = () => {
       last7Days,
       serviceData
     };
-  }, [bookings, language, today, STATS_CUTOFF_DATE]);
+  }, [bookings, language, today]);
 
   // Recent bookings (last 5)
   const recentBookings = bookings?.slice(0, 5) || [];

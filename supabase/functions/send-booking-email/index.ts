@@ -4,11 +4,11 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 // @ts-expect-error: Deno-specific URL import
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.89.0";
-import { 
-  EmailRequest, 
-  generateEmailHtml, 
-  generateEmailText, 
-  generateAdminNotificationHtml, 
+import {
+  EmailRequest,
+  generateEmailHtml,
+  generateEmailText,
+  generateAdminNotificationHtml,
   generateAdminNotificationText,
   generateReminderHtml,
   generateReminderText,
@@ -17,7 +17,8 @@ import {
   generateCancellationClientHtml,
   generateCancellationClientText,
   generateSubject,
-  formatDate
+  formatDate,
+  trimHtml
 } from "./templates.ts";
 
 // Improved type safety for Deno Edge Runtime in IDE
@@ -98,7 +99,7 @@ serve(async (req: Request) => {
       to: data.to,
       subject: subject,
       content: textContent,
-      html: html,
+      html: trimHtml(html),
     });
 
     await client.close();

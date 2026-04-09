@@ -32,6 +32,8 @@ export const translations = {
     clinicName: "FYZIOAFIT",
     contact: "Kontakt: booking@fyzioafit.sk",
     addToCalendar: "Pridať do kalendára",
+    cancelPolicyTitle: "Storno podmienky",
+    cancelPolicy: "Bezplatné zrušenie je možné najneskôr 10 hodín pred termínom. Po uplynutí tejto doby bude účtovaný storno poplatok 10 €. V prípade nutnosti nás kontaktujte telefonicky (+421 905 307 198).",
   },
   en: {
     subject: "Booking Confirmation",
@@ -49,6 +51,8 @@ export const translations = {
     clinicName: "FYZIOAFIT",
     contact: "Contact: booking@fyzioafit.sk",
     addToCalendar: "Add to Calendar",
+    cancelPolicyTitle: "Cancellation Policy",
+    cancelPolicy: "Free cancellation is possible up to 10 hours before the appointment. After this time, a cancellation fee of €10 will be charged. If necessary, please contact us by phone (+421 905 307 198).",
   },
 };
 
@@ -60,6 +64,14 @@ export function escapeHtml(str: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;');
+}
+
+export function trimHtml(html: string): string {
+  return html
+    .split('\n')
+    .map(line => line.trimEnd())
+    .filter(line => line.trim() !== '')
+    .join('\n');
 }
 
 export function formatDate(dateStr: string, language: "sk" | "en"): string {
@@ -195,15 +207,11 @@ export function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
                       <a href="${generateGoogleCalendarUrl(data)}" style="display: inline-block; background: linear-gradient(135deg, ${colors.brandBlueLight} 0%, ${colors.brandBlue} 100%); color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-size: 15px; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 167, 237, 0.25);">${t.addToCalendar}</a>
                     </div>
 
-                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fff8f8; border-left: 4px solid ${colors.error}; border-radius: 4px; margin-bottom: 32px;">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fff8f8; border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 32px;">
                       <tr>
                         <td style="padding: 20px;">
-                          <div style="color: ${colors.error}; font-size: 14px; font-weight: 700; margin-bottom: 8px;">${data.language === 'sk' ? 'Storno podmienky' : 'Cancellation Policy'}</div>
-                          <div style="color: ${colors.textSlate}; font-size: 14px; line-height: 1.5;">
-                            ${data.language === 'sk' 
-                              ? 'Bezplatné zrušenie je možné najneskôr 10 hodín pred termínom. Po tomto čase nás prosím kontaktujte telefonicky (+421 905 307 198).' 
-                              : 'Free cancellation is possible up to 10 hours before. After this time, please contact us by phone (+421 905 307 198).'}
-                          </div>
+                          <div style="color: #ef4444; font-size: 14px; font-weight: 700; margin-bottom: 8px;">${t.cancelPolicyTitle}</div>
+                          <div style="color: #334155; font-size: 14px; line-height: 1.5;">${t.cancelPolicy}</div>
                         </td>
                       </tr>
                     </table>
@@ -259,7 +267,11 @@ export function generateEmailText(data: EmailRequest, baseUrl: string): string {
     `${t.dateTime}: ${formattedDate} ${data.time}`,
     `${t.location}: ${t.address}`,
     "----------------------------------------",
-    '',
+    "",
+    `⚠ ${t.cancelPolicyTitle}`,
+    t.cancelPolicy,
+    "----------------------------------------",
+    "",
     t.cancelText,
     cancelUrl,
     "",
@@ -409,6 +421,14 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
                   </table>
                 </td></tr>
               </table>
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fff8f8; border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 32px;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <div style="color: #ef4444; font-size: 14px; font-weight: 700; margin-bottom: 8px;">${t.cancelPolicyTitle}</div>
+                    <div style="color: #334155; font-size: 14px; line-height: 1.5;">${t.cancelPolicy}</div>
+                  </td>
+                </tr>
+              </table>
               <div style="text-align: center;">
                 <a href="${cancelUrl}" style="color: #ef4444; font-size: 14px; font-weight: 700; text-decoration: none; border-bottom: 1px solid #ef4444; padding-bottom: 2px;">${t.cancelButton}</a>
               </div>
@@ -440,8 +460,15 @@ export function generateReminderText(data: EmailRequest, baseUrl: string): strin
     "",
     `${t.service}: ${serviceName}`,
     `${t.dateTime}: ${formattedDate} o ${data.time}`,
-    "-----------------------------------------",
-    `Tešíme sa na Vás!`,
+    "----------------------------------------",
+    "",
+    `⚠ ${t.cancelPolicyTitle}`,
+    t.cancelPolicy,
+    "----------------------------------------",
+    "",
+    t.cancelText,
+    "",
+    t.contact,
   ].join("\n");
 }
 
@@ -582,6 +609,14 @@ export function generateCancellationClientHtml(data: EmailRequest, baseUrl: stri
                   </table>
                 </td></tr>
               </table>
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fff8f8; border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 32px;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <div style="color: #ef4444; font-size: 14px; font-weight: 700; margin-bottom: 8px;">${t.cancelPolicyTitle}</div>
+                    <div style="color: #334155; font-size: 14px; line-height: 1.5;">${t.cancelPolicy}</div>
+                  </td>
+                </tr>
+              </table>
               <div style="text-align: center;">
                 <a href="${baseUrl}" style="display: inline-block; background-color: #1e40af; color: #ffffff; padding: 16px 36px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 15px; box-shadow: 0 4px 10px rgba(30, 64, 175, 0.2);">${labels.ctaButton}</a>
               </div>
@@ -611,6 +646,12 @@ export function generateCancellationClientText(data: EmailRequest, baseUrl: stri
     `${t.greeting}, ${data.clientName}!`,
     `Vaša rezervácia na ${serviceName} bola zrušená.`,
     "",
-    `Novú si môžete vytvoriť tu: ${baseUrl}`,
+    `⚠ ${t.cancelPolicyTitle}`,
+    t.cancelPolicy,
+    "----------------------------------------",
+    "",
+    `Novú rezerváciu si môžete vytvoriť tu: ${baseUrl}`,
+    "",
+    t.contact,
   ].join("\n");
 }

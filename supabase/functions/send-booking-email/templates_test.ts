@@ -1,11 +1,12 @@
 // @ts-expect-error: Deno-specific URL import
 import { assertEquals, assertStringIncludes, assertNotMatch } from "https://deno.land/std@0.168.0/testing/asserts.ts";
-import { 
-  generateSubject, 
-  generateEmailHtml, 
-  generateReminderHtml, 
+import {
+  generateSubject,
+  generateEmailHtml,
+  generateReminderHtml,
   generateCancellationClientHtml,
-  EmailRequest 
+  trimHtml,
+  EmailRequest
 } from "./templates.ts";
 
 // Improved type safety for Deno Edge Runtime in IDE
@@ -99,13 +100,31 @@ Deno.test("Email Template: Admin New Booking", () => {
 });
 
 Deno.test("Email Template: Admin Cancellation", () => {
-  const data: EmailRequest = { 
-    ...mockBooking, 
+  const data: EmailRequest = {
+    ...mockBooking,
     template: "cancellation-admin" as const,
     adminData: mockAdminData
   };
   const subject = generateSubject(data);
   assertStringIncludes(subject, "❌");
   assertStringIncludes(subject, "ZRUŠENÁ");
+});
+
+Deno.test("trimHtml: removes trailing spaces and blank lines (=20 prevention)", () => {
+  const raw = generateEmailHtml(mockBooking, "https://fyzioafit.sk");
+  const trimmed = trimHtml(raw);
+
+  // No line should end with a space (source of =20 in quoted-printable)
+  const linesWithTrailingSpace = trimmed.split('\n').filter(l => l !== l.trimEnd());
+  assertEquals(linesWithTrailingSpace.length, 0, `Lines with trailing spaces: ${linesWithTrailingSpace.length}`);
+
+  // No blank/whitespace-only lines
+  const blankLines = trimmed.split('\n').filter(l => l.trim() === '');
+  assertEquals(blankLines.length, 0, `Blank lines remaining: ${blankLines.length}`);
+
+  // Content must still be present
+  assertStringIncludes(trimmed, "Chiro masáž (60 min)");
+  assertStringIncludes(trimmed, "FYZIOAFIT");
+  assertNotMatch(trimmed, /=20/);
 });
 

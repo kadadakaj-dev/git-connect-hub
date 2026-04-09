@@ -642,6 +642,21 @@ export type Database = {
         }
         Returns: number
       }
+      get_opening_hours_conflicts: {
+        Args: {
+          p_day_of_week: number
+          p_new_start_time: string
+          p_new_end_time: string
+        }
+        Returns: {
+          booking_id: string
+          booking_date: string
+          booking_time: string
+          client_name: string
+          service_name_sk: string
+          service_name_en: string
+        }[]
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {

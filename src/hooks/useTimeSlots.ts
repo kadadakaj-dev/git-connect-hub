@@ -196,12 +196,38 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
         (slot, index, self) => self.findIndex((s) => s.time === slot.time) === index
       );
 
-      // Filter out slots within the 36h lead time window
+      // Filter out slots within the 36h lead time window OR ending after 18:00
       const filtered = uniqueSlots.map((slot) => {
         const slotDateTime = parseBratislavaDate(selectedDate, slot.time);
+        
+        // Rule 2: 36h Lead Time
         if (slotDateTime < minBookableTime) {
           return { ...slot, available: false };
         }
+
+        // Rule 1: Operating Hours (Start >= Opening Time)
+        const [h, m] = slot.time.split(':').map(Number);
+        
+        // Use fetched config for the day
+        const dayConfig = configRes.data?.[0];
+        if (!dayConfig || !dayConfig.is_active) {
+          return { ...slot, available: false };
+        }
+
+        const [startH, startM] = dayConfig.start_time.split(':').map(Number);
+        if (h < startH || (h === startH && m < startM)) {
+          return { ...slot, available: false };
+        }
+
+        // Rule 2: Operating Hours (End <= Closing Time)
+        const [endH, endM] = dayConfig.end_time.split(':').map(Number);
+        const endMinutes = h * 60 + m + serviceDuration;
+        const closingMinutes = endH * 60 + endM;
+        
+        if (endMinutes > closingMinutes) {
+          return { ...slot, available: false };
+        }
+
         return slot;
       });
 

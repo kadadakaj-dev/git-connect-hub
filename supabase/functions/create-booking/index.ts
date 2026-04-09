@@ -233,7 +233,7 @@ serve(async (req: EdgeRequest) => {
       )
     }
 
-    // 36h Lead Time Check (Server-Side Enforcement)
+    // 36h Lead Time & 18:00 Operating Hours Boundary (Server-Side Enforcement)
     try {
       const [hours, minutes] = body.time_slot.split(':').map(Number);
       const [year, month, day] = body.date.split('-').map(Number);
@@ -243,17 +243,56 @@ serve(async (req: EdgeRequest) => {
         year, month, day, hour: hours, minute: minutes, second: 0, millisecond: 0
       }, { zone: 'Europe/Bratislava' });
 
+      if (!targetDateTime.isValid) {
+        return new Response(
+          JSON.stringify({ error: 'Invalid date or time format' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
       const now = DateTime.now().setZone('Europe/Bratislava');
       const leadTimeHours = 36;
       
+      // Rule 3: 36h Minimum Lead Time (Source of Truth Mirror)
       if (targetDateTime < now.plus({ hours: leadTimeHours })) {
         return new Response(
-          JSON.stringify({ error: 'Advance booking required (min 36h)' }),
+          JSON.stringify({ error: 'BUSINESS_RULE_VIOLATION: Advance booking required (min 36h)' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      // Rule 1: Operating Hours (Must end by 18:00)
+      // Retrieve service duration for end-time check
+      const { data: serviceRes } = await supabase
+        .from('services')
+        .select('duration')
+        .eq('id', body.service_id)
+        .single();
+      
+      const duration = serviceRes?.duration || 60;
+      const endDateTime = targetDateTime.plus({ minutes: duration });
+
+      // Rule 1: Operating Hours (Start >= 09:00)
+      if (targetDateTime.hour < 9) {
+        return new Response(
+          JSON.stringify({ error: 'BUSINESS_RULE_VIOLATION: Booking before 09:00 is not allowed' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      // Rule 2: Operating Hours (End <= 18:00)
+      if (endDateTime.hour > 18 || (endDateTime.hour === 18 && endDateTime.minute > 0)) {
+        return new Response(
+          JSON.stringify({ error: `BUSINESS_RULE_VIOLATION: Booking must end by 18:00. Your session ends at ${endDateTime.toFormat('HH:mm')}` }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
     } catch (e) {
-      console.error('Error validating 36h rule:', e);
+      console.error('Error validating business rules:', e);
+      return new Response(
+        JSON.stringify({ error: 'Business rule validation failed' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     interface Booking {
