@@ -216,18 +216,18 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between gap-2 mb-0.5">
-                            <h3 className="text-xl font-black tracking-tight text-[hsl(var(--deep-navy))]">
+                            <h3 className="text-[17.5px] font-black tracking-tight text-[hsl(var(--deep-navy))]">
                               EXPRESS TERMÍN
                             </h3>
                             <div className="flex items-baseline gap-1 bg-white/40 px-3 py-1 rounded-full border border-primary/10">
-                              <span className="text-lg font-black font-data text-[hsl(var(--deep-navy))]">+15 €</span>
-                              <span className="text-[9px] font-bold uppercase text-muted-foreground/80">
+                              <span className="text-[15.5px] font-black font-data text-[hsl(var(--deep-navy))]">+15 €</span>
+                              <span className="text-[6.5px] font-bold uppercase text-muted-foreground/80">
                                 {language === 'sk' ? 'k cene' : 'surcharge'}
                               </span>
                             </div>
                           </div>
-                          <p className="text-[17px] font-medium leading-tight text-[hsl(var(--soft-navy))]">
-                            Počas sviatkov a víkendov je možné objednanie iba telefonicky na čísle <span className="font-bold text-primary whitespace-nowrap">+421 905 307 198</span>.
+                          <p className="text-[14.5px] font-medium leading-tight text-[hsl(var(--soft-navy))]">
+                            Počas sviatkov a víkendov je možné objednanie od 36h.
                           </p>
                         </div>
                       </div>
