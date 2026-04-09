@@ -169,9 +169,9 @@ const BookingWizard = () => {
         {/* Step 1: Service */}
         <motion.section
           className="mb-3 sm:mb-4"
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         >
           <SectionHeader number={1} title={language === 'sk' ? 'Vyberte službu' : 'Select service'} completed={hasService} />
           <div className="mt-2">
@@ -184,9 +184,9 @@ const BookingWizard = () => {
         {/* Step 2 & 3: Date & Time */}
         <motion.section
           ref={dateTimeRef}
-          initial={{ opacity: 0.3, y: 14 }}
-          animate={{ opacity: hasService ? 1 : 0.3, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: hasService ? 1 : 0.35, y: 0 }}
+          transition={{ duration: 0.38, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
           className={cn("mb-3 sm:mb-4 scroll-mt-20 sm:scroll-mt-28", !hasService && "pointer-events-none")}
         >
           <div className="flex items-center gap-6 mb-2">
@@ -209,9 +209,9 @@ const BookingWizard = () => {
         {/* Step 4: Client Details */}
         <motion.section
           ref={detailsRef}
-          initial={{ opacity: 0.3, y: 14 }}
-          animate={{ opacity: hasDateTime ? 1 : 0.3, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: hasDateTime ? 1 : 0.35, y: 0 }}
+          transition={{ duration: 0.38, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
           className={cn("mb-3 sm:mb-4 scroll-mt-20 sm:scroll-mt-24", !hasDateTime && "pointer-events-none")}
         >
           <SectionHeader number={4} title={language === 'sk' ? 'Vyplňte Vaše údaje' : 'Your details'} completed={false} />
@@ -225,9 +225,9 @@ const BookingWizard = () => {
         {/* Submit */}
         <motion.div
           ref={submitRef}
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.38, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
         >
           <SubmitButton enabled={hasService && hasDateTime} isPending={createBooking.isPending} onSubmit={handleSubmit} />
         </motion.div>
