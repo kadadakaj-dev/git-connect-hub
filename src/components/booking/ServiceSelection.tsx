@@ -220,7 +220,7 @@ const ServiceSelection = ({ selectedService, onSelect }: ServiceSelectionProps) 
                               EXPRESS TERMÍN
                             </h3>
                             <div className="flex items-baseline gap-1 bg-white/40 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap shrink-0">
-                              <span className="text-[15.5px] font-black font-data text-[hsl(var(--deep-navy))] whitespace-nowrap">+15 €</span>
+                              <span className="text-[15.5px] font-black font-data text-[hsl(var(--deep-navy))] whitespace-nowrap">+15€</span>
                               <span className="text-[6.5px] font-bold uppercase text-muted-foreground/80">
                                 {language === 'sk' ? 'k cene' : 'surcharge'}
                               </span>
