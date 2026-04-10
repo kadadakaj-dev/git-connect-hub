@@ -47,13 +47,32 @@ const BookingManagement = () => {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: BookingStatus }) => {
+    mutationFn: async ({ id, status, booking }: { id: string; status: BookingStatus; booking?: Booking }) => {
       const { error } = await supabase
         .from('bookings')
         .update({ status })
         .eq('id', id);
 
       if (error) throw error;
+
+      if (status === 'cancelled' && booking) {
+        const serviceName = language === 'sk'
+          ? booking.services?.name_sk
+          : booking.services?.name_en;
+
+        supabase.functions.invoke('send-booking-email', {
+          body: {
+            to: booking.client_email,
+            clientName: booking.client_name,
+            serviceName: serviceName || booking.services?.name_sk || 'Služba',
+            date: booking.date,
+            time: booking.time_slot,
+            cancellationToken: booking.cancellation_token || '',
+            language: language === 'sk' ? 'sk' : 'en',
+            template: 'cancellation-client',
+          }
+        }).catch((err: unknown) => console.error('Failed to send cancellation email:', err));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-bookings'] });

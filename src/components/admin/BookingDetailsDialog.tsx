@@ -26,6 +26,7 @@ export interface AdminBookingDetails {
   status: string;
   notes: string | null;
   created_at: string;
+  cancellation_token?: string;
   booking_duration?: number;
   services?: {
     name_sk: string;
@@ -162,6 +163,24 @@ const BookingDetailsDialog = ({ booking, open, onOpenChange, onSaved, employees 
       toast.error(isSlovak ? 'Nepodarilo sa zrušiť' : 'Failed to cancel');
       return;
     }
+
+    const serviceName = isSlovak
+      ? booking.services?.name_sk
+      : booking.services?.name_en;
+
+    supabase.functions.invoke('send-booking-email', {
+      body: {
+        to: booking.client_email,
+        clientName: booking.client_name,
+        serviceName: serviceName || booking.services?.name_sk || 'Služba',
+        date: booking.date,
+        time: booking.time_slot,
+        cancellationToken: booking.cancellation_token || '',
+        language: isSlovak ? 'sk' : 'en',
+        template: 'cancellation-client',
+      }
+    }).catch((err: unknown) => console.error('Failed to send cancellation email:', err));
+
     toast.success(isSlovak ? 'Rezervácia zrušená' : 'Booking cancelled');
     onSaved?.();
     onOpenChange(false);

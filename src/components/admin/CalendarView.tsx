@@ -570,6 +570,29 @@ const CalendarView = () => {
         toast.error(language === 'sk' ? 'Nepodarilo sa zrušiť' : 'Failed to cancel');
         return;
       }
+
+      supabase
+        .from('bookings')
+        .select('cancellation_token, client_email, client_name, date, time_slot, services(name_sk, name_en)')
+        .eq('id', formData.id)
+        .single()
+        .then(({ data: b }) => {
+          if (!b || !b.client_email) return;
+          const svc = b.services as { name_sk: string; name_en: string } | null;
+          supabase.functions.invoke('send-booking-email', {
+            body: {
+              to: b.client_email,
+              clientName: b.client_name,
+              serviceName: (language === 'sk' ? svc?.name_sk : svc?.name_en) || svc?.name_sk || 'Služba',
+              date: b.date,
+              time: b.time_slot,
+              cancellationToken: b.cancellation_token || '',
+              language: language === 'sk' ? 'sk' : 'en',
+              template: 'cancellation-client',
+            }
+          }).catch((err: unknown) => console.error('Failed to send cancellation email:', err));
+        });
+
       toast.success(language === 'sk' ? 'Rezervácia zrušená' : 'Booking cancelled');
     }
 
