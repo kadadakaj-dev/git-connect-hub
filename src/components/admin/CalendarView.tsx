@@ -175,7 +175,7 @@ const CalendarView = () => {
         .order('sort_order'),
     ]);
 
-    if (employeesRes.data) setEmployees(employeesRes.data as unknown as Employee[]);
+    if (employeesRes.data) setEmployees(employeesRes.data as Employee[]);
     if (blockedRes.data) setBlockedDates(blockedRes.data);
     if (servicesRes.data) setServices(servicesRes.data as ServiceOption[]);
 
@@ -260,10 +260,16 @@ const CalendarView = () => {
 
     const handleEnd = async () => {
       if (resizingState && resizingState.currentDuration !== resizingState.originalDuration) {
-        await supabase
+        const { error } = await supabase
           .from('bookings')
           .update({ booking_duration: resizingState.currentDuration })
           .eq('id', resizingState.id);
+        if (error) {
+          setEvents(prev => prev.map(ev =>
+            ev.id === resizingState.id ? { ...ev, duration: resizingState.originalDuration } : ev
+          ));
+          toast.error(language === 'sk' ? 'Nepodarilo sa zmeniť dĺžku' : 'Failed to resize booking');
+        }
       }
       setResizingState(null);
     };
@@ -283,7 +289,7 @@ const CalendarView = () => {
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [resizingState, events, preventOverlap]);
+  }, [resizingState, events, preventOverlap, language]);
 
   // Navigation
   const handlePrev = () => {

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { User, Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { ADMIN_PHONE, BOOKING_EMAIL } from '@/lib/constants';
 
 const BookingHeader = () => {
   const { language } = useLanguage();
@@ -15,20 +16,20 @@ const BookingHeader = () => {
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Mobile: show phone icon only */}
           <a
-            href="tel:+421905307198"
+            href={`tel:${ADMIN_PHONE.replace(/\s/g, '')}`}
             className="sm:hidden p-2 rounded-xl text-muted-foreground hover:text-[hsl(var(--navy))] hover:bg-white/70 transition-all duration-200"
             aria-label={language === 'sk' ? 'Zavolať' : 'Call us'}
           >
             <Phone className="w-4 h-4" />
           </a>
           {/* Desktop: show full contact info */}
-          <a href="tel:+421905307198" className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors">
+          <a href={`tel:${ADMIN_PHONE.replace(/\s/g, '')}`} className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors">
             <Phone className="w-3 h-3" />
-            <span>+421 905 307 198</span>
+            <span>{ADMIN_PHONE}</span>
           </a>
-          <a href="mailto:booking@fyzioafit.sk" className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors">
+          <a href={`mailto:${BOOKING_EMAIL}`} className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground hover:text-[hsl(var(--soft-navy))] transition-colors">
             <Mail className="w-3 h-3" />
-            <span>booking@fyzioafit.sk</span>
+            <span>{BOOKING_EMAIL}</span>
           </a>
           <Button variant="ghost" size="sm" asChild className="gap-1 text-muted-foreground hover:text-[hsl(var(--soft-navy))] hover:bg-white/70 h-8 px-3 rounded-xl">
             <Link to="/portal" aria-label={language === 'sk' ? 'Klientský portál' : 'Client Portal'}>

@@ -2,12 +2,11 @@ import { ReactNode, useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session } from "@supabase/supabase-js";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 type AdminProtectedRouteProps = {
   children: ReactNode;
 };
-
-const ADMIN_EMAIL = "booking@fyzioafit.sk";
 
 export default function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
   const [session, setSession] = useState<Session | null | undefined>(undefined);

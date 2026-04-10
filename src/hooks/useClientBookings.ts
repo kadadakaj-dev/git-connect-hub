@@ -123,15 +123,40 @@ export function useClientBookings(userId: string | undefined) {
 
 export function useCancelBooking() {
   const queryClient = useQueryClient();
+  const { language } = useLanguage();
 
   return useMutation({
     mutationFn: async (bookingId: string) => {
+      const { data: booking, error: fetchError } = await supabase
+        .from('bookings')
+        .select('client_email, client_name, date, time_slot, cancellation_token, services(name_sk, name_en)')
+        .eq('id', bookingId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
       const { error } = await supabase
         .from('bookings')
         .update({ status: 'cancelled' })
         .eq('id', bookingId);
 
       if (error) throw error;
+
+      if (booking?.client_email) {
+        const svc = booking.services as { name_sk: string; name_en: string } | null;
+        supabase.functions.invoke('send-booking-email', {
+          body: {
+            to: booking.client_email,
+            clientName: booking.client_name,
+            serviceName: (language === 'sk' ? svc?.name_sk : svc?.name_en) || svc?.name_sk || 'Služba',
+            date: booking.date,
+            time: booking.time_slot,
+            cancellationToken: booking.cancellation_token || '',
+            language: language === 'sk' ? 'sk' : 'en',
+            template: 'cancellation-client',
+          }
+        }).catch((err: unknown) => console.error('Failed to send cancellation email:', err));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['client-bookings'] });

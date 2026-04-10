@@ -84,8 +84,7 @@ export async function isSubscribedToPush(): Promise<boolean> {
  * This requires a `push_subscriptions` table or edge function on the server.
  */
 async function saveSubscriptionToServer(subscription: PushSubscription): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase as any).from('push_subscriptions').upsert(
+  await supabase.from('push_subscriptions').upsert(
     {
       endpoint: subscription.endpoint,
       keys: JSON.stringify(subscription.toJSON().keys),
@@ -99,6 +98,5 @@ async function saveSubscriptionToServer(subscription: PushSubscription): Promise
  * Remove the push subscription from the server.
  */
 async function removeSubscriptionFromServer(subscription: PushSubscription): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase as any).from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
+  await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
 }
