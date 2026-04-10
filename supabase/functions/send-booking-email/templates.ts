@@ -364,14 +364,14 @@ export function generateAdminNotificationText(data: EmailRequest): string {
 
   return [
     `REZERVÁCIA: ${serviceName.toUpperCase()}`,
-    "========================================",
+    "----------------------------------------",
     `Klient: ${escapeHtml(admin?.clientName || 'Neznámy klient')}`,
     `Email: ${escapeHtml(admin?.clientEmail || '-')}`,
     `Tel: ${escapeHtml(admin?.clientPhone || '-')}`,
     `Služba: ${serviceName}`,
     `Dátum: ${formattedDate}`,
     `Čas: ${data.time}`,
-    "========================================",
+    "----------------------------------------",
   ].join("\n");
 }
 
@@ -455,7 +455,7 @@ export function generateReminderText(data: EmailRequest, baseUrl: string): strin
 
   return [
     `🔔 PRIPOMIENKA: ${serviceName.toUpperCase()}`,
-    "========================================",
+    "----------------------------------------",
     `${t.greeting}, ${data.clientName}!`,
     "",
     `${t.service}: ${serviceName}`,
@@ -546,10 +546,10 @@ export function generateCancellationAdminText(data: EmailRequest): string {
 
   return [
     `❌ ZRUŠENÁ REZERVÁCIA: ${serviceName.toUpperCase()}`,
-    "========================================",
+    "----------------------------------------",
     `Klient: ${escapeHtml(admin?.clientName || 'Neznámy klient')}`,
     `Termín bol zrušený.`,
-    "========================================",
+    "----------------------------------------",
   ].join("\n");
 }
 
@@ -642,7 +642,7 @@ export function generateCancellationClientText(data: EmailRequest, baseUrl: stri
 
   return [
     `❌ ZRUŠENÉ: ${serviceName.toUpperCase()}`,
-    "=========================================",
+    "----------------------------------------",
     `${t.greeting}, ${data.clientName}!`,
     `Vaša rezervácia na ${serviceName} bola zrušená.`,
     "",
