@@ -12,6 +12,8 @@ import {
   generateAdminNotificationText,
   generateReminderHtml,
   generateReminderText,
+  generateReminder10hHtml,
+  generateReminder10hText,
   generateCancellationAdminHtml,
   generateCancellationAdminText,
   generateCancellationClientHtml,
@@ -71,13 +73,17 @@ serve(async (req: Request) => {
     const isAdminNotification = data.template === "admin-notification";
     const isCancellationAdmin = data.template === "cancellation-admin";
     const isCancellationClient = data.template === "cancellation-client";
+    const isReminder10h = data.template === "reminder-10h";
     const isReminder = data.template === "reminder" || data.template === "reminder-24h";
 
     const subject = generateSubject(data);
     let html: string;
     let textContent: string;
 
-    if (isCancellationClient) {
+    if (isReminder10h) {
+      html = generateReminder10hHtml(data);
+      textContent = generateReminder10hText(data);
+    } else if (isCancellationClient) {
       html = generateCancellationClientHtml(data, baseUrl);
       textContent = generateCancellationClientText(data, baseUrl);
     } else if (isCancellationAdmin) {

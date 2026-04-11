@@ -6,7 +6,7 @@ export interface EmailRequest {
   time: string;
   cancellationToken: string;
   language: "sk" | "en";
-  template?: "confirmation" | "reminder" | "reminder-24h" | "admin-notification" | "cancellation-admin" | "cancellation-client";
+  template?: "confirmation" | "reminder" | "reminder-24h" | "reminder-10h" | "admin-notification" | "cancellation-admin" | "cancellation-client";
   adminData?: {
     clientName: string;
     clientEmail: string;
@@ -20,10 +20,14 @@ export const translations = {
     subject: "Potvrdenie rezervácie",
     reminderSubject: "Pripomienka termínu",
     reminder24hSubject: "Pripomienka: zajtra máte termín",
+    reminder10hSubject: "⏰ Termín o menej ako 10 hodín — online zrušenie nie je možné",
     greeting: "Dobrý deň",
     confirmationTitle: "Vaša rezervácia bola úspešne vytvorená",
     reminderTitle: "Pripomíname vám zajtrajší termín",
     reminder24hTitle: "Zajtra máte termín — nezabudnite!",
+    reminder10hTitle: "Váš termín je o menej ako 10 hodín",
+    reminder10hInfo: "Online zrušenie rezervácie už nie je možné. Ak potrebujete zrušiť alebo zmeniť termín, kontaktujte nás telefonicky. Bude účtovaný storno poplatok 10 €.",
+    reminder10hPhone: "+421 905 307 198",
     service: "Služba",
     dateTime: "Dátum a čas",
     location: "Miesto",
@@ -41,10 +45,14 @@ export const translations = {
     subject: "Booking Confirmation",
     reminderSubject: "Appointment Reminder",
     reminder24hSubject: "Reminder: your appointment is tomorrow",
+    reminder10hSubject: "⏰ Appointment in less than 10 hours — online cancellation no longer possible",
     greeting: "Hello",
     confirmationTitle: "Your booking has been successfully created",
     reminderTitle: "Reminder about your appointment tomorrow",
     reminder24hTitle: "Your appointment is tomorrow — don't forget!",
+    reminder10hTitle: "Your appointment is in less than 10 hours",
+    reminder10hInfo: "Online cancellation is no longer possible. If you need to cancel or change your appointment, please contact us by phone. A cancellation fee of €10 will be charged.",
+    reminder10hPhone: "+421 905 307 198",
     service: "Service",
     dateTime: "Date & Time",
     location: "Location",
@@ -121,6 +129,8 @@ export function generateSubject(data: EmailRequest): string {
     return `[REZERVÁCIA] ${serviceName} - ${data.adminData?.clientName || 'Klient'}`;
   } else if (data.template === "reminder-24h") {
     return translations[data.language].reminder24hSubject + ` — FYZIOAFIT`;
+  } else if (data.template === "reminder-10h") {
+    return translations[data.language].reminder10hSubject;
   } else if (isReminder) {
     return `Pripomienka: ${serviceName} - FYZIOAFIT`;
   } else {
@@ -438,7 +448,7 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
                 </tr>
               </table>
               <div style="text-align: center;">
-                <a href="${cancelUrl}" style="color: #ef4444; font-size: 14px; font-weight: 700; text-decoration: none; border-bottom: 1px solid #ef4444; padding-bottom: 2px;">${t.cancelButton}</a>
+                <a href="${cancelUrl}" style="display: inline-block; background-color: #ef4444; color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none; padding: 12px 28px; border-radius: 99px; letter-spacing: 0.02em;">${t.cancelButton}</a>
               </div>
             </td>
           </tr>
@@ -478,6 +488,106 @@ export function generateReminderText(data: EmailRequest, baseUrl: string): strin
     "----------------------------------------",
     "",
     t.cancelText,
+    "",
+    t.contact,
+  ].join("\n");
+}
+
+export function generateReminder10hHtml(data: EmailRequest): string {
+  const t = translations[data.language];
+  const formattedDate = formatDate(data.date, data.language);
+  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Termín dnes | ⏰</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #ffffff;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding: 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(185, 28, 28, 0.1); border: 1px solid #fee2e2;">
+          <tr>
+            <td style="background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 100%); padding: 45px 30px; text-align: center;">
+              <p style="color: rgba(255,255,255,0.8); margin: 0 0 8px; font-size: 32px; line-height: 1;">⏰</p>
+              <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 800;">${serviceName}</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Termín dnes</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h2 style="color: #7f1d1d; margin: 0 0 8px 0; font-size: 20px; font-weight: 800;">${t.reminder10hTitle}</h2>
+              <p style="color: #334155; margin: 0 0 28px 0; font-size: 15px;">${t.greeting}, ${escapeHtml(data.clientName)}!</p>
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fffafb; border-radius: 12px; margin-bottom: 28px; border: 1px solid #fee2e2;">
+                <tr><td style="padding: 24px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #fee2e2;">
+                        <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.service}</span><br>
+                        <span style="color: #1a2b42; font-size: 17px; font-weight: 600;">${serviceName}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 0;">
+                        <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.dateTime}</span><br>
+                        <span style="color: #b91c1c; font-size: 18px; font-weight: 800;">${formattedDate} o ${data.time}</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td></tr>
+              </table>
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fef2f2; border-left: 4px solid #b91c1c; border-radius: 4px; margin-bottom: 16px;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <div style="color: #7f1d1d; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🚫 Online zrušenie nie je možné</div>
+                    <div style="color: #334155; font-size: 14px; line-height: 1.6;">${t.reminder10hInfo}</div>
+                  </td>
+                </tr>
+              </table>
+              <div style="text-align: center; padding: 16px 0;">
+                <a href="tel:${t.reminder10hPhone.replace(/\s/g, '')}" style="display: inline-block; background-color: #7f1d1d; color: #ffffff; font-size: 15px; font-weight: 700; text-decoration: none; padding: 14px 32px; border-radius: 99px; letter-spacing: 0.02em;">📞 ${t.reminder10hPhone}</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #fef2f2; padding: 25px 30px; text-align: center;">
+              <p style="color: #991b1b; margin: 0; font-size: 13px; font-weight: 500;"><strong>${t.clinicName}</strong> • ${t.address}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+}
+
+export function generateReminder10hText(data: EmailRequest): string {
+  const t = translations[data.language];
+  const formattedDate = formatDate(data.date, data.language);
+  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
+
+  return [
+    `⏰ TERMÍN DNES: ${serviceName.toUpperCase()}`,
+    "----------------------------------------",
+    t.reminder10hTitle,
+    "",
+    `${t.greeting}, ${data.clientName}!`,
+    "",
+    `${t.service}: ${serviceName}`,
+    `${t.dateTime}: ${formattedDate} o ${data.time}`,
+    "----------------------------------------",
+    "",
+    `🚫 Online zrušenie nie je možné`,
+    t.reminder10hInfo,
+    "",
+    `📞 ${t.reminder10hPhone}`,
+    "----------------------------------------",
     "",
     t.contact,
   ].join("\n");

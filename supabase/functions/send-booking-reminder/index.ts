@@ -152,93 +152,47 @@ const handler = async (req: Request): Promise<Response> => {
           continue;
         }
 
-        // ── Short-notice reminder: booking is 0-20h away ─────────────────────
-        if (diffHours <= 0 || diffHours > 20) continue;
-
-        // Check if email reminder already sent (dedup)
-        const { data: existingEmailReminder } = await supabase
-          .from("booking_reminders")
-          .select("id")
-          .eq("booking_id", booking.id)
-          .eq("reminder_type", "email")
-          .maybeSingle();
-
-        if (existingEmailReminder) {
-          results.push({ booking_id: booking.id, status: "already_sent", reminder: "short-notice" });
-          continue;
-        }
-
-        // Send reminder email
-        const { error: emailError } = await supabase.functions.invoke(
-          "send-booking-email",
-          {
-            body: {
-              to: booking.client_email,
-              clientName: booking.client_name,
-              serviceName: booking.service?.duration
-                ? `${booking.service.name_sk} (${booking.service.duration} min)`
-                : (booking.service?.name_sk || "Služba"),
-              date: booking.date,
-              time: booking.time_slot,
-              cancellationToken: booking.cancellation_token,
-              language: "sk",
-              template: "reminder",
-            },
-          }
-        );
-
-        if (emailError) {
-          console.error(`Error sending email for booking ${booking.id}:`, emailError);
-          results.push({ booking_id: booking.id, status: "email_failed", reminder: "short-notice" });
-          continue;
-        }
-
-        // Record email reminder sent
-        await supabase.from("booking_reminders").insert({
-          booking_id: booking.id,
-          reminder_sent_at: new Date().toISOString(),
-          reminder_type: "email",
-        });
-
-        // Send push notification if the client has a linked user account
-        if (booking.client_user_id) {
-          const { data: existingPushReminder } = await supabase
+        // ── 10h final alert: booking is 8-12h away, cancel no longer possible ─
+        if (diffHours > 0 && diffHours <= 12) {
+          const { data: existing10h } = await supabase
             .from("booking_reminders")
             .select("id")
             .eq("booking_id", booking.id)
-            .eq("reminder_type", "push")
+            .eq("reminder_type", "email-10h")
             .maybeSingle();
 
-          if (!existingPushReminder) {
-            try {
-              await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${supabaseServiceKey}`,
-                },
-                body: JSON.stringify({
-                  user_id: booking.client_user_id,
-                  payload: {
-                    title: "Pripomienka: Blížiaci sa termín",
-                    body: `${booking.service?.name_sk || "Služba"}${booking.service?.duration ? ` (${booking.service.duration} min)` : ''} — ${booking.date} o ${timeStr}`,
-                    url: "/portal",
-                  },
-                }),
-              });
+          if (!existing10h) {
+            const { error: emailError } = await supabase.functions.invoke("send-booking-email", {
+              body: {
+                to: booking.client_email,
+                clientName: booking.client_name,
+                serviceName: booking.service?.duration
+                  ? `${booking.service.name_sk} (${booking.service.duration} min)`
+                  : (booking.service?.name_sk || "Služba"),
+                date: booking.date,
+                time: booking.time_slot,
+                cancellationToken: booking.cancellation_token,
+                language: "sk",
+                template: "reminder-10h",
+              },
+            });
 
+            if (emailError) {
+              console.error(`Error sending 10h alert for ${booking.id}:`, emailError);
+              results.push({ booking_id: booking.id, status: "email_failed", reminder: "10h" });
+            } else {
               await supabase.from("booking_reminders").insert({
                 booking_id: booking.id,
                 reminder_sent_at: new Date().toISOString(),
-                reminder_type: "push",
+                reminder_type: "email-10h",
               });
-            } catch (pushErr) {
-              console.error(`Push notification failed for booking ${booking.id}:`, pushErr);
+              results.push({ booking_id: booking.id, status: "sent", reminder: "10h" });
             }
+          } else {
+            results.push({ booking_id: booking.id, status: "already_sent", reminder: "10h" });
           }
+          continue;
         }
-
-        results.push({ booking_id: booking.id, status: "sent", reminder: "short-notice" });
       } catch (err) {
         console.error(`Error processing booking ${booking.id}:`, err);
         results.push({ booking_id: booking.id, status: "error" });
