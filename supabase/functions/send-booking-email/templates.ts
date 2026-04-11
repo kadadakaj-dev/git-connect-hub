@@ -220,7 +220,7 @@ export function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
                     </table>
 
                     <div style="text-align: center; margin-bottom: 40px;">
-                      <a href="${generateGoogleCalendarUrl(data)}" style="display: inline-block; background: linear-gradient(135deg, ${colors.brandBlueLight} 0%, ${colors.brandBlue} 100%); color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-size: 15px; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 167, 237, 0.25);">${t.addToCalendar}</a>
+                      <a href="${generateGoogleCalendarUrl(data).replace(/&/g, '&amp;')}" style="display: inline-block; background: linear-gradient(135deg, ${colors.brandBlueLight} 0%, ${colors.brandBlue} 100%); color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-size: 15px; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 167, 237, 0.25);">${t.addToCalendar}</a>
                     </div>
 
                     <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fff8f8; border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 32px;">
@@ -270,7 +270,7 @@ export function generateEmailText(data: EmailRequest, baseUrl: string): string {
   const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`;
   const isReminder = data.template === "reminder";
   const title = isReminder ? t.reminderTitle : t.confirmationTitle;
-  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
+  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
 
   return [
     `✅ ${serviceName.toUpperCase()}`,
@@ -469,7 +469,7 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
 export function generateReminderText(data: EmailRequest, baseUrl: string): string {
   const t = translations[data.language];
   const formattedDate = formatDate(data.date, data.language);
-  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
+  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
   const titleLine = data.template === 'reminder-24h' ? t.reminder24hTitle : t.reminderTitle;
 
   return [
@@ -570,7 +570,7 @@ export function generateReminder10hHtml(data: EmailRequest): string {
 export function generateReminder10hText(data: EmailRequest): string {
   const t = translations[data.language];
   const formattedDate = formatDate(data.date, data.language);
-  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
+  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
 
   return [
     `⏰ TERMÍN DNES: ${serviceName.toUpperCase()}`,

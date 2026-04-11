@@ -9,6 +9,7 @@ import {
   generateReminder10hHtml,
   generateReminder10hText,
   generateCancellationClientHtml,
+  generateGoogleCalendarUrl,
   trimHtml,
   EmailRequest
 } from "./templates.ts";
@@ -149,4 +150,47 @@ Deno.test("trimHtml: no trailing spaces or blank lines (=20 prevention)", () => 
   // Check for QP-encoded space specifically: =20 followed by whitespace or end-of-line
   // (not =2026 in Google Calendar dates)
   assertNotMatch(trimmed, /=20[\s\n]/);
+});
+
+// ─── &amp; escaping tests ─────────────────────────────────────────────────────
+Deno.test("&amp;: service name with & is escaped in confirmation HTML", () => {
+  const data: EmailRequest = { ...mockBooking, serviceName: "Physio & Chiro (60 min)" };
+  const html = generateEmailHtml(data, BASE);
+  assertStringIncludes(html, "Physio &amp; Chiro (60 min)");
+  assertNotMatch(html, /Physio & Chiro/);
+});
+
+Deno.test("&amp;: service name with & is NOT escaped in plain text", () => {
+  const data: EmailRequest = { ...mockBooking, serviceName: "Physio & Chiro (60 min)" };
+  const text = generateEmailText(data, BASE);
+  assertStringIncludes(text, "Physio & Chiro (60 min)");
+  assertNotMatch(text, /&amp;/);
+});
+
+Deno.test("&amp;: Google Calendar URL in HTML href uses &amp; not bare &", () => {
+  const html = generateEmailHtml(mockBooking, BASE);
+  // The calendar link must encode & as &amp; inside href attribute
+  assertStringIncludes(html, "google.com/calendar/render?action=TEMPLATE&amp;text=");
+  // No bare & should appear inside the href (only &amp;)
+  assertNotMatch(html, /href="https:\/\/www\.google\.com\/calendar\/render[^"]*[^p]&[^a]/);
+});
+
+Deno.test("&amp;: generateGoogleCalendarUrl returns bare & (for plain text / external use)", () => {
+  const url = generateGoogleCalendarUrl(mockBooking);
+  assertStringIncludes(url, "action=TEMPLATE&text=");
+  assertNotMatch(url, /&amp;/);
+});
+
+Deno.test("&amp;: reminder HTML service name with & is escaped", () => {
+  const data: EmailRequest = { ...mockBooking, template: "reminder-24h", serviceName: "Physio & Masáž" };
+  const html = generateReminderHtml(data, BASE);
+  assertStringIncludes(html, "Physio &amp; Masáž");
+  assertNotMatch(html, /Physio & Masáž/);
+});
+
+Deno.test("&amp;: reminder-10h HTML service name with & is escaped", () => {
+  const data: EmailRequest = { ...mockBooking, template: "reminder-10h", serviceName: "Physio & Masáž" };
+  const html = generateReminder10hHtml(data);
+  assertStringIncludes(html, "Physio &amp; Masáž");
+  assertNotMatch(html, /Physio & Masáž/);
 });
