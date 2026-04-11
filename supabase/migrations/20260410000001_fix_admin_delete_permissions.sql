@@ -18,16 +18,12 @@ USING (
     SELECT 1 FROM public.user_roles
     WHERE user_id = auth.uid() AND role = 'admin'
   )
-  OR (
-    SELECT email FROM auth.users WHERE id = auth.uid()
-  ) = 'booking@fyzioafit.sk'
+  OR (auth.jwt() ->> 'email') = 'booking@fyzioafit.sk'
 )
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM public.user_roles
     WHERE user_id = auth.uid() AND role = 'admin'
   )
-  OR (
-    SELECT email FROM auth.users WHERE id = auth.uid()
-  ) = 'booking@fyzioafit.sk'
+  OR (auth.jwt() ->> 'email') = 'booking@fyzioafit.sk'
 );
