@@ -72,13 +72,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 20h window: find bookings where booking datetime is within 0-20h from now
     const now = new Date();
-    const windowEnd = new Date(now.getTime() + 20 * 60 * 60 * 1000);
 
-    // We need today and tomorrow's bookings to cover the 20h window
+    // Fetch bookings for today + next 2 days to cover both reminder windows
     const todayStr = now.toISOString().split("T")[0];
     const tomorrowStr = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    const dayAfterStr = new Date(now.getTime() + 48 * 60 * 60 * 1000).toISOString().split("T")[0];
 
     const { data: bookings, error: bookingsError } = await supabase
       .from("bookings")
@@ -92,34 +91,69 @@ const handler = async (req: Request): Promise<Response> => {
         cancellation_token,
         service:services(name_sk, name_en, duration)
       `)
-      .in("date", [todayStr, tomorrowStr])
+      .in("date", [todayStr, tomorrowStr, dayAfterStr])
       .in("status", ["pending", "confirmed"]);
 
     if (bookingsError) {
       throw new Error(`Error fetching bookings: ${bookingsError.message}`);
     }
 
-    const results: { booking_id: string; status: string }[] = [];
+    const results: { booking_id: string; status: string; reminder?: string }[] = [];
 
     for (const booking of (bookings as unknown as BookingWithService[]) || []) {
       try {
-        // Calculate booking datetime in Europe/Bratislava timezone
-        // booking.date is YYYY-MM-DD, booking.time_slot is HH:MM:SS
         const timeStr = booking.time_slot.substring(0, 5); // HH:MM
         const bookingDateTimeStr = `${booking.date}T${timeStr}:00`;
-        
-        // Create date in Bratislava timezone context
-        // We parse as local Bratislava time by using the offset
         const bratislavaOffset = getBratislavaOffsetMs(new Date(bookingDateTimeStr));
         const bookingUtc = new Date(new Date(bookingDateTimeStr).getTime() - bratislavaOffset);
-        
+
         const diffMs = bookingUtc.getTime() - now.getTime();
         const diffHours = diffMs / (1000 * 60 * 60);
 
-        // Only send if booking is in the future AND within 20h window
-        if (diffHours <= 0 || diffHours > 20) {
+        // ── 24h reminder: booking is 20-28h away ─────────────────────────────
+        if (diffHours > 20 && diffHours <= 28) {
+          const { data: existing24h } = await supabase
+            .from("booking_reminders")
+            .select("id")
+            .eq("booking_id", booking.id)
+            .eq("reminder_type", "email-24h")
+            .maybeSingle();
+
+          if (!existing24h) {
+            const { error: emailError } = await supabase.functions.invoke("send-booking-email", {
+              body: {
+                to: booking.client_email,
+                clientName: booking.client_name,
+                serviceName: booking.service?.duration
+                  ? `${booking.service.name_sk} (${booking.service.duration} min)`
+                  : (booking.service?.name_sk || "Služba"),
+                date: booking.date,
+                time: booking.time_slot,
+                cancellationToken: booking.cancellation_token,
+                language: "sk",
+                template: "reminder-24h",
+              },
+            });
+
+            if (emailError) {
+              console.error(`Error sending 24h reminder for ${booking.id}:`, emailError);
+              results.push({ booking_id: booking.id, status: "email_failed", reminder: "24h" });
+            } else {
+              await supabase.from("booking_reminders").insert({
+                booking_id: booking.id,
+                reminder_sent_at: new Date().toISOString(),
+                reminder_type: "email-24h",
+              });
+              results.push({ booking_id: booking.id, status: "sent", reminder: "24h" });
+            }
+          } else {
+            results.push({ booking_id: booking.id, status: "already_sent", reminder: "24h" });
+          }
           continue;
         }
+
+        // ── Short-notice reminder: booking is 0-20h away ─────────────────────
+        if (diffHours <= 0 || diffHours > 20) continue;
 
         // Check if email reminder already sent (dedup)
         const { data: existingEmailReminder } = await supabase
@@ -130,7 +164,7 @@ const handler = async (req: Request): Promise<Response> => {
           .maybeSingle();
 
         if (existingEmailReminder) {
-          results.push({ booking_id: booking.id, status: "already_sent" });
+          results.push({ booking_id: booking.id, status: "already_sent", reminder: "short-notice" });
           continue;
         }
 
@@ -141,8 +175,8 @@ const handler = async (req: Request): Promise<Response> => {
             body: {
               to: booking.client_email,
               clientName: booking.client_name,
-              serviceName: booking.service?.duration 
-                ? `${booking.service.name_sk} (${booking.service.duration} min)` 
+              serviceName: booking.service?.duration
+                ? `${booking.service.name_sk} (${booking.service.duration} min)`
                 : (booking.service?.name_sk || "Služba"),
               date: booking.date,
               time: booking.time_slot,
@@ -155,7 +189,7 @@ const handler = async (req: Request): Promise<Response> => {
 
         if (emailError) {
           console.error(`Error sending email for booking ${booking.id}:`, emailError);
-          results.push({ booking_id: booking.id, status: "email_failed" });
+          results.push({ booking_id: booking.id, status: "email_failed", reminder: "short-notice" });
           continue;
         }
 
@@ -204,7 +238,7 @@ const handler = async (req: Request): Promise<Response> => {
           }
         }
 
-        results.push({ booking_id: booking.id, status: "sent" });
+        results.push({ booking_id: booking.id, status: "sent", reminder: "short-notice" });
       } catch (err) {
         console.error(`Error processing booking ${booking.id}:`, err);
         results.push({ booking_id: booking.id, status: "error" });

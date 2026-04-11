@@ -71,7 +71,7 @@ serve(async (req: Request) => {
     const isAdminNotification = data.template === "admin-notification";
     const isCancellationAdmin = data.template === "cancellation-admin";
     const isCancellationClient = data.template === "cancellation-client";
-    const isReminder = data.template === "reminder";
+    const isReminder = data.template === "reminder" || data.template === "reminder-24h";
 
     const subject = generateSubject(data);
     let html: string;

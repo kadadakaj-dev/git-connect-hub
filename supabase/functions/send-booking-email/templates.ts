@@ -6,7 +6,7 @@ export interface EmailRequest {
   time: string;
   cancellationToken: string;
   language: "sk" | "en";
-  template?: "confirmation" | "reminder" | "admin-notification" | "cancellation-admin" | "cancellation-client";
+  template?: "confirmation" | "reminder" | "reminder-24h" | "admin-notification" | "cancellation-admin" | "cancellation-client";
   adminData?: {
     clientName: string;
     clientEmail: string;
@@ -19,9 +19,11 @@ export const translations = {
   sk: {
     subject: "Potvrdenie rezervácie",
     reminderSubject: "Pripomienka termínu",
+    reminder24hSubject: "Pripomienka: zajtra máte termín",
     greeting: "Dobrý deň",
     confirmationTitle: "Vaša rezervácia bola úspešne vytvorená",
     reminderTitle: "Pripomíname vám zajtrajší termín",
+    reminder24hTitle: "Zajtra máte termín — nezabudnite!",
     service: "Služba",
     dateTime: "Dátum a čas",
     location: "Miesto",
@@ -38,9 +40,11 @@ export const translations = {
   en: {
     subject: "Booking Confirmation",
     reminderSubject: "Appointment Reminder",
+    reminder24hSubject: "Reminder: your appointment is tomorrow",
     greeting: "Hello",
     confirmationTitle: "Your booking has been successfully created",
     reminderTitle: "Reminder about your appointment tomorrow",
+    reminder24hTitle: "Your appointment is tomorrow — don't forget!",
     service: "Service",
     dateTime: "Date & Time",
     location: "Location",
@@ -115,6 +119,8 @@ export function generateSubject(data: EmailRequest): string {
     return `ZRUŠENÁ: ${serviceName} | ${data.adminData?.clientName || 'Klient'}`;
   } else if (isAdminNotification) {
     return `[REZERVÁCIA] ${serviceName} - ${data.adminData?.clientName || 'Klient'}`;
+  } else if (data.template === "reminder-24h") {
+    return translations[data.language].reminder24hSubject + ` — FYZIOAFIT`;
   } else if (isReminder) {
     return `Pripomienka: ${serviceName} - FYZIOAFIT`;
   } else {
@@ -380,6 +386,7 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
   const formattedDate = formatDate(data.date, data.language);
   const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`;
   const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
+  const h2Title = data.template === 'reminder-24h' ? t.reminder24hTitle : t.reminderTitle;
 
   return `
 <!DOCTYPE html>
@@ -402,7 +409,8 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
           </tr>
           <tr>
             <td style="padding: 40px 30px;">
-              <h2 style="color: #1a2b42; margin: 0 0 20px 0; font-size: 20px; font-weight: 700;">${t.greeting}, ${escapeHtml(data.clientName)}!</h2>
+              <h2 style="color: #1a2b42; margin: 0 0 20px 0; font-size: 20px; font-weight: 700;">${h2Title}</h2>
+              <p style="color: #334155; margin: 0 0 24px 0; font-size: 15px;">${t.greeting}, ${escapeHtml(data.clientName)}!</p>
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fffafb; border-radius: 12px; margin-bottom: 30px; border: 1px solid #fee2e2;">
                 <tr><td style="padding: 24px;">
                   <table width="100%" cellpadding="0" cellspacing="0">
@@ -452,10 +460,13 @@ export function generateReminderText(data: EmailRequest, baseUrl: string): strin
   const t = translations[data.language];
   const formattedDate = formatDate(data.date, data.language);
   const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
+  const titleLine = data.template === 'reminder-24h' ? t.reminder24hTitle : t.reminderTitle;
 
   return [
     `🔔 PRIPOMIENKA: ${serviceName.toUpperCase()}`,
     "----------------------------------------",
+    titleLine,
+    "",
     `${t.greeting}, ${data.clientName}!`,
     "",
     `${t.service}: ${serviceName}`,
