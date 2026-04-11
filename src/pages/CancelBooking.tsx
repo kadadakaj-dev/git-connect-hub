@@ -158,7 +158,13 @@ const CancelBooking = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+        const errorCode = errorData.error || `HTTP ${response.status}`;
+        if (errorCode === 'TOO_LATE_TO_CANCEL') {
+          setError('TOO_LATE_TO_CANCEL');
+          setStatus('error');
+          return;
+        }
+        throw new Error(errorCode);
       }
 
       const data = await response.json();
