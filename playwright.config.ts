@@ -1,7 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
+import process from 'node:process';
+import dns from 'node:dns';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+// Force IPv4 for localhost to avoid ETIMEDOUT on Windows
+dns.setDefaultResultOrder('ipv4first');
 
 /**
  * Read environment variables from file.
@@ -19,12 +24,12 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
-    baseURL: 'http://localhost:8080',
+    baseURL: 'http://127.0.0.1:8082',
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'npm run dev -- --host 0.0.0.0 --port 8080',
-    url: 'http://localhost:8080',
+    command: 'npm run dev -- --host 127.0.0.1 --port 8082',
+    url: 'http://127.0.0.1:8082',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
   },

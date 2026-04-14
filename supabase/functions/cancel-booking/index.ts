@@ -129,19 +129,23 @@ serve(async (req: EdgeRequest) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${supabaseServiceKey}`,
       },
-        body: JSON.stringify({
-          to: 'booking@fyzioafit.sk',
+      body: JSON.stringify({
+        to: 'booking@fyzioafit.sk',
+        clientName: booking.client_name,
+        serviceName: booking.service_name_sk || 'Služba',
+        serviceDescription: booking.service_description_sk || undefined,
+        date: booking.date,
+        time: booking.time_slot,
+        cancellationToken: '',
+        language: 'sk',
+        template: 'cancellation-admin',
+        adminData: {
           clientName: booking.client_name,
-          serviceName: booking.service_name_sk || 'Služba',
-          language: 'sk',
-          template: 'cancellation-admin',
-          adminData: {
-            clientName: booking.client_name,
-            clientEmail: booking.client_email,
-            clientPhone: booking.client_phone || '',
-            notes: booking.notes,
-          },
-        }),
+          clientEmail: booking.client_email,
+          clientPhone: booking.client_phone || '',
+          notes: booking.notes,
+        },
+      }),
     }).then(res => {
       if (!res.ok) console.error('Failed to send cancellation admin email')
     }).catch(err => console.error('Error sending cancellation admin email:', err))
@@ -157,11 +161,11 @@ serve(async (req: EdgeRequest) => {
         to: booking.client_email,
         clientName: booking.client_name,
         serviceName: booking.service_name_sk || 'Služba',
-        serviceNameEn: booking.service_name_en || 'Service',
+        serviceDescription: booking.service_description_sk || undefined,
         date: booking.date,
         time: booking.time_slot,
         cancellationToken: '',
-        language: 'sk',
+        language: booking.language || 'sk',
         template: 'cancellation-client',
       }),
     }).then(res => {

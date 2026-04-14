@@ -3,5 +3,8 @@
 		{
 			"path": ".."
 		}
-	]
+	],
+	"settings": {
+		"claudeCode.useTerminal": true
+	}
 }

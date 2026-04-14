@@ -100,18 +100,17 @@ const mockServices: Service[] = [
 // ── GlassBackground ──────────────────────────────────────────────────────────
 
 describe('GlassBackground — animation assets', () => {
-  it('renders exactly 3 animated glass blobs', () => {
+  it('renders a single fixed full-screen backdrop element', () => {
     const { container } = render(<GlassBackground />);
-    const blobs = container.querySelectorAll('.glass-blob');
-    expect(blobs.length).toBe(3);
+    expect(container.children).toHaveLength(1);
+    const wrapper = container.firstChild as HTMLElement;
+    expect(wrapper.className).toContain('fixed');
+    expect(wrapper.className).toContain('inset-0');
   });
 
-  it('each blob carries a custom --blob-dur CSS variable', () => {
+  it('renders as a single root element (pure CSS implementation)', () => {
     const { container } = render(<GlassBackground />);
-    const blobs = container.querySelectorAll<HTMLElement>('.glass-blob');
-    blobs.forEach((blob) => {
-      expect(blob.style.getPropertyValue('--blob-dur')).not.toBe('');
-    });
+    expect(container.children).toHaveLength(1);
   });
 
   it('wrapper is fixed and pointer-events-none so it never blocks interaction', () => {

@@ -1,6 +1,11 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import process from "node:process";
+import dns from "node:dns";
+
+// Force IPv4 for localhost to avoid ETIMEDOUT on Windows
+dns.setDefaultResultOrder("ipv4first");
 
 export default defineConfig({
   plugins: [react()],

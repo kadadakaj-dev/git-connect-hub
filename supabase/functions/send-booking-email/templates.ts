@@ -2,6 +2,7 @@ export interface EmailRequest {
   to: string;
   clientName: string;
   serviceName: string;
+  serviceDescription?: string;
   date: string;
   time: string;
   cancellationToken: string;
@@ -17,6 +18,11 @@ export interface EmailRequest {
 
 export const translations = {
   sk: {
+    subjectPrefix: "Potvrdenie",
+    reminderPrefix: "Pripomienka",
+    cancellationPrefix: "Zrušenie",
+    adminCancellationPrefix: "ZRUŠENÁ",
+    adminNotificationPrefix: "[REZERVÁCIA]",
     subject: "Potvrdenie rezervácie",
     reminderSubject: "Pripomienka termínu",
     reminder24hSubject: "Pripomienka: zajtra máte termín",
@@ -30,18 +36,32 @@ export const translations = {
     reminder10hPhone: "+421 905 307 198",
     service: "Služba",
     dateTime: "Dátum a čas",
+    at: "o",
     location: "Miesto",
     address: "Krmanová 6, Košice",
     cancelText: "Ak potrebujete zrušiť rezerváciu, kliknite na nasledujúci odkaz:",
     cancelButton: "Zrušiť rezerváciu",
     footer: "Tešíme sa na vašu návštevu!",
+    footerNote: "Tento luxusný e-mail bol odoslaný automaticky rezervačným systémom FYZIOAFIT.",
     clinicName: "FYZIOAFIT",
     contact: "Kontakt: booking@fyzioafit.sk",
     addToCalendar: "Pridať do kalendára",
     cancelPolicyTitle: "Storno podmienky",
     cancelPolicy: "Bezplatné zrušenie je možné najneskôr 10 hodín pred termínom. Po uplynutí tejto doby bude účtovaný storno poplatok 10 €. V prípade nutnosti nás kontaktujte telefonicky (+421 905 307 198).",
+    description: "Popis",
+    reminder10hNoCancel: "🚫 Online zrušenie nie je možné",
+    reminder10hSubtitle: "Termín dnes",
+    titleReminder: "Pripomienka",
+    titleCancellation: "Zrušenie",
+    calendarDetails: "Vaša rezervácia",
+    calendarLocation: "Miesto",
   },
   en: {
+    subjectPrefix: "Confirmation",
+    reminderPrefix: "Reminder",
+    cancellationPrefix: "Cancellation",
+    adminCancellationPrefix: "CANCELLED",
+    adminNotificationPrefix: "[BOOKING]",
     subject: "Booking Confirmation",
     reminderSubject: "Appointment Reminder",
     reminder24hSubject: "Reminder: your appointment is tomorrow",
@@ -55,16 +75,25 @@ export const translations = {
     reminder10hPhone: "+421 905 307 198",
     service: "Service",
     dateTime: "Date & Time",
+    at: "at",
     location: "Location",
     address: "Krmanová 6, Košice",
     cancelText: "If you need to cancel your booking, click the following link:",
     cancelButton: "Cancel Booking",
     footer: "We look forward to seeing you!",
+    footerNote: "This luxury email was sent automatically by the FYZIOAFIT booking system.",
     clinicName: "FYZIOAFIT",
     contact: "Contact: booking@fyzioafit.sk",
     addToCalendar: "Add to Calendar",
     cancelPolicyTitle: "Cancellation Policy",
     cancelPolicy: "Free cancellation is possible up to 10 hours before the appointment. After this time, a cancellation fee of €10 will be charged. If necessary, please contact us by phone (+421 905 307 198).",
+    description: "Description",
+    reminder10hNoCancel: "🚫 Online cancellation no longer possible",
+    reminder10hSubtitle: "Appointment today",
+    titleReminder: "Reminder",
+    titleCancellation: "Cancellation",
+    calendarDetails: "Your booking",
+    calendarLocation: "Location",
   },
 };
 
@@ -100,18 +129,36 @@ export function formatDate(dateStr: string, language: "sk" | "en"): string {
 
 export function generateGoogleCalendarUrl(data: EmailRequest): string {
   const [h, m] = data.time.split(':').map(Number);
-  const startDate = new Date(data.date);
-  startDate.setHours(h, m, 0, 0);
-  
-  const endDate = new Date(startDate.getTime() + 30 * 60000);
-  
+  const hh = String(h).padStart(2, '0');
+  const mm = String(m).padStart(2, '0');
+
+  // Convert Bratislava local time → UTC.
+  // Bratislava = CET (UTC+1) in winter, CEST (UTC+2) in summer.
+  // Probe: treat the appointment time naively as UTC, then measure how far
+  // Bratislava deviates from that probe → subtract the offset.
+  const probe = new Date(`${data.date}T${hh}:${mm}:00Z`);
+  const baParts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Bratislava',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  }).formatToParts(probe);
+  const baH = parseInt(baParts.find(p => p.type === 'hour')?.value ?? '0');
+  const baM = parseInt(baParts.find(p => p.type === 'minute')?.value ?? '0');
+  const offsetMs = (baH * 60 + baM - (h * 60 + m)) * 60000;
+  const startUtc = new Date(probe.getTime() - offsetMs);
+
+  // Parse duration from serviceName e.g. "Chiropraxia (60 min)" → 60
+  const durationMatch = data.serviceName?.match(/\((\d+)\s*min\)/);
+  const durationMin = durationMatch ? parseInt(durationMatch[1]) : 60;
+  const endUtc = new Date(startUtc.getTime() + durationMin * 60000);
+
   const formatG = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   
+  const ct = translations[data.language];
   const title = `FYZIOAFIT: ${data.serviceName}`;
-  const details = `Vaša rezervácia pre ${data.clientName}.\nMiesto: Krmanová 6, Košice`;
+  const details = `${ct.calendarDetails} ${data.clientName}.\n${ct.calendarLocation}: Krmanová 6, Košice`;
   const location = "Krmanová 6, 040 01 Košice, Slovensko";
   
-  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatG(startDate)}/${formatG(endDate)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
+  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatG(startUtc)}/${formatG(endUtc)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
 }
 
 export function generateSubject(data: EmailRequest): string {
@@ -119,22 +166,26 @@ export function generateSubject(data: EmailRequest): string {
   const isCancellationAdmin = data.template === "cancellation-admin";
   const isAdminNotification = data.template === "admin-notification";
   const isReminder = data.template === "reminder";
-  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
+  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
+  const t = translations[data.language];
   
   if (isCancellationClient) {
-    return `Zrušenie: ${serviceName} - FYZIOAFIT`;
+    return `${t.cancellationPrefix}: ${serviceName} - FYZIOAFIT`;
   } else if (isCancellationAdmin) {
-    return `ZRUŠENÁ: ${serviceName} | ${data.adminData?.clientName || 'Klient'}`;
+    // Admin templates always in SK for clinic staff
+    const adminT = translations.sk;
+    return `${adminT.adminCancellationPrefix}: ${serviceName} | ${data.adminData?.clientName || 'Klient'}`;
   } else if (isAdminNotification) {
-    return `[REZERVÁCIA] ${serviceName} - ${data.adminData?.clientName || 'Klient'}`;
+    const adminT = translations.sk;
+    return `${adminT.adminNotificationPrefix} ${serviceName} - ${data.adminData?.clientName || 'Klient'}`;
   } else if (data.template === "reminder-24h") {
-    return translations[data.language].reminder24hSubject + ` — FYZIOAFIT`;
+    return t.reminder24hSubject + ` — FYZIOAFIT`;
   } else if (data.template === "reminder-10h") {
-    return translations[data.language].reminder10hSubject;
+    return t.reminder10hSubject;
   } else if (isReminder) {
-    return `Pripomienka: ${serviceName} - FYZIOAFIT`;
+    return `${t.reminderPrefix}: ${serviceName} - FYZIOAFIT`;
   } else {
-    return `Potvrdenie: ${serviceName} - FYZIOAFIT`;
+    return `${t.subjectPrefix}: ${serviceName} - FYZIOAFIT`;
   }
 }
 
@@ -142,8 +193,7 @@ export function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
   const t = translations[data.language];
   const formattedDate = formatDate(data.date, data.language);
   const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`;
-  const isReminder = data.template === "reminder";
-  const title = isReminder ? t.reminderTitle : t.confirmationTitle;
+  const title = t.confirmationTitle;
   const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
 
   const colors = {
@@ -200,12 +250,13 @@ export function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
                               <td style="padding-bottom: 16px; border-bottom: 1px solid rgba(0, 111, 184, 0.1);">
                                 <div style="color: ${colors.brandBlue}; font-size: 11px; font-weight: 700; text-transform: uppercase;">${t.service}</div>
                                 <div style="color: ${colors.textInk}; font-size: 17px; font-weight: 600;">${serviceName}</div>
+                                ${data.serviceDescription ? `<div style="color: #475569; font-size: 13px; margin-top: 4px; font-style: italic;">${escapeHtml(data.serviceDescription)}</div>` : ''}
                               </td>
                             </tr>
                             <tr>
                               <td style="padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(0, 111, 184, 0.1);">
                                 <div style="color: ${colors.brandBlue}; font-size: 11px; font-weight: 700; text-transform: uppercase;">${t.dateTime}</div>
-                                <div style="color: ${colors.textInk}; font-size: 17px; font-weight: 600;">${formattedDate} o <span style="color: ${colors.brandBlueLight};">${data.time}</span></div>
+                                <div style="color: ${colors.textInk}; font-size: 17px; font-weight: 600;">${formattedDate} ${t.at} <span style="color: ${colors.brandBlueLight};">${data.time}</span></div>
                               </td>
                             </tr>
                             <tr>
@@ -251,7 +302,7 @@ export function generateEmailHtml(data: EmailRequest, baseUrl: string): string {
           <tr>
             <td align="center" style="padding-top: 24px;">
               <p style="color: #94a3b8; font-size: 12px; margin: 0; letter-spacing: 0.2px;">
-                Tento luxusný e-mail bol odoslaný automaticky rezervačným systémom FYZIOAFIT.
+                ${t.footerNote}
               </p>
             </td>
           </tr>
@@ -268,8 +319,7 @@ export function generateEmailText(data: EmailRequest, baseUrl: string): string {
   const t = translations[data.language];
   const formattedDate = formatDate(data.date, data.language);
   const cancelUrl = `${baseUrl}/cancel?token=${data.cancellationToken}`;
-  const isReminder = data.template === "reminder";
-  const title = isReminder ? t.reminderTitle : t.confirmationTitle;
+  const title = t.confirmationTitle;
   const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
 
   return [
@@ -280,7 +330,8 @@ export function generateEmailText(data: EmailRequest, baseUrl: string): string {
     title,
     "",
     `${t.service}: ${serviceName}`,
-    `${t.dateTime}: ${formattedDate} ${data.time}`,
+    ...(data.serviceDescription ? [`${t.description}:  ${data.serviceDescription}`] : []),
+    `${t.dateTime}: ${formattedDate} ${t.at} ${data.time}`,
     `${t.location}: ${t.address}`,
     "----------------------------------------",
     "",
@@ -297,13 +348,13 @@ export function generateEmailText(data: EmailRequest, baseUrl: string): string {
 
 export function generateAdminNotificationHtml(data: EmailRequest): string {
   const formattedDate = formatDate(data.date, "sk");
-  const admin = data.adminData!;
-  const dashboardUrl = "https://fyzioafit.sk/admin";
+  const admin = data.adminData;
+  const dashboardUrl = "https://booking.fyzioafit.sk/admin";
   const serviceName = escapeHtml(data.serviceName || 'Nová služba');
 
   return `
 <!DOCTYPE html>
-<html>
+<html lang="sk">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -339,16 +390,29 @@ export function generateAdminNotificationHtml(data: EmailRequest): string {
                     </tr>
                     <tr>
                       <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
-                        <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Služba</span><br>
-                        <span style="color: #1a2b42; font-size: 16px; font-weight: 600;">${serviceName}</span>
+                        <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Telefón</span><br>
+                        <span style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin?.clientPhone || '-')}</span>
                       </td>
                     </tr>
                     <tr>
-                      <td style="padding: 12px 0;">
-                        <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Dátum a čas</span><br>
-                        <span style="color: #1e704a; font-size: 17px; font-weight: 700;">${formattedDate} o ${data.time}</span>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+                        <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Služba</span><br>
+                        <span style="color: #1a2b42; font-size: 16px; font-weight: 600;">${serviceName}</span>
+                        ${data.serviceDescription ? `<br><span style="color: #475569; font-size: 13px; font-style: italic;">${escapeHtml(data.serviceDescription)}</span>` : ''}
                       </td>
                     </tr>
+                    <tr>
+                      <td style="padding: 12px 0;${admin?.notes ? ' border-bottom: 1px solid #e2e8f0;' : ''}">
+                        <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Dátum a čas</span><br>
+                        <span style="color: #1e704a; font-size: 17px; font-weight: 700;">${formattedDate} ${translations.sk.at} ${data.time}</span>
+                      </td>
+                    </tr>
+                    ${admin?.notes ? `<tr>
+                      <td style="padding: 12px 0;">
+                        <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Poznámka klienta</span><br>
+                        <span style="color: #1a2b42; font-size: 15px; font-style: italic;">${escapeHtml(admin.notes)}</span>
+                      </td>
+                    </tr>` : ''}
                   </table>
                 </td></tr>
               </table>
@@ -375,20 +439,24 @@ export function generateAdminNotificationHtml(data: EmailRequest): string {
 
 export function generateAdminNotificationText(data: EmailRequest): string {
   const formattedDate = formatDate(data.date, "sk");
-  const admin = data.adminData!;
-  const serviceName = escapeHtml(data.serviceName || 'Nová služba');
+  const admin = data.adminData;
+  const serviceName = data.serviceName || 'Nová služba';
 
-  return [
+  const lines = [
     `REZERVÁCIA: ${serviceName.toUpperCase()}`,
     "----------------------------------------",
-    `Klient: ${escapeHtml(admin?.clientName || 'Neznámy klient')}`,
-    `Email: ${escapeHtml(admin?.clientEmail || '-')}`,
-    `Tel: ${escapeHtml(admin?.clientPhone || '-')}`,
+    `Klient: ${admin?.clientName || 'Neznámy klient'}`,
+    `Email:  ${admin?.clientEmail || '-'}`,
+    `Tel:    ${admin?.clientPhone || '-'}`,
     `Služba: ${serviceName}`,
-    `Dátum: ${formattedDate}`,
-    `Čas: ${data.time}`,
-    "----------------------------------------",
-  ].join("\n");
+    ...(data.serviceDescription ? [`Popis:  ${data.serviceDescription}`] : []),
+    `Dátum:  ${formattedDate} ${translations.sk.at} ${data.time}`,
+  ];
+  if (admin?.notes) {
+    lines.push(`Pozn.:  ${admin.notes}`);
+  }
+  lines.push("----------------------------------------");
+  return lines.join("\n");
 }
 
 export function generateReminderHtml(data: EmailRequest, baseUrl: string): string {
@@ -400,11 +468,11 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
 
   return `
 <!DOCTYPE html>
-<html>
+<html lang="${data.language}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pripomienka | 🔔</title>
+  <title>${t.titleReminder} | 🔔</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #ffffff;">
   <table width="100%" cellpadding="0" cellspacing="0" style="padding: 20px;">
@@ -414,7 +482,7 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
           <tr>
             <td style="background: linear-gradient(135deg, #991b1b 0%, #ef4444 100%); padding: 45px 30px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 800;">${serviceName}</h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Pripomienka termínu</p>
+              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">${t.reminderSubject}</p>
             </td>
           </tr>
           <tr>
@@ -428,12 +496,19 @@ export function generateReminderHtml(data: EmailRequest, baseUrl: string): strin
                       <td style="padding: 12px 0; border-bottom: 1px solid #fee2e2;">
                         <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.service}</span><br>
                         <span style="color: #1a2b42; font-size: 17px; font-weight: 600;">${serviceName}</span>
+                        ${data.serviceDescription ? `<br><span style="color: #475569; font-size: 13px; font-style: italic;">${escapeHtml(data.serviceDescription)}</span>` : ''}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #fee2e2;">
+                        <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.dateTime}</span><br>
+                        <span style="color: #b91c1c; font-size: 18px; font-weight: 800;">${formattedDate} ${t.at} ${data.time}</span>
                       </td>
                     </tr>
                     <tr>
                       <td style="padding: 12px 0;">
-                        <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.dateTime}</span><br>
-                        <span style="color: #b91c1c; font-size: 18px; font-weight: 800;">${formattedDate} o ${data.time}</span>
+                        <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.location}</span><br>
+                        <span style="color: #1a2b42; font-size: 15px; font-weight: 500;">${t.address}</span>
                       </td>
                     </tr>
                   </table>
@@ -471,16 +546,19 @@ export function generateReminderText(data: EmailRequest, baseUrl: string): strin
   const formattedDate = formatDate(data.date, data.language);
   const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
   const titleLine = data.template === 'reminder-24h' ? t.reminder24hTitle : t.reminderTitle;
+  const at = t.at;
 
   return [
-    `🔔 PRIPOMIENKA: ${serviceName.toUpperCase()}`,
+    `🔔 ${t.reminderPrefix.toUpperCase()}: ${serviceName.toUpperCase()}`,
     "----------------------------------------",
     titleLine,
     "",
     `${t.greeting}, ${data.clientName}!`,
     "",
     `${t.service}: ${serviceName}`,
-    `${t.dateTime}: ${formattedDate} o ${data.time}`,
+    ...(data.serviceDescription ? [`${t.description}:  ${data.serviceDescription}`] : []),
+    `${t.dateTime}: ${formattedDate} ${at} ${data.time}`,
+    `${t.location}: ${t.address}`,
     "----------------------------------------",
     "",
     `⚠ ${t.cancelPolicyTitle}`,
@@ -488,6 +566,7 @@ export function generateReminderText(data: EmailRequest, baseUrl: string): strin
     "----------------------------------------",
     "",
     t.cancelText,
+    `${baseUrl}/cancel?token=${data.cancellationToken}`,
     "",
     t.contact,
   ].join("\n");
@@ -500,7 +579,7 @@ export function generateReminder10hHtml(data: EmailRequest): string {
 
   return `
 <!DOCTYPE html>
-<html>
+<html lang="${data.language}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -515,7 +594,7 @@ export function generateReminder10hHtml(data: EmailRequest): string {
             <td style="background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 100%); padding: 45px 30px; text-align: center;">
               <p style="color: rgba(255,255,255,0.8); margin: 0 0 8px; font-size: 32px; line-height: 1;">⏰</p>
               <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 800;">${serviceName}</h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Termín dnes</p>
+              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">${t.reminder10hSubtitle}</p>
             </td>
           </tr>
           <tr>
@@ -529,12 +608,13 @@ export function generateReminder10hHtml(data: EmailRequest): string {
                       <td style="padding: 12px 0; border-bottom: 1px solid #fee2e2;">
                         <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.service}</span><br>
                         <span style="color: #1a2b42; font-size: 17px; font-weight: 600;">${serviceName}</span>
+                        ${data.serviceDescription ? `<br><span style="color: #475569; font-size: 13px; font-style: italic;">${escapeHtml(data.serviceDescription)}</span>` : ''}
                       </td>
                     </tr>
                     <tr>
                       <td style="padding: 12px 0;">
                         <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.dateTime}</span><br>
-                        <span style="color: #b91c1c; font-size: 18px; font-weight: 800;">${formattedDate} o ${data.time}</span>
+                        <span style="color: #b91c1c; font-size: 18px; font-weight: 800;">${formattedDate} ${t.at} ${data.time}</span>
                       </td>
                     </tr>
                   </table>
@@ -543,7 +623,7 @@ export function generateReminder10hHtml(data: EmailRequest): string {
               <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fef2f2; border-left: 4px solid #b91c1c; border-radius: 4px; margin-bottom: 16px;">
                 <tr>
                   <td style="padding: 20px;">
-                    <div style="color: #7f1d1d; font-size: 14px; font-weight: 700; margin-bottom: 8px;">🚫 Online zrušenie nie je možné</div>
+                    <div style="color: #7f1d1d; font-size: 14px; font-weight: 700; margin-bottom: 8px;">${t.reminder10hNoCancel}</div>
                     <div style="color: #334155; font-size: 14px; line-height: 1.6;">${t.reminder10hInfo}</div>
                   </td>
                 </tr>
@@ -580,10 +660,11 @@ export function generateReminder10hText(data: EmailRequest): string {
     `${t.greeting}, ${data.clientName}!`,
     "",
     `${t.service}: ${serviceName}`,
-    `${t.dateTime}: ${formattedDate} o ${data.time}`,
+    ...(data.serviceDescription ? [`${t.description}:  ${data.serviceDescription}`] : []),
+    `${t.dateTime}: ${formattedDate} ${t.at} ${data.time}`,
     "----------------------------------------",
     "",
-    `🚫 Online zrušenie nie je možné`,
+    t.reminder10hNoCancel,
     t.reminder10hInfo,
     "",
     `📞 ${t.reminder10hPhone}`,
@@ -595,13 +676,13 @@ export function generateReminder10hText(data: EmailRequest): string {
 
 export function generateCancellationAdminHtml(data: EmailRequest): string {
   const formattedDate = formatDate(data.date, "sk");
-  const admin = data.adminData!;
-  const dashboardUrl = "https://fyzioafit.sk/admin";
+  const admin = data.adminData;
+  const dashboardUrl = "https://booking.fyzioafit.sk/admin";
   const serviceName = escapeHtml(data.serviceName || 'Zrušená služba');
 
   return `
 <!DOCTYPE html>
-<html>
+<html lang="sk">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -631,14 +712,27 @@ export function generateCancellationAdminHtml(data: EmailRequest): string {
                     </tr>
                     <tr>
                       <td style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
+                        <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">Email</span><br>
+                        <span style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin?.clientEmail || '-')}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
+                        <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">Telefón</span><br>
+                        <span style="color: #1a2b42; font-size: 16px;">${escapeHtml(admin?.clientPhone || '-')}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #fecaca;">
                         <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">Služba</span><br>
                         <span style="color: #1a2b42; font-size: 16px; font-weight: 600;">${serviceName}</span>
+                        ${data.serviceDescription ? `<br><span style="color: #475569; font-size: 13px; font-style: italic;">${escapeHtml(data.serviceDescription)}</span>` : ''}
                       </td>
                     </tr>
                     <tr>
                       <td style="padding: 12px 0;">
                         <span style="color: #991b1b; font-size: 11px; text-transform: uppercase; font-weight: 700;">Pôvodný termín</span><br>
-                        <span style="color: #7f1d1d; font-size: 17px; font-weight: 800; text-decoration: line-through;">${formattedDate} o ${data.time}</span>
+                        <span style="color: #7f1d1d; font-size: 17px; font-weight: 800; text-decoration: line-through;">${formattedDate} ${translations.sk.at} ${data.time}</span>
                       </td>
                     </tr>
                   </table>
@@ -662,14 +756,18 @@ export function generateCancellationAdminHtml(data: EmailRequest): string {
 
 export function generateCancellationAdminText(data: EmailRequest): string {
   const formattedDate = formatDate(data.date, "sk");
-  const admin = data.adminData!;
-  const serviceName = escapeHtml(data.serviceName || 'Zrušená služba');
+  const admin = data.adminData;
+  const serviceName = data.serviceName || 'Zrušená služba';
 
   return [
     `❌ ZRUŠENÁ REZERVÁCIA: ${serviceName.toUpperCase()}`,
     "----------------------------------------",
-    `Klient: ${escapeHtml(admin?.clientName || 'Neznámy klient')}`,
-    `Termín bol zrušený.`,
+    `Klient:  ${admin?.clientName || 'Neznámy klient'}`,
+    `Email:   ${admin?.clientEmail || '-'}`,
+    `Tel:     ${admin?.clientPhone || '-'}`,
+    `Služba:  ${serviceName}`,
+    ...(data.serviceDescription ? [`Popis:   ${data.serviceDescription}`] : []),
+    `Termín:  ${formattedDate} ${translations.sk.at} ${data.time}`,
     "----------------------------------------",
   ].join("\n");
 }
@@ -691,11 +789,11 @@ export function generateCancellationClientHtml(data: EmailRequest, baseUrl: stri
 
   return `
 <!DOCTYPE html>
-<html>
+<html lang="${data.language}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zrušenie | ❌</title>
+  <title>${t.titleCancellation} | ❌</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #ffffff;">
   <table width="100%" cellpadding="0" cellspacing="0" style="padding: 20px;">
@@ -719,12 +817,13 @@ export function generateCancellationClientHtml(data: EmailRequest, baseUrl: stri
                       <td style="padding: 12px 0;">
                         <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.service}</span><br>
                         <span style="color: #1a2b42; font-size: 17px; font-weight: 600;">${serviceName}</span>
+                        ${data.serviceDescription ? `<br><span style="color: #475569; font-size: 13px; font-style: italic;">${escapeHtml(data.serviceDescription)}</span>` : ''}
                       </td>
                     </tr>
                     <tr>
                       <td style="padding: 12px 0; border-top: 1px solid #e2e8f0;">
                         <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700;">${t.dateTime}</span><br>
-                        <span style="color: #b91c1c; font-size: 16px; font-weight: 600; text-decoration: line-through;">${formattedDate} o ${data.time}</span>
+                        <span style="color: #b91c1c; font-size: 16px; font-weight: 600; text-decoration: line-through;">${formattedDate} ${t.at} ${data.time}</span>
                       </td>
                     </tr>
                   </table>
@@ -759,19 +858,31 @@ export function generateCancellationClientHtml(data: EmailRequest, baseUrl: stri
 
 export function generateCancellationClientText(data: EmailRequest, baseUrl: string): string {
   const t = translations[data.language];
-  const serviceName = escapeHtml(data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service'));
+  const formattedDate = formatDate(data.date, data.language);
+  const serviceName = data.serviceName || (data.language === 'sk' ? 'Naša služba' : 'Our Service');
+  const cancelledLine = data.language === 'sk'
+    ? `Vaša rezervácia na ${serviceName} bola zrušená.`
+    : `Your booking for ${serviceName} has been cancelled.`;
+  const newBookingLine = data.language === 'sk'
+    ? `Novú rezerváciu si môžete vytvoriť tu: ${baseUrl}`
+    : `You can make a new booking here: ${baseUrl}`;
 
   return [
-    `❌ ZRUŠENÉ: ${serviceName.toUpperCase()}`,
+    `❌ ${t.cancellationPrefix.toUpperCase()}: ${serviceName.toUpperCase()}`,
     "----------------------------------------",
     `${t.greeting}, ${data.clientName}!`,
-    `Vaša rezervácia na ${serviceName} bola zrušená.`,
+    cancelledLine,
+    "",
+    `${t.service}:   ${serviceName}`,
+    ...(data.serviceDescription ? [`${t.description}:  ${data.serviceDescription}`] : []),
+    `${t.dateTime}: ${formattedDate} ${t.at} ${data.time}`,
+    "----------------------------------------",
     "",
     `⚠ ${t.cancelPolicyTitle}`,
     t.cancelPolicy,
     "----------------------------------------",
     "",
-    `Novú rezerváciu si môžete vytvoriť tu: ${baseUrl}`,
+    newBookingLine,
     "",
     t.contact,
   ].join("\n");

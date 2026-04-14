@@ -367,12 +367,13 @@ serve(async (req: EdgeRequest) => {
     // Fetch service info for the email
     const { data: serviceData } = await supabase
       .from('services')
-      .select('name_sk, duration')
+      .select('name_sk, duration, description_sk')
       .eq('id', body.service_id)
       .single()
 
     const serviceName = serviceData?.name_sk || 'Fyzioterapia'
     const serviceDuration = serviceData?.duration || 60
+    const serviceDescription = serviceData?.description_sk || undefined
 
     // Send confirmation email to client (fire-and-forget, non-blocking)
     const emailPromise = fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
@@ -384,7 +385,8 @@ serve(async (req: EdgeRequest) => {
       body: JSON.stringify({
         to: body.client_email,
         clientName: body.client_name,
-        serviceName: `${serviceName} (${serviceDuration} min)`, 
+        serviceName: `${serviceName} (${serviceDuration} min)`,
+        serviceDescription,
         date: body.date,
         time: body.time_slot,
         cancellationToken: booking.cancellation_token,
@@ -406,7 +408,8 @@ serve(async (req: EdgeRequest) => {
       body: JSON.stringify({
         to: adminEmail,
         clientName: 'Admin',
-        serviceName: `${serviceName} (${serviceDuration} min)`, 
+        serviceName: `${serviceName} (${serviceDuration} min)`,
+        serviceDescription,
         date: body.date,
         time: body.time_slot,
         cancellationToken: booking.cancellation_token,

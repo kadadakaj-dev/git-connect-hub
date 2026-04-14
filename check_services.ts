@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import process from 'node:process';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;

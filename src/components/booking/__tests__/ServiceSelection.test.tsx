@@ -142,8 +142,8 @@ describe('ServiceSelection', () => {
         mockUseServices.mockReturnValue({ data: mockServices, isLoading: false, error: null });
         render(<ServiceSelection selectedService={null} onSelect={onSelect} />);
 
-        expect(screen.getByText('85 €')).toBeInTheDocument();
-        expect(screen.getByText('65 €')).toBeInTheDocument();
+        expect(screen.getByText('85€')).toBeInTheDocument();
+        expect(screen.getByText('65€')).toBeInTheDocument();
     });
 
     it('should display service duration info', () => {

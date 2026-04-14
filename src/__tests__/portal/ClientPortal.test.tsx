@@ -110,7 +110,7 @@ vi.mock("@/hooks/useClientBookings", () => {
   const bookingsData = [
     {
       id: "booking-1",
-      date: "2026-04-10",
+      date: "2026-04-30",
       time_slot: "10:00",
       status: "confirmed",
       service: { name: "Physiotherapy" },

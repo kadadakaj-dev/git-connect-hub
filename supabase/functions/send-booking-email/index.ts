@@ -76,7 +76,14 @@ serve(async (req: Request) => {
     const isReminder10h = data.template === "reminder-10h";
     const isReminder = data.template === "reminder" || data.template === "reminder-24h";
 
-    const subject = generateSubject(data);
+    const rawSubject = generateSubject(data);
+    // denomailer v1.6.0 generates malformed RFC 2047 QP encoded-words for long
+    // UTF-8 subjects (missing ?= terminator, spaces inside the encoded-word).
+    // Workaround: pre-encode as RFC 2047 Base64 ourselves. Since the result is
+    // pure ASCII, denomailer will not attempt to re-encode it.
+    const subject = /[^\x00-\x7F]/.test(rawSubject)
+      ? `=?utf-8?B?${btoa(unescape(encodeURIComponent(rawSubject)))}?=`
+      : rawSubject;
     let html: string;
     let textContent: string;
 

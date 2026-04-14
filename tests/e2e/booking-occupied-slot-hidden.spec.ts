@@ -12,42 +12,39 @@ test.describe('Occupied Slot Visibility', () => {
     });
 
     test('should hide a slot from the available list after it is booked', async ({ page }) => {
+        const bookedDate = '2026-04-08';
+        const bookedTime = '09:00';
+
         await page.goto('/');
 
-        // Use robust helper for first booking
-        const { timeSlot } = await performBookingFlow(page, {});
-        const timeStr = `time-slot-${timeSlot}`;
+        // Book a specific slot so we know exactly which one to check
+        await performBookingFlow(page, { date: bookedDate, time: bookedTime });
 
-        // 5. Success Check
-        await expect(page.getByText(/Rezervácia úspešná/i).or(page.getByText(/Booking successful/i))).toBeVisible({ timeout: 15000 });
+        // Confirm success
+        await expect(
+            page.getByText(/Rezervácia potvrdená/i).or(page.getByText(/Booking Confirmed/i))
+        ).toBeVisible({ timeout: 15000 });
 
-        // 6. Navigate back and check the same slot
-        await page.goto('/');
-        
-        // Select service again
-        await page.locator('[data-testid^="service-"]').first().click();
-        
-        // Wait for calendar and pick Wednesday, April 8 2026 (safe future date from our April 6 mock)
-        const targetDateStr = '2026-04-08';
-        const targetDay = page.locator(`[data-testid="calendar-day-${targetDateStr}"]`);
-        await expect(targetDay).toBeVisible({ timeout: 10000 });
-        await targetDay.click();
-        
-        // Use updated availability mock if needed, but the first booking was real in this context (in-session state)
-        // Wait for time slots to refresh
-        const updatedTimeButton = page.locator(`[data-testid="${timeStr}"]`);
-        await expect(updatedTimeButton).toBeVisible({ timeout: 10000 });
-        
-        // In a real app without refresh, it might still show available if not using real DB for mocks
-        // But since we want to "guard" the rule, we mock it as occupied for the second check
+        // Register the "occupied" mock BEFORE navigating back so it is active for
+        // the next slot-count fetch. Playwright resolves routes last-registered-first,
+        // so this overrides the empty-array mock set up in beforeEach.
         await page.route('**/rest/v1/rpc/get_booking_slot_counts*', async route => {
-            await route.fulfill({ 
-                json: [{ time: timeSlot, booked_count: 1, total_capacity: 1 }] 
+            await route.fulfill({
+                json: [{ time: bookedTime, booked_count: 1, total_capacity: 1 }],
             });
         });
-        
-        // Re-click day to trigger re-fetch if needed, or just wait
+
+        // Navigate back and go through the booking wizard to the same date
+        await page.goto('/');
+        await page.locator('[data-testid^="service-"]').first().click();
+
+        const targetDay = page.locator(`[data-testid="calendar-day-${bookedDate}"]`);
+        await expect(targetDay).toBeVisible({ timeout: 10000 });
         await targetDay.click();
-        await expect(updatedTimeButton).toBeDisabled({ timeout: 10000 });
+
+        // The slot should now be disabled because the count mock returns it as fully booked
+        const bookedSlot = page.locator(`[data-testid="time-slot-${bookedTime}"]`);
+        await expect(bookedSlot).toBeVisible({ timeout: 10000 });
+        await expect(bookedSlot).toBeDisabled({ timeout: 10000 });
     });
 });

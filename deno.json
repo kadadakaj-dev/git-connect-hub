@@ -3,5 +3,16 @@
     "allowJs": true,
     "lib": ["deno.window", "deno.ns"]
   },
-  "importMap": "./supabase/functions/import_map.json"
+  "importMap": "./supabase/functions/import_map.json",
+  "exclude": [
+    "src",
+    "tests",
+    "node_modules",
+    "dist",
+    "public",
+    "playwright.config.ts",
+    "vitest.config.ts",
+    "vite.config.ts",
+    "tailwind.config.ts"
+  ]
 }

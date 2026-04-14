@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import process from 'node:process';
 
 const supabase = createClient(
     process.env.VITE_SUPABASE_URL!,

@@ -1,4 +1,5 @@
 import { type Page } from '@playwright/test';
+import process from 'node:process';
 
 /**
  * Automates the login process for the admin dashboard.
@@ -10,8 +11,8 @@ export async function loginAsAdmin(page: Page) {
 
     // Skip splash screen and cookie banner
     await page.addInitScript(() => {
-        window.sessionStorage.setItem('fyzio_splash_shown', 'true');
-        window.localStorage.setItem('cookie-consent', 'accepted');
+        globalThis.sessionStorage.setItem('fyzio_splash_shown', 'true');
+        globalThis.localStorage.setItem('cookie-consent', 'accepted');
     });
 
     await page.goto('/auth');

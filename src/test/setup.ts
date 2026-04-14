@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
+import process from "node:process";
 
 // Mock Supabase environment variables for tests
 // This prevents "Invalid supabaseUrl" errors during initialization
@@ -24,11 +25,11 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // Mock resize observer
-global.ResizeObserver = class ResizeObserver {
+globalThis.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}
 };
 
 // Global scrollIntoView mock
-window.HTMLElement.prototype.scrollIntoView = vi.fn();
+globalThis.HTMLElement.prototype.scrollIntoView = vi.fn();

@@ -134,7 +134,7 @@ describe('BookingWizard', () => {
         render(<BookingWizard />);
 
         expect(screen.getAllByText('Fyzioterapia')[0]).toBeInTheDocument();
-        expect(screen.getByText('65 €')).toBeInTheDocument();
+        expect(screen.getByText('65€')).toBeInTheDocument();
     });
 
     it('should show submit button text', () => {

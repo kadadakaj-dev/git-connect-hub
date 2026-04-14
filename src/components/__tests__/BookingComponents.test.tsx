@@ -103,10 +103,12 @@ describe('SplashScreen', () => {
 });
 
 describe('GlassBackground', () => {
-    it('should render high-quality backdrop with signature glass blobs', () => {
+    it('should render a single fixed full-screen backdrop element', () => {
         const { container } = render(<GlassBackground />);
-        const blobs = container.querySelectorAll('.glass-blob');
-        expect(blobs.length).toBe(3);
+        expect(container.children).toHaveLength(1);
+        const wrapper = container.firstChild as HTMLElement;
+        expect(wrapper.className).toContain('fixed');
+        expect(wrapper.className).toContain('inset-0');
     });
 
     it('should be fixed positioned and non-interactive', () => {

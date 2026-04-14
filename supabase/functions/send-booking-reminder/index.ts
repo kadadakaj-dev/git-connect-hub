@@ -89,7 +89,7 @@ const handler = async (req: Request): Promise<Response> => {
         client_email,
         client_user_id,
         cancellation_token,
-        service:services(name_sk, name_en, duration)
+        service:services(name_sk, name_en, duration, description_sk)
       `)
       .in("date", [todayStr, tomorrowStr, dayAfterStr])
       .in("status", ["pending", "confirmed"]);
@@ -127,6 +127,7 @@ const handler = async (req: Request): Promise<Response> => {
                 serviceName: booking.service?.duration
                   ? `${booking.service.name_sk} (${booking.service.duration} min)`
                   : (booking.service?.name_sk || "Služba"),
+                serviceDescription: booking.service?.description_sk || undefined,
                 date: booking.date,
                 time: booking.time_slot,
                 cancellationToken: booking.cancellation_token,
@@ -169,6 +170,7 @@ const handler = async (req: Request): Promise<Response> => {
                 serviceName: booking.service?.duration
                   ? `${booking.service.name_sk} (${booking.service.duration} min)`
                   : (booking.service?.name_sk || "Služba"),
+                serviceDescription: booking.service?.description_sk || undefined,
                 date: booking.date,
                 time: booking.time_slot,
                 cancellationToken: booking.cancellation_token,
