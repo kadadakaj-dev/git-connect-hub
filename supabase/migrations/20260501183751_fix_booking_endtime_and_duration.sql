@@ -224,7 +224,7 @@ END;
 $$;
 
 -- ────────────────────────────────────────────────────────────────────────────────
--- Part 2: SQL repair for wrong booking_duration values
+-- Part 2: Data repair for wrong booking_duration values
 --
 -- booking_duration semantics (confirmed from the canonical RPC above):
 --   booking_duration = ceil(services.duration / 30) * 30
@@ -234,41 +234,11 @@ $$;
 --   Naprávanie       15 min → booking_duration 30  (blocks slot  16:00 only)
 --   Celotelová chiro 90 min → booking_duration 90  (blocks slots 16:00 + 16:30 + 17:00)
 --
--- If a booking was created while the service had a wrong duration (e.g. 15 instead
--- of 50 for Chiro masáž), the stored booking_duration will be 30 instead of 60.
--- This causes the adjacent slot (e.g. 16:30) to appear free in the UI, allowing
--- a second booking that should be blocked.
+-- NOTE: The booking_duration repair UPDATE has intentionally been left out of this
+-- migration so it cannot run automatically via `supabase db push` before the DBA
+-- has had a chance to inspect which rows will be affected.
 --
--- The repair below targets confirmed/pending future bookings where booking_duration
--- does not match ceil(service.duration / 30) * 30.
---
--- ── Verification query (run first and inspect the results) ──────────────────────
---
--- SELECT
---     b.id,
---     b.date,
---     b.time_slot,
---     b.booking_duration          AS stored_duration,
---     s.name_sk                   AS service_name,
---     s.duration                  AS service_duration,
---     ceil(s.duration::float / 30) * 30 AS correct_booking_duration
--- FROM public.bookings b
--- JOIN public.services s ON b.service_id = s.id
--- WHERE b.status IN ('confirmed', 'pending')
---   AND b.date >= CURRENT_DATE
---   AND ceil(s.duration::float / 30) * 30 != b.booking_duration
--- ORDER BY b.date, b.time_slot;
---
--- ── Repair UPDATE ───────────────────────────────────────────────────────────────
--- Run this only after inspecting the verification query above and confirming the
--- rows are the expected affected bookings.
-
-UPDATE public.bookings b
-SET
-    booking_duration = ceil(s.duration::float / 30) * 30,
-    updated_at       = now()
-FROM public.services s
-WHERE b.service_id = s.id
-  AND b.status IN ('confirmed', 'pending')
-  AND b.date >= CURRENT_DATE
-  AND ceil(s.duration::float / 30) * 30 != b.booking_duration;
+-- Run the manual repair script AFTER reviewing the output of the verification
+-- SELECT it contains:
+--   supabase/manual-sql/repair_booking_duration_after_chiro_fix.sql
+-- ────────────────────────────────────────────────────────────────────────────────

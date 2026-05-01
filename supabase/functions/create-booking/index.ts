@@ -281,12 +281,12 @@ serve(async (req: EdgeRequest) => {
         )
       }
 
-      const duration = serviceRes.duration
-      const endDateTime = targetDateTime.plus({ minutes: duration })
+      const duration = serviceRes.duration;
+      const endDateTime = targetDateTime.plus({ minutes: duration });
 
       // Fetch dynamic operating hours from time_slots_config.
       // Luxon weekday: 1=Mon..7=Sun; PostgreSQL DOW: 0=Sun..6=Sat → convert via % 7
-      const dayOfWeek = targetDateTime.weekday % 7
+      const dayOfWeek = targetDateTime.weekday % 7;
 
       const { data: configRes, error: configError } = await supabase
         .from('time_slots_config')
@@ -309,8 +309,8 @@ serve(async (req: EdgeRequest) => {
       }
 
       // Parse configured start/end (stored as "HH:MM:SS" TIME by Supabase)
-      const [confStartH, confStartM] = configRes.start_time.split(':').map(Number)
-      const [confEndH, confEndM] = configRes.end_time.split(':').map(Number)
+      const [confStartH, confStartM] = configRes.start_time.split(':').map(Number);
+      const [confEndH, confEndM] = configRes.end_time.split(':').map(Number);
       const configStart = DateTime.fromObject(
         { year, month, day, hour: confStartH, minute: confStartM, second: 0 },
         { zone: 'Europe/Bratislava' }
