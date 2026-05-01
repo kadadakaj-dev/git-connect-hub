@@ -32,7 +32,15 @@ declare const Deno: {
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-version'
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+};
+
+function hasNonAscii(input: string): boolean {
+  return Array.from(input).some((char) => {
+    const codePoint = char.codePointAt(0);
+    return typeof codePoint === "number" && codePoint > 0x7f;
+  });
 }
 
 serve(async (req: Request) => {
@@ -81,7 +89,7 @@ serve(async (req: Request) => {
     // UTF-8 subjects (missing ?= terminator, spaces inside the encoded-word).
     // Workaround: pre-encode as RFC 2047 Base64 ourselves. Since the result is
     // pure ASCII, denomailer will not attempt to re-encode it.
-    const subject = /[^\x01-\x7F]/.test(rawSubject)
+    const subject = hasNonAscii(rawSubject)
       ? `=?utf-8?B?${btoa(unescape(encodeURIComponent(rawSubject)))}?=`
       : rawSubject;
     let html: string;
