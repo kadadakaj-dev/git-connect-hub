@@ -233,12 +233,12 @@ serve(async (req: EdgeRequest) => {
       )
     }
 
-    // 36h Lead Time & 18:00 Operating Hours Boundary (Server-Side Enforcement)
+    // Business Rules: 36h Lead Time + Dynamic Operating Hours (from time_slots_config)
     try {
       const [hours, minutes] = body.time_slot.split(':').map(Number);
       const [year, month, day] = body.date.split('-').map(Number);
-      
-      // Parse the requested date/time specifically in the Bratislava zone
+
+      // Parse the requested date/time in the Bratislava zone
       const targetDateTime = DateTime.fromObject({
         year, month, day, hour: hours, minute: minutes, second: 0, millisecond: 0
       }, { zone: 'Europe/Bratislava' });
@@ -251,39 +251,87 @@ serve(async (req: EdgeRequest) => {
       }
 
       const now = DateTime.now().setZone('Europe/Bratislava');
-      const leadTimeHours = 36;
-      
-      // Rule 3: 36h Minimum Lead Time (Source of Truth Mirror)
-      if (targetDateTime < now.plus({ hours: leadTimeHours })) {
+
+      // Rule: 36h Minimum Lead Time
+      if (targetDateTime < now.plus({ hours: 36 })) {
         return new Response(
           JSON.stringify({ error: 'BUSINESS_RULE_VIOLATION: Advance booking required (min 36h)' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
 
-      // Rule 1: Operating Hours (Must end by 18:00)
-      // Retrieve service duration for end-time check
-      const { data: serviceRes } = await supabase
+      // Fetch service — must exist; no silent duration fallback
+      const { data: serviceRes, error: serviceError } = await supabase
         .from('services')
-        .select('duration')
+        .select('duration, is_active')
         .eq('id', body.service_id)
-        .single();
-      
-      const duration = serviceRes?.duration || 60;
-      const endDateTime = targetDateTime.plus({ minutes: duration });
+        .single()
 
-      // Rule 1: Operating Hours (Start >= 09:00)
-      if (targetDateTime.hour < 9) {
+      if (serviceError || !serviceRes) {
         return new Response(
-          JSON.stringify({ error: 'BUSINESS_RULE_VIOLATION: Booking before 09:00 is not allowed' }),
+          JSON.stringify({ error: 'Service not found' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
 
-      // Rule 2: Operating Hours (End <= 18:00)
-      if (endDateTime.hour > 18 || (endDateTime.hour === 18 && endDateTime.minute > 0)) {
+      if (!serviceRes.is_active) {
         return new Response(
-          JSON.stringify({ error: `BUSINESS_RULE_VIOLATION: Booking must end by 18:00. Your session ends at ${endDateTime.toFormat('HH:mm')}` }),
+          JSON.stringify({ error: 'Service is not available' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      const duration = serviceRes.duration;
+      const endDateTime = targetDateTime.plus({ minutes: duration });
+
+      // Fetch dynamic operating hours from time_slots_config.
+      // Luxon weekday: 1=Mon..7=Sun; PostgreSQL DOW: 0=Sun..6=Sat → convert via % 7
+      const dayOfWeek = targetDateTime.weekday % 7;
+
+      const { data: configRes, error: configError } = await supabase
+        .from('time_slots_config')
+        .select('start_time, end_time, is_active')
+        .eq('day_of_week', dayOfWeek)
+        .maybeSingle()
+
+      if (configError || !configRes) {
+        return new Response(
+          JSON.stringify({ error: 'BUSINESS_RULE_VIOLATION: No working hours configuration found for this day' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      if (!configRes.is_active) {
+        return new Response(
+          JSON.stringify({ error: 'BUSINESS_RULE_VIOLATION: The clinic is closed on this day' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      // Parse configured start/end (stored as "HH:MM:SS" TIME by Supabase)
+      const [confStartH, confStartM] = configRes.start_time.split(':').map(Number);
+      const [confEndH, confEndM] = configRes.end_time.split(':').map(Number);
+      const configStart = DateTime.fromObject(
+        { year, month, day, hour: confStartH, minute: confStartM, second: 0 },
+        { zone: 'Europe/Bratislava' }
+      )
+      const configEnd = DateTime.fromObject(
+        { year, month, day, hour: confEndH, minute: confEndM, second: 0 },
+        { zone: 'Europe/Bratislava' }
+      )
+
+      // Rule: Start time must be within opening hours
+      if (targetDateTime < configStart) {
+        return new Response(
+          JSON.stringify({ error: `BUSINESS_RULE_VIOLATION: Booking before opening hours (${configRes.start_time.slice(0, 5)}) is not allowed` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      // Rule: End time (start + service duration) must not exceed closing time
+      if (endDateTime > configEnd) {
+        return new Response(
+          JSON.stringify({ error: `BUSINESS_RULE_VIOLATION: Booking must end by ${configRes.end_time.slice(0, 5)}. Your session ends at ${endDateTime.toFormat('HH:mm')}` }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
