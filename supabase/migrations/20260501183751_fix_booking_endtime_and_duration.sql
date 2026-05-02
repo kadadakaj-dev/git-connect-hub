@@ -15,14 +15,15 @@
 -- ────────────────────────────────────────────────────────────────────────────────
 -- Part 1: Update create_secure_booking to also validate end-time against config
 --
--- This updates the canonical 10-parameter function that the create-booking edge
--- function calls. The only functional change is adding a check after service
--- duration is known:
+-- This replaces the canonical 10-parameter function that the create-booking edge
+-- function calls. The primary behavior change in this migration is adding an
+-- end-time check after service duration is known:
 --
 --   IF (p_time_slot::time + (v_service_duration || ' minutes')::interval)::time > v_end_time
 --
--- All other logic is preserved exactly as defined in migration
--- 20260408000001_security_and_logic_hardening.sql.
+-- The function body below follows the current canonical definition being installed
+-- by this migration and should be audited as a whole rather than assuming every
+-- branch is identical to migration 20260408000001_security_and_logic_hardening.sql.
 -- ────────────────────────────────────────────────────────────────────────────────
 
 CREATE OR REPLACE FUNCTION public.create_secure_booking(
