@@ -2,6 +2,10 @@ import "@testing-library/jest-dom";
 import { vi } from "vitest";
 import process from "node:process";
 
+// Ensure date-fns / Date methods use Bratislava locale throughout all tests
+// (parseBratislavaDate expects the timeSlot to be expressed in Europe/Bratislava time)
+process.env.TZ = "Europe/Bratislava";
+
 // Mock Supabase environment variables for tests
 // This prevents "Invalid supabaseUrl" errors during initialization
 if (typeof process !== "undefined") {
