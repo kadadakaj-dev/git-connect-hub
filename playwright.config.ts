@@ -32,6 +32,15 @@ export default defineConfig({
     url: 'http://127.0.0.1:8082',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
+    env: {
+      // Provide fallback placeholder values so the Supabase client module can
+      // initialise without throwing.  All actual network calls in E2E tests
+      // are intercepted by Playwright route mocks, so these values are never
+      // used for real requests.
+      VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+      VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY ?? 'placeholder_anon_key_for_e2e_tests',
+      VITE_SUPABASE_PUBLISHABLE_KEY: process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? 'placeholder_anon_key_for_e2e_tests',
+    },
   },
   projects: [
     {
