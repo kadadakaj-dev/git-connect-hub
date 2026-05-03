@@ -14,6 +14,8 @@ function skipSplashAndCookies(page: import('@playwright/test').Page) {
     return page.addInitScript(() => {
         window.sessionStorage.setItem('fyzio_splash_shown', 'true');
         window.localStorage.setItem('cookie-consent', 'accepted');
+        // Prevent TanStack Query DevTools from auto-opening (key = prefix + "." + fieldName)
+        window.localStorage.setItem('TanstackQueryDevtools.open', 'false');
     });
 }
 
@@ -127,7 +129,7 @@ test.describe('Footer navigation', () => {
 
     test('footer Terms of Service link navigates to /legal?tab=terms', async ({ page }) => {
         await page.goto('/legal');
-        const termsLink = page.getByRole('link', { name: /Obchodné podmienky|Terms of Service/i }).first();
+        const termsLink = page.locator('footer').getByRole('link', { name: /Obchodné podmienky|Terms of Service/i }).first();
         await expect(termsLink).toBeVisible({ timeout: 10000 });
         await termsLink.click();
         await expect(page).toHaveURL(/\/legal/);
@@ -136,7 +138,7 @@ test.describe('Footer navigation', () => {
 
     test('footer Privacy Policy link navigates to /legal?tab=privacy', async ({ page }) => {
         await page.goto('/legal');
-        const privacyLink = page.getByRole('link', { name: /Ochrana údajov|Privacy Policy/i }).first();
+        const privacyLink = page.locator('footer').getByRole('link', { name: /Ochrana údajov|Privacy Policy/i }).first();
         await expect(privacyLink).toBeVisible({ timeout: 10000 });
         await privacyLink.click();
         await expect(page).toHaveURL(/\/legal/);

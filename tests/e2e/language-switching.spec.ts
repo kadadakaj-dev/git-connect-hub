@@ -20,7 +20,7 @@ function skipSplashAndCookies(page: import('@playwright/test').Page) {
     });
 }
 
-/** Close the TanStack Query Devtools panel if it is open (can persist across browser contexts in the same browser instance). */
+/** Close the TanStack Query DevTools panel if it is open (can persist across browser contexts in the same browser instance). */
 async function closeDevtoolsIfOpen(page: import('@playwright/test').Page) {
     // The DevTools can initialise asynchronously; give it up to 1.5 s to show.
     const closeBtn = page.getByRole('button', { name: /Close tanstack query devtools/i });
