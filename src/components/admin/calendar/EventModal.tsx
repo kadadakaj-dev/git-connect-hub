@@ -177,6 +177,7 @@ const EventModal = ({
             <div className="relative">
               {formData.type !== 'block' && <User className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5 sm:top-3" />}
               <Input
+                data-testid="input-title"
                 value={formData.title}
                 onChange={(e) => onChange({ title: e.target.value })}
                 className={`h-9 sm:h-10 ${formData.type !== 'block' ? 'pl-9' : ''}`}

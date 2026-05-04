@@ -10,7 +10,7 @@ test.describe('Admin CRUD Regression', () => {
         await page.route('**/rest/v1/services*', async route => {
             if (route.request().method() === 'GET') {
                 await route.fulfill({
-                    json: [{ id: 's1', name_sk: 'Service 1', price: 10, duration: 30, is_active: true, category: 'chiropractic', icon: 'Activity', sort_order: 0 }]
+                    json: [{ id: 's1', name_sk: 'Service 1', name_en: 'Service 1 EN', description_sk: 'Popis SK', description_en: 'Description EN', price: 10, duration: 30, is_active: true, category: 'chiropractic', icon: 'Activity', sort_order: 0 }]
                 });
             } else {
                 await route.fulfill({ status: 200, json: { success: true } });
@@ -37,6 +37,28 @@ test.describe('Admin CRUD Regression', () => {
             }
         });
 
+        // CalendarView fetches these — mock them so fetchData completes quickly and
+        // the calendar tab renders even when Supabase is not running locally.
+        await page.route('**/rest/v1/blocked_dates*', async route => {
+            await route.fulfill({ json: [] });
+        });
+
+        await page.route('**/rest/v1/blocked_slots*', async route => {
+            if (route.request().method() === 'POST') {
+                await route.fulfill({ status: 201, json: [] });
+            } else {
+                await route.fulfill({ json: [] });
+            }
+        });
+
+        await page.route('**/rest/v1/bookings*', async route => {
+            await route.fulfill({ json: [] });
+        });
+
+        await page.route('**/rest/v1/rpc/get_booking_slot_counts*', async route => {
+            await route.fulfill({ json: [] });
+        });
+
         await loginAsAdmin(page);
         // Confirm we are on the admin dashboard
         await expect(page.getByTestId('admin-dashboard')).toBeVisible({ timeout: 15000 });
@@ -49,10 +71,11 @@ test.describe('Admin CRUD Regression', () => {
 
         // Create
         await page.click('button:has-text("Pridať službu")');
-        await page.fill('input[id="name_sk"]', 'New Service SK');
-        await page.fill('input[id="name_en"]', 'New Service EN');
-        await page.fill('textarea[id="description_sk"]', 'Desc SK');
-        await page.fill('textarea[id="description_en"]', 'Desc EN');
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await page.getByTestId('input-name_sk').fill('New Service SK');
+        await page.getByTestId('input-name_en').fill('New Service EN');
+        await page.getByTestId('input-description_sk').fill('Desc SK');
+        await page.getByTestId('input-description_en').fill('Desc EN');
         await page.locator('input[type="number"]').first().fill('45'); // Duration
         await page.locator('input[type="number"]').nth(1).fill('50'); // Price
 
@@ -61,7 +84,8 @@ test.describe('Admin CRUD Regression', () => {
 
         // Update
         await page.locator('button[aria-label="Upraviť"]').first().click();
-        await page.fill('input[id="name_sk"]', 'Updated Service');
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await page.getByTestId('input-name_sk').fill('Updated Service');
         await page.click('button:has-text("Uložiť")');
         await expect(page.getByText(/Služba aktualizovaná/i)).toBeVisible();
 
@@ -77,14 +101,16 @@ test.describe('Admin CRUD Regression', () => {
 
         // Create
         await page.click('button:has-text("Pridať zamestnanca")');
-        await page.fill('input[id="full_name"]', 'New Employee');
-        await page.fill('input[type="email"]', 'new@e.com');
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await page.getByTestId('input-full_name').fill('New Employee');
+        await page.locator('input[type="email"]').fill('new@e.com');
         await page.click('button:has-text("Vytvoriť")');
         await expect(page.getByText(/Uložené/i)).toBeVisible();
 
         // Update
         await page.locator('button[aria-label="Upraviť"]').first().click();
-        await page.fill('input[id="full_name"]', 'Updated Employee');
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await page.getByTestId('input-full_name').fill('Updated Employee');
         await page.click('button:has-text("Uložiť")');
         await expect(page.getByText(/Uložené/i)).toBeVisible();
 
@@ -116,7 +142,8 @@ test.describe('Admin CRUD Regression', () => {
         await page.getByRole('button', { name: /Blokovať|Block/i }).first().click();
         await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
 
-        await page.fill('input[id="title"]', 'Test Block');
+        // EventModal title has data-testid="input-title"
+        await page.getByTestId('input-title').fill('Test Block');
         await page.getByRole('button', { name: /Uložiť|Save/i }).click();
 
         await expect(
