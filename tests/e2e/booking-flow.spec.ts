@@ -59,7 +59,8 @@ test.describe('Booking wizard smoke flow', () => {
                 const timeSlot = page.locator('[data-testid^="time-slot-"]:not([disabled])').first();
                 await expect(timeSlot).toBeVisible({ timeout: 1500 });
                 await timeSlot.click();
-                await page.waitForTimeout(500); // Wait for React state & Framer Motion to settle
+                // Wait for the wizard to advance to the personal details step
+                await expect(page.locator('[data-testid="input-clientName"]')).toBeVisible({ timeout: 5000 });
                 foundTime = true;
                 break;
             } catch (e) {

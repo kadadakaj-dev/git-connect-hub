@@ -16,6 +16,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+// Provide safe placeholder values for Vite env vars so the dev server (webServer)
+// can start in CI without real Supabase secrets. All Supabase network calls are
+// intercepted by page.route() in individual tests, so these placeholders never
+// reach a real Supabase instance.
+if (!process.env.VITE_SUPABASE_URL) {
+    process.env.VITE_SUPABASE_URL = 'http://127.0.0.1:54321';
+}
+if (!process.env.VITE_SUPABASE_ANON_KEY) {
+    process.env.VITE_SUPABASE_ANON_KEY = 'e2e-placeholder-anon-key';
+}
+if (!process.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY = 'e2e-placeholder-publishable-key';
+}
+
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
