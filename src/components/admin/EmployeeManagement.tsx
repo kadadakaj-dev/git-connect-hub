@@ -200,7 +200,7 @@ const EmployeeManagement = () => {
             <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
               <div className="space-y-2">
                 <Label>{language === 'sk' ? 'Meno' : 'Full Name'} *</Label>
-                <Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
+                <Input data-testid="input-full_name" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">

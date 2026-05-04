@@ -72,12 +72,10 @@ test.describe('Admin CRUD Regression', () => {
         // Create
         await page.click('button:has-text("Pridať službu")');
         await expect(page.getByRole('dialog')).toBeVisible();
-        // ServiceManagement inputs have no id — target by position within the dialog
-        const svcDialog = page.getByRole('dialog');
-        await svcDialog.locator('input:not([type="number"])').nth(0).fill('New Service SK'); // name_sk
-        await svcDialog.locator('input:not([type="number"])').nth(1).fill('New Service EN'); // name_en
-        await svcDialog.locator('textarea').nth(0).fill('Desc SK');                          // description_sk
-        await svcDialog.locator('textarea').nth(1).fill('Desc EN');                          // description_en
+        await page.getByTestId('input-name_sk').fill('New Service SK');
+        await page.getByTestId('input-name_en').fill('New Service EN');
+        await page.getByTestId('input-description_sk').fill('Desc SK');
+        await page.getByTestId('input-description_en').fill('Desc EN');
         await page.locator('input[type="number"]').first().fill('45'); // Duration
         await page.locator('input[type="number"]').nth(1).fill('50'); // Price
 
@@ -87,7 +85,7 @@ test.describe('Admin CRUD Regression', () => {
         // Update
         await page.locator('button[aria-label="Upraviť"]').first().click();
         await expect(page.getByRole('dialog')).toBeVisible();
-        await page.getByRole('dialog').locator('input:not([type="number"])').nth(0).fill('Updated Service');
+        await page.getByTestId('input-name_sk').fill('Updated Service');
         await page.click('button:has-text("Uložiť")');
         await expect(page.getByText(/Služba aktualizovaná/i)).toBeVisible();
 
@@ -104,17 +102,15 @@ test.describe('Admin CRUD Regression', () => {
         // Create
         await page.click('button:has-text("Pridať zamestnanca")');
         await expect(page.getByRole('dialog')).toBeVisible();
-        // EmployeeManagement inputs have no id — skip file/email/number inputs
-        const empDialog = page.getByRole('dialog');
-        await empDialog.locator('input:not([type="file"]):not([type="email"]):not([type="number"])').first().fill('New Employee');
-        await empDialog.locator('input[type="email"]').fill('new@e.com');
+        await page.getByTestId('input-full_name').fill('New Employee');
+        await page.locator('input[type="email"]').fill('new@e.com');
         await page.click('button:has-text("Vytvoriť")');
         await expect(page.getByText(/Uložené/i)).toBeVisible();
 
         // Update
         await page.locator('button[aria-label="Upraviť"]').first().click();
         await expect(page.getByRole('dialog')).toBeVisible();
-        await page.getByRole('dialog').locator('input:not([type="file"]):not([type="email"]):not([type="number"])').first().fill('Updated Employee');
+        await page.getByTestId('input-full_name').fill('Updated Employee');
         await page.click('button:has-text("Uložiť")');
         await expect(page.getByText(/Uložené/i)).toBeVisible();
 
@@ -146,9 +142,8 @@ test.describe('Admin CRUD Regression', () => {
         await page.getByRole('button', { name: /Blokovať|Block/i }).first().click();
         await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
 
-        // EventModal title input has no id — it is the first non-date/time input in the dialog
-        const blockDialog = page.getByRole('dialog');
-        await blockDialog.locator('input:not([type="date"]):not([type="time"])').first().fill('Test Block');
+        // EventModal title has data-testid="input-title"
+        await page.getByTestId('input-title').fill('Test Block');
         await page.getByRole('button', { name: /Uložiť|Save/i }).click();
 
         await expect(
