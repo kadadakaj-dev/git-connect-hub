@@ -25,15 +25,16 @@ test.describe('Admin Slot Blocking', () => {
         // Navigate to the Calendar tab where CalendarView (and the Block button) lives
         await page.getByRole('tab', { name: /Kalendár|Calendar/i }).click();
 
-        // Mock the booking INSERT that represents a time-slot block in the bookings table
-        await page.route('**/rest/v1/bookings*', async route => {
+        // Mock the blocked_slots INSERT used by CalendarView when blockScope === 'time_slot'
+        // (the previous mock targeted `bookings`, but CalendarView writes to `blocked_slots`)
+        await page.route('**/rest/v1/blocked_slots*', async route => {
             if (route.request().method() === 'POST') {
                 await route.fulfill({
                     status: 201,
-                    json: { id: 'mock-block-id', date: dateStr, time_slot: timeStr },
+                    json: [{ id: 'mock-block-id', date: dateStr, time_slot: timeStr, duration: 30 }],
                 });
             } else {
-                await route.continue();
+                await route.fulfill({ json: [] });
             }
         });
 

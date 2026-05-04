@@ -33,6 +33,13 @@ test.describe('Booking wizard smoke flow', () => {
         await page.route('**/rest/v1/rpc/get_booking_slot_counts*', async route => {
             await route.fulfill({ json: [] });
         });
+
+        // Mock blocked_dates — without this the supabase request may hang in CI
+        // (filtered TCP connection → no immediate RST → useTimeSlots query never
+        //  resolves inside the 1500 ms Playwright timeout)
+        await page.route('**/rest/v1/blocked_dates*', async route => {
+            await route.fulfill({ json: [] });
+        });
     });
 
     test('should progress through the booking wizard steps', async ({ page }) => {
