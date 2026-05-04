@@ -45,6 +45,7 @@ function supabaseStorageKey(supabaseUrl: string): string {
         const hostname = new URL(supabaseUrl).hostname;
         return `sb-${hostname.split('.')[0]}-auth-token`;
     } catch {
+        console.warn(`[loginAsAdmin] Could not parse VITE_SUPABASE_URL "${supabaseUrl}" — falling back to sb-127-auth-token`);
         return 'sb-127-auth-token';
     }
 }

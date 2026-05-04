@@ -9,11 +9,13 @@ import process from 'node:process';
  */
 export async function cleanupTestBookings(clientEmail: string = 'test@example.com') {
     const url = process.env.VITE_SUPABASE_URL;
-    // Both variable names refer to the same anon/publishable key in this project
-    // (see .env.example). Accept either so CI configs using either name work.
-    const key =
-        process.env.VITE_SUPABASE_ANON_KEY ||
-        process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    // VITE_SUPABASE_ANON_KEY and VITE_SUPABASE_PUBLISHABLE_KEY are two names used
+    // for the same anon/publishable key in this project (see .env.example).
+    // VITE_SUPABASE_ANON_KEY takes precedence; VITE_SUPABASE_PUBLISHABLE_KEY is
+    // accepted as an alias for environments that only set the publishable key name.
+    const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
+    const publishableKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    const key = anonKey || publishableKey;
 
     if (!url || !key) {
         console.warn('[cleanup] Supabase env vars not set – skipping E2E database cleanup');

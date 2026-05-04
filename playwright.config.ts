@@ -17,10 +17,10 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 // Provide safe placeholder values for Vite env vars so the dev server (webServer)
-// can start in CI without real Supabase secrets. All Supabase network calls are
-// intercepted by page.route() in individual tests, so these placeholders never
-// reach a real Supabase instance.
-const LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321'; // standard local Supabase emulator address
+// can start in CI without real Supabase secrets.  These values are never sent to
+// a real Supabase instance — all Supabase network calls in the E2E tests are
+// intercepted by page.route() handlers.
+const LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321'; // placeholder; matches local Supabase CLI default port
 
 if (!process.env.VITE_SUPABASE_URL) {
     process.env.VITE_SUPABASE_URL = LOCAL_SUPABASE_URL;
