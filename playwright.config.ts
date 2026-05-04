@@ -20,8 +20,10 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 // can start in CI without real Supabase secrets. All Supabase network calls are
 // intercepted by page.route() in individual tests, so these placeholders never
 // reach a real Supabase instance.
+const LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321'; // standard local Supabase emulator address
+
 if (!process.env.VITE_SUPABASE_URL) {
-    process.env.VITE_SUPABASE_URL = 'http://127.0.0.1:54321';
+    process.env.VITE_SUPABASE_URL = LOCAL_SUPABASE_URL;
 }
 if (!process.env.VITE_SUPABASE_ANON_KEY) {
     process.env.VITE_SUPABASE_ANON_KEY = 'e2e-placeholder-anon-key';

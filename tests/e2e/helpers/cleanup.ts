@@ -9,6 +9,8 @@ import process from 'node:process';
  */
 export async function cleanupTestBookings(clientEmail: string = 'test@example.com') {
     const url = process.env.VITE_SUPABASE_URL;
+    // Both variable names refer to the same anon/publishable key in this project
+    // (see .env.example). Accept either so CI configs using either name work.
     const key =
         process.env.VITE_SUPABASE_ANON_KEY ||
         process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
