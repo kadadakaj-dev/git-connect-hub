@@ -22,6 +22,15 @@ export async function cleanupTestBookings(clientEmail: string = 'test@example.co
         return;
     }
 
+    // Skip when CI placeholder values are present to avoid noise from failed
+    // connections to http://127.0.0.1:54321 in environments without a real Supabase.
+    const usesPlaceholderKey = key.includes('placeholder');
+    const usesCiLocal = process.env.CI === 'true' && url === 'http://127.0.0.1:54321';
+    if (usesPlaceholderKey || usesCiLocal) {
+        console.warn('[cleanup] Placeholder/CI Supabase detected – skipping E2E database cleanup');
+        return;
+    }
+
     const supabase = createClient(url, key);
     const { error } = await supabase
         .from('bookings')

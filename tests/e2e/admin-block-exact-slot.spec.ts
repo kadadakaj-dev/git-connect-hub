@@ -23,10 +23,9 @@ test.describe('Admin Slot Blocking', () => {
         await expect(page.getByTestId('admin-dashboard')).toBeVisible({ timeout: 15000 });
 
         // Navigate to the Calendar tab where CalendarView (and the Block button) lives
-        await page.getByRole('tab', { name: /Kalendár|Calendar/i }).click();
-
-        // Mock the blocked_slots INSERT used by CalendarView when blockScope === 'time_slot'
-        // (the previous mock targeted `bookings`, but CalendarView writes to `blocked_slots`)
+        // Register the blocked_slots mock BEFORE clicking the tab, because CalendarView's
+        // fetchData() fires immediately on render and the GET would otherwise slip through
+        // to the placeholder Supabase URL.
         await page.route('**/rest/v1/blocked_slots*', async route => {
             if (route.request().method() === 'POST') {
                 await route.fulfill({
@@ -37,6 +36,8 @@ test.describe('Admin Slot Blocking', () => {
                 await route.fulfill({ json: [] });
             }
         });
+
+        await page.getByRole('tab', { name: /Kalendár|Calendar/i }).click();
 
         // Click the "Block" button in CalendarHeader
         await page.getByRole('button', { name: /Blokovať|Block/i }).first().click();

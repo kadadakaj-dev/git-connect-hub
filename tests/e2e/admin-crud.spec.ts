@@ -10,7 +10,7 @@ test.describe('Admin CRUD Regression', () => {
         await page.route('**/rest/v1/services*', async route => {
             if (route.request().method() === 'GET') {
                 await route.fulfill({
-                    json: [{ id: 's1', name_sk: 'Service 1', price: 10, duration: 30, is_active: true, category: 'chiropractic', icon: 'Activity', sort_order: 0 }]
+                    json: [{ id: 's1', name_sk: 'Service 1', name_en: 'Service 1 EN', description_sk: 'Popis SK', description_en: 'Description EN', price: 10, duration: 30, is_active: true, category: 'chiropractic', icon: 'Activity', sort_order: 0 }]
                 });
             } else {
                 await route.fulfill({ status: 200, json: { success: true } });
