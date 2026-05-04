@@ -1,12 +1,9 @@
 import { type Page } from '@playwright/test';
+import process from 'node:process';
 
 // The hardcoded admin email checked by AdminProtectedRoute / Admin page.
 // Must match src/lib/constants.ts ADMIN_EMAIL.
 const ADMIN_EMAIL = 'booking@fyzioafit.sk';
-
-// Project reference read from src/main.tsx — determines the localStorage key
-// where supabase-js v2 stores the auth session.
-const SUPABASE_PROJECT_REF = 'gtefgucwbskgknsdirvj';
 
 // A fake JWT that supabase-js v2 can decode (it only base64url-decodes the
 // payload — it never verifies the signature client-side).
@@ -38,6 +35,21 @@ const MOCK_SESSION = {
 };
 
 /**
+ * Derives the localStorage key that supabase-js v2 uses for the auth session.
+ * Formula (from supabase-js source): sb-{hostname.split('.')[0]}-auth-token
+ * e.g. https://abc.supabase.co → sb-abc-auth-token
+ *      http://127.0.0.1:54321 → sb-127-auth-token
+ */
+function supabaseStorageKey(supabaseUrl: string): string {
+    try {
+        const hostname = new URL(supabaseUrl).hostname;
+        return `sb-${hostname.split('.')[0]}-auth-token`;
+    } catch {
+        return 'sb-127-auth-token';
+    }
+}
+
+/**
  * Bypasses the real Supabase login form by injecting a fake admin session
  * directly into localStorage before the app loads.
  *
@@ -50,6 +62,11 @@ const MOCK_SESSION = {
  *    our fake session satisfies.
  */
 export async function loginAsAdmin(page: Page) {
+    // Compute the actual localStorage key from the Supabase URL that the Vite
+    // dev server is started with (set by playwright.config.ts).
+    const supabaseUrl = process.env.VITE_SUPABASE_URL || 'http://127.0.0.1:54321';
+    const storageKey = supabaseStorageKey(supabaseUrl);
+
     // Mock Supabase auth API calls so token refresh / getUser() succeed.
     await page.route('**/auth/v1/user*', async route => {
         await route.fulfill({ json: MOCK_ADMIN_USER });
@@ -66,7 +83,7 @@ export async function loginAsAdmin(page: Page) {
             sessionStorage.setItem('fyzio_splash_shown', 'true');
             localStorage.setItem('cookie-consent', 'accepted');
         },
-        { storageKey: `sb-${SUPABASE_PROJECT_REF}-auth-token`, session: MOCK_SESSION },
+        { storageKey, session: MOCK_SESSION },
     );
 
     await page.goto('/admin');
