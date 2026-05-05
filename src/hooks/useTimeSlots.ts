@@ -205,7 +205,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
         (slot, index, self) => self.findIndex((s) => s.time === slot.time) === index
       );
 
-      // Filter out slots within the 36h lead time window OR ending after 18:00
+      // Filter out slots within the 36h lead time window or outside configured closing time
       const filtered = uniqueSlots.map((slot) => {
         const slotDateTime = parseBratislavaDate(selectedDate, slot.time);
         
