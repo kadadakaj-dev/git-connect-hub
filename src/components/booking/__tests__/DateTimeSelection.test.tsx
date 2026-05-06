@@ -14,11 +14,11 @@ vi.mock('@/integrations/supabase/client', () => ({
         from: vi.fn(() => ({
             select: vi.fn().mockResolvedValue({
                 data: [
-                    { id: 'cfg-1', day_of_week: 1, is_active: true, updated_at: '2026-01-01T00:00:00Z' },
-                    { id: 'cfg-2', day_of_week: 2, is_active: true, updated_at: '2026-01-01T00:00:00Z' },
-                    { id: 'cfg-3', day_of_week: 3, is_active: true, updated_at: '2026-01-01T00:00:00Z' },
-                    { id: 'cfg-4', day_of_week: 4, is_active: true, updated_at: '2026-01-01T00:00:00Z' },
-                    { id: 'cfg-5', day_of_week: 5, is_active: true, updated_at: '2026-01-01T00:00:00Z' },
+                    { id: 'cfg-1', day_of_week: 1, is_active: true, created_at: '2026-01-01T00:00:00Z' },
+                    { id: 'cfg-2', day_of_week: 2, is_active: true, created_at: '2026-01-01T00:00:00Z' },
+                    { id: 'cfg-3', day_of_week: 3, is_active: true, created_at: '2026-01-01T00:00:00Z' },
+                    { id: 'cfg-4', day_of_week: 4, is_active: true, created_at: '2026-01-01T00:00:00Z' },
+                    { id: 'cfg-5', day_of_week: 5, is_active: true, created_at: '2026-01-01T00:00:00Z' },
                 ],
                 error: null,
             }),

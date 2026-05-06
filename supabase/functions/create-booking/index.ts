@@ -35,15 +35,15 @@ interface WorkingHoursConfigRow {
   start_time: string
   end_time: string
   is_active: boolean
-  updated_at?: string
+  created_at?: string
 }
 
 function selectLatestWorkingHoursConfig(configs: WorkingHoursConfigRow[]): WorkingHoursConfigRow | null {
   if (configs.length === 0) return null
 
   const sorted = [...configs].sort((a, b) => {
-    const updatedAtCompare = (b.updated_at || '').localeCompare(a.updated_at || '')
-    if (updatedAtCompare !== 0) return updatedAtCompare
+    const createdAtCompare = (b.created_at || '').localeCompare(a.created_at || '')
+    if (createdAtCompare !== 0) return createdAtCompare
     return (b.id || '').localeCompare(a.id || '')
   })
 
@@ -310,7 +310,7 @@ serve(async (req: EdgeRequest) => {
 
       const { data: configRows, error: configError } = await supabase
         .from('time_slots_config')
-        .select('id, start_time, end_time, is_active, updated_at')
+        .select('id, start_time, end_time, is_active, created_at')
         .eq('day_of_week', dayOfWeek)
       const configRes = selectLatestWorkingHoursConfig(configRows || [])
 

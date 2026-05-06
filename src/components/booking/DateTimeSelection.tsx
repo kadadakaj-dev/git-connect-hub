@@ -28,13 +28,13 @@ type DayConfigRow = {
   id?: string;
   day_of_week: number;
   is_active: boolean;
-  updated_at?: string;
+  created_at?: string;
 };
 
 function isMoreRecentConfig(a: DayConfigRow, b: DayConfigRow): boolean {
-  const updatedAtCompare = (a.updated_at || '').localeCompare(b.updated_at || '');
-  if (updatedAtCompare !== 0) {
-    return updatedAtCompare > 0;
+  const createdAtCompare = (a.created_at || '').localeCompare(b.created_at || '');
+  if (createdAtCompare !== 0) {
+    return createdAtCompare > 0;
   }
   return (a.id || '').localeCompare(b.id || '') > 0;
 }
@@ -144,7 +144,7 @@ const DateTimeSelection = ({
     queryFn: async () => {
       const { data } = await supabase
         .from('time_slots_config')
-        .select('id, day_of_week, is_active, updated_at');
+        .select('id, day_of_week, is_active, created_at');
 
       const latestByDay = new Map<number, DayConfigRow>();
       for (const row of (data || []) as DayConfigRow[]) {
