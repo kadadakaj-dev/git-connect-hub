@@ -19,21 +19,18 @@ jobs:
 
       - name: Run pg_dump
         env:
-          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_SESSION_POOLER_URL: ${{ secrets.DB_SESSION_POOLER_URL }}
         run: |
-          if [ -z "$PGPASSWORD" ]; then
-            echo "::error::DB_PASSWORD secret is not set. Add it under Settings → Secrets and variables → Actions."
+          if [ -z "$DB_SESSION_POOLER_URL" ]; then
+            echo "::error::DB_SESSION_POOLER_URL secret is not set. Add the Supabase Session Pooler connection string (IPv4) under Settings → Secrets and variables → Actions."
             exit 1
           fi
           mkdir -p backups
           TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')
-          # Resolve to an IPv4 address to avoid IPv6 connectivity issues on GitHub Actions runners
-          DB_HOST=$(getent ahostsv4 db.gtefgucwbskgknsdirvj.supabase.co | awk 'NR==1{print $1}')
-          if [ -z "$DB_HOST" ]; then
-            echo "::error::Could not resolve db.gtefgucwbskgknsdirvj.supabase.co to an IPv4 address."
-            exit 1
-          fi
-          pg_dump -h "${DB_HOST}" -U postgres -d postgres -p 5432 -F c -b -v -f "backups/supabase_backup_${TIMESTAMP}.dump"
+          # Use Supabase Session Pooler URL (IPv4-compatible on GitHub-hosted runners).
+          # Expected format:
+          # postgres://postgres.<project-ref>:<password>@aws-<n>-<region>.pooler.supabase.com:5432/postgres
+          pg_dump --dbname="${DB_SESSION_POOLER_URL}" -F c -b -v -f "backups/supabase_backup_${TIMESTAMP}.dump"
 
       - name: Upload Backup Artifact
         uses: actions/upload-artifact@v6
