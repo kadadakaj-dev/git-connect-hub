@@ -25,12 +25,67 @@ jobs:
             echo "::error::DB_SESSION_POOLER_URL secret is not set. Add the Supabase Session Pooler connection string (IPv4) under Settings → Secrets and variables → Actions."
             exit 1
           fi
+          RAW_URI="$DB_SESSION_POOLER_URL"
+          # Accept accidental secret format: DB_SESSION_POOLER_URL=postgres://...
+          if echo "$RAW_URI" | grep -Eq '^[A-Za-z_][A-Za-z0-9_]*=postgres(ql)?://'; then
+            RAW_URI="${RAW_URI#*=}"
+          fi
+          # Trim optional surrounding quotes.
+          RAW_URI="${RAW_URI%\"}"
+          RAW_URI="${RAW_URI#\"}"
+          RAW_URI="${RAW_URI%\'}"
+          RAW_URI="${RAW_URI#\'}"
           mkdir -p backups
           TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')
           # Remove unsupported `pgbouncer` URI query param for libpq clients (pg_dump).
-          DB_URI=$(echo "$DB_SESSION_POOLER_URL" \
+          DB_URI=$(echo "$RAW_URI" \
             | sed -E 's/([?&])pgbouncer=[^&]*&?/\1/g' \
             | sed -E 's/[?&]$//; s/\?&/?/g')
+          # Validate URI shape without printing secrets.
+          export DB_URI
+          python3 - <<'PY'
+          import os
+          import sys
+          from urllib.parse import parse_qsl, urlsplit
+
+          uri = os.environ.get("DB_URI", "")
+          parsed = urlsplit(uri)
+          errors = []
+          query_keys = [k.lower() for k, _ in parse_qsl(parsed.query)]
+
+          if parsed.scheme not in ("postgres", "postgresql"):
+              errors.append("scheme must be postgres:// or postgresql://")
+          if not parsed.username:
+              errors.append("missing username")
+          elif parsed.username == "postgres":
+              errors.append("username must be postgres.<project-ref>, not plain postgres")
+          if not parsed.password:
+              errors.append("missing password")
+          if not parsed.hostname or not parsed.hostname.endswith(".pooler.supabase.com"):
+              errors.append("host must be aws-<n>-<region>.pooler.supabase.com")
+          if parsed.port != 5432:
+              errors.append("port must be 5432 for Supabase session pooler")
+          if parsed.path.lstrip("/") != "postgres":
+              errors.append("database path must be /postgres")
+          if "pgbouncer" in query_keys:
+              errors.append("remove pgbouncer query parameter")
+
+          if errors:
+              print("::error::DB_SESSION_POOLER_URL has invalid format:")
+              for item in errors:
+                  print(f"::error::{item}")
+              print("::error::Expected format: postgresql://postgres.<project-ref>:<url-encoded-password>@aws-<n>-<region>.pooler.supabase.com:5432/postgres")
+              sys.exit(1)
+
+          print("Validated DB URI metadata:")
+          print(f"scheme={parsed.scheme}")
+          print(f"username={parsed.username}")
+          print(f"host={parsed.hostname}")
+          print(f"port={parsed.port}")
+          print(f"database={parsed.path.lstrip('/')}")
+          print(f"query_keys={query_keys}")
+          print(f"password_present={bool(parsed.password)}")
+          PY
           # Use Supabase Session Pooler URL (IPv4-compatible on GitHub-hosted runners).
           # Expected format:
           # postgres://postgres.<project-ref>:<password>@aws-<n>-<region>.pooler.supabase.com:5432/postgres
