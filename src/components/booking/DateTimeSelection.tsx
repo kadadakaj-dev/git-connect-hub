@@ -24,6 +24,21 @@ interface DateTimeSelectionProps {
   therapistId?: string;
 }
 
+type DayConfigRow = {
+  id?: string;
+  day_of_week: number;
+  is_active: boolean;
+  updated_at?: string;
+};
+
+function isMoreRecentConfig(a: DayConfigRow, b: DayConfigRow): boolean {
+  const updatedAtCompare = (a.updated_at || '').localeCompare(b.updated_at || '');
+  if (updatedAtCompare !== 0) {
+    return updatedAtCompare > 0;
+  }
+  return (a.id || '').localeCompare(b.id || '') > 0;
+}
+
 function getSlotAvailableClass(
   slot: TimeSlot,
   isSlotSelected: boolean,
@@ -127,8 +142,21 @@ const DateTimeSelection = ({
   const { data: activeConfigs = [] } = useQuery({
     queryKey: ['active-time-configs'],
     queryFn: async () => {
-      const { data } = await supabase.from('time_slots_config').select('day_of_week').eq('is_active', true);
-      return (data || []).map(d => d.day_of_week);
+      const { data } = await supabase
+        .from('time_slots_config')
+        .select('id, day_of_week, is_active, updated_at');
+
+      const latestByDay = new Map<number, DayConfigRow>();
+      for (const row of (data || []) as DayConfigRow[]) {
+        const existing = latestByDay.get(row.day_of_week);
+        if (!existing || isMoreRecentConfig(row, existing)) {
+          latestByDay.set(row.day_of_week, row);
+        }
+      }
+
+      return Array.from(latestByDay.values())
+        .filter((row) => row.is_active)
+        .map((row) => row.day_of_week);
     }
   });
 

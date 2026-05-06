@@ -120,6 +120,7 @@ describe('BookingWizard', () => {
         vi.clearAllMocks();
         // Mock window.scrollTo
         vi.spyOn(window, 'scrollTo').mockImplementation(() => { });
+        window.history.replaceState({}, '', '/');
     });
 
     it('should render the wizard with step sections', () => {
@@ -158,5 +159,17 @@ describe('BookingWizard', () => {
         expect(screen.getByTestId('booking-header')).toBeInTheDocument();
         expect(screen.getByTestId('footer')).toBeInTheDocument();
     });
-});
 
+    it('preselects service from query param and unlocks datetime section', async () => {
+        window.history.replaceState({}, '', '/?service=svc-1');
+        const { container } = render(<BookingWizard />);
+
+        await waitFor(() => {
+            const sections = container.querySelectorAll('section');
+            expect(sections[1].className).not.toContain('pointer-events-none');
+        });
+
+        expect(screen.getByTestId('service-svc-1')).toHaveAttribute('aria-pressed', 'true');
+        expect(window.location.search).toBe('');
+    });
+});

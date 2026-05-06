@@ -3,13 +3,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { TimeSlot } from '@/types/booking';
 import { format } from 'date-fns';
 import { getBratislavaNow, parseBratislavaDate } from '@/lib/booking-rules';
-import { getBookingDuration } from '@/lib/booking-utils';
 
 interface TimeSlotConfig {
+  id?: string;
   day_of_week: number;
   start_time: string;
   end_time: string;
   is_active: boolean;
+  updated_at?: string;
 }
 
 interface BookingRecord {
@@ -100,6 +101,18 @@ function generateSlotsFromConfig(
   return slots;
 }
 
+function selectLatestConfig(configs: TimeSlotConfig[]): TimeSlotConfig | null {
+  if (configs.length === 0) return null;
+
+  const sorted = [...configs].sort((a, b) => {
+    const updatedAtCompare = (b.updated_at || '').localeCompare(a.updated_at || '');
+    if (updatedAtCompare !== 0) return updatedAtCompare;
+    return (b.id || '').localeCompare(a.id || '');
+  });
+
+  return sorted[0] ?? null;
+}
+
 /**
  * Get all possible slot times from configs (used for consecutive slot validation).
  */
@@ -147,9 +160,8 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
       const [configRes, bookingsRes, employeesRes] = await Promise.all([
         supabase
           .from('time_slots_config')
-          .select('*')
-          .eq('day_of_week', dayOfWeek)
-          .eq('is_active', true),
+          .select('id, day_of_week, start_time, end_time, is_active, updated_at')
+          .eq('day_of_week', dayOfWeek),
         supabase
           .rpc('get_booking_slot_counts', { _date: dateString, _employee_id: null }),
         supabase
@@ -169,7 +181,8 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
       if (employeesRes.error) throw employeesRes.error;
 
       const configData = configRes.data;
-      if (!configData || configData.length === 0) return [];
+      const dayConfig = selectLatestConfig(configData || []);
+      if (!dayConfig || !dayConfig.is_active) return [];
 
       // PRODUCTION RULE: One occupied hour = fully blocked for everyone.
       // We force totalCapacity to 1 for the customer UI to reflect this clinic-wide restriction.
@@ -180,14 +193,10 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
         booking_duration: b.booking_duration || 30,
       }));
 
-      const allSlotTimes = getAllSlotTimes(configData);
+      const allSlotTimes = getAllSlotTimes([dayConfig]);
 
       // Generate all slots
-      let allSlots: TimeSlot[] = [];
-      for (const config of configData) {
-        const slots = generateSlotsFromConfig(config, allSlotTimes, bookings, totalCapacity, requiredSlots);
-        allSlots = [...allSlots, ...slots];
-      }
+      const allSlots = generateSlotsFromConfig(dayConfig, allSlotTimes, bookings, totalCapacity, requiredSlots);
 
       allSlots.sort((a, b) => a.time.localeCompare(b.time));
 
@@ -196,7 +205,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
         (slot, index, self) => self.findIndex((s) => s.time === slot.time) === index
       );
 
-      // Filter out slots within the 36h lead time window OR ending after 18:00
+      // Filter out slots within the 36h lead time window or outside configured closing time
       const filtered = uniqueSlots.map((slot) => {
         const slotDateTime = parseBratislavaDate(selectedDate, slot.time);
         
@@ -208,12 +217,6 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
         // Rule 1: Operating Hours (Start >= Opening Time)
         const [h, m] = slot.time.split(':').map(Number);
         
-        // Use fetched config for the day
-        const dayConfig = configRes.data?.[0];
-        if (!dayConfig || !dayConfig.is_active) {
-          return { ...slot, available: false };
-        }
-
         const [startH, startM] = dayConfig.start_time.split(':').map(Number);
         if (h < startH || (h === startH && m < startM)) {
           return { ...slot, available: false };
