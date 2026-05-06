@@ -36,7 +36,7 @@ jobs:
           pg_dump -h "${DB_HOST}" -U postgres -d postgres -p 5432 -F c -b -v -f "backups/supabase_backup_${TIMESTAMP}.dump"
 
       - name: Upload Backup Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: supabase-backup-${{ github.run_id }}
           path: backups/
