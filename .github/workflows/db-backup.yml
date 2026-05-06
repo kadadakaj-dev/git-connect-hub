@@ -31,6 +31,14 @@ jobs:
           DB_URI=$(echo "$DB_SESSION_POOLER_URL" \
             | sed -E 's/([?&])pgbouncer=[^&]*&?/\1/g' \
             | sed -E 's/[?&]$//; s/\?&/?/g')
+          # Supabase uses port 6543 for the Transaction Pooler and port 5432 for the
+          # Session Pooler.  pg_dump requires a Session Pooler connection; if the secret
+          # was mistakenly set to the Transaction Pooler URL (port 6543) auto-correct it
+          # and warn so the operator can fix the secret value.
+          if echo "$DB_URI" | grep -qE ':6543(/|$)'; then
+            echo "::warning::DB_SESSION_POOLER_URL uses port 6543 (Transaction Pooler). Switching to port 5432 (Session Pooler). Update the secret with the Session Pooler URL to silence this warning."
+            DB_URI=$(echo "$DB_URI" | sed -E 's/:6543(\/|$)/:5432\1/')
+          fi
           # Use Supabase Session Pooler URL (IPv4-compatible on GitHub-hosted runners).
           # Expected format:
           # postgres://postgres.<project-ref>:<password>@aws-<n>-<region>.pooler.supabase.com:5432/postgres
