@@ -27,10 +27,21 @@ jobs:
           fi
           mkdir -p backups
           TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')
+          DB_URI=$(python3 - <<'PY'
+import os
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
+raw = os.environ["DB_SESSION_POOLER_URL"]
+parts = urlsplit(raw)
+filtered = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k.lower() != "pgbouncer"]
+query = urlencode(filtered)
+print(urlunsplit((parts.scheme, parts.netloc, parts.path, query, parts.fragment)))
+PY
+          )
           # Use Supabase Session Pooler URL (IPv4-compatible on GitHub-hosted runners).
           # Expected format:
           # postgres://postgres.<project-ref>:<password>@aws-<n>-<region>.pooler.supabase.com:5432/postgres
-          pg_dump --dbname="${DB_SESSION_POOLER_URL}" -F c -b -v -f "backups/supabase_backup_${TIMESTAMP}.dump"
+          pg_dump --dbname="${DB_URI}" -F c -b -v -f "backups/supabase_backup_${TIMESTAMP}.dump"
 
       - name: Upload Backup Artifact
         uses: actions/upload-artifact@v6
