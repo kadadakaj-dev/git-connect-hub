@@ -279,6 +279,7 @@ const ServiceManagement = () => {
                 <div className="space-y-2">
                   <Label>{language === 'sk' ? 'Názov (SK)' : 'Name (SK)'}</Label>
                   <Input
+                    data-testid="input-name_sk"
                     value={formData.name_sk}
                     onChange={(e) => setFormData({ ...formData, name_sk: e.target.value })}
                     required
@@ -287,6 +288,7 @@ const ServiceManagement = () => {
                 <div className="space-y-2">
                   <Label>{language === 'sk' ? 'Názov (EN)' : 'Name (EN)'}</Label>
                   <Input
+                    data-testid="input-name_en"
                     value={formData.name_en}
                     onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
                     required
@@ -298,6 +300,7 @@ const ServiceManagement = () => {
                 <div className="space-y-2">
                   <Label>{language === 'sk' ? 'Popis (SK)' : 'Description (SK)'}</Label>
                   <Textarea
+                    data-testid="input-description_sk"
                     value={formData.description_sk}
                     onChange={(e) => setFormData({ ...formData, description_sk: e.target.value })}
                     required
@@ -306,6 +309,7 @@ const ServiceManagement = () => {
                 <div className="space-y-2">
                   <Label>{language === 'sk' ? 'Popis (EN)' : 'Description (EN)'}</Label>
                   <Textarea
+                    data-testid="input-description_en"
                     value={formData.description_en}
                     onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
                     required

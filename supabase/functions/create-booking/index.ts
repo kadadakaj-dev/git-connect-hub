@@ -30,6 +30,26 @@ interface BookingRequest {
   employee_id?: string
 }
 
+interface WorkingHoursConfigRow {
+  id?: string
+  start_time: string
+  end_time: string
+  is_active: boolean
+  updated_at?: string
+}
+
+function selectLatestWorkingHoursConfig(configs: WorkingHoursConfigRow[]): WorkingHoursConfigRow | null {
+  if (configs.length === 0) return null
+
+  const sorted = [...configs].sort((a, b) => {
+    const updatedAtCompare = (b.updated_at || '').localeCompare(a.updated_at || '')
+    if (updatedAtCompare !== 0) return updatedAtCompare
+    return (b.id || '').localeCompare(a.id || '')
+  })
+
+  return sorted[0] ?? null
+}
+
 // Validation functions
 function isValidUUID(str: string): boolean {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -288,11 +308,15 @@ serve(async (req: EdgeRequest) => {
       // Luxon weekday: 1=Mon..7=Sun; PostgreSQL DOW: 0=Sun..6=Sat → convert via % 7
       const dayOfWeek = targetDateTime.weekday % 7;
 
-      const { data: configRes, error: configError } = await supabase
+      const { data: configRows, error: configError } = await supabase
         .from('time_slots_config')
-        .select('start_time, end_time, is_active')
+        .select('id, start_time, end_time, is_active, updated_at')
         .eq('day_of_week', dayOfWeek)
-        .maybeSingle()
+      const configRes = selectLatestWorkingHoursConfig(configRows || [])
+
+      if ((configRows?.length || 0) > 1) {
+        console.warn('Multiple time_slots_config rows found for day_of_week:', dayOfWeek, 'selected config id:', configRes?.id ?? 'unknown')
+      }
 
       if (configError || !configRes) {
         return new Response(

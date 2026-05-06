@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { generateId } from '@/lib/uuid';
 import { BookingData, Service } from '@/types/booking';
 import ServiceSelection from './ServiceSelection';
@@ -17,6 +17,7 @@ import GlassCard from './GlassCard';
 import SectionHeader from './SectionHeader';
 import SubmitButton from './SubmitButton';
 import { mapBookingErrorMessage } from './bookingErrorMessages';
+import { useServices } from '@/hooks/useServices';
 
 const initialBookingData: BookingData = {
   service: null,
@@ -36,11 +37,44 @@ const BookingWizard = () => {
   const [bookingId, setBookingId] = useState<string | undefined>();
   const [clientRequestId, setClientRequestId] = useState(() => generateId());
   const createBooking = useCreateBooking();
+  const { data: services } = useServices();
 
   const dateTimeRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef<HTMLDivElement>(null);
   const lastTimeSelectRef = useRef<number>(0);
+  const consumedServiceParamRef = useRef(false);
+
+  useEffect(() => {
+    if (consumedServiceParamRef.current || !services) return;
+    consumedServiceParamRef.current = true;
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const serviceFromQuery = searchParams.get('service');
+    if (!serviceFromQuery) return;
+
+    const matchedService = services.find((service) => service.id === serviceFromQuery);
+
+    if (matchedService) {
+      setBookingData((prev) => ({
+        ...prev,
+        service: matchedService,
+        date: null,
+        time: null,
+      }));
+
+      setTimeout(() => {
+        dateTimeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
+    } else {
+      toast.error(language === 'sk' ? 'Vybraná služba nie je dostupná' : 'Selected service is not available');
+    }
+
+    searchParams.delete('service');
+    const newSearch = searchParams.toString();
+    const nextUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ''}${window.location.hash}`;
+    window.history.replaceState(window.history.state, '', nextUrl);
+  }, [language, services]);
 
   const updateBookingData = <K extends keyof BookingData>(field: K, value: BookingData[K]) => {
     setBookingData((prev) => ({ ...prev, [field]: value }));

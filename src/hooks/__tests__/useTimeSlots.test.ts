@@ -238,6 +238,71 @@ describe('useTimeSlots', () => {
     expect(slot1800?.available).toBe(true);
   });
 
+  it('18:00 slot is unavailable when config end_time is 18:00', async () => {
+    // 18:00 + 15 min = 18:15, closing 18:00 → blocked
+    const date = new Date('2026-12-07T12:00:00');
+
+    mockRpc.mockImplementation(() => mockChain({ data: [], error: null }));
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'blocked_dates') return mockChain({ data: null, error: null });
+      if (table === 'time_slots_config') {
+        return mockChain({
+          data: [{ day_of_week: 1, start_time: '09:00', end_time: '18:00', is_active: true }],
+          error: null,
+        });
+      }
+      if (table === 'employees_public') return mockChain({ data: [{ id: 'emp-1' }], error: null });
+      return mockChain({ data: [], error: null });
+    });
+
+    const { result } = renderHook(() => useTimeSlots(date, 15), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    const slot1800 = result.current.data?.find(s => s.time === '18:00');
+    expect(slot1800).toBeUndefined();
+  });
+
+  it('uses the latest time_slots_config row per day deterministically', async () => {
+    // Older config would allow 18:00, latest config should block it.
+    const date = new Date('2026-12-07T12:00:00');
+
+    mockRpc.mockImplementation(() => mockChain({ data: [], error: null }));
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'blocked_dates') return mockChain({ data: null, error: null });
+      if (table === 'time_slots_config') {
+        return mockChain({
+          data: [
+            {
+              id: 'cfg-old',
+              day_of_week: 1,
+              start_time: '09:00',
+              end_time: '19:10',
+              is_active: true,
+              updated_at: '2026-01-01T10:00:00Z',
+            },
+            {
+              id: 'cfg-new',
+              day_of_week: 1,
+              start_time: '09:00',
+              end_time: '18:00',
+              is_active: true,
+              updated_at: '2026-05-01T10:00:00Z',
+            },
+          ],
+          error: null,
+        });
+      }
+      if (table === 'employees_public') return mockChain({ data: [{ id: 'emp-1' }], error: null });
+      return mockChain({ data: [], error: null });
+    });
+
+    const { result } = renderHook(() => useTimeSlots(date, 15), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    const slot1800 = result.current.data?.find(s => s.time === '18:00');
+    expect(slot1800).toBeUndefined();
+  });
+
   it('18:30 slot is unavailable for a 50-min service when config end_time is 19:10', async () => {
     // 18:30 + 50 min = 19:20, closing 19:10 → endMinutes(1160) > closingMinutes(1150) → blocked
     const date = new Date('2026-12-07T12:00:00');

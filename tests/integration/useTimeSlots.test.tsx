@@ -49,7 +49,7 @@ describe('useTimeSlots Integration', () => {
   const mockSuccessfulResponses = () => {
     vi.mocked(supabase.from).mockImplementation(((table: string) => {
       if (table === 'blocked_dates') return { select: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: null }) }) }) };
-      if (table === 'time_slots_config') return { select: () => ({ eq: () => ({ eq: () => Promise.resolve({ data: [{ day_of_week: 0, start_time: '09:00', end_time: '10:00', is_active: true }] }) }) }) };
+      if (table === 'time_slots_config') return { select: () => ({ eq: () => Promise.resolve({ data: [{ day_of_week: 0, start_time: '09:00', end_time: '10:00', is_active: true }] }) }) };
       if (table === 'employees_public') return { select: () => ({ eq: () => Promise.resolve({ data: [{ id: mainPersonId }, { id: '5c1c02af-cbbc-47a8-b7c7-1387aa53a7bc' }, { id: '06acd843-2d63-4273-b352-14efae698b17' }] }) }) };
       return supabase;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

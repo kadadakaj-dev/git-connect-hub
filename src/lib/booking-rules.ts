@@ -15,26 +15,21 @@ export function getBratislavaNow(): DateTime {
 export function parseBratislavaDate(date: Date, timeSlot: string): DateTime {
   const [hours, minutes] = timeSlot.split(':').map(Number);
 
-  // We want the specific Day/Month/Year from the picker to be interpreted
-  // as that day in Bratislava time, regardless of where the server/browser is.
-  return DateTime.fromObject(
-    {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      day: date.getDate(),
-      hour: hours,
-      minute: minutes,
-      second: 0,
-      millisecond: 0,
-    },
-    { zone: TIMEZONE }
-  );
+  // Convert the instant to Bratislava zone first so that the calendar date
+  // (year/month/day) is correct regardless of the runner/browser timezone.
+  // Then apply the timeSlot (expressed in Bratislava time) in-zone.
+  return DateTime.fromJSDate(date, { zone: TIMEZONE }).set({
+    hour: hours,
+    minute: minutes,
+    second: 0,
+    millisecond: 0,
+  });
 }
 
 /**
  * Validates if the given booking date and time slot is at least 36 hours from the current Bratislava time.
  * @param date The selected booking date
- * @param timeSlot The selected time slot in "HH:mm" format
+ * @param timeSlot The selected time slot in "HH:mm" format (must be in Europe/Bratislava time)
  * @returns { allowed: boolean; error?: string }
  */
 export function validateBookingLeadTime(

@@ -166,6 +166,43 @@ export async function mockBookingResources(page: Page) {
         await route.fulfill({ json: [] });
     });
 
+    await page.route('**/rest/v1/bookings*', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({ json: [] });
+        } else {
+            await route.fulfill({
+                status: 201,
+                json: [{
+                    id: 'mock-booking-id',
+                    date: '2026-04-08',
+                    time_slot: '10:00',
+                    client_name: 'Test User',
+                    client_email: 'test@example.com',
+                    status: 'confirmed',
+                    booking_duration: 30,
+                }],
+            });
+        }
+    });
+
+    await page.route('**/rest/v1/blocked_slots*', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({ json: [] });
+        } else {
+            await route.fulfill({
+                status: 201,
+                json: [{
+                    id: 'mock-block-id',
+                    date: '2026-04-08',
+                    time_slot: '10:00',
+                    duration: 30,
+                    therapist_id: null,
+                    reason: 'Blokovaný čas',
+                }],
+            });
+        }
+    });
+
     await page.route('**/functions/v1/create-booking', async route => {
         await route.fulfill({ 
             json: { 
@@ -173,5 +210,9 @@ export async function mockBookingResources(page: Page) {
                 booking: { id: 'mock-booking-id', date: '2026-04-08', time_slot: '10:00', status: 'confirmed' } 
             } 
         });
+    });
+
+    await page.route('**/functions/v1/send-booking-email', async route => {
+        await route.fulfill({ json: { success: true } });
     });
 }

@@ -33,6 +33,13 @@ test.describe('Booking wizard smoke flow', () => {
         await page.route('**/rest/v1/rpc/get_booking_slot_counts*', async route => {
             await route.fulfill({ json: [] });
         });
+
+        // Mock blocked_dates — without this the supabase request may hang in CI
+        // (filtered TCP connection → no immediate RST → useTimeSlots query never
+        //  resolves inside the 1500 ms Playwright timeout)
+        await page.route('**/rest/v1/blocked_dates*', async route => {
+            await route.fulfill({ json: [] });
+        });
     });
 
     test('should progress through the booking wizard steps', async ({ page }) => {
@@ -59,7 +66,8 @@ test.describe('Booking wizard smoke flow', () => {
                 const timeSlot = page.locator('[data-testid^="time-slot-"]:not([disabled])').first();
                 await expect(timeSlot).toBeVisible({ timeout: 1500 });
                 await timeSlot.click();
-                await page.waitForTimeout(500); // Wait for React state & Framer Motion to settle
+                // Wait for the wizard to advance to the personal details step
+                await expect(page.locator('[data-testid="input-clientName"]')).toBeVisible({ timeout: 5000 });
                 foundTime = true;
                 break;
             } catch (e) {

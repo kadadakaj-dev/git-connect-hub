@@ -1,39 +1,93 @@
 import { type Page } from '@playwright/test';
 import process from 'node:process';
 
+// The hardcoded admin email checked by AdminProtectedRoute / Admin page.
+// Must match src/lib/constants.ts ADMIN_EMAIL.
+const ADMIN_EMAIL = 'booking@fyzioafit.sk';
+
+// A fake JWT that supabase-js v2 can decode (it only base64url-decodes the
+// payload — it never verifies the signature client-side).
+// Payload: { aud, exp (far future), sub, email: ADMIN_EMAIL, role, iat }
+const FAKE_ACCESS_TOKEN = [
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+    'eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjo5OTk5OTk5OTk5LCJzdWIiOiJtb2NrLWFkbWluLWlkIiwiZW1haWwiOiJib29raW5nQGZ5emlvYWZpdC5zayIsInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiaWF0IjoxMDAwMDAwMDAwfQ',
+    'fakesig',
+].join('.');
+
+const MOCK_ADMIN_USER = {
+    id: 'mock-admin-id',
+    aud: 'authenticated',
+    role: 'authenticated',
+    email: ADMIN_EMAIL,
+    email_confirmed_at: '2026-01-01T00:00:00Z',
+    app_metadata: { provider: 'email' },
+    user_metadata: {},
+    created_at: '2026-01-01T00:00:00Z',
+};
+
+const MOCK_SESSION = {
+    access_token: FAKE_ACCESS_TOKEN,
+    token_type: 'bearer',
+    expires_in: 86400,
+    expires_at: 9999999999,
+    refresh_token: 'mock-refresh-token',
+    user: MOCK_ADMIN_USER,
+};
+
 /**
- * Automates the login process for the admin dashboard.
- * Requires TEST_ADMIN_EMAIL and TEST_ADMIN_PASSWORD env vars.
+ * Derives the localStorage key that supabase-js v2 uses for the auth session.
+ * Formula (from supabase-js source): sb-{hostname.split('.')[0]}-auth-token
+ * e.g. https://abc.supabase.co → sb-abc-auth-token
+ *      http://127.0.0.1:54321 → sb-127-auth-token
+ */
+function supabaseStorageKey(supabaseUrl: string): string {
+    try {
+        const hostname = new URL(supabaseUrl).hostname;
+        return `sb-${hostname.split('.')[0]}-auth-token`;
+    } catch {
+        console.warn(`[loginAsAdmin] Could not parse VITE_SUPABASE_URL "${supabaseUrl}" — falling back to sb-127-auth-token`);
+        return 'sb-127-auth-token';
+    }
+}
+
+/**
+ * Bypasses the real Supabase login form by injecting a fake admin session
+ * directly into localStorage before the app loads.
+ *
+ * This works without real Supabase credentials because:
+ * 1. supabase-js v2 reads the session from localStorage on startup (no network
+ *    call needed when the token is not expired).
+ * 2. Any subsequent auth API calls (/auth/v1/user, /auth/v1/token) are mocked
+ *    via page.route() to return the same fake user/session.
+ * 3. AdminProtectedRoute only checks session.user.email === ADMIN_EMAIL, which
+ *    our fake session satisfies.
  */
 export async function loginAsAdmin(page: Page) {
-    const email = process.env.VITE_TEST_ADMIN_EMAIL ?? 'admin@example.com';
-    const password = process.env.VITE_TEST_ADMIN_PASSWORD ?? 'password123';
+    // Compute the actual localStorage key from the Supabase URL that the Vite
+    // dev server is started with (set by playwright.config.ts).
+    const supabaseUrl = process.env.VITE_SUPABASE_URL || 'http://127.0.0.1:54321';
+    const storageKey = supabaseStorageKey(supabaseUrl);
 
-    // Skip splash screen and cookie banner
-    await page.addInitScript(() => {
-        globalThis.sessionStorage.setItem('fyzio_splash_shown', 'true');
-        globalThis.localStorage.setItem('cookie-consent', 'accepted');
+    // Mock Supabase auth API calls so token refresh / getUser() succeed.
+    await page.route('**/auth/v1/user*', async route => {
+        await route.fulfill({ json: MOCK_ADMIN_USER });
+    });
+    await page.route('**/auth/v1/token*', async route => {
+        await route.fulfill({ json: MOCK_SESSION });
     });
 
-    await page.goto('/auth');
-    
-    // Fill login form
-    await page.locator('#email').fill(email);
-    await page.locator('#password').fill(password);
-    
-    await page.getByRole('button', {
-        name: /Pokračovať|Prihlásiť sa|Prihlásiť|Sign In/i,
-    }).click();
+    // Seed the session into localStorage BEFORE the Supabase client initialises.
+    // addInitScript runs at the very start of each page load.
+    await page.addInitScript(
+        (args: { storageKey: string; session: typeof MOCK_SESSION }) => {
+            localStorage.setItem(args.storageKey, JSON.stringify(args.session));
+            sessionStorage.setItem('fyzio_splash_shown', 'true');
+            localStorage.setItem('cookie-consent', 'accepted');
+        },
+        { storageKey, session: MOCK_SESSION },
+    );
 
-    // Wait for either portal or admin (portal is the default redirect)
-    await page.waitForURL(url => url.pathname.includes('/portal') || url.pathname.includes('/admin'));
-    
-    // If we land on /portal (standard client redirect), navigate to /admin
-    if (page.url().includes('/portal')) {
-        await page.goto('/admin');
-    }
-
-    // Ensure we are on admin
+    await page.goto('/admin');
     await page.waitForURL('**/admin');
 }
 
