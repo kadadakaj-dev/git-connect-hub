@@ -278,7 +278,7 @@ describe('useTimeSlots', () => {
               start_time: '09:00',
               end_time: '19:10',
               is_active: true,
-              updated_at: '2026-01-01T10:00:00Z',
+              created_at: '2026-01-01T10:00:00Z',
             },
             {
               id: 'cfg-new',
@@ -286,7 +286,7 @@ describe('useTimeSlots', () => {
               start_time: '09:00',
               end_time: '18:00',
               is_active: true,
-              updated_at: '2026-05-01T10:00:00Z',
+              created_at: '2026-05-01T10:00:00Z',
             },
           ],
           error: null,

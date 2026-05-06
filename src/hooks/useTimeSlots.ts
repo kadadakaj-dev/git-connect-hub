@@ -10,7 +10,7 @@ interface TimeSlotConfig {
   start_time: string;
   end_time: string;
   is_active: boolean;
-  updated_at?: string;
+  created_at?: string;
 }
 
 interface BookingRecord {
@@ -105,8 +105,8 @@ function selectLatestConfig(configs: TimeSlotConfig[]): TimeSlotConfig | null {
   if (configs.length === 0) return null;
 
   const sorted = [...configs].sort((a, b) => {
-    const updatedAtCompare = (b.updated_at || '').localeCompare(a.updated_at || '');
-    if (updatedAtCompare !== 0) return updatedAtCompare;
+    const createdAtCompare = (b.created_at || '').localeCompare(a.created_at || '');
+    if (createdAtCompare !== 0) return createdAtCompare;
     return (b.id || '').localeCompare(a.id || '');
   });
 
@@ -160,7 +160,7 @@ export function useTimeSlots(selectedDate: Date | null, serviceDuration: number 
       const [configRes, bookingsRes, employeesRes] = await Promise.all([
         supabase
           .from('time_slots_config')
-          .select('id, day_of_week, start_time, end_time, is_active, updated_at')
+          .select('id, day_of_week, start_time, end_time, is_active, created_at')
           .eq('day_of_week', dayOfWeek),
         supabase
           .rpc('get_booking_slot_counts', { _date: dateString, _employee_id: null }),
