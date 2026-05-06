@@ -7,30 +7,30 @@ describe('getBookingDuration', () => {
         expect(getBookingDuration(30)).toBe(30);
     });
 
-    it('should round up 45 minutes to 60', () => {
-        expect(getBookingDuration(45)).toBe(60);
+    it('should return exact value for 45 minutes', () => {
+        expect(getBookingDuration(45)).toBe(45);
     });
 
     it('should return 60 for exactly 60 minutes', () => {
         expect(getBookingDuration(60)).toBe(60);
     });
 
-    it('should round up 15 minutes to 30', () => {
-        expect(getBookingDuration(15)).toBe(30);
+    it('should return exact value for 15 minutes', () => {
+        expect(getBookingDuration(15)).toBe(15);
     });
 
-    it('should round up 1 minute to 30', () => {
-        expect(getBookingDuration(1)).toBe(30);
+    it('should return exact value for 1 minute', () => {
+        expect(getBookingDuration(1)).toBe(1);
     });
 
-    it('should return 90 for 61-90 minutes', () => {
-        expect(getBookingDuration(61)).toBe(90);
-        expect(getBookingDuration(75)).toBe(90);
+    it('should return exact value for 61-90 minutes', () => {
+        expect(getBookingDuration(61)).toBe(61);
+        expect(getBookingDuration(75)).toBe(75);
         expect(getBookingDuration(90)).toBe(90);
     });
 
-    it('should return 120 for 91-120 minutes', () => {
-        expect(getBookingDuration(91)).toBe(120);
+    it('should return exact value for 91-120 minutes', () => {
+        expect(getBookingDuration(91)).toBe(91);
         expect(getBookingDuration(120)).toBe(120);
     });
 });

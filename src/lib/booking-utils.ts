@@ -1,7 +1,7 @@
 /**
  * Calculate the booking duration in minutes based on service duration.
- * Rounds up to the nearest 30-minute slot.
+ * No buffer: booking duration equals the real service duration.
  */
 export function getBookingDuration(serviceDurationMinutes: number): number {
-  return Math.ceil(serviceDurationMinutes / 30) * 30;
+  return serviceDurationMinutes;
 }

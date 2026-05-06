@@ -175,14 +175,14 @@ describe('useTimeSlots', () => {
 
   // ── Chiro booking correctness tests ──────────────────────────────────────────
 
-  it('chiro 16:00 booking (booking_duration=60) blocks the 16:30 slot', async () => {
-    // booking_duration semantics: ceil(service_duration / 30) * 30
-    // Chiro masáž: service duration 50 min → booking_duration 60 (2 grid slots)
-    // A booking at 16:00 with booking_duration=60 must make 16:30 unavailable.
+  it('chiro 16:00 booking (booking_duration=50) blocks the 16:30 slot', async () => {
+    // No-buffer semantics: booking_duration equals service duration.
+    // Chiro masáž: service duration 50 min → booking_duration 50.
+    // A booking at 16:00 with booking_duration=50 still blocks 16:30 (overlap until 16:50).
     const date = new Date('2026-12-07T12:00:00'); // Monday, far future
 
     mockRpc.mockImplementation(() => mockChain({
-      data: [{ time_slot: '16:00', booking_duration: 60 }],
+      data: [{ time_slot: '16:00', booking_duration: 50 }],
       error: null,
     }));
     mockFrom.mockImplementation((table: string) => {
@@ -197,7 +197,7 @@ describe('useTimeSlots', () => {
       return mockChain({ data: [], error: null });
     });
 
-    // serviceDuration=50 → requiredSlots=2 (50/30 rounded up)
+    // serviceDuration=50 → requiredSlots=2 (grid still 30-minute slots)
     const { result } = renderHook(() => useTimeSlots(date, 50), { wrapper: createWrapper() });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 

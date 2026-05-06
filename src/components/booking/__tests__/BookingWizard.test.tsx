@@ -57,21 +57,20 @@ const mockServices: Service[] = [
         category: 'physiotherapy',
         icon: 'Heart',
     },
+    {
+        id: 'svc-55',
+        name: 'Chiro masáž',
+        description: 'Klasická masáž chrbta a ramien',
+        duration: 55,
+        price: 55,
+        category: 'chiropractic',
+        icon: 'Bone',
+    },
 ];
 
 vi.mock('@/hooks/useServices', () => ({
     useServices: () => ({
-        data: [
-            {
-                id: 'svc-1',
-                name: 'Fyzioterapia',
-                description: 'Cielené ošetrenie',
-                duration: 30,
-                price: 65,
-                category: 'physiotherapy',
-                icon: 'Heart',
-            },
-        ],
+        data: mockServices,
         isLoading: false,
         error: null,
     }),
@@ -85,6 +84,25 @@ vi.mock('@/hooks/useTimeSlots', () => ({
         ],
         isLoading: false,
     }),
+}));
+
+vi.mock('../DateTimeSelection', () => ({
+    default: ({
+        onDateSelect,
+        onTimeSelect,
+    }: {
+        onDateSelect: (date: Date) => void;
+        onTimeSelect: (time: string) => void;
+    }) => (
+        <div>
+            <button data-testid="mock-date-select" onClick={() => onDateSelect(new Date('2026-12-07T12:00:00'))}>
+                select-date
+            </button>
+            <button data-testid="mock-time-select" onClick={() => onTimeSelect('10:00')}>
+                select-time
+            </button>
+        </div>
+    ),
 }));
 
 // Mock child components that are heavy
@@ -171,5 +189,36 @@ describe('BookingWizard', () => {
 
         expect(screen.getByTestId('service-svc-1')).toHaveAttribute('aria-pressed', 'true');
         expect(window.location.search).toBe('');
+    });
+
+    it('submits the selected service id from service card selection', async () => {
+        mockMutateAsync.mockResolvedValue({
+            success: true,
+            booking: { id: 'bk-1', date: '2026-12-07', time_slot: '10:00', status: 'confirmed' },
+        });
+
+        render(<BookingWizard />);
+
+        fireEvent.click(screen.getByTestId('service-svc-55'));
+        fireEvent.click(screen.getByTestId('mock-date-select'));
+        fireEvent.click(screen.getByTestId('mock-time-select'));
+
+        fireEvent.change(screen.getByTestId('input-clientName'), { target: { value: 'Erik Test' } });
+        fireEvent.change(screen.getByTestId('input-clientEmail'), { target: { value: 'erik@test.com' } });
+        fireEvent.change(screen.getByTestId('input-clientPhone'), { target: { value: '+421900123456' } });
+
+        fireEvent.click(screen.getByText('Rezervovať'));
+
+        await waitFor(() => expect(mockMutateAsync).toHaveBeenCalled());
+
+        expect(mockMutateAsync).toHaveBeenCalledWith(
+            expect.objectContaining({
+                serviceId: 'svc-55',
+                timeSlot: '10:00',
+                clientName: 'Erik Test',
+                clientEmail: 'erik@test.com',
+                clientPhone: '+421900123456',
+            })
+        );
     });
 });
