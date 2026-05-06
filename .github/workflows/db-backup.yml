@@ -27,17 +27,10 @@ jobs:
           fi
           mkdir -p backups
           TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')
-          DB_URI=$(python3 - <<'PY'
-import os
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
-
-raw = os.environ["DB_SESSION_POOLER_URL"]
-parts = urlsplit(raw)
-filtered = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k.lower() != "pgbouncer"]
-query = urlencode(filtered)
-print(urlunsplit((parts.scheme, parts.netloc, parts.path, query, parts.fragment)))
-PY
-          )
+          # Remove unsupported `pgbouncer` URI query param for libpq clients (pg_dump).
+          DB_URI=$(echo "$DB_SESSION_POOLER_URL" \
+            | sed -E 's/([?&])pgbouncer=[^&]*&?/\1/g' \
+            | sed -E 's/[?&]$//; s/\?&/?/g')
           # Use Supabase Session Pooler URL (IPv4-compatible on GitHub-hosted runners).
           # Expected format:
           # postgres://postgres.<project-ref>:<password>@aws-<n>-<region>.pooler.supabase.com:5432/postgres
