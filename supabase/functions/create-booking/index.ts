@@ -141,7 +141,11 @@ async function checkRateLimit(
 ): Promise<{ allowed: boolean; remaining: number }> {
   // Cleanup old entries periodically (1 in 10 chance)
   if (Math.random() < 0.1) {
-    await supabase.rpc('cleanup_rate_limits').catch(() => { })
+    try {
+      await supabase.rpc('cleanup_rate_limits')
+    } catch {
+      // Best-effort cleanup; never block bookings on cleanup failure.
+    }
   }
 
   const windowStart = new Date(Date.now() - windowMinutes * 60 * 1000).toISOString()
